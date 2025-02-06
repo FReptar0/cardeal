@@ -129,8 +129,8 @@ const ExtrasRenta = () => {
         <Typography variant="h5" fontWeight="bold" sx={{ color: "#d60812" }}>{total.toFixed(2)} MXN</Typography>
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
-        <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", borderRadius: "8px", padding: "12px 30px", fontSize: "16px" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
+        <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 30px", fontSize: "16px" }}>
           CONTINUAR
         </Button>
       </Box>

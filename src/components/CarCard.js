@@ -1,7 +1,16 @@
 import { Card, CardContent, CardMedia, Typography, Button, Box } from "@mui/material";
 import LuggageIcon from "@mui/icons-material/Luggage";
 
+import { useRouter } from "next/router";
+
 export default function CarCard({ car }) {
+
+    const router = useRouter(); // Inicializa el router
+
+    const handleReserve = () => {
+        router.push("/seguro"); // Redirige a /seguro
+    };
+
     return (
         <Card sx={{ display: "flex", alignItems: "center", padding: 2 }}>
             {/* Imagen */}
@@ -22,22 +31,22 @@ export default function CarCard({ car }) {
                 </Typography>
                 <Box sx={{ display: "flex", gap: 2, marginTop: 1, alignItems: "center" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <img 
-                            src="https://dealrentacar.com/images/icons/ic-pax.svg" 
-                            alt="Pasajeros" 
+                        <img
+                            src="https://dealrentacar.com/images/icons/ic-pax.svg"
+                            alt="Pasajeros"
                             width="20"
                             height="20"
-                            style={{ filter: "brightness(0)" }} 
+                            style={{ filter: "brightness(0)" }}
                         />
                         <Typography variant="body2">{car.passengers} pasajeros</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <img 
-                            src="https://dealrentacar.com/images/icons/ic-door.svg" 
-                            alt="Puertas" 
+                        <img
+                            src="https://dealrentacar.com/images/icons/ic-door.svg"
+                            alt="Puertas"
                             width="20"
                             height="20"
-                            style={{ filter: "brightness(0)" }} 
+                            style={{ filter: "brightness(0)" }}
                         />
                         <Typography variant="body2">{car.doors} puertas</Typography>
                     </Box>
@@ -46,12 +55,12 @@ export default function CarCard({ car }) {
                         <Typography variant="body2">{car.luggage} maletas</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                        <img 
-                            src="https://dealrentacar.com/images/icons/ic-trans.svg" 
-                            alt="Transmisión" 
+                        <img
+                            src="https://dealrentacar.com/images/icons/ic-trans.svg"
+                            alt="Transmisión"
                             width="20"
                             height="20"
-                            style={{ filter: "brightness(0)" }} 
+                            style={{ filter: "brightness(0)" }}
                         />
                         <Typography variant="body2">{car.transmission}</Typography>
                     </Box>
@@ -64,7 +73,8 @@ export default function CarCard({ car }) {
                     {car.price} MXN
                 </Typography>
                 <Typography variant="body2">{car.price} MXN/día</Typography>
-                <Button variant="contained" sx={{ backgroundColor: "#d32f2f", color: "white", marginTop: 1 }}>
+                <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "8px 20px", fontSize: "16px" }}
+                    onClick={handleReserve} >
                     Reservar
                 </Button>
             </Box>

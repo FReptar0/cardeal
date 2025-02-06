@@ -5,6 +5,8 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
+import { useRouter } from "next/router"; // Importa useRouter
+
 const todasLasCoberturas = [
   "Colisión y daños",
   "Responsabilidad Civil",
@@ -67,6 +69,8 @@ const SeguroVehiculo = () => {
   const [seleccionado, setSeleccionado] = useState(null);
   const [openWarning, setOpenWarning] = useState(false);
 
+  const router = useRouter(); // Inicializa el router
+
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
   };
@@ -76,6 +80,7 @@ const SeguroVehiculo = () => {
       setOpenWarning(true);
     } else {
       console.log("Continuar con el seguro seleccionado: ", seleccionado);
+      router.push("/extras-renta"); // Redirige a la página
     }
   };
 
@@ -152,8 +157,18 @@ const SeguroVehiculo = () => {
         ))}
       </Grid>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
-        <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", borderRadius: "8px", padding: "12px 30px", fontSize: "16px" }} onClick={handleContinue}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#d60812",
+            color: "white",
+            fontWeight: "bold",
+            padding: "12px 30px",
+            fontSize: "16px"
+          }}
+          onClick={handleContinue} // Ahora redirige a /extras-renta
+        >
           CONTINUAR
         </Button>
       </Box>
