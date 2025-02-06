@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Container, Typography, Box } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import { Container, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
@@ -15,22 +14,20 @@ export default function RentalPage() {
     };
 
     return (
-        <Container sx={{ marginTop: 4 }}>
-            <Grid2 container spacing={2}>
-                {/* 🟥 LADO IZQUIERDO - BUSCADOR */}
-                <Grid2 xs={12} md={4}>
+        <Container sx={{ marginTop: 4, maxWidth: "100vw", paddingX: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "85vh", alignItems: "flex-start", width: "100%" }}>
+                {/* LADO IZQUIERDO - BUSCADOR */}
+                <Box sx={{ width: { xs: "100%", md: "30%" }, paddingRight: { md: 2 }, marginBottom: { xs: 2, md: 0 }, display: "flex", justifyContent: "center" }}>
                     <SearchBar onSearch={handleSearch} />
-                </Grid2>
+                </Box>
 
-                {/* 🟦 LADO DERECHO - TARJETAS DE AUTOS */}
-                <Grid2 xs={12} md={8}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        {filteredCars.map((car, index) => (
-                            <CarCard key={index} car={car} />
-                        ))}
-                    </Box>
-                </Grid2>
-            </Grid2>
+                {/* LADO DERECHO - TARJETAS DE AUTOS */}
+                <Box sx={{ width: { xs: "100%", md: "70%" }, paddingLeft: { md: 2 }, display: "flex", flexDirection: "column", gap: 2, minHeight: "80vh", overflowY: "auto" }}>
+                    {filteredCars.map((car, index) => (
+                        <CarCard key={index} car={car} />
+                    ))}
+                </Box>
+            </Box>
         </Container>
     );
 }
