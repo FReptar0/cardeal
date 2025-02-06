@@ -133,7 +133,7 @@ export default function SearchBar() {
 
     return (
         <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, display: "flex", flexDirection: "column", gap: 3 }}>
-            <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }}>Ubicación de origen</Typography>
+            <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }} id="ubicacionOrigenSB">Ubicación de origen</Typography>
             <Autocomplete
                 options={locations}
                 getOptionLabel={(option) => `${option.city} - ${option.name}`}
@@ -144,6 +144,7 @@ export default function SearchBar() {
                 sx={{ width: "100%" }}
             />
             <FormControlLabel
+                id="checkboxSB"
                 control={<Checkbox checked={sameOffice} onChange={() => setSameOffice(!sameOffice)} sx={{ color: "#d32f2f", "&.Mui-checked": { color: "#d32f2f" } }} />}
                 label="Devolver en la misma oficina"
                 sx={{ color: "black", fontWeight: "bold" }}
