@@ -1,3 +1,5 @@
+import '../styles/global.css';
+
 // pages/_app.js
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
