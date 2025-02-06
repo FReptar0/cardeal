@@ -1,8 +1,11 @@
+import '../styles/global.css';
+
 // pages/_app.js
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import darkTheme from '../utils/theme';
 import Head from 'next/head';
+import Layout from '../components/Layout';
 
 function MyApp({ Component, pageProps }) {
     return (
@@ -15,7 +18,10 @@ function MyApp({ Component, pageProps }) {
 
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
-                <Component {...pageProps} />
+                {/* LAYOUT TIENE RODEANDO UN COMPONENTE BOX PARA EVITAR EL EL SHRINK QUE HACE EL CONTAINER */}
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
             </ThemeProvider>
         </>
     );
