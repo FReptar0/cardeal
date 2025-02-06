@@ -1,0 +1,8 @@
+.custom-search-bar #ubicacionOrigenSB{
+    text-align: start;
+}
+
+.custom-search-bar #checkboxSB .MuiFormControlLabel-label{
+    font-size: 1.2rem;
+    margin-left: 10px;
+}
