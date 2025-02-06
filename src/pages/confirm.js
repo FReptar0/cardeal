@@ -13,18 +13,27 @@ const OrderConfirmation = () => {
             .catch((err) => console.error(err));
     }, []);
 
+    const dailyRate = 450;
+    const rentalDays = 4;
+    const babySeats = 2;
+    const babySeatPrice = 50;
+    const wifiPrice = 150;
+    const extraDriverPrice = 200;
+
+    const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
+
     return (
         <>
             <Head>
                 <title>Confirmación de Pedido</title>
             </Head>
             <Container sx={{ marginTop: -10, maxWidth: "100vw", paddingX: 2 }}>
-                <Box sx={{ 
-                    display: "flex", 
+                <Box sx={{
+                    display: "flex",
                     flexDirection: { xs: "column", md: "row" },
-                    minHeight: "85vh", 
-                    alignItems: "center", 
-                    justifyContent: "center", 
+                    minHeight: "85vh",
+                    alignItems: "center",
+                    justifyContent: "center",
                     textAlign: "left",
                     gap: 4
                 }}>
@@ -33,29 +42,35 @@ const OrderConfirmation = () => {
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                             <CardContent>
                                 <Typography variant="h6" align="center" gutterBottom>
-                                    Número de Pedido #000001
+                                    Número de renta #637491
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                    <img src="/car-placeholder.png" alt="Auto rentado" style={{ width: 100, borderRadius: 8 }} />
-                                    <Box>
-                                        <Typography variant="body1"><b>Categoría del automóvil rentado:</b> Sedán</Typography>
-                                        <Typography variant="body1"><b>Precio:</b> $68</Typography>
+                                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                                    <img src="/cars/camry.png" alt="Toyota Camry 2025" style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
+                                    <Box sx={{ ml: 2, textAlign: "left" }}>
+                                        <Typography variant="body1"><b>Marca:</b> Toyota</Typography>
+                                        <Typography variant="body1"><b>Modelo:</b> Camry</Typography>
+                                        <Typography variant="body1"><b>Año:</b> 2025</Typography>
                                     </Box>
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
-                                <Typography variant="subtitle1">Servicios adicionales</Typography>
-                                <Typography variant="body2">Servicio Wi-Fi - $68</Typography>
+                                <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
+                                <Typography variant="body2">$450 x 4 días = $1800</Typography>
+                                <Divider sx={{ my: 2 }} />
+                                <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
+                                <Typography variant="body2">2 Sillas para bebés ($50 c/u x 4 días) - $400</Typography>
+                                <Typography variant="body2">Wi-Fi ($150 x 4 días) - $600</Typography>
+                                <Typography variant="body2">Conductor adicional - $200</Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Typography variant="h6" align="right">
-                                    Total: <b>$136</b>
+                                    Total: <b>${total}</b>
                                 </Typography>
                             </CardContent>
                         </Card>
                     </Box>
-                    
+
                     {/* Contenedor de información de confirmación y QR */}
-                    <Box sx={{ width: { xs: "100%", md: "75%" }, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 2 }}>
+                    <Box sx={{ width: { xs: "100%", md: "75%" }, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 2, }}>
                         {/* Información de confirmación */}
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
                             <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -65,9 +80,9 @@ const OrderConfirmation = () => {
                             <Typography variant="body2" color="text.secondary">
                                 Gracias por elegir nuestro servicio.
                             </Typography>
-                            <Typography variant="h5">Número de confirmación</Typography>
+                            <Typography variant="h5">Número de confirmación #637491</Typography>
                             <Typography variant="body1"><b>Nombre completo:</b> Manuel Jesús Contreras Pérez</Typography>
-                            <Typography variant="body1"><b>Teléfono:</b> 000-000-0000</Typography>
+                            <Typography variant="body1"><b>Teléfono:</b> 738-937-9364</Typography>
                             <Typography variant="body1"><b>Correo electrónico:</b> manueljesus@test.com</Typography>
                             <Typography variant="body1"><b>Método de pago:</b> Pago electrónico</Typography>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
