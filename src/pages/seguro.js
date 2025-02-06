@@ -1,72 +1,74 @@
 import { useState } from "react";
-import { Container, Grid, Card, CardContent, CardMedia, Typography, Box, List, ListItem, ListItemIcon, ListItemText, Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import {
+  Container, Grid, Card, CardContent, CardMedia, Typography, Box, ListItem, ListItemIcon, ListItemText, Button, Dialog, DialogTitle, DialogContent, DialogActions
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import InfoIcon from "@mui/icons-material/Info";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+const todasLasCoberturas = [
+  "Colisión y daños",
+  "Responsabilidad Civil",
+  "Protección de Robo",
+  "Cristales y Llantas",
+  "Gastos Médicos Ocupantes",
+  "Cobertura 0% Deducible",
+  "Asistencia Vial",
+
+];
 
 const planesSeguros = [
   {
     id: "basico",
     nombre: "PAQUETE BASICO",
-    precio: "$539.92 MXN/DÍA",
-    total: "$8,000.00 MXN",
+    total: "$350",
     imagen: "/images-seguros/camry1.png",
     color: "#d60812",
     coberturas: [
       "Colisión y daños",
       "Responsabilidad Civil",
       "Protección de Robo"
-    ],
+    ]
   },
   {
     id: "intermedio",
     nombre: "PAQUETE ESTANDAR",
-    precio: "$1009.20 MXN/DÍA",
-    total: "$6,000.00 MXN",
+    total: "$550",
     imagen: "/images-seguros/camry2.png",
     color: "#d60812",
     coberturas: [
       "Colisión y daños",
-      "Asistencia Vial",
-      "Cristales y Llantas",
-      "Gastos Médicos Ocupantes",
       "Responsabilidad Civil",
-      "Protección de Robo"
-    ],
+      "Protección de Robo",
+      "Cristales y Llantas",
+      "Gastos Médicos Ocupantes"
+    ]
   },
   {
     id: "completo",
     nombre: "PAQUETE PREMIUM",
-    precio: "$1444.60 MXN/DÍA",
-    total: "$3,000.00 MXN",
+    total: "$850",
     imagen: "/images-seguros/camry3.png",
     color: "#d60812",
     recomendado: true,
     coberturas: [
       "Colisión y daños",
+      "Responsabilidad Civil",
+      "Protección de Robo",
       "Cobertura 0% Deducible",
       "Asistencia Vial",
       "Cristales y Llantas",
-      "Gastos Médicos Ocupantes",
-      "Responsabilidad Civil",
-      "Protección de Robo"
-    ],
-  },
+      "Gastos Médicos Ocupantes"
+    ]
+  }
 ];
+
 
 const SeguroVehiculo = () => {
   const [seleccionado, setSeleccionado] = useState(null);
-  const [recomendado, setRecomendado] = useState(null);
-  const [openPopup, setOpenPopup] = useState(false);
-
   const [openWarning, setOpenWarning] = useState(false);
 
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
-    const siguientePlan = planesSeguros.find((p, index) => p.id === plan.id && index < planesSeguros.length - 1);
-    if (siguientePlan) {
-      setRecomendado(siguientePlan);
-      setOpenPopup(true);
-    }
   };
 
   const handleContinue = () => {
@@ -88,6 +90,7 @@ const SeguroVehiculo = () => {
             <Card
               sx={{
                 boxShadow: seleccionado === plan.id ? 6 : 2,
+                border: seleccionado === plan.id ? "3px solid black" : "1px solid #ddd",
                 cursor: "pointer",
                 padding: 3,
                 backgroundColor: "#fff",
@@ -102,36 +105,53 @@ const SeguroVehiculo = () => {
               onClick={() => handleSelect(plan)}
             >
               {plan.recomendado && (
-                <Box sx={{ position: "absolute", top: 0, right: -8, padding: "10px 14px", background: "black", color: "white", padding: "6px 12px", borderRadius: "5px" }}>
+                <Box sx={{ position: "absolute", top: -2, right: -8, padding: "6px 12px", background: "black", color: "white", borderRadius: "5px" }}>
                   Recomendado
                 </Box>
               )}
-              <Typography variant="h6" fontWeight="bold" sx={{ color: "black", p: 1 }}>{plan.total} </Typography>
+              <Typography variant="h4" fontWeight="bold" sx={{ color: "black", display: "inline" }}>
+                {plan.total.split(" ")[0]} {/* Solo toma el valor numérico */}
+              </Typography>
+              <Typography variant="h6" sx={{ color: "gray", display: "inline", ml: 1 }}>
+                /día
+              </Typography>
+
               <CardMedia component="img" sx={{ height: 200, objectFit: "contain", padding: 1 }} image={plan.imagen} alt={plan.nombre} />
               <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: plan.color, mb: 1 }}>{plan.nombre}</Typography>
-                <Grid container spacing={1}>
-                  {plan.coberturas.map((cobertura, index) => (
-                    <Grid item xs={12} key={index}>
-                      <ListItem disablePadding>
-                        <ListItemIcon>
-                          <CheckCircleIcon color="error" />
-                        </ListItemIcon>
-                        <ListItemText primaryTypographyProps={{ style: { fontSize: '14px' } }} primary={cobertura} />
-                      </ListItem>
-                    </Grid>
-                  ))}
-                </Grid>
-                <Box sx={{ mt: 4 }} />
-                <Button variant="contained" sx={{ mt: 'auto', backgroundColor: "red", color: "white", fontWeight: "bold", borderRadius: "20px", padding: "10px 20px", width: "100%" }}>
-                  Elegir por {plan.precio}
-                </Button>
 
+                {/* Mostrar coberturas con CheckCircleIcon o CancelIcon según disponibilidad */}
+                {todasLasCoberturas.map((cobertura, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemIcon>
+                      {plan.coberturas.includes(cobertura) ? (
+                        <CheckCircleIcon color="error" />
+                      ) : (
+                        <CancelIcon sx={{ color: "gray" }} />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText primaryTypographyProps={{ style: { fontSize: '14px' } }} primary={cobertura} />
+                  </ListItem>
+                ))}
+
+                <Box sx={{ mt: 4 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "#10906a",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    mt: 2
+                  }}
+                >
+                  {`Elegir por $${parseInt(plan.total.replace("$", "")) * 4} MXN (4 días)`}
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
+
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
         <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", borderRadius: "8px", padding: "12px 30px", fontSize: "16px" }} onClick={handleContinue}>
           CONTINUAR
@@ -139,24 +159,25 @@ const SeguroVehiculo = () => {
       </Box>
 
       <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
-        <DialogTitle sx={{ textAlign: "center", fontSize: "24px", fontWeight: "bold" }}>ATENCIÓN</DialogTitle>
+        <DialogTitle sx={{ textAlign: "center", fontSize: "24px", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+          🚨 ATENCIÓN 🚨
+        </DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            CARDEAL tiene como objetivo explicar las opciones de coberturas de forma clara y sencilla. Nuestro compromiso es ofrecer protecciones que resguarden al conductor y a sus acompañantes contra colisión, daños y robo en cualquier situación.
-          </Typography>
-          <Typography variant="body1" mt={2}>
-            CARDEAL pone a tu disposición diferentes tipos de coberturas y paquetes con descuentos especiales. Si no eres elegible para declinar las coberturas, por favor selecciona una de las siguientes opciones para continuar con tu reserva.
-          </Typography>
-          <Typography variant="body1" mt={2} fontWeight="bold">
-            ⚠ Tu reserva NO incluye cobertura de responsabilidad, colisión, robo y daños. Es fundamental proporcionar la documentación necesaria si deseas rechazar estas coberturas previamente indicadas.
+          <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}>
+            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar un seguro antes de continuar con tu reserva.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenWarning(false)} variant="outlined" sx={{ borderColor: "#d60812", color: "#d60812" }}>Continuar</Button>
-          <Button onClick={() => setOpenWarning(false)} variant="contained" sx={{ backgroundColor: "#d60812", color: "white" }}>Escoger un seguro</Button>
-
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Button
+            onClick={() => setOpenWarning(false)}
+            variant="contained"
+            sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px" }}
+          >
+            ESCOGER UN SEGURO
+          </Button>
         </DialogActions>
       </Dialog>
+
     </Container>
   );
 };

@@ -7,63 +7,128 @@ const extras = [
   {
     id: "responsabilidad_civil",
     nombre: "Responsabilidad Civil (PLI)",
-    descripcion: "Responsabilidad Civil (PLI). Esta cobertura deberá ser pagada adicionalmente al monto de la renta diaria del vehículo.",
+    descripcion: "Esta cobertura deberá ser pagada adicionalmente al monto de la renta diaria del vehículo.",
     precio: 538.24,
-    imagen: "/images-extras/responsabilidad_civil.jpg",
+    imagen: "/extras/civil.jpg",
+    unico: true,
   },
   {
     id: "conductor_adicional",
     nombre: "Conductor Adicional (CA)",
-    descripcion: "El máximo de conductores que se pueden incluir en una reservación son 3. (Cada conductor adicional tiene un costo de $125.00 + impuestos por día).",
+    descripcion: "Se pueden incluir hasta 3 conductores adicionales con un costo extra por día.",
     precio: 145.00,
-    imagen: "/images-extras/conductor_adicional.jpg",
+    imagen: "/extras/conductores.jpg",
   },
   {
     id: "conductor_menor",
     nombre: "Conductor Menor (CM)",
-    descripcion: "La edad mínima para reservar un vehículo es de 18 años. Se considera conductor menor a personas menores de 25 años, generando un cargo adicional por conductor menor ($125.00 MXN + impuestos por día).",
+    descripcion: "Los conductores menores de 25 años generan un cargo adicional por día.",
     precio: 145.00,
-    imagen: "/images-extras/conductor_menor.jpg",
+    imagen: "/extras/menor.jpg",
+  },
+  {
+    id: "silla_bebe",
+    nombre: "Silla para Bebé",
+    descripcion: "Proporciona seguridad adicional para bebés y niños pequeños.",
+    precio: 50.00,
+    imagen: "/extras/silla.png",
+  },
+  {
+    id: "gps",
+    nombre: "GPS",
+    descripcion: "Navegación GPS integrada para facilitar tu viaje.",
+    precio: 60.00,
+    imagen: "/extras/gps.jpg",
+    unico: true,
+  },
+  {
+    id: "wifi",
+    nombre: "WiFi Móvil",
+    descripcion: "Conéctate en cualquier lugar con internet de alta velocidad.",
+    precio: 150.00,
+    imagen: "/extras/wifi.jpg",
+    unico: true,
   },
 ];
 
 const ExtrasRenta = () => {
   const [cantidadExtras, setCantidadExtras] = useState({});
 
-  const modificarCantidad = (id, operacion) => {
+  const modificarCantidad = (id, operacion, unico = false) => {
     setCantidadExtras((prev) => {
-      const nuevaCantidad = (prev[id] || 0) + (operacion === "sumar" ? 1 : -1);
+      let nuevaCantidad = unico ? (operacion === "sumar" ? 1 : 0) : (prev[id] || 0) + (operacion === "sumar" ? 1 : -1);
       return { ...prev, [id]: nuevaCantidad < 0 ? 0 : nuevaCantidad };
     });
   };
 
+  // Calcular el total sumando los extras únicos y los repetibles por 4 días
+  const total = extras.reduce((acc, extra) => {
+    const cantidad = cantidadExtras[extra.id] || 0;
+    const costo = extra.unico ? cantidad * extra.precio : cantidad * extra.precio * 4;
+    return acc + costo;
+  }, 0);
+
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
       <Typography variant="h4" fontWeight="bold">Extras para tu renta</Typography>
-      <Typography variant="body1" mb={4}>Añade servicios adicionales a tu renta de auto</Typography>
+      <Typography variant="body1" mb={4}>Añade servicios adicionales para mejorar tu experiencia</Typography>
+
       <Grid container spacing={3} justifyContent="center">
         {extras.map((extra) => (
           <Grid item xs={12} key={extra.id}>
-            <Card sx={{ display: "flex", alignItems: "center", p: 2 }}>
-              <CardMedia component="img" sx={{ width: 250, height: 150, objectFit: "cover", borderRadius: "8px" }} image={extra.imagen} alt={extra.nombre} />
-              <CardContent sx={{ flex: 1, textAlign: "left" }}>
+            <Card sx={{ display: "flex", alignItems: "stretch", height: "100%", overflow: "hidden" }}>
+              <CardMedia
+                component="img"
+                sx={{ width: 250, objectFit: "cover", borderRadius: "0px", height: "100%" }}
+                image={extra.imagen}
+                alt={extra.nombre}
+              />
+              <CardContent sx={{ flex: 1, textAlign: "left", display: "flex", flexDirection: "column", justifyContent: "center", p: 2 }}>
                 <Typography variant="h6" fontWeight="bold">{extra.nombre}</Typography>
                 <Typography variant="body2" color="textSecondary">{extra.descripcion}</Typography>
               </CardContent>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>{extra.precio.toFixed(2)} MXN/DÍA</Typography>
-                <IconButton onClick={() => modificarCantidad(extra.id, "restar")} disabled={cantidadExtras[extra.id] === 0}>
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="h6">{cantidadExtras[extra.id] || 0}</Typography>
-                <IconButton onClick={() => modificarCantidad(extra.id, "sumar")}>
-                  <AddIcon />
-                </IconButton>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, pr: 2 }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
+                  {extra.precio.toFixed(2)} MXN/DÍA
+                </Typography>
+                {extra.unico ? (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: cantidadExtras[extra.id] ? "#A0A0A0" : "#d60812",
+                      color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "0px",
+                      padding: "8px 20px",
+                      fontSize: "14px",
+                    }}
+                    onClick={() => modificarCantidad(extra.id, cantidadExtras[extra.id] ? "restar" : "sumar", true)}
+                  >
+                    {cantidadExtras[extra.id] ? "CANCELAR" : "AGREGAR"}
+                  </Button>
+                ) : (
+                  <>
+                    <IconButton onClick={() => modificarCantidad(extra.id, "restar")} disabled={cantidadExtras[extra.id] === 0}>
+                      <RemoveIcon />
+                    </IconButton>
+                    <Typography variant="h6">{cantidadExtras[extra.id] || 0}</Typography>
+                    <IconButton onClick={() => modificarCantidad(extra.id, "sumar")}>
+                      <AddIcon />
+                    </IconButton>
+                  </>
+                )}
               </Box>
             </Card>
           </Grid>
         ))}
       </Grid>
+
+      {/* Sección del total */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 4, p: 2, backgroundColor: "#f8f8f8", borderRadius: "8px" }}>
+        <Typography variant="h5" fontWeight="bold">TOTAL de extras:</Typography>
+        <Typography variant="h5" fontWeight="bold" sx={{ color: "#d60812" }}>{total.toFixed(2)} MXN</Typography>
+      </Box>
+
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
         <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", borderRadius: "8px", padding: "12px 30px", fontSize: "16px" }}>
           CONTINUAR
