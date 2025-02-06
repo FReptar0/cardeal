@@ -56,7 +56,7 @@ const AtencionCliente = () => {
       </Box>
 
       {/* Sección de correos electrónicos */}
-      <Box sx={{ mt: 5, textAlign: "center", borderTop: "1px solid gray", pt: 3, width: "100%" }}>
+      <Box sx={{ mt: 5, textAlign: "center", borderTop: "1px solid gray", pt: 3, pb: 3, width: "100%" }}>
         <EmailIcon fontSize="large" />
         <Typography variant="h6" fontWeight="bold">Correo electrónico</Typography>
         <Typography variant="body2" color="error" fontWeight="bold">

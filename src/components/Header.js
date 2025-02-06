@@ -96,7 +96,7 @@ const Header = () => {
           {/* MENÚ NORMAL (SOLO EN ESCRITORIO) */}
           {isTop && (
             <Box sx={{ display: { xs: "none", md: "flex" }, gap: 5, width: "100%", justifyContent: "end", marginRight: "32px" }}>
-              {["/", "/disponible", "/categorias", "/ofertas"].map((path, index) => (
+              {["/", "/disponible", "/categorias", "/ofertas", "/atencion-cliente"].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
@@ -157,7 +157,7 @@ const Header = () => {
       {/* MENÚ QUE SE EXPANDE HACIA ABAJO */}
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box sx={{ backgroundColor: "#F5F5F5", textAlign: "center", py: 2, paddingTop: "0px" }}>
-          {["/", "/disponible", "/categorias", "/ofertas"].map((path, index) => (
+          {["/", "/disponible", "/categorias", "/ofertas", "/atencion-cliente"].map((path, index) => (
             <Box key={index} sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
               <Link
                 href={path}
