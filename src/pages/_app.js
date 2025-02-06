@@ -11,9 +11,10 @@ function MyApp({ Component, pageProps }) {
     return (
         <>
             <Head>
-                <link rel="icon" href="/favicon.png" />
-                <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon"></link>
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/logos/logo.png" />
+                <link href="/logos/logo.png" rel="shortcut icon" type="image/x-icon"></link>
+                <link rel="icon" href="/logos/logo.png" />
+                <title>Qardeal</title>
             </Head>
 
             <ThemeProvider theme={darkTheme}>
