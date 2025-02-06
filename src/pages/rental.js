@@ -22,7 +22,7 @@ export default function RentalPage() {
                 </Box>
 
                 {/* LADO DERECHO - TARJETAS DE AUTOS */}
-                <Box sx={{ width: { xs: "100%", md: "70%" }, paddingLeft: { md: 2 }, display: "flex", flexDirection: "column", gap: 2, minHeight: "80vh", overflowY: "auto" }}>
+                <Box sx={{ pb: 3, width: { xs: "100%", md: "70%" }, paddingLeft: { md: 2 }, display: "flex", flexDirection: "column", gap: 2, minHeight: "80vh", overflowY: "auto" }}>
                     {filteredCars.map((car, index) => (
                         <CarCard key={index} car={car} />
                     ))}

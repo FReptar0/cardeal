@@ -1,43 +1,52 @@
 [
-    {
-      "name": "Hyundai Grand i10 Std.",
-      "category": "Económico EDMR",
-      "passengers": 5,
-      "doors": 4,
-      "luggage": 2,
-      "transmission": "Manual",
-      "price": 170.00,
-      "image": "/images/hyundai-grand-i10.png"
-    },
-    {
-      "name": "Chevrolet Beat Sedan Std.",
-      "category": "Compacto CDMR",
-      "passengers": 5,
-      "doors": 4,
-      "luggage": 2,
-      "transmission": "Manual",
-      "price": 170.00,
-      "image": "/images/chevrolet-beat.png"
-    },
-    {
-      "name": "Mitsubishi Mirage G4 Std.",
-      "category": "Intermedio IDMR",
-      "passengers": 5,
-      "doors": 4,
-      "luggage": 2,
-      "transmission": "Manual",
-      "price": 175.00,
-      "image": "/images/mitsubishi-mirage.png"
-    },
-    {
-      "name": "Chevrolet Aveo Sedan Std.",
-      "category": "Intermedio IDMR",
-      "passengers": 5,
-      "doors": 4,
-      "luggage": 2,
-      "transmission": "Manual",
-      "price": 175.00,
-      "image": "/images/chevrolet-aveo.png"
-    }
-  ]
-  
+  {
+    "name": "Toyota Camry LE",
+    "category": "Sedán Mediano SDMR",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 3,
+    "transmission": "Automática",
+    "price": 450.00,
+    "image": "/cars/camry.png"
+  },
+  {
+    "name": "Honda CR-V Touring",
+    "category": "SUV Mediano SFAR",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 4,
+    "transmission": "Automática",
+    "price": 600.00,
+    "image": "/cars/CRV.png"
+  },
+  {
+    "name": "Ford F-150 XLT",
+    "category": "Camioneta Pickup PFAR",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 5,
+    "transmission": "Automática",
+    "price": 750.00,
+    "image": "/cars/f150.png"
+  },
+  {
+    "name": "Mazda MX-5 Miata",
+    "category": "Deportivo Convertible STMR",
+    "passengers": 2,
+    "doors": 2,
+    "luggage": 1,
+    "transmission": "Manual",
+    "price": 800.00,
+    "image": "/cars/miata.png"
+  },
+  {
+    "name": "Nissan Versa Advance",
+    "category": "Sedán Compacto CDMR",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 3,
+    "transmission": "Automática",
+    "price": 350.00,
+    "image": "/cars/versa.png"
+  }
+]
