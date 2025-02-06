@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import darkTheme from '../utils/theme';
 import Head from 'next/head';
+import Layout from '../components/Layout';
 
 function MyApp({ Component, pageProps }) {
     return (
@@ -15,7 +16,9 @@ function MyApp({ Component, pageProps }) {
 
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
-                <Component {...pageProps} />
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
             </ThemeProvider>
         </>
     );
