@@ -1,0 +1,43 @@
+[
+    {
+      "name": "Hyundai Grand i10 Std.",
+      "category": "Económico EDMR",
+      "passengers": 5,
+      "doors": 4,
+      "luggage": 2,
+      "transmission": "Manual",
+      "price": 170.00,
+      "image": "/images/hyundai-grand-i10.png"
+    },
+    {
+      "name": "Chevrolet Beat Sedan Std.",
+      "category": "Compacto CDMR",
+      "passengers": 5,
+      "doors": 4,
+      "luggage": 2,
+      "transmission": "Manual",
+      "price": 170.00,
+      "image": "/images/chevrolet-beat.png"
+    },
+    {
+      "name": "Mitsubishi Mirage G4 Std.",
+      "category": "Intermedio IDMR",
+      "passengers": 5,
+      "doors": 4,
+      "luggage": 2,
+      "transmission": "Manual",
+      "price": 175.00,
+      "image": "/images/mitsubishi-mirage.png"
+    },
+    {
+      "name": "Chevrolet Aveo Sedan Std.",
+      "category": "Intermedio IDMR",
+      "passengers": 5,
+      "doors": 4,
+      "luggage": 2,
+      "transmission": "Manual",
+      "price": 175.00,
+      "image": "/images/chevrolet-aveo.png"
+    }
+  ]
+  
