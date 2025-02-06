@@ -7,7 +7,12 @@
     "luggage": 3,
     "transmission": "Automática",
     "price": 450.00,
-    "image": "/cars/camry.png"
+    "image": "/cars/camry.png",
+    "images": [
+      "/cars/camry.png",
+      "/cars/camry2.png",
+      "/cars/camry3.jpg"
+    ]
   },
   {
     "name": "Honda CR-V Touring",
@@ -17,7 +22,12 @@
     "luggage": 4,
     "transmission": "Automática",
     "price": 600.00,
-    "image": "/cars/CRV.png"
+    "image": "/cars/CRV.png",
+    "images": [
+      "/cars/CRV1.png",
+      "/cars/CRV2.png",
+      "/cars/CRV3.png"
+    ]
   },
   {
     "name": "Ford F-150 XLT",
@@ -27,7 +37,12 @@
     "luggage": 5,
     "transmission": "Automática",
     "price": 750.00,
-    "image": "/cars/f150.png"
+    "image": "/cars/f150.png",
+    "images": [
+      "/cars/f1501.png",
+      "/cars/f1502.png",
+      "/cars/f1503.png"
+    ]
   },
   {
     "name": "Mazda MX-5 Miata",
@@ -37,7 +52,12 @@
     "luggage": 1,
     "transmission": "Manual",
     "price": 800.00,
-    "image": "/cars/miata.png"
+    "image": "/cars/miata.png",
+    "images": [
+      "/cars/miata1.png",
+      "/cars/miata2.png",
+      "/cars/miata3.png"
+    ]
   },
   {
     "name": "Nissan Versa Advance",
@@ -47,6 +67,11 @@
     "luggage": 3,
     "transmission": "Automática",
     "price": 350.00,
-    "image": "/cars/versa.png"
+    "image": "/cars/versa.png",
+    "images": [
+      "/cars/versa1.png",
+      "/cars/versa2.png",
+      "/cars/versa3.png"
+    ]
   }
 ]
