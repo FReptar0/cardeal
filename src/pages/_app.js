@@ -18,6 +18,7 @@ function MyApp({ Component, pageProps }) {
 
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
+                {/* LAYOUT TIENE RODEANDO UN COMPONENTE BOX PARA EVITAR EL EL SHRINK QUE HACE EL CONTAINER */}
                 <Layout>
                     <Component {...pageProps} />
                 </Layout>
