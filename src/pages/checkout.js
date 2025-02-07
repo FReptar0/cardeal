@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Typography, Divider, TextField, Autocomplete, FormControlLabel, Checkbox, Button, Container } from "@mui/material";
 import { useState } from "react";
+import { useRouter } from "next/router"; // Importar useRouter
 
 const locations = [
     { city: "CDMX", name: "Aeropuerto Internacional Benito Juárez" },
@@ -15,6 +16,7 @@ const locations = [
 ];
 
 const CheckoutPage = () => {
+    const router = useRouter(); // Inicializar useRouter
     const [formData, setFormData] = useState({
         name: "",
         pickupLocation: locations[0],
@@ -63,8 +65,20 @@ const CheckoutPage = () => {
         }
     };
 
+    // Función para redirigir a /confirm al pagar al entregar
+    const handleCashPayment = (event) => {
+        event.preventDefault();
+        if (validate()) {
+            console.log("Redirigiendo a /confirm...");
+            router.push("/confirm"); // Redirige a la página de confirmación
+        } else {
+            console.log("Errores en el formulario:", errors);
+        }
+    };
+
+
     return (
-        <Container sx={{ marginTop: 4, maxWidth: "100vw", paddingX: 2 }}>
+        <Container sx={{ marginTop: 4, mb: 3, maxWidth: "100vw", paddingX: 2 }}>
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 4, justifyContent: "center", alignItems: "center" }}>
                 {/* Resumen del pedido */}
                 <Box sx={{ width: { xs: "100%", md: "40%" }, display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -93,7 +107,7 @@ const CheckoutPage = () => {
                         </CardContent>
                     </Card>
                 </Box>
-                
+
                 {/* Formulario */}
                 <Box sx={{ width: { xs: "100%", md: "50%" } }}>
                     <Card sx={{ p: 3, width: "100%" }}>
@@ -105,13 +119,13 @@ const CheckoutPage = () => {
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <form onSubmit={handleSubmit}>
-                            <TextField 
-                                label="Nombre completo" 
-                                name="name" 
-                                fullWidth 
-                                margin="normal" 
-                                value={formData.name} 
-                                onChange={handleChange} 
+                            <TextField
+                                label="Nombre completo"
+                                name="name"
+                                fullWidth
+                                margin="normal"
+                                value={formData.name}
+                                onChange={handleChange}
                                 error={!!errors.name}
                                 helperText={errors.name}
                             />
@@ -133,60 +147,60 @@ const CheckoutPage = () => {
                                 onChange={(event, newValue) => setFormData((prev) => ({ ...prev, deliveryLocation: newValue }))}
                                 sx={{ width: "100%", marginTop: 2 }}
                             />
-                            <TextField 
-                                label="Correo electrónico" 
-                                name="email" 
-                                type="email" 
-                                fullWidth 
-                                margin="normal" 
-                                value={formData.email} 
-                                onChange={handleChange} 
+                            <TextField
+                                label="Correo electrónico"
+                                name="email"
+                                type="email"
+                                fullWidth
+                                margin="normal"
+                                value={formData.email}
+                                onChange={handleChange}
                                 error={!!errors.email}
                                 helperText={errors.email}
                             />
-                            <TextField 
-                                label="Número telefónico" 
-                                name="phone" 
-                                fullWidth 
-                                margin="normal" 
-                                value={formData.phone} 
-                                onChange={handleChange} 
+                            <TextField
+                                label="Número telefónico"
+                                name="phone"
+                                fullWidth
+                                margin="normal"
+                                value={formData.phone}
+                                onChange={handleChange}
                                 error={!!errors.phone}
                                 helperText={errors.phone}
                             />
-                            <TextField 
-                                label="Nota de entrega" 
-                                name="deliveryNote" 
-                                fullWidth 
-                                margin="normal" 
-                                value={formData.deliveryNote} 
-                                onChange={handleChange} 
+                            <TextField
+                                label="Nota de entrega"
+                                name="deliveryNote"
+                                fullWidth
+                                margin="normal"
+                                value={formData.deliveryNote}
+                                onChange={handleChange}
                             />
-                            <TextField 
-                                label="Contraseña" 
-                                name="password" 
-                                type="password" 
-                                fullWidth 
-                                margin="normal" 
-                                value={formData.password} 
-                                onChange={handleChange} 
+                            <TextField
+                                label="Contraseña"
+                                name="password"
+                                type="password"
+                                fullWidth
+                                margin="normal"
+                                value={formData.password}
+                                onChange={handleChange}
                                 error={!!errors.password}
                                 helperText={errors.password}
                             />
-                            
-                            <FormControlLabel 
-                                control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />} 
-                                label="Acepto términos y condiciones de renta" 
+
+                            <FormControlLabel
+                                control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
+                                label="Acepto términos y condiciones de renta"
                                 error={!!errors.terms}
                                 helperText={errors.terms}
                             />
-                            <FormControlLabel 
-                                control={<Checkbox name="privacy" checked={formData.privacy} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />} 
-                                label="Acepto la política de datos personales" 
+                            <FormControlLabel
+                                control={<Checkbox name="privacy" checked={formData.privacy} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
+                                label="Acepto la política de datos personales"
                                 error={!!errors.privacy}
                                 helperText={errors.privacy}
                             />
-                            
+
                             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mt: 2 }}>
                                 <Button variant="contained" sx={{ backgroundColor: "#d60812", height: 55 }} type="submit" fullWidth disabled={!isFormValid()}>
                                     Pago al entregar

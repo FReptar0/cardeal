@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router"; // Importar useRouter
 import { Container, Grid, Card, CardContent, CardMedia, Typography, Box, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -52,6 +53,7 @@ const extras = [
 ];
 
 const ExtrasRenta = () => {
+  const router = useRouter(); // Inicializar useRouter
   const [cantidadExtras, setCantidadExtras] = useState({});
 
   const modificarCantidad = (id, operacion, unico = false) => {
@@ -67,6 +69,11 @@ const ExtrasRenta = () => {
     const costo = extra.unico ? cantidad * extra.precio : cantidad * extra.precio * 4;
     return acc + costo;
   }, 0);
+
+  // Función para redirigir a /checkout
+  const irAcheckout = () => {
+    router.push("/checkout");
+  };
 
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
@@ -130,7 +137,11 @@ const ExtrasRenta = () => {
       </Box>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
-        <Button variant="contained" sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 30px", fontSize: "16px" }}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 30px", fontSize: "16px" }}
+          onClick={irAcheckout} // Llama a la función para redirigir
+        >
           CONTINUAR
         </Button>
       </Box>

@@ -24,9 +24,9 @@
     "price": 600.00,
     "image": "/cars/CRV.png",
     "images": [
-      "/cars/CRV1.png",
-      "/cars/CRV2.png",
-      "/cars/CRV3.png"
+      "/cars/CRV.png",
+      "/cars/CRV2.jpeg",
+      "/cars/CRV3.jpeg"
     ]
   },
   {
@@ -39,9 +39,9 @@
     "price": 750.00,
     "image": "/cars/f150.png",
     "images": [
-      "/cars/f1501.png",
-      "/cars/f1502.png",
-      "/cars/f1503.png"
+      "/cars/f150.png",
+      "/cars/f1502.jpg",
+      "/cars/f1503.jpg"
     ]
   },
   {
@@ -54,9 +54,8 @@
     "price": 800.00,
     "image": "/cars/miata.png",
     "images": [
-      "/cars/miata1.png",
-      "/cars/miata2.png",
-      "/cars/miata3.png"
+      "/cars/miata.png",
+      "/cars/miata3.jpeg"
     ]
   },
   {
@@ -69,9 +68,8 @@
     "price": 350.00,
     "image": "/cars/versa.png",
     "images": [
-      "/cars/versa1.png",
-      "/cars/versa2.png",
-      "/cars/versa3.png"
+      "/cars/versa.png",
+      "/cars/versa2.jpg"
     ]
   }
 ]
