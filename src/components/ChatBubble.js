@@ -22,7 +22,7 @@ const ChatBubble = () => {
                     height: 64,
                     borderRadius: "50%",
                     boxShadow: 3,
-                    "&:hover": { backgroundColor: "#0056b3" }
+                    "&:hover": { backgroundColor: "#0d7b5f" }
                 }}
             >
                 <ChatIcon fontSize="large" />
