@@ -132,7 +132,7 @@ export default function SearchBar() {
     };
 
     return (
-        <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", borderRadius: 2, display: "flex", flexDirection: "column", gap: 3 }} id="containerBox">
             <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }} id="ubicacionOrigenSB">Ubicación de origen</Typography>
             <Autocomplete
                 options={locations}
@@ -151,7 +151,7 @@ export default function SearchBar() {
             />
             {!sameOffice && (
                 <>
-                    <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }}>Ubicación de destino</Typography>
+                    <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }} id="ubicacionDestinoSB">Ubicación de destino</Typography>
                     <Autocomplete
                         options={locations}
                         getOptionLabel={(option) => `${option.city} - ${option.name}`}
@@ -163,7 +163,7 @@ export default function SearchBar() {
                     />
                 </>
             )}
-            <DateTimeSelector label="Fecha y Hora de Recogida" date={pickupDate} setDate={handlePickupDateChange} time={pickupTime} setTime={setPickupTime} />
+            <DateTimeSelector id="fechaHoraRecogida" label="Fecha y Hora de Recogida" date={pickupDate} setDate={handlePickupDateChange} time={pickupTime} setTime={setPickupTime} />
             <DateTimeSelector label="Fecha y Hora de Devolución" date={returnDate} setDate={setReturnDate} time={returnTime} setTime={setReturnTime} />
         </Box>
     );
