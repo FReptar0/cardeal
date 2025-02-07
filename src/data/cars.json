@@ -1,7 +1,7 @@
 [
   {
     "name": "Toyota Camry LE",
-    "category": "Sedán Mediano SDMR",
+    "category": "Sedán Mediano SDMR o similares",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
@@ -16,7 +16,7 @@
   },
   {
     "name": "Honda CR-V Touring",
-    "category": "SUV Mediano SFAR",
+    "category": "SUV Mediano SFAR o similares",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
@@ -31,7 +31,7 @@
   },
   {
     "name": "Ford F-150 XLT",
-    "category": "Camioneta Pickup PFAR",
+    "category": "Camioneta Pickup PFAR o similares",
     "passengers": 5,
     "doors": 4,
     "luggage": 5,
@@ -42,12 +42,11 @@
       "/cars/f150.png",
       "/cars/f1502.jpg",
       "/cars/f1503.jpg"
-      
     ]
   },
   {
     "name": "Mazda MX-5 Miata",
-    "category": "Deportivo Convertible STMR",
+    "category": "Deportivo Convertible STMR o similares",
     "passengers": 2,
     "doors": 2,
     "luggage": 1,
@@ -61,7 +60,7 @@
   },
   {
     "name": "Nissan Versa Advance",
-    "category": "Sedán Compacto CDMR",
+    "category": "Sedán Compacto CDMR o similares",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
