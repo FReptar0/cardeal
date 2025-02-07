@@ -4,7 +4,6 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-
 import { useRouter } from "next/router"; // Importa useRouter
 import RentalStepper from "../components/Stepper";
 
@@ -16,7 +15,6 @@ const todasLasCoberturas = [
   "Gastos Médicos Ocupantes",
   "Cobertura 0% Deducible",
   "Asistencia Vial",
-
 ];
 
 const planesSeguros = [
@@ -65,15 +63,26 @@ const planesSeguros = [
   }
 ];
 
-
 const SeguroVehiculo = () => {
   const [seleccionado, setSeleccionado] = useState(null);
   const [openWarning, setOpenWarning] = useState(false);
+  const [openRecommendation, setOpenRecommendation] = useState(false);
+  const [recommendedPlan, setRecommendedPlan] = useState(null);
 
   const router = useRouter(); // Inicializa el router
 
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
+    const nextPlan = planesSeguros.find(p => p.id === getNextPlanId(plan.id));
+    if (nextPlan) {
+      setRecommendedPlan(nextPlan);
+      setOpenRecommendation(true);
+    }
+  };
+
+  const getNextPlanId = (currentPlanId) => {
+    const planIndex = planesSeguros.findIndex(plan => plan.id === currentPlanId);
+    return planIndex < planesSeguros.length - 1 ? planesSeguros[planIndex + 1].id : null;
   };
 
   const handleContinue = () => {
@@ -191,6 +200,26 @@ const SeguroVehiculo = () => {
             sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px" }}
           >
             ESCOGER UN SEGURO
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openRecommendation} onClose={() => setOpenRecommendation(false)}>
+        <DialogTitle sx={{ textAlign: "center", fontSize: "24px", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+          RECOMENDACIÓN
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}>
+            Te recomendamos considerar el <strong>{recommendedPlan?.nombre}</strong> por solo <strong>{recommendedPlan?.total}</strong> al día, que incluye coberturas adicionales para mayor tranquilidad.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Button
+            onClick={() => setOpenRecommendation(false)}
+            variant="contained"
+            sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px" }}
+          >
+            Entendido
           </Button>
         </DialogActions>
       </Dialog>
