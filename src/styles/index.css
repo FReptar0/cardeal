@@ -1,0 +1,65 @@
+.custom-search-bar #ubicacionOrigenSB{
+    text-align: start;
+    font-size: 1.1rem;
+    margin-left: 4px;
+    margin-bottom: -10px;
+}
+
+.custom-search-bar #ubicacionDestinoSB{
+    text-align: start;
+    font-size: 1.1rem;
+    margin-left: 4px;
+    margin-bottom: -10px;
+}
+
+.custom-search-bar h6{
+    text-align: start;
+    font-size: 1.1rem;
+    margin-top: -10px;
+}
+
+.custom-search-bar .MuiBox-root .css-js43ba{
+    padding: 3px;
+}
+
+.custom-search-bar #checkboxSB .MuiFormControlLabel-label{
+    font-size: .9rem;
+    margin-left: 10px;
+}
+
+@media screen and (max-width: 1201px) {
+
+    .custom-search-bar{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        position: relative !important;
+        top: -10px !important;
+    }
+
+    #sectionOne{
+        height: 110vh !important;
+    }
+
+    #sectionDerechaTitle{
+        position: absolute !important;
+        left: 6% !important;
+        margin-bottom: 10px !important;
+    }
+
+    .custom-search-bar #containerBox{
+    width: 90%;
+    }
+
+    @media screen and (max-width: 500px) {
+        #flechaDerecha{
+            display: none;
+        }
+
+        #flechaIzquierda{
+            display: none;
+        }
+    }
+
+   
+}

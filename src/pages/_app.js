@@ -1,4 +1,6 @@
 import '../styles/global.css';
+import "../styles/index.css";
+
 
 // pages/_app.js
 import { ThemeProvider } from '@mui/material/styles';
