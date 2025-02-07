@@ -25,7 +25,6 @@ const OrderConfirmation = () => {
 
     return (
         <>
-
             <Container sx={{ marginTop: 10, maxWidth: "100vw", paddingX: 2 }}>
                 <RentalStepper />
 
@@ -37,7 +36,7 @@ const OrderConfirmation = () => {
                     justifyContent: "center",
                     textAlign: "left",
                     gap: 4,
-                    marginTop: -10
+                    marginTop: -4
                 }}>
 
                     {/* Resumen del pedido */}
@@ -73,7 +72,7 @@ const OrderConfirmation = () => {
                     </Box>
 
                     {/* Contenedor de información de confirmación y QR */}
-                    <Box sx={{ width: { xs: "100%", md: "75%" }, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 2, }}>
+                    <Box sx={{ width: { xs: "100%", md: "75%" }, display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", justifyContent: "center", gap: 2 }}>
                         {/* Información de confirmación */}
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
                             <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -96,7 +95,7 @@ const OrderConfirmation = () => {
                             </Box>
                         </Box>
                         {/* QR */}
-                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "70%" }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: { xs: "100%", md: "70%" } }}>
                             {qrCodeUrl && (
                                 <Box sx={{ width: "150px", height: "150px", display: "flex", justifyContent: "center", alignItems: "center", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
                                     <img src={qrCodeUrl} alt="Código QR" style={{ width: "100%", height: "100%" }} />
