@@ -94,6 +94,11 @@ const SeguroVehiculo = () => {
     }
   };
 
+  const handleSelectNextPlan = () => {
+    setSeleccionado(recommendedPlan.id);
+    setOpenRecommendation(false);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
       <RentalStepper />
@@ -216,11 +221,19 @@ const SeguroVehiculo = () => {
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
           <Button
             onClick={() => setOpenRecommendation(false)}
+            variant="outlined"
+            sx={{ color: "grey", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px", borderColor: "grey" }}
+          >
+            Mantener seguro actual
+          </Button>
+          <Button
+            onClick={handleSelectNextPlan}
             variant="contained"
             sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px" }}
           >
-            Entendido
+            Seleccionar {recommendedPlan?.nombre}
           </Button>
+
         </DialogActions>
       </Dialog>
 
