@@ -14,7 +14,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 const images = [
   { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido" },
-  { src: "/cars/crv.png", title: "Honda CR-V Touring", description:"SUV cómoda y espaciosa"},
+  { src: "/cars/CRV.png", title: "Honda CR-V Touring", description:"SUV cómoda y espaciosa"},
   { src: "/cars/f150.png", title: "Ford F-150 XLT", description:"Potente y lista para el trabajo" },
   { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido"  },
   { src: "/cars/Versa.png", title: "Nissan Versa Advance", description: " Compacto, eficiente y versátil" },
