@@ -15,6 +15,16 @@ const locations = [
     { city: "Cancún", name: "Centro" },
 ];
 
+const dailyRate = 450;
+const rentalDays = 4;
+const babySeats = 2;
+const babySeatPrice = 50;
+const wifiPrice = 150;
+const extraDriverPrice = 200;
+
+const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
+
+
 const CheckoutPage = () => {
     const router = useRouter(); // Inicializar useRouter
     const [formData, setFormData] = useState({
@@ -60,6 +70,7 @@ const CheckoutPage = () => {
         if (validate()) {
             // Procesar el formulario
             console.log("Formulario válido", formData);
+            router.push("/confirm");
         } else {
             console.log("Formulario inválido", errors);
         }
@@ -88,21 +99,25 @@ const CheckoutPage = () => {
                                 Resumen de la renta
                             </Typography>
                             <Divider sx={{ my: 2 }} />
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                <img src="/cars/camry.png" alt="Auto rentado" style={{ width: 300, borderRadius: 8 }} />
-                                <Box>
-                                    <Typography variant="body1"><b>Automóvil:</b> Porsche Bennington</Typography>
-                                    <Typography variant="body1"><b>Precio:</b> $81</Typography>
+                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                                <img src="/cars/camry.png" alt="Toyota Camry 2025" style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
+                                <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Marca:</b> Toyota</Typography>
+                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Modelo:</b> Camry</Typography>
+                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Año:</b> 2025</Typography>
                                 </Box>
                             </Box>
                             <Divider sx={{ my: 2 }} />
-                            <Typography variant="subtitle1">Detalles</Typography>
-                            <Typography variant="body2">Rentar por dos días - $27</Typography>
-                            <Typography variant="body2">Garantías limitadas - $27</Typography>
-                            <Typography variant="body2">Servicios adicionales - $27</Typography>
+                            <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
+                            <Typography variant="body2">$450 x 4 días = $1800</Typography>
+                            <Divider sx={{ my: 2 }} />
+                            <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
+                            <Typography variant="body2">2 Sillas para bebés ($50 c/u x 4 días) - $400</Typography>
+                            <Typography variant="body2">Wi-Fi ($150 x 4 días) - $600</Typography>
+                            <Typography variant="body2">Conductor adicional - $200</Typography>
                             <Divider sx={{ my: 2 }} />
                             <Typography variant="h6" align="right">
-                                Total: <b>$81</b>
+                                Total: <b>${total}</b>
                             </Typography>
                         </CardContent>
                     </Card>
