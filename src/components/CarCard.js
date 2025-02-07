@@ -26,22 +26,23 @@ export default function CarCard({ car }) {
                 width: "100%",
                 minHeight: 160,
                 borderRadius: 3,
-                boxShadow: 2
+                boxShadow: 2,
+                flexDirection: { xs: "column", sm: "row" } // Ajuste para móviles
             }}>
                 {/* Imagen - Abre el Modal al hacer clic */}
                 <CardMedia
                     component="img"
-                    sx={{ width: 120, height: "auto", marginRight: 2, cursor: "pointer" }}
+                    sx={{ width: { xs: "100%", sm: 120 }, height: "auto", marginRight: { sm: 2 }, cursor: "pointer" }}
                     image={car.image}
                     alt={car.name}
                     onClick={() => setOpen(true)}
                 />
 
                 {/* Información */}
-                <CardContent sx={{ flex: 1 }}>
+                <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
                     <Typography variant="h6" fontWeight="bold">{car.name}</Typography>
                     <Typography variant="body2" color="textSecondary">{car.category}</Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, marginTop: 1, alignItems: "center" }}>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, marginTop: 1, alignItems: "center", justifyContent: { xs: "center", sm: "flex-start" } }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
                             <img src="https://dealrentacar.com/images/icons/ic-pax.svg" alt="Pasajeros" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.passengers} pasajeros</Typography>
@@ -62,7 +63,7 @@ export default function CarCard({ car }) {
                 </CardContent>
 
                 {/* Precio y botón */}
-                <Box sx={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center", minWidth: "120px" }}>
+                <Box sx={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: { xs: "center", sm: "flex-end" }, justifyContent: "center", minWidth: { xs: "100%", sm: "120px" }, marginTop: { xs: 2, sm: 0 } }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Typography variant="h4" fontWeight="bold" sx={{ color: "black" }}>$ {car.price}</Typography>
                         <Typography variant="h6" sx={{ color: "gray" }}>/día</Typography>
