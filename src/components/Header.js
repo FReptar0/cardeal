@@ -161,7 +161,6 @@ const Header = () => {
         </Toolbar>
       </AppBar>
 
-      {/* MENÚ QUE SE EXPANDE HACIA ABAJO */}
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box sx={{ backgroundColor: "#F5F5F5", textAlign: "center", py: 2, paddingTop: "0px" }}>
           {["/", "/flota", "/atencion-cliente"].map((path, index) => (
