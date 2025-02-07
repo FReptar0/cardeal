@@ -31,7 +31,7 @@ const RentalStepper = () => {
   };
 
   return (
-    <Stepper activeStep={activeStep} alternativeLabel>
+    <Stepper sx={{ marginTop: 18, mb: 3 }} activeStep={activeStep} alternativeLabel>
       {steps.map((step, index) => {
         const isCompleted = index <= activeStep; // Si el paso ya fue alcanzado
         return (

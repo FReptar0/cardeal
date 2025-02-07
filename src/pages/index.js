@@ -39,9 +39,9 @@ export default function Index() {
       >
         <Grid container spacing={2} sx={{ flexGrow: 1 }}>
           {/* Sección Izquierda */}
-          <Grid item xs={12} md={12} lg={6} sx={{ 
-              display: { xs: "none", lg: "block" } // Solo mostrar en pantallas grandes
-            }} style={{ position: "relative" }}>
+          <Grid item xs={12} md={12} lg={6} sx={{
+            display: { xs: "none", lg: "block" } // Solo mostrar en pantallas grandes
+          }} style={{ position: "relative" }}>
             {/* Fondo detrás de la imagen */}
             {/* Imagen de fondo */}
             <img
@@ -79,9 +79,9 @@ export default function Index() {
                 flexDirection: "column",
               }}
             >
-              <div style={{ position: "absolute", top: "100px",width: "100%" }}>
+              <div style={{ position: "fixed", top: "100px", width: "100%" }}>
                 <h2
-                id='sectionDerechaTitle'
+                  id='sectionDerechaTitle'
                   style={{
                     position: "relative",
                     top: "40px",
@@ -125,8 +125,8 @@ export default function Index() {
           height: "82vh",
         }}
       >
-        <div><h2 style={{fontSize: "44px"}}>Nuestra flota</h2>
-          <p style={{fontSize: "1.3rem", fontWeight: "600",}}>Tenemos los mejores autos de acuerdo a tus necesidades</p></div>
+        <div><h2 style={{ fontSize: "44px" }}>Nuestra flota</h2>
+          <p style={{ fontSize: "1.3rem", fontWeight: "600", }}>Tenemos los mejores autos de acuerdo a tus necesidades</p></div>
         <Carousel />
       </div>
     </Box>
