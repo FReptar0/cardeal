@@ -6,6 +6,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 import { useRouter } from "next/router"; // Importa useRouter
+import RentalStepper from "../components/Stepper";
 
 const todasLasCoberturas = [
   "Colisión y daños",
@@ -86,6 +87,7 @@ const SeguroVehiculo = () => {
 
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
+      <RentalStepper />
       <Typography variant="h4" fontWeight="bold">Elige el tipo de seguro</Typography>
       <Typography variant="body1" mb={4}>que se va a cubrir al rentar un carro</Typography>
 
