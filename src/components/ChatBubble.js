@@ -16,7 +16,7 @@ const ChatBubble = () => {
             <IconButton 
                 onClick={toggleChat} 
                 sx={{
-                    backgroundColor: "#007bff",
+                    backgroundColor: "#10906a",
                     color: "white",
                     width: 64,
                     height: 64,
