@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/router"; // Importa useRouter
 import {
     Box,
     Typography,
@@ -10,6 +11,7 @@ import {
     TextField,
     Autocomplete,
     FormControlLabel,
+    Button,
     Checkbox
 } from "@mui/material";
 import { es } from "date-fns/locale";
@@ -32,6 +34,8 @@ const locations = [
     { city: "Cancún", name: "Centro" },
 ];
 
+
+
 // Funciones para formatear fechas
 const formatDay = (date) => (date instanceof Date && !isNaN(date)) ? format(date, "EEEE", { locale: es }) : "Día inválido";
 const formatNumber = (date) => (date instanceof Date && !isNaN(date)) ? format(date, "dd") : "--";
@@ -42,6 +46,8 @@ const getTodayDate = () => format(new Date(), "yyyy-MM-dd");
 
 function DateTimeSelector({ label, date, setDate, time, setTime }) {
     const dateInputRef = useRef(null);
+
+    const router = useRouter(); // Inicializa el router
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -113,6 +119,7 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
 }
 
 export default function SearchBar() {
+    const router = useRouter();
     const [pickupLocation, setPickupLocation] = useState(locations[0]);
     const [returnLocation, setReturnLocation] = useState(locations[0]);
     const [sameOffice, setSameOffice] = useState(true);
@@ -165,6 +172,8 @@ export default function SearchBar() {
             )}
             <DateTimeSelector id="fechaHoraRecogida" label="Fecha y Hora de Recogida" date={pickupDate} setDate={handlePickupDateChange} time={pickupTime} setTime={setPickupTime} />
             <DateTimeSelector label="Fecha y Hora de Devolución" date={returnDate} setDate={setReturnDate} time={returnTime} setTime={setReturnTime} />
-        </Box>
+            <Button variant="contained" color="primary" sx={{ backgroundColor: "#d60812", width: "100%", margin: "0 auto" }}
+                onClick={() => router.push("/rental")}> Buscar</Button>
+        </Box >
     );
 }
