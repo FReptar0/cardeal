@@ -12,6 +12,7 @@ import carsData from "../data/cars.json";
 import zIndex from "@mui/material/styles/zIndex";
 import Carousel from "../components/Carousel";
 
+
 export default function Index() {
   // const [sameLocation, setSameLocation] = useState(true);
   const [filteredCars, setFilteredCars] = useState(carsData);
