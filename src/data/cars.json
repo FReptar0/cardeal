@@ -52,9 +52,9 @@
     "luggage": 1,
     "transmission": "Manual",
     "price": 800.00,
-    "image": "/cars/miata.png",
+    "image": "/cars/Miata.png",
     "images": [
-      "/cars/miata.png",
+      "/cars/Miata.png",
       "/cars/miata3.jpeg"
     ]
   },
@@ -68,7 +68,7 @@
     "price": 350.00,
     "image": "/cars/versa.png",
     "images": [
-      "/cars/versa.png",
+      "/cars/Versa.png",
       "/cars/versa2.jpg"
     ]
   }
