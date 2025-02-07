@@ -13,12 +13,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const images = [
-  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata" },
-  { src: "/cars/crv.png", title: "Honda CR-V Touring" },
-  { src: "/cars/f150.png", title: "Ford F-150 XLT" },
-  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata" },
-  { src: "/cars/Versa.png", title: "Nissan Versa Advance" },
-  { src: "/cars/f150.png", title: "Ford F-150 XLT" },
+  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido" },
+  { src: "/cars/crv.png", title: "Honda CR-V Touring", description:"SUV cómoda y espaciosa"},
+  { src: "/cars/f150.png", title: "Ford F-150 XLT", description:"Potente y lista para el trabajo" },
+  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido"  },
+  { src: "/cars/Versa.png", title: "Nissan Versa Advance", description: " Compacto, eficiente y versátil" },
+  { src: "/cars/f150.png", title: "Ford F-150 XLT", description: "Potente y lista para el trabajo" },
 ];
 
 const Carousel = () => {
@@ -55,6 +55,7 @@ const Carousel = () => {
     >
       {/* Flecha izquierda */}
       <IconButton
+      id="flechaIzquierda"
         onClick={() => sliderRef.current.slickPrev()}
         sx={{
           position: "absolute",
@@ -93,7 +94,7 @@ const Carousel = () => {
                 {item.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                {item.description}
               </Typography>
             </CardContent>
           </Card>
@@ -102,6 +103,8 @@ const Carousel = () => {
 
       {/* Flecha derecha */}
       <IconButton
+            id="flechaDerecha"
+
         onClick={() => sliderRef.current.slickNext()}
         sx={{
           position: "absolute",

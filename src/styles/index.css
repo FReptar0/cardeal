@@ -50,5 +50,16 @@
     .custom-search-bar #containerBox{
     width: 90%;
     }
+
+    @media screen and (max-width: 500px) {
+        #flechaDerecha{
+            display: none;
+        }
+
+        #flechaIzquierda{
+            display: none;
+        }
+    }
+
    
 }
