@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Typography, Divider, TextField, Autocomplete, FormControlLabel, Checkbox, Button, Container } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/router"; // Importar useRouter
+import RentalStepper from "../components/Stepper";
 
 const locations = [
     { city: "CDMX", name: "Aeropuerto Internacional Benito Juárez" },
@@ -90,7 +91,8 @@ const CheckoutPage = () => {
 
     return (
         <Container sx={{ marginTop: 4, mb: 3, maxWidth: "100vw", paddingX: 2 }}>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 4, justifyContent: "center", alignItems: "center" }}>
+            <RentalStepper />
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 4, justifyContent: "center", alignItems: "center", mt: 3 }}>
                 {/* Resumen del pedido */}
                 <Box sx={{ width: { xs: "100%", md: "40%" }, display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>

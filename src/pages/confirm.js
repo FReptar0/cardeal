@@ -3,6 +3,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import Head from "next/head";
+import RentalStepper from "../components/Stepper";
 
 const OrderConfirmation = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -24,10 +25,10 @@ const OrderConfirmation = () => {
 
     return (
         <>
-            <Head>
-                <title>Confirmación de Pedido</title>
-            </Head>
-            <Container sx={{ marginTop: -10, maxWidth: "100vw", paddingX: 2 }}>
+
+            <Container sx={{ marginTop: 10, maxWidth: "100vw", paddingX: 2 }}>
+                <RentalStepper />
+
                 <Box sx={{
                     display: "flex",
                     flexDirection: { xs: "column", md: "row" },
@@ -35,8 +36,10 @@ const OrderConfirmation = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     textAlign: "left",
-                    gap: 4
+                    gap: 4,
+                    marginTop: -10
                 }}>
+
                     {/* Resumen del pedido */}
                     <Box sx={{ width: { xs: "100%", md: "40%" }, display: "flex", justifyContent: "center" }}>
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>

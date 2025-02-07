@@ -3,6 +3,7 @@ import { useRouter } from "next/router"; // Importar useRouter
 import { Container, Grid, Card, CardContent, CardMedia, Typography, Box, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import RentalStepper from "../components/Stepper";
 
 const extras = [
   {
@@ -77,6 +78,7 @@ const ExtrasRenta = () => {
 
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
+      <RentalStepper />
       <Typography variant="h4" fontWeight="bold">Extras para tu renta</Typography>
       <Typography variant="body1" mb={4}>Añade servicios adicionales para mejorar tu experiencia</Typography>
 

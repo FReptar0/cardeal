@@ -5,6 +5,7 @@ import { Container, Box } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
+import RentalStepper from "../components/Stepper";
 
 export default function RentalPage() {
     const [filteredCars, setFilteredCars] = useState(carsData);
@@ -15,7 +16,9 @@ export default function RentalPage() {
 
     return (
         <Container sx={{ marginTop: 4, maxWidth: "100vw", paddingX: 2 }}>
+            <RentalStepper />
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "85vh", alignItems: "flex-start", width: "100%" }}>
+
                 <Box sx={{ width: { xs: "100%", md: "30%" }, paddingRight: { md: 2 }, marginBottom: { xs: 2, md: 0 }, display: "flex", justifyContent: "center" }}>
                     <SearchBar onSearch={handleSearch} />
                 </Box>
