@@ -105,7 +105,7 @@ export default function CarCard({ car }) {
                         <CloseIcon />
                     </IconButton>
 
-                    <Typography variant="h6" fontWeight="bold" textAlign="center" mb={2}>
+                    <Typography variant="h4" fontWeight="bold" textAlign="center" mb={2}>
                         {car.name}
                     </Typography>
 
@@ -124,16 +124,25 @@ export default function CarCard({ car }) {
                         alignItems: "center"
                     }}>
                         {tabIndex === 0 ? (
-                            <Swiper navigation={true} modules={[Navigation]} style={{ width: "100%", height: "60vh" }}>
+                            <Swiper
+                                navigation={{
+                                    nextEl: '.swiper-button-next',
+                                    prevEl: '.swiper-button-prev',
+                                }}
+                                modules={[Navigation]}
+                                style={{ width: "100%", height: "60vh" }}
+                            >
                                 {(car.images || []).map((img, index) => (
                                     <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center" }}>
                                         <img
                                             src={img}
                                             alt={`Imagen ${index + 1}`}
-                                            style={{ maxWidth: "100%", maxHeight: "60vh", borderRadius: 5, objectFit: "contain" }}
+                                            style={{ maxWidth: "80%", maxHeight: "50vh", borderRadius: 5, objectFit: "contain", margin: "0 20px" }}
                                         />
                                     </SwiperSlide>
                                 ))}
+                                <div className="swiper-button-next" style={{ color: 'black' }}></div>
+                                <div className="swiper-button-prev" style={{ color: 'black' }}></div>
                             </Swiper>
                         ) : (
                             <iframe
@@ -149,6 +158,15 @@ export default function CarCard({ car }) {
                     </Box>
                 </Box>
             </Modal>
+
+            <style jsx>{`
+                .swiper-button-next, .swiper-button-prev {
+                    color: black;
+                }
+                .swiper-button-next:hover, .swiper-button-prev:hover {
+                    color: white;
+                }
+            `}</style>
 
         </>
     );

@@ -47,10 +47,10 @@ const OrderConfirmation = () => {
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                                     <img src="/cars/camry.png" alt="Toyota Camry 2025" style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
-                                    <Box sx={{ ml: 2, textAlign: "left" }}>
-                                        <Typography variant="body1"><b>Marca:</b> Toyota</Typography>
-                                        <Typography variant="body1"><b>Modelo:</b> Camry</Typography>
-                                        <Typography variant="body1"><b>Año:</b> 2025</Typography>
+                                    <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Marca:</b> Toyota</Typography>
+                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Modelo:</b> Camry</Typography>
+                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Año:</b> 2025</Typography>
                                     </Box>
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
@@ -78,7 +78,7 @@ const OrderConfirmation = () => {
                                 Su reserva se realizó correctamente
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Gracias por elegir nuestro servicio.
+                                <b>Gracias por elegir nuestro servicio.</b>
                             </Typography>
                             <Typography variant="h5">Número de confirmación #637491</Typography>
                             <Typography variant="body1"><b>Nombre completo:</b> Manuel Jesús Contreras Pérez</Typography>
@@ -100,7 +100,7 @@ const OrderConfirmation = () => {
                                 </Box>
                             )}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
-                                <Button variant="contained" color="primary" fullWidth>Descargar orden de pedido</Button>
+                                <Button variant="contained" color="primary" sx={{ backgroundColor: "#d60812", width: "95%", margin: "0 auto" }}>Descargar orden de pedido</Button>
                                 <Box sx={{ display: "flex", gap: 0, width: "100%" }}>
                                     <Button variant="text" color="inherit" fullWidth>
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Add_to_Google_Wallet_badge.svg" alt="Agregar a Cartera de Google" style={{ width: "150px" }} />
