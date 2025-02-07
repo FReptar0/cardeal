@@ -77,9 +77,16 @@ const Header = () => {
     };
   }, []);
 
+  const formatPathName = (path) => {
+    if (path === "/") return "Inicio";
+    if (path === "/atencion-cliente") return "Atención a Clientes";
+    if (path === "/flota") return "Flota";
+    return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
+  };
+
   return (
     <>
-      <AppBar position="sticky" sx={{ background: isTop ? "#F5F5F5" : "linear-gradient(to bottom, rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.7))", color: "#000", transition: "background 0.3s, height 0.3s", height: isTop ? "100px" : "60px" }}>
+      <AppBar position="fixed" sx={{ background: isTop ? "#F5F5F5" : "linear-gradient(to bottom, rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.7))", color: "#000", transition: "background 0.3s, height 0.3s", height: isTop ? "100px" : "60px" }}>
         <Toolbar sx={{ justifyContent: "space-between", minHeight: "60px !important" }}>
           {/* LOGO */}
           <Box
@@ -96,7 +103,7 @@ const Header = () => {
           {/* MENÚ NORMAL (SOLO EN ESCRITORIO) */}
           {isTop && (
             <Box sx={{ display: { xs: "none", md: "flex" }, gap: 5, width: "100%", justifyContent: "end", marginRight: "32px" }}>
-              {["/", "/disponible", "/categorias", "/ofertas", "/atencion-cliente"].map((path, index) => (
+              {["/", "/flota", "/atencion-cliente"].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
@@ -108,7 +115,7 @@ const Header = () => {
                   }}
                   onClick={() => handleNavigation(path)}
                 >
-                  {path === "/" ? "Inicio" : path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
+                  {formatPathName(path)}
                 </Button>
               ))}
             </Box>
@@ -157,7 +164,7 @@ const Header = () => {
       {/* MENÚ QUE SE EXPANDE HACIA ABAJO */}
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box sx={{ backgroundColor: "#F5F5F5", textAlign: "center", py: 2, paddingTop: "0px" }}>
-          {["/", "/disponible", "/categorias", "/ofertas", "/atencion-cliente"].map((path, index) => (
+          {["/", "/flota", "/atencion-cliente"].map((path, index) => (
             <Box key={index} sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
               <Link
                 href={path}
@@ -178,7 +185,7 @@ const Header = () => {
                 }}
                 onClick={() => handleNavigation(path)}
               >
-                {path === "/" ? "Inicio" : path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
+                {formatPathName(path)}
               </Link>
             </Box>
           ))}

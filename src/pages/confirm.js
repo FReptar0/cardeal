@@ -24,9 +24,6 @@ const OrderConfirmation = () => {
 
     return (
         <>
-            <Head>
-                <title>Confirmación de Pedido</title>
-            </Head>
             <Container sx={{ marginTop: -10, maxWidth: "100vw", paddingX: 2 }}>
                 <Box sx={{
                     display: "flex",

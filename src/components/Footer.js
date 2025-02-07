@@ -169,7 +169,7 @@ const Footer = () => {
               </Typography>
               <Typography sx={{ fontSize: "1.1rem" }}>
                 Correo:{" "}
-                <span style={{ color: "#ff3f60" }}>support@cardeal.com</span>
+                <span style={{ color: "#ff3f60" }}>support@qardeal.com</span>
               </Typography>
             </Box>
           </Box>
