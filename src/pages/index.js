@@ -79,7 +79,7 @@ export default function Index() {
                 flexDirection: "column",
               }}
             >
-              <div style={{ position: "absolute", top: "100px", width: "450px" }}>
+              <div style={{ position: "absolute", top: "100px", width: "500px" }}>
                 <h2
                   id='sectionDerechaTitle'
                   style={{
