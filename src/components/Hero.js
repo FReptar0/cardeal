@@ -26,14 +26,14 @@ export default function Hero() {
         {/* Fondo detrás de la imagen */}
         {/* Imagen de fondo */}
         <img
-          src="/extras/background-mexico-light.png"
+          src="/extras/background-w-logo-red.png"
           alt="Fondo"
           style={{
             width: "600px", // Ajusta el tamaño del fondo
             height: "auto",
             position: "absolute",
-            top: "40%",
-            left: "52%",
+            top: "46%",
+            left: "48%",
             transform: "translate(-50%, -50%)",
             zIndex: -1, // Envía el fondo detrás de la imagen principal
           }}
