@@ -88,13 +88,15 @@ const Carousel = () => {
               sx={{ objectFit: "contain" }} // Esto asegura que las imágenes se ajusten bien sin distorsión
             />
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h5" component="div"
+                sx={{ fontWeight: "bold" }}
+              >
                 {car.name.replace(" o Similar", "")}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {car.description}
               </Typography>
-              <Typography variant="body2" color="text.primary" sx={{ marginTop: 1 }}>
+              <Typography variant="caption" color="textSecondary" sx={{ fontWeight: "bold" }}>
                 {slogans[index % slogans.length]}
               </Typography>
             </CardContent>
