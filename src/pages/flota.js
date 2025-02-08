@@ -23,7 +23,7 @@ export default function Flota() {
       </div>
 
       <Box sx={{
-        marginTop: 10,
+        marginTop: 30,
       }}><Typography variant="h4" gutterBottom textAlign="center" color="black" >
         FLOTA DE AUTOS
       </Typography></Box>
