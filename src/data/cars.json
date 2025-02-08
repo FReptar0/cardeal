@@ -1,7 +1,10 @@
 [
   {
-    "name": "Toyota Camry LE",
-    "category": "Sedán Mediano SDMR o similares",
+    "category": "Sedán Mediano",
+    "abbreviation": "SDMR",
+    "abbreviationMeaning": "Sedán Mediano SDMR",
+    "abbreviationDescription": "Vehículo sedán mediano con transmisión automática y aire acondicionado.",
+    "name": "Toyota Camry LE o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
@@ -15,8 +18,11 @@
     ]
   },
   {
-    "name": "Honda CR-V Touring",
-    "category": "SUV Mediano SFAR o similares",
+    "category": "SUV Mediano",
+    "abbreviation": "SFAR",
+    "abbreviationMeaning": "SUV Mediano SFAR",
+    "abbreviationDescription": "SUV mediano con transmisión automática y aire acondicionado.",
+    "name": "Honda CR-V Touring o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
@@ -30,8 +36,11 @@
     ]
   },
   {
-    "name": "Ford F-150 XLT",
-    "category": "Camioneta Pickup PFAR o similares",
+    "category": "Camioneta Pickup",
+    "abbreviation": "PFAR",
+    "abbreviationMeaning": "Camioneta Pickup PFAR",
+    "abbreviationDescription": "Camioneta pickup con transmisión automática y aire acondicionado.",
+    "name": "Ford F-150 XLT o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 5,
@@ -45,8 +54,11 @@
     ]
   },
   {
-    "name": "Mazda MX-5 Miata",
-    "category": "Deportivo Convertible STMR o similares",
+    "category": "Deportivo Convertible",
+    "abbreviation": "STMR",
+    "abbreviationMeaning": "Deportivo Convertible STMR",
+    "abbreviationDescription": "Deportivo convertible con transmisión manual y techo retráctil.",
+    "name": "Mazda MX-5 Miata o Similar",
     "passengers": 2,
     "doors": 2,
     "luggage": 1,
@@ -59,8 +71,11 @@
     ]
   },
   {
-    "name": "Nissan Versa Advance",
-    "category": "Sedán Compacto CDMR o similares",
+    "category": "Sedán Compacto",
+    "abbreviation": "CDMR",
+    "abbreviationMeaning": "Sedán Compacto CDMR",
+    "abbreviationDescription": "Vehículo sedán compacto con transmisión automática y aire acondicionado.",
+    "name": "Nissan Versa Advance o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
