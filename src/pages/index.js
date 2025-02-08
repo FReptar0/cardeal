@@ -30,7 +30,7 @@ export default function Index() {
           width: "100%",
         }}
       >
-        <div>
+        <div style={{ textAlign: "center", marginTop: "250px" }}>
           <h2 style={{ fontSize: "44px" }}>Nuestra flota</h2>
           <p style={{ fontSize: "1.3rem", fontWeight: "600" }}>
             Tenemos los mejores autos de acuerdo a tus necesidades
