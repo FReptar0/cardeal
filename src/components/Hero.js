@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import {
-    Grid
-  } from "@mui/material";
+import { Grid } from "@mui/material";
 import SearchBar from "../components/SearchBar";
 import carsData from "../data/cars.json";
-
 
 export default function Hero() {
   const [filteredCars, setFilteredCars] = useState(carsData);
@@ -14,7 +11,7 @@ export default function Hero() {
   };
 
   return (
-    <Grid container spacing={2} sx={{ flexGrow: 1, height: "100vh"}}>
+    <Grid container spacing={2} sx={{ flexGrow: 1 }}>
       {/* Sección Izquierda */}
       <Grid
         item
@@ -35,7 +32,7 @@ export default function Hero() {
             width: "600px", // Ajusta el tamaño del fondo
             height: "auto",
             position: "absolute",
-            top: "10%",
+            top: "40%",
             left: "52%",
             transform: "translate(-50%, -50%)",
             zIndex: -1, // Envía el fondo detrás de la imagen principal
@@ -46,8 +43,9 @@ export default function Hero() {
         <img
           style={{
             width: "80vh",
-            position: "relative",
-            top: "30px",
+            position: "absolute",
+            top: "42%",
+            left: "15%",
             zIndex: 0,
           }}
           src="/cars/CRV.png"
@@ -63,7 +61,7 @@ export default function Hero() {
             flexDirection: "column",
           }}
         >
-          <div style={{ position: "absolute", top: "100px", width: "100%" }}>
+          <div style={{ position: "relative", top: "100px", width: "100%" }}>
             <h2
               id="sectionDerechaTitle"
               style={{
@@ -94,7 +92,12 @@ export default function Hero() {
           </div>
           <div
             className="custom-search-bar"
-            style={{ width: "40%", position: "absolute", top: "250px" }}
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "120px",
+            }}
           >
             <SearchBar onSearch={handleSearch} />
           </div>

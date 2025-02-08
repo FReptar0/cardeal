@@ -174,6 +174,7 @@ export default function SearchBar() {
         display: "flex",
         flexDirection: "column",
         gap: 3,
+        width: "100%",  
       }}
       id="containerBox"
     >
@@ -238,8 +239,8 @@ export default function SearchBar() {
           />
         </>
       )}
-      <div >
-        <div className="date-time-selectors-container">
+      <div>
+        <div className="date-time-selectors-container" style={{flexDirection: "column"}}>
           <div className="fh-rec-sbc" style={{marginBottom: "22px"}}>
             <DateTimeSelector
               label="Fecha y hora de recepción"
