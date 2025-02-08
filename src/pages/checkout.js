@@ -1,7 +1,11 @@
-import { Box, Card, CardContent, Typography, Divider, TextField, Autocomplete, FormControlLabel, Checkbox, Button, Container } from "@mui/material";
+import { Box, Card, CardContent, Typography, Divider, TextField, Autocomplete, FormControlLabel, Checkbox, Button, Container, Tooltip, IconButton, Link, Modal } from "@mui/material";
+import InfoIcon from '@mui/icons-material/Info';
 import { useState } from "react";
-import { useRouter } from "next/router"; // Importar useRouter
+import { useRouter } from "next/router";
 import RentalStepper from "../components/Stepper";
+import cars from "../data/cars.json";
+
+const car = cars[0]; // Usar el primer registro del JSON
 
 const locations = [
     { city: "CDMX", name: "Aeropuerto Internacional Benito Juárez" },
@@ -16,7 +20,7 @@ const locations = [
     { city: "Cancún", name: "Centro" },
 ];
 
-const dailyRate = 450;
+const dailyRate = car.price;
 const rentalDays = 4;
 const babySeats = 2;
 const babySeatPrice = 50;
@@ -25,22 +29,30 @@ const extraDriverPrice = 200;
 
 const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
 
+const formatCurrency = (amount) => {
+    return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+};
 
 const CheckoutPage = () => {
-    const router = useRouter(); // Inicializar useRouter
+    const router = useRouter();
     const [formData, setFormData] = useState({
         name: "",
         pickupLocation: locations[0],
         deliveryLocation: locations[0],
         email: "",
+        confirmEmail: "",
         phone: "",
         deliveryNote: "",
         password: "",
         terms: false,
-        privacy: false
+        privacy: false,
+        notifications: false
     });
 
     const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const [openModal, setOpenModal] = useState(false);
+    const [modalContent, setModalContent] = useState("");
 
     const handleChange = (event) => {
         const { name, value, type, checked } = event.target;
@@ -50,10 +62,20 @@ const CheckoutPage = () => {
         }));
     };
 
+    const handleBlur = (event) => {
+        const { name } = event.target;
+        setTouched((prev) => ({ ...prev, [name]: true }));
+        validate();
+    };
+
     const validate = () => {
         let tempErrors = {};
         tempErrors.name = formData.name ? "" : "Este campo es requerido.";
         tempErrors.email = formData.email ? "" : "Este campo es requerido.";
+        tempErrors.confirmEmail = formData.confirmEmail ? "" : "Este campo es requerido.";
+        if (formData.email && formData.confirmEmail && formData.email !== formData.confirmEmail) {
+            tempErrors.confirmEmail = "Los correos electrónicos no coinciden.";
+        }
         tempErrors.phone = formData.phone ? "" : "Este campo es requerido.";
         tempErrors.password = formData.password ? "" : "Este campo es requerido.";
         tempErrors.terms = formData.terms ? "" : "Debe aceptar los términos y condiciones.";
@@ -63,7 +85,7 @@ const CheckoutPage = () => {
     };
 
     const isFormValid = () => {
-        return formData.name && formData.email && formData.phone && formData.password && formData.terms && formData.privacy;
+        return formData.name && formData.email && formData.confirmEmail && formData.phone && formData.password && formData.terms && formData.privacy;
     };
 
     const handleSubmit = (event) => {
@@ -77,17 +99,14 @@ const CheckoutPage = () => {
         }
     };
 
-    // Función para redirigir a /confirm al pagar al entregar
-    const handleCashPayment = (event) => {
-        event.preventDefault();
-        if (validate()) {
-            console.log("Redirigiendo a /confirm...");
-            router.push("/confirm"); // Redirige a la página de confirmación
-        } else {
-            console.log("Errores en el formulario:", errors);
-        }
+    const handleOpenModal = (content) => {
+        setModalContent(content);
+        setOpenModal(true);
     };
 
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
 
     return (
         <Container sx={{ marginTop: 4, mb: 3, maxWidth: "100vw", paddingX: 2 }}>
@@ -102,24 +121,30 @@ const CheckoutPage = () => {
                             </Typography>
                             <Divider sx={{ my: 2 }} />
                             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                                <img src="/cars/camry.png" alt="Toyota Camry 2025" style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
-                                <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Marca:</b> Toyota</Typography>
-                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Modelo:</b> Camry</Typography>
-                                    <Typography variant="body1" sx={{ mx: 1 }}><b>Año:</b> 2025</Typography>
+                                <img src={car.image} alt={car.name} style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
+                                <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <Typography variant="body1" sx={{ mx: 1 }}>{car.abbreviationMeaning}</Typography>
+                                        <Tooltip title={car.abbreviationDescription} arrow>
+                                            <IconButton sx={{ color: "gray", fontSize: 20 }}>
+                                                <InfoIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                    <Typography variant="body2" color="textSecondary" sx={{ mx: 1 }}>{car.name}</Typography>
                                 </Box>
                             </Box>
                             <Divider sx={{ my: 2 }} />
                             <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
-                            <Typography variant="body2">$450 x 4 días = $1800</Typography>
+                            <Typography variant="body2">{formatCurrency(dailyRate)} x {rentalDays} días = {formatCurrency(dailyRate * rentalDays)} MXN</Typography>
                             <Divider sx={{ my: 2 }} />
                             <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
-                            <Typography variant="body2">2 Sillas para bebés ($50 c/u x 4 días) - $400</Typography>
-                            <Typography variant="body2">Wi-Fi ($150 x 4 días) - $600</Typography>
-                            <Typography variant="body2">Conductor adicional - $200</Typography>
+                            <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u x {rentalDays} días) - {formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</Typography>
+                            <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días) - {formatCurrency(wifiPrice * rentalDays)} MXN</Typography>
+                            <Typography variant="body2">Conductor adicional - {formatCurrency(extraDriverPrice)} MXN</Typography>
                             <Divider sx={{ my: 2 }} />
                             <Typography variant="h6" align="right">
-                                Total: <b>${total}</b>
+                                Total: <b>{formatCurrency(total)} MXN</b>
                             </Typography>
                         </CardContent>
                     </Card>
@@ -143,8 +168,9 @@ const CheckoutPage = () => {
                                 margin="normal"
                                 value={formData.name}
                                 onChange={handleChange}
-                                error={!!errors.name}
-                                helperText={errors.name}
+                                onBlur={handleBlur}
+                                error={touched.name && !!errors.name}
+                                helperText={touched.name && errors.name}
                             />
                             <Autocomplete
                                 options={locations}
@@ -172,8 +198,21 @@ const CheckoutPage = () => {
                                 margin="normal"
                                 value={formData.email}
                                 onChange={handleChange}
-                                error={!!errors.email}
-                                helperText={errors.email}
+                                onBlur={handleBlur}
+                                error={touched.email && !!errors.email}
+                                helperText={touched.email && errors.email}
+                            />
+                            <TextField
+                                label="Confirmar correo electrónico"
+                                name="confirmEmail"
+                                type="email"
+                                fullWidth
+                                margin="normal"
+                                value={formData.confirmEmail}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={touched.confirmEmail && !!errors.confirmEmail}
+                                helperText={touched.confirmEmail && errors.confirmEmail}
                             />
                             <TextField
                                 label="Número telefónico"
@@ -182,11 +221,12 @@ const CheckoutPage = () => {
                                 margin="normal"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                error={!!errors.phone}
-                                helperText={errors.phone}
+                                onBlur={handleBlur}
+                                error={touched.phone && !!errors.phone}
+                                helperText={touched.phone && errors.phone}
                             />
                             <TextField
-                                label="Nota de entrega"
+                                label="Nota de entrega (opcional)"
                                 name="deliveryNote"
                                 fullWidth
                                 margin="normal"
@@ -194,28 +234,43 @@ const CheckoutPage = () => {
                                 onChange={handleChange}
                             />
                             <TextField
-                                label="Contraseña"
+                                label="Contraseña (para crear tu cuenta)"
                                 name="password"
                                 type="password"
                                 fullWidth
                                 margin="normal"
                                 value={formData.password}
                                 onChange={handleChange}
-                                error={!!errors.password}
-                                helperText={errors.password}
+                                onBlur={handleBlur}
+                                error={touched.password && !!errors.password}
+                                helperText={touched.password && errors.password}
                             />
 
                             <FormControlLabel
-                                control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
-                                label="Acepto términos y condiciones de renta"
-                                error={!!errors.terms}
-                                helperText={errors.terms}
+                                control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
+                                label={<Link component="button" variant="body2" 
+                                    sx={{
+                                        textDecoration: "underline",
+                                        color: "#d60812"
+                                    }}
+                                    onClick={() => handleOpenModal("Términos y condiciones de renta")}>Acepto términos y condiciones de renta</Link>}
+                                error={touched.terms && !!errors.terms}
+                                helperText={touched.terms && errors.terms}
                             />
                             <FormControlLabel
-                                control={<Checkbox name="privacy" checked={formData.privacy} onChange={handleChange} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
-                                label="Acepto la política de datos personales"
-                                error={!!errors.privacy}
-                                helperText={errors.privacy}
+                                control={<Checkbox name="privacy" checked={formData.privacy} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
+                                label={<Link component="button" variant="body2"
+                                    sx={{
+                                        textDecoration: "underline",
+                                        color: "#d60812"
+                                    }}
+                                    onClick={() => handleOpenModal("Política de datos personales")}>Acepto la política de datos personales</Link>}
+                                error={touched.privacy && !!errors.privacy}
+                                helperText={touched.privacy && errors.privacy}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox name="notifications" checked={formData.notifications} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
+                                label="Deseo recibir notificaciones vía correo y WhatsApp"
                             />
 
                             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mt: 2 }}>
@@ -230,6 +285,17 @@ const CheckoutPage = () => {
                     </Card>
                 </Box>
             </Box>
+
+            <Modal open={openModal} onClose={handleCloseModal}>
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+                    <Typography variant="h6" component="h2">
+                        {modalContent}
+                    </Typography>
+                    <Typography sx={{ mt: 2 }}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </Typography>
+                </Box>
+            </Modal>
         </Container>
     );
 };

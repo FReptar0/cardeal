@@ -134,7 +134,7 @@ const SeguroVehiculo = () => {
                 {plan.total.split(" ")[0]} {/* Solo toma el valor numérico */}
               </Typography>
               <Typography variant="h6" sx={{ color: "gray", display: "inline", ml: 1 }}>
-                /día
+                MXN/día
               </Typography>
 
               <CardMedia component="img" sx={{ height: 200, objectFit: "contain", padding: 1 }} image={plan.imagen} alt={plan.nombre} />

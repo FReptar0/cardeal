@@ -1,9 +1,26 @@
-import { Box, Card, CardContent, Typography, Button, Divider, Chip, Container } from "@mui/material";
+import { Box, Card, CardContent, Typography, Button, Divider, Chip, Container, Tooltip, IconButton} from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
+import InfoIcon from "@mui/icons-material/Info";
 import Head from "next/head";
 import RentalStepper from "../components/Stepper";
+import cars from "../data/cars.json";
+
+const car = cars[0]; // Usar el primer registro del JSON
+
+const dailyRate = car.price;
+const rentalDays = 4;
+const babySeats = 2;
+const babySeatPrice = 50;
+const wifiPrice = 150;
+const extraDriverPrice = 200;
+
+const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
+
+const formatCurrency = (amount) => {
+    return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+};
 
 const OrderConfirmation = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -13,15 +30,6 @@ const OrderConfirmation = () => {
             .then((url) => setQrCodeUrl(url))
             .catch((err) => console.error(err));
     }, []);
-
-    const dailyRate = 450;
-    const rentalDays = 4;
-    const babySeats = 2;
-    const babySeatPrice = 50;
-    const wifiPrice = 150;
-    const extraDriverPrice = 200;
-
-    const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
 
     return (
         <>
@@ -43,29 +51,39 @@ const OrderConfirmation = () => {
                     <Box sx={{ width: { xs: "100%", md: "35%" }, display: "flex", justifyContent: "center" }}>
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                             <CardContent>
-                                <Typography variant="h6" align="center" gutterBottom>
+                                <Typography variant="h6" align="center" gutterBottom
+                                    sx={{
+                                        fontWeight: "bold",
+                                    }}
+                                >
                                     Número de renta #637491
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                                    <img src="/cars/camry.png" alt="Toyota Camry 2025" style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
-                                    <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Marca:</b> Toyota</Typography>
-                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Modelo:</b> Camry</Typography>
-                                        <Typography variant="body1" sx={{ mx: 1 }}><b>Año:</b> 2025</Typography>
+                                    <img src={car.image} alt={car.name} style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
+                                    <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                                            <Typography variant="body1" sx={{ mx: 1 }}>{car.abbreviationMeaning}</Typography>
+                                            <Tooltip title={car.abbreviationDescription} arrow>
+                                                <IconButton sx={{ color: "gray", fontSize: 20 }}>
+                                                    <InfoIcon fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Box>
+                                        <Typography variant="body2" color="textSecondary" sx={{ mx: 1 }}>{car.name}</Typography>
                                     </Box>
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
                                 <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
-                                <Typography variant="body2">$450 x 4 días = $1800</Typography>
+                                <Typography variant="body2">{formatCurrency(dailyRate)} x {rentalDays} días = {formatCurrency(dailyRate * rentalDays)} MXN</Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
-                                <Typography variant="body2">2 Sillas para bebés ($50 c/u x 4 días) - $400</Typography>
-                                <Typography variant="body2">Wi-Fi ($150 x 4 días) - $600</Typography>
-                                <Typography variant="body2">Conductor adicional - $200</Typography>
+                                <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u x {rentalDays} días) - {formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</Typography>
+                                <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días) - {formatCurrency(wifiPrice * rentalDays)} MXN</Typography>
+                                <Typography variant="body2">Conductor adicional - {formatCurrency(extraDriverPrice)} MXN</Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Typography variant="h6" align="right">
-                                    Total: <b>${total}</b>
+                                    Total: <b>{formatCurrency(total)} MXN</b>
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -81,7 +99,9 @@ const OrderConfirmation = () => {
                                     <b>Su reserva se realizó correctamente</b>
                                 </Typography>
                             </Box>
-                            <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1.2rem" }}>
+                            <Typography variant="body1" color="text.secondary" 
+                            sx={{ 
+                                fontSize: "1.2rem" }}>
                                 <b>Gracias por elegir nuestro servicio.</b>
                             </Typography>
                             <Typography variant="h5">Número de confirmación #637491</Typography>

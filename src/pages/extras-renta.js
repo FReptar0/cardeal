@@ -82,11 +82,11 @@ const ExtrasRenta = () => {
 
       <Grid container spacing={3} justifyContent="center">
         {extras.map((extra) => (
-          <Grid item xs={12} sm={6} md={4} key={extra.id}>
-            <Card sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: "stretch", height: "100%", overflow: "hidden" }}>
+          <Grid item xs={12} sm={6} md={12} key={extra.id}>
+            <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "stretch", height: "100%", overflow: "hidden" }}>
               <CardMedia
                 component="img"
-                sx={{ width: { xs: "100%", sm: 250 }, height: { xs: 160, sm: "100%" }, objectFit: "cover", borderRadius: "0px" }}
+                sx={{ width: { xs: "100%", md: 250 }, height: { xs: 160, md: "100%" }, objectFit: "cover", borderRadius: "0px" }}
                 image={extra.imagen}
                 alt={extra.nombre}
               />
@@ -94,7 +94,7 @@ const ExtrasRenta = () => {
                 <Typography variant="h6" fontWeight="bold">{extra.nombre}</Typography>
                 <Typography variant="body2" color="textSecondary">{extra.descripcion}</Typography>
               </CardContent>
-              <Box sx={{ display: "flex", alignItems: "center", flexDirection: { xs: "column", sm: "row" }, gap: 2, pr: 2, pb: { xs: 2, sm: 0 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", flexDirection: { xs: "column", md: "row" }, gap: 2, pr: 2, pb: { xs: 2, md: 0 } }}>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
                   {extra.precio.toFixed(2)} MXN/DÍA
                 </Typography>
