@@ -12,6 +12,8 @@
     margin-bottom: -10px;
 }
 
+
+
 .custom-search-bar h6{
     text-align: start;
     font-size: 1.1rem;
@@ -24,7 +26,39 @@
 
 .custom-search-bar #checkboxSB .MuiFormControlLabel-label{
     font-size: .9rem;
-    margin-left: 10px;
+    margin-left: 2px;
+}
+
+.custom-search-bar  #checkboxSB span {	
+    position:sticky;
+    margin-top: -12px;
+}
+
+.custom-search-bar .date-time-selectors-container{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.custom-search-bar .btn-buscar-sb{
+    margin-top: -12px;
+}
+
+.custom-search-bar .arrow-icon{
+    display: block !important;
+}
+
+.custom-search-bar .fh-rec-sbc,
+.custom-search-bar .fh-dev-sbc {
+    flex: 1; 
+}
+
+.custom-search-bar .fh-rec-sbc {
+    margin-bottom: 20px;
+}
+
+.custom-search-bar .second-select{
+    margin-top: -20px;
 }
 
 @media screen and (max-width: 1201px) {
