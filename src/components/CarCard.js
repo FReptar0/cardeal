@@ -54,11 +54,11 @@ export default function CarCard({ car }) {
                     <Typography variant="body1" color="textSecondary" sx={{ fontStyle: "italic", marginBottom: 1 }}>{car.name}</Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "center", justifyContent: { xs: "center", sm: "flex-start" } }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-                            <img src="https://dealrentacar.com/images/icons/ic-pax.svg" alt="Pasajeros" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <img src="/icons/ic-pax.svg" alt="Pasajeros" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.passengers} pasajeros</Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-                            <img src="https://dealrentacar.com/images/icons/ic-door.svg" alt="Puertas" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <img src="/icons/ic-door.svg" alt="Puertas" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.doors} puertas</Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
@@ -66,7 +66,7 @@ export default function CarCard({ car }) {
                             <Typography variant="body2">{car.luggage} maletas</Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-                            <img src="https://dealrentacar.com/images/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.transmission}</Typography>
                         </Box>
                     </Box>

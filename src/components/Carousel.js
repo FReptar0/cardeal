@@ -11,15 +11,7 @@ import {
 import { ArrowBack, ArrowForward } from "@mui/icons-material"; // Íconos de flechas
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-const images = [
-  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido" },
-  { src: "/cars/CRV.png", title: "Honda CR-V Touring", description:"SUV cómoda y espaciosa"},
-  { src: "/cars/f150.png", title: "Ford F-150 XLT", description:"Potente y lista para el trabajo" },
-  { src: "/cars/Miata.png", title: "Mazda MX-5 Miata", description:"Deportivo, ligero y divertido"  },
-  { src: "/cars/Versa.png", title: "Nissan Versa Advance", description: " Compacto, eficiente y versátil" },
-  { src: "/cars/f150.png", title: "Ford F-150 XLT", description: "Potente y lista para el trabajo" },
-];
+import cars from "../data/cars.json"; // Importar datos del JSON
 
 const Carousel = () => {
   const sliderRef = useRef(null); // Referencia al Slider
@@ -40,6 +32,12 @@ const Carousel = () => {
     centerPadding: "10px",
   };
 
+  const slogans = [
+    "Confort y estilo en cada viaje",
+    "La mejor elección para tu aventura",
+    "Seguridad y rendimiento garantizados",
+  ];
+
   return (
     <Box
       id="sectionTwo"
@@ -55,7 +53,7 @@ const Carousel = () => {
     >
       {/* Flecha izquierda */}
       <IconButton
-      id="flechaIzquierda"
+        id="flechaIzquierda"
         onClick={() => sliderRef.current.slickPrev()}
         sx={{
           position: "absolute",
@@ -71,7 +69,7 @@ const Carousel = () => {
       </IconButton>
 
       <Slider ref={sliderRef} {...settings} style={{ width: "100%" }}>
-        {images.map((item, index) => (
+        {cars.map((car, index) => (
           <Card
             key={index}
             sx={{
@@ -85,16 +83,19 @@ const Carousel = () => {
               component="img"
               height="150"
               width="150"
-              image={item.src}
-              alt={item.title}
+              image={car.image}
+              alt={car.name}
               sx={{ objectFit: "contain" }} // Esto asegura que las imágenes se ajusten bien sin distorsión
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                {item.title}
+                {car.name.replace(" o Similar", "")}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {item.description}
+                {car.description}
+              </Typography>
+              <Typography variant="body2" color="text.primary" sx={{ marginTop: 1 }}>
+                {slogans[index % slogans.length]}
               </Typography>
             </CardContent>
           </Card>
@@ -103,8 +104,7 @@ const Carousel = () => {
 
       {/* Flecha derecha */}
       <IconButton
-            id="flechaDerecha"
-
+        id="flechaDerecha"
         onClick={() => sliderRef.current.slickNext()}
         sx={{
           position: "absolute",

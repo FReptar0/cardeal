@@ -8,7 +8,7 @@ import Hero from "../components/Hero";
 
 export default function Flota() {
   const handleSearch = (filters) => {
-    setFilteredCars(carsData);
+    setFilteredCars(carData);
   };
 
   return (

@@ -12,7 +12,7 @@
     "price": 450.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/altima/vehicle-profile-assets/2025/model-2025-nissan-altima-sr-fwd-scarlet_ember.png.ximg.l_3_m.smart.png",
     "images": [
-      "/cars/camry.png",
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/altima/vehicle-profile-assets/2025/model-2025-nissan-altima-sr-fwd-scarlet_ember.png.ximg.l_3_m.smart.png",
       "/cars/camry2.png",
       "/cars/camry3.jpg"
     ]
@@ -30,7 +30,7 @@
     "price": 600.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
     "images": [
-      "/cars/CRV.png",
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
       "/cars/CRV2.jpeg",
       "/cars/CRV3.jpeg"
     ]
@@ -48,7 +48,7 @@
     "price": 750.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/frontier/vehicle-profile-assets/2025/model-2025-frontier-crew-cab-pro-4x-boulder-afterburn-orange.png.ximg.l_3_m.smart.png",
     "images": [
-      "/cars/f150.png",
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/frontier/vehicle-profile-assets/2025/model-2025-frontier-crew-cab-pro-4x-boulder-afterburn-orange.png.ximg.l_3_m.smart.png",
       "/cars/f1502.jpg",
       "/cars/f1503.jpg"
     ]
@@ -66,7 +66,7 @@
     "price": 800.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/nissan-z/vehicle-profile-assets/2024/model-2024-nissan-z-performance-two-tone-ikazuchi-yellow-tricoat-super-black.png.ximg.l_3_m.smart.png",
     "images": [
-      "/cars/Miata.png",
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/nissan-z/vehicle-profile-assets/2024/model-2024-nissan-z-performance-two-tone-ikazuchi-yellow-tricoat-super-black.png.ximg.l_3_m.smart.png",
       "/cars/miata3.jpeg"
     ]
   },
@@ -83,7 +83,7 @@
     "price": 350.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
     "images": [
-      "/cars/Versa.png",
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
       "/cars/versa2.jpg"
     ]
   }
