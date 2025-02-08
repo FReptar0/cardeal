@@ -40,7 +40,7 @@ const OrderConfirmation = () => {
                 }}>
 
                     {/* Resumen del pedido */}
-                    <Box sx={{ width: { xs: "100%", md: "40%" }, display: "flex", justifyContent: "center" }}>
+                    <Box sx={{ width: { xs: "100%", md: "35%" }, display: "flex", justifyContent: "center" }}>
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                             <CardContent>
                                 <Typography variant="h6" align="center" gutterBottom>
@@ -72,14 +72,16 @@ const OrderConfirmation = () => {
                     </Box>
 
                     {/* Contenedor de información de confirmación y QR */}
-                    <Box sx={{ width: { xs: "100%", md: "75%" }, display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", justifyContent: "center", gap: 2 }}>
+                    <Box sx={{ width: { xs: "100%", md: "65%" }, display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", justifyContent: "center", gap: 2 }}>
                         {/* Información de confirmación */}
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-                            <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <CheckCircleOutlineIcon color="success" />
-                                Su reserva se realizó correctamente
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <CheckCircleOutlineIcon color="success" sx={{ fontSize: 50 }} />
+                                <Typography variant="h5">
+                                    <b>Su reserva se realizó correctamente</b>
+                                </Typography>
+                            </Box>
+                            <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1.2rem" }}>
                                 <b>Gracias por elegir nuestro servicio.</b>
                             </Typography>
                             <Typography variant="h5">Número de confirmación #637491</Typography>
@@ -95,20 +97,20 @@ const OrderConfirmation = () => {
                             </Box>
                         </Box>
                         {/* QR */}
-                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: { xs: "100%", md: "70%" } }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: { xs: "100%", md: "30%" } }}>
                             {qrCodeUrl && (
-                                <Box sx={{ width: "150px", height: "150px", display: "flex", justifyContent: "center", alignItems: "center", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
+                                <Box sx={{ width: "180px", height: "180px", display: "flex", justifyContent: "center", alignItems: "center", border: "1px solid #ccc", borderRadius: 2, overflow: "hidden" }}>
                                     <img src={qrCodeUrl} alt="Código QR" style={{ width: "100%", height: "100%" }} />
                                 </Box>
                             )}
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
-                                <Button variant="contained" color="primary" sx={{ backgroundColor: "#d60812", width: "95%", margin: "0 auto" }}>Descargar orden de pedido</Button>
-                                <Box sx={{ display: "flex", gap: 0, width: "100%" }}>
+                                <Button variant="contained" color="primary" sx={{ backgroundColor: "#d60812", width: "95%", margin: "0 auto" }}>Descargar detalles de la reserva</Button>
+                                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
                                     <Button variant="text" color="inherit" fullWidth>
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Add_to_Google_Wallet_badge.svg" alt="Agregar a Cartera de Google" style={{ width: "150px" }} />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Add_to_Google_Wallet_badge.svg" alt="Agregar a Cartera de Google" style={{ width: "200px" }} />
                                     </Button>
                                     <Button variant="text" color="inherit" fullWidth>
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Add_to_Apple_Wallet_badge.svg" alt="Agregar a Cartera de Apple" style={{ width: "150px" }} />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Add_to_Apple_Wallet_badge.svg" alt="Agregar a Cartera de Apple" style={{ width: "200px" }} />
                                     </Button>
                                 </Box>
                             </Box>
