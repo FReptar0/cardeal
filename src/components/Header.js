@@ -10,7 +10,7 @@ import {
   Link,
   Menu,
   MenuItem,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -66,9 +66,15 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       setIsTop(scrollTop === 0);
       setShowMenu(scrollTop === 0);
+
+      // Cierra el menú toggle si el header se minimiza
+      if (scrollTop > 0) {
+        setOpen(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -86,23 +92,56 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ background: isTop ? "#F5F5F5" : "linear-gradient(to bottom, rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.7))", color: "#000", transition: "background 0.3s, height 0.3s", height: isTop ? "100px" : "60px" }}>
-        <Toolbar sx={{ justifyContent: "space-between", minHeight: "60px !important" }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          background: isTop
+            ? "#F5F5F5"
+            : "linear-gradient(to bottom, rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.7))",
+          color: "#000",
+          transition: "background 0.3s, height 0.3s",
+          height: isTop ? "100px" : "60px",
+        }}
+      >
+        <Toolbar
+          sx={{ justifyContent: "space-between", minHeight: "60px !important" }}
+        >
           {/* LOGO */}
           <Box
-            sx={{ display: "flex", alignItems: "center", height: "100%", cursor: "pointer" }}
+            sx={{
+              width: isTop ? 350 : 200,
+              height: "auto",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
             onClick={() => handleNavigation("/")}
           >
             <img
               src="/logos/Qardeal_logo completo verde y rojo.png"
               alt="Logo"
-              style={{ width: isTop ? 350 : 200, height: "auto", transition: "width 0.3s" }} // Ajusta el tamaño aquí
+              id="logoHeader"
+              style={{
+                width: "100%",
+                height: "auto",
+                transition: "width 0.3s",
+              }}
             />
           </Box>
 
           {/* MENÚ NORMAL (SOLO EN ESCRITORIO) */}
           {isTop && (
-            <Box sx={{ display: { xs: "none", md: "flex" }, gap: 5, width: "100%", justifyContent: "end", marginRight: "32px" }}>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 5,
+                width: "100%",
+                justifyContent: "end",
+                marginRight: "32px",
+              }}
+            >
               {["/", "/flota", "/atencion-cliente"].map((path, index) => (
                 <Button
                   key={index}
@@ -110,7 +149,8 @@ const Header = () => {
                     color: "#000",
                     textDecoration: "none",
                     fontWeight: activePath === path ? "bold" : "normal",
-                    borderBottom: activePath === path ? "2px solid #141414" : "none",
+                    borderBottom:
+                      activePath === path ? "2px solid #141414" : "none",
                     cursor: "pointer",
                   }}
                   onClick={() => handleNavigation(path)}
@@ -130,9 +170,9 @@ const Header = () => {
 
               {/* MENÚ DESPLEGABLE DE USUARIO */}
               <Menu
-                anchorEl={anchorEl} // El elemento que dispara el menú
-                open={openMenu} // Si el menú está abierto
-                onClose={handleCloseMenu} // Cerrar el menú al hacer clic fuera
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleCloseMenu}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",
@@ -142,9 +182,9 @@ const Header = () => {
                   horizontal: "right",
                 }}
               >
-                <MenuItem onClick={
-                  () => handleNavigation("/perfil")
-                }>Mi perfil</MenuItem>
+                <MenuItem onClick={() => handleNavigation("/perfil")}>
+                  Mi perfil
+                </MenuItem>
                 <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
               </Menu>
 
@@ -162,9 +202,26 @@ const Header = () => {
       </AppBar>
 
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <Box sx={{ backgroundColor: "#F5F5F5", textAlign: "center", py: 2, paddingTop: "0px" }}>
+        <Box
+          id="collapsedMenu"
+          sx={{
+            backgroundColor: "#F5F5F5",
+            textAlign: "center",
+            py: 2,
+            paddingTop: "0px",
+            position: "relative",
+            top: "100px",
+            left: 0,
+            width: "100%",
+            zIndex: 3,
+            boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+          }}
+        >
           {["/", "/flota", "/atencion-cliente"].map((path, index) => (
-            <Box key={index} sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
+            <Box
+              key={index}
+              sx={{ display: "flex", width: "100%", justifyContent: "center" }}
+            >
               <Link
                 href={path}
                 sx={{
@@ -179,10 +236,15 @@ const Header = () => {
                   lineHeight: 1.75,
                   letterSpacing: "0.02857em",
                   textTransform: "uppercase",
-                  borderBottom: activePath === path ? "2px solid #141414" : "none",
+                  borderBottom:
+                    activePath === path ? "2px solid #141414" : "none",
                   cursor: "pointer",
+                  transition: "background 0.3s",
+                  borderRadius: "5px",
+                  "&:hover": {
+                    backgroundColor: "#D6D6D6",
+                  },
                 }}
-                onClick={() => handleNavigation(path)}
               >
                 {formatPathName(path)}
               </Link>

@@ -15,3 +15,10 @@ body {
 #__next {
   height: 100%;
 }
+
+@media screen and (max-width: 480px) {
+  #logoHeader{
+    width: 248px !important;
+  }
+}
+

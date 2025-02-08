@@ -13,6 +13,39 @@
 }
 
 
+.custom-search-bar .date-time-selectors-container{
+    display: flex;
+    flex-direction: row !important;
+}
+
+
+.custom-search-bar {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+}
+
+#containerBox {
+    max-width: 90%;  /* Limita el ancho */
+    height: auto !important; /* Permite que crezca con el contenido */
+    overflow: visible !important; /* Evita que el contenido se salga */
+}
+
+.date-time-selectors-container {
+    display: flex;
+    flex-direction: column; /* En móviles */
+    gap: 20px;
+}
+
+@media screen and (min-width: 768px) {
+    .date-time-selectors-container {
+        flex-direction: row; /* En escritorio */
+    }
+}
+
+
+
 
 .custom-search-bar h6{
     text-align: start;
@@ -61,6 +94,19 @@
     margin-top: -20px;
 }
 
+@media screen and (max-width: 1323px) {
+    .custom-search-bar .arrow-icon{
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .custom-search-bar .arrow-icon{
+        display: none !important;
+    }
+}
+
+
 @media screen and (max-width: 1201px) {
 
     .custom-search-bar{
@@ -71,29 +117,35 @@
         top: -10px !important;
     }
 
-    #sectionOne{
-        height: 110vh !important;
-    }
-
     #sectionDerechaTitle{
-        position: absolute !important;
         left: 6% !important;
-        margin-bottom: 10px !important;
+        width: 50%;
+        margin-bottom: 50px !important;
     }
 
     .custom-search-bar #containerBox{
     width: 90%;
     }
+}
 
-    @media screen and (max-width: 500px) {
-        #flechaDerecha{
-            display: none;
-        }
-
-        #flechaIzquierda{
-            display: none;
-        }
+@media screen and (max-width: 598px) {
+    .custom-search-bar .date-time-selectors-container {
+        flex-direction: column !important;
     }
 
-   
+    .custom-search-bar .btn-buscar-sb{
+        margin-top: 20px;
+    }
+}
+
+
+
+@media screen and (max-width: 500px) {
+    #flechaDerecha{
+        display: none;
+    }
+
+    #flechaIzquierda{
+        display: none;
+    }
 }
