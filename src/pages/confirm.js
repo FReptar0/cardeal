@@ -16,7 +16,15 @@ const babySeatPrice = 50;
 const wifiPrice = 150;
 const extraDriverPrice = 200;
 
-const total = (dailyRate * rentalDays) + (babySeats * babySeatPrice * rentalDays) + (wifiPrice * rentalDays) + extraDriverPrice;
+
+// Definir valores de descuento, impuestos y cargos adicionales
+const discount = 100; // Puedes ajustar esto según promociones aplicadas
+const subtotal = (dailyRate * rentalDays) - discount;
+const ivaLocal = subtotal * 0.16; // 16% de IVA
+const locationFee = 65.41;
+const serviceFee = 25.00;
+const dropOffFee = 0.00;
+const total = subtotal + ivaLocal + locationFee + serviceFee + dropOffFee;
 
 const formatCurrency = (amount) => {
     return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
@@ -51,8 +59,8 @@ const OrderConfirmation = () => {
                     <Box sx={{ width: { xs: "100%", md: "35%" }, display: "flex", justifyContent: "center" }}>
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                             <CardContent>
-                                <Typography variant="h6" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-                                    Número de renta #637491
+                                <Typography variant="h6" align="center" gutterBottom>
+                                    Resumen de la renta
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
@@ -71,33 +79,50 @@ const OrderConfirmation = () => {
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
 
-                                {/* Costo de la renta */}
-                                <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
+                                {/* Tarifa base */}
+                                <Typography variant="subtitle1"><b>Tarifa base</b></Typography>
                                 <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-                                    <Typography variant="body2">Tarifa diaria ({rentalDays} días)</Typography>
+                                    <Typography variant="body2">Precio por {rentalDays} días</Typography>
                                     <Typography variant="body2"><b>{formatCurrency(dailyRate * rentalDays)} MXN</b></Typography>
                                 </Box>
 
-                                <Divider sx={{ my: 2 }} />
-
-                                {/* Servicios adicionales */}
-                                <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
+                                {/* Promoción aplicada */}
+                                <Typography variant="subtitle1"><b>Promoción aplicada</b></Typography>
                                 <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-                                    <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u)</Typography>
-                                    <Typography variant="body2"><b>{formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</b></Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-                                    <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días)</Typography>
-                                    <Typography variant="body2"><b>{formatCurrency(wifiPrice * rentalDays)} MXN</b></Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-                                    <Typography variant="body2">Conductor adicional</Typography>
-                                    <Typography variant="body2"><b>{formatCurrency(extraDriverPrice)} MXN</b></Typography>
+                                    <Typography variant="body2">Descuento</Typography>
+                                    <Typography variant="body2" sx={{ color: "red" }}><b>-{formatCurrency(discount)} MXN</b></Typography>
                                 </Box>
 
                                 <Divider sx={{ my: 2 }} />
 
-                                {/* Total */}
+                                {/* Subtotal */}
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="subtitle1"><b>Subtotal</b></Typography>
+                                    <Typography variant="subtitle1"><b>{formatCurrency(subtotal)} MXN</b></Typography>
+                                </Box>
+
+                                {/* IVA y Cargos adicionales */}
+                                <Typography variant="subtitle1"><b>IVA y Cargos adicionales</b></Typography>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">IVA Local</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(ivaLocal)} MXN</b></Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Cuota Locación</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(locationFee)} MXN</b></Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Cargo por Servicio</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(serviceFee)} MXN</b></Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Drop Off</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(dropOffFee)} MXN</b></Typography>
+                                </Box>
+
+                                <Divider sx={{ my: 2 }} />
+
+                                {/* Total Final */}
                                 <Typography variant="h6" align="right">
                                     Total: <b>{formatCurrency(total)} MXN</b>
                                 </Typography>
