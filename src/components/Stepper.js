@@ -10,7 +10,7 @@ import { useRouter, usePathname } from "next/navigation";
 
 const steps = [
   { label: "Renta", icon: DirectionsCarIcon, path: "/rental" },
-  { label: "Seguro", icon: SecurityIcon, path: "/seguro" },
+  { label: "Protección", icon: SecurityIcon, path: "/seguro" },
   { label: "Extras", icon: AddCircleIcon, path: "/extras-renta" },
   { label: "Checkout", icon: ShoppingCartIcon, path: "/checkout" },
   { label: "Confirmación", icon: CheckCircleIcon, path: "/confirm" },

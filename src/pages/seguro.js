@@ -102,7 +102,7 @@ const SeguroVehiculo = () => {
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", mt: 5 }}>
       <RentalStepper />
-      <Typography variant="h4" fontWeight="bold">Elige el tipo de seguro</Typography>
+      <Typography variant="h4" fontWeight="bold">Elige un tipo de protección</Typography>
       <Typography variant="body1" mb={4}>que se va a cubrir al rentar un carro</Typography>
 
       <Grid container spacing={3} justifyContent="center" alignItems="stretch">
@@ -154,19 +154,6 @@ const SeguroVehiculo = () => {
                     <ListItemText primaryTypographyProps={{ style: { fontSize: '14px' } }} primary={cobertura} />
                   </ListItem>
                 ))}
-
-                <Box sx={{ mt: 4 }} />
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: "#10906a",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    mt: 2
-                  }}
-                >
-                  {`Elegir por $${parseInt(plan.total.replace("$", "")) * 4} MXN (4 días)`}
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -195,7 +182,7 @@ const SeguroVehiculo = () => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}>
-            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar un seguro antes de continuar con tu reserva.
+            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar una protección antes de continuar con tu reserva.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
@@ -204,7 +191,7 @@ const SeguroVehiculo = () => {
             variant="contained"
             sx={{ backgroundColor: "#d60812", color: "white", fontWeight: "bold", padding: "12px 20px", borderRadius: "8px", fontSize: "16px" }}
           >
-            ESCOGER UN SEGURO
+            ESCOGER UNA PROTECCIÓN
           </Button>
         </DialogActions>
       </Dialog>

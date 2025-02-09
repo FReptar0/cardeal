@@ -113,7 +113,7 @@ const OrderConfirmation = () => {
                                 <Typography variant="body1" component="span">
                                     <b>Estado de pago:</b>
                                 </Typography>
-                                <Chip label="Pendiente" color="warning" />
+                                <Chip label="Pago en mostrador" color="warning" />
                             </Box>
                         </Box>
                         {/* QR */}

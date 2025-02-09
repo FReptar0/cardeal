@@ -86,5 +86,107 @@
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
       "/cars/versa2.jpg"
     ]
+  },
+  {
+    "category": "Económico",
+    "abbreviation": "ECMR",
+    "abbreviationMeaning": "Económico ECMR",
+    "abbreviationDescription": "Vehículo económico con transmisión manual y aire acondicionado.",
+    "name": "Nissan March o Similar",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 2,
+    "transmission": "Manual",
+    "price": 300.00,
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/march/vehicle-profile-assets/2025/model-2025-nissan-march.png",
+    "images": [
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/march/vehicle-profile-assets/2025/model-2025-nissan-march.png"
+    ],
+    "reservationDate": "20/10/2021"
+  },
+  {
+    "category": "Compacto",
+    "abbreviation": "CDMR",
+    "abbreviationMeaning": "Compacto CDMR",
+    "abbreviationDescription": "Vehículo compacto con transmisión automática y aire acondicionado.",
+    "name": "Nissan Versa o Similar",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 3,
+    "transmission": "Automática",
+    "price": 350.00,
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/versa/vehicle-profile-assets/2025/model-2025-nissan-versa.png",
+    "images": [
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/versa/vehicle-profile-assets/2025/model-2025-nissan-versa.png"
+    ],
+    "reservationDate": "21/10/2021"
+  },
+  {
+    "category": "Full",
+    "abbreviation": "FDMR",
+    "abbreviationMeaning": "Full FDMR",
+    "abbreviationDescription": "Vehículo full con transmisión automática y aire acondicionado.",
+    "name": "Nissan Sentra o Similar",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 3,
+    "transmission": "Automática",
+    "price": 450.00,
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra.png",
+    "images": [
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra.png"
+    ],
+    "reservationDate": "22/10/2021"
+  },
+  {
+    "category": "SUV 5",
+    "abbreviation": "SFAR",
+    "abbreviationMeaning": "SUV 5 SFAR",
+    "abbreviationDescription": "SUV 5 con transmisión automática y aire acondicionado.",
+    "name": "Nissan Kicks o Similar",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 4,
+    "transmission": "Automática",
+    "price": 600.00,
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/kicks/vehicle-profile-assets/2025/model-2025-nissan-kicks.png",
+    "images": [
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/kicks/vehicle-profile-assets/2025/model-2025-nissan-kicks.png"
+    ],
+    "reservationDate": "23/10/2021"
+  },
+  {
+    "category": "SUV 5 LX",
+    "abbreviation": "SLXR",
+    "abbreviationMeaning": "SUV 5 LX SLXR",
+    "abbreviationDescription": "SUV 5 LX con transmisión automática y aire acondicionado.",
+    "name": "Nissan Xtrail o Similar",
+    "passengers": 5,
+    "doors": 4,
+    "luggage": 4,
+    "transmission": "Automática",
+    "price": 700.00,
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/xtrail/vehicle-profile-assets/2025/model-2025-nissan-xtrail.png",
+    "images": [
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/xtrail/vehicle-profile-assets/2025/model-2025-nissan-xtrail.png"
+    ],
+    "reservationDate": "24/10/2021"
+  },
+  {
+    "category": "SUV 7",
+    "abbreviation": "S7AR",
+    "abbreviationMeaning": "SUV 7 S7AR",
+    "abbreviationDescription": "SUV 7 con transmisión automática y aire acondicionado.",
+    "name": "Suzuki Ertiga o Similar",
+    "passengers": 7,
+    "doors": 4,
+    "luggage": 5,
+    "transmission": "Automática",
+    "price": 800.00,
+    "image": "https://www.suzuki.com/content/dam/Suzuki/us/vehicles/ertiga/vehicle-profile-assets/2025/model-2025-suzuki-ertiga.png",
+    "images": [
+      "https://www.suzuki.com/content/dam/Suzuki/us/vehicles/ertiga/vehicle-profile-assets/2025/model-2025-suzuki-ertiga.png"
+    ],
+    "reservationDate": "25/10/2021"
   }
 ]
