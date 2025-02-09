@@ -122,7 +122,7 @@ const CheckoutPage = () => {
                             <Divider sx={{ my: 2 }} />
                             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                                 <img src={car.image} alt={car.name} style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
-                                <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                <Box sx={{ textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                                     <Box sx={{ display: "flex", alignItems: "center" }}>
                                         <Typography variant="body1" sx={{ mx: 1 }}>{car.abbreviationMeaning}</Typography>
                                         <Tooltip title={car.abbreviationDescription} arrow>
@@ -135,19 +135,40 @@ const CheckoutPage = () => {
                                 </Box>
                             </Box>
                             <Divider sx={{ my: 2 }} />
+
+                            {/* Costo de la renta */}
                             <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
-                            <Typography variant="body2">{formatCurrency(dailyRate)} x {rentalDays} días = {formatCurrency(dailyRate * rentalDays)} MXN</Typography>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                <Typography variant="body2">Tarifa diaria ({rentalDays} días)</Typography>
+                                <Typography variant="body2"><b>{formatCurrency(dailyRate * rentalDays)} MXN</b></Typography>
+                            </Box>
+
                             <Divider sx={{ my: 2 }} />
+
+                            {/* Servicios adicionales */}
                             <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
-                            <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u x {rentalDays} días) - {formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</Typography>
-                            <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días) - {formatCurrency(wifiPrice * rentalDays)} MXN</Typography>
-                            <Typography variant="body2">Conductor adicional - {formatCurrency(extraDriverPrice)} MXN</Typography>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u)</Typography>
+                                <Typography variant="body2"><b>{formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</b></Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días)</Typography>
+                                <Typography variant="body2"><b>{formatCurrency(wifiPrice * rentalDays)} MXN</b></Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                <Typography variant="body2">Conductor adicional</Typography>
+                                <Typography variant="body2"><b>{formatCurrency(extraDriverPrice)} MXN</b></Typography>
+                            </Box>
+
                             <Divider sx={{ my: 2 }} />
+
+                            {/* Total */}
                             <Typography variant="h6" align="right">
                                 Total: <b>{formatCurrency(total)} MXN</b>
                             </Typography>
                         </CardContent>
                     </Card>
+
                 </Box>
 
                 {/* Formulario */}
@@ -248,7 +269,7 @@ const CheckoutPage = () => {
 
                             <FormControlLabel
                                 control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
-                                label={<Link component="button" variant="body2" 
+                                label={<Link component="button" variant="body2"
                                     sx={{
                                         textDecoration: "underline",
                                         color: "#d60812"

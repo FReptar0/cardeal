@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, Button, Divider, Chip, Container, Tooltip, IconButton} from "@mui/material";
+import { Box, Card, CardContent, Typography, Button, Divider, Chip, Container, Tooltip, IconButton } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -51,17 +51,13 @@ const OrderConfirmation = () => {
                     <Box sx={{ width: { xs: "100%", md: "35%" }, display: "flex", justifyContent: "center" }}>
                         <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                             <CardContent>
-                                <Typography variant="h6" align="center" gutterBottom
-                                    sx={{
-                                        fontWeight: "bold",
-                                    }}
-                                >
+                                <Typography variant="h6" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
                                     Número de renta #637491
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                                     <img src={car.image} alt={car.name} style={{ width: "100%", maxWidth: 300, borderRadius: 8 }} />
-                                    <Box sx={{ ml: 2, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                    <Box sx={{ textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                                         <Box sx={{ display: "flex", alignItems: "center" }}>
                                             <Typography variant="body1" sx={{ mx: 1 }}>{car.abbreviationMeaning}</Typography>
                                             <Tooltip title={car.abbreviationDescription} arrow>
@@ -74,19 +70,40 @@ const OrderConfirmation = () => {
                                     </Box>
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
+
+                                {/* Costo de la renta */}
                                 <Typography variant="subtitle1"><b>Costo de la renta</b></Typography>
-                                <Typography variant="body2">{formatCurrency(dailyRate)} x {rentalDays} días = {formatCurrency(dailyRate * rentalDays)} MXN</Typography>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Tarifa diaria ({rentalDays} días)</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(dailyRate * rentalDays)} MXN</b></Typography>
+                                </Box>
+
                                 <Divider sx={{ my: 2 }} />
+
+                                {/* Servicios adicionales */}
                                 <Typography variant="subtitle1"><b>Servicios adicionales</b></Typography>
-                                <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u x {rentalDays} días) - {formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</Typography>
-                                <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días) - {formatCurrency(wifiPrice * rentalDays)} MXN</Typography>
-                                <Typography variant="body2">Conductor adicional - {formatCurrency(extraDriverPrice)} MXN</Typography>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">{babySeats} Sillas para bebés ({formatCurrency(babySeatPrice)} c/u)</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(babySeats * babySeatPrice * rentalDays)} MXN</b></Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Wi-Fi ({formatCurrency(wifiPrice)} x {rentalDays} días)</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(wifiPrice * rentalDays)} MXN</b></Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+                                    <Typography variant="body2">Conductor adicional</Typography>
+                                    <Typography variant="body2"><b>{formatCurrency(extraDriverPrice)} MXN</b></Typography>
+                                </Box>
+
                                 <Divider sx={{ my: 2 }} />
+
+                                {/* Total */}
                                 <Typography variant="h6" align="right">
                                     Total: <b>{formatCurrency(total)} MXN</b>
                                 </Typography>
                             </CardContent>
                         </Card>
+
                     </Box>
 
                     {/* Contenedor de información de confirmación y QR */}
@@ -99,9 +116,10 @@ const OrderConfirmation = () => {
                                     <b>Su reserva se realizó correctamente</b>
                                 </Typography>
                             </Box>
-                            <Typography variant="body1" color="text.secondary" 
-                            sx={{ 
-                                fontSize: "1.2rem" }}>
+                            <Typography variant="body1" color="text.secondary"
+                                sx={{
+                                    fontSize: "1.2rem"
+                                }}>
                                 <b>Gracias por elegir nuestro servicio.</b>
                             </Typography>
                             <Typography variant="h5">Número de confirmación #637491</Typography>
