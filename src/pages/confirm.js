@@ -23,8 +23,7 @@ const subtotal = (dailyRate * rentalDays);
 const ivaLocal = subtotal * 0.16; // 16% de IVA
 const locationFee = 65.41;
 const serviceFee = 25.00;
-const dropOffFee = 0.00;
-const total = subtotal + ivaLocal + locationFee + serviceFee + dropOffFee;
+const total = subtotal + ivaLocal + locationFee + serviceFee;
 
 const formatCurrency = (amount) => {
     return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
@@ -115,10 +114,7 @@ const OrderConfirmation = () => {
                                     <Typography variant="body2">Cargo por Servicio</Typography>
                                     <Typography variant="body2"><b>{formatCurrency(serviceFee)} MXN</b></Typography>
                                 </Box>
-                                <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-                                    <Typography variant="body2">Drop Off</Typography>
-                                    <Typography variant="body2"><b>{formatCurrency(dropOffFee)} MXN</b></Typography>
-                                </Box>
+
 
                                 <Divider sx={{ my: 2 }} />
 
