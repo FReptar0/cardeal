@@ -86,12 +86,12 @@ const OrderConfirmation = () => {
                                     <Typography variant="body2"><b>{formatCurrency(dailyRate * rentalDays)} MXN</b></Typography>
                                 </Box>
 
-                                {/* Promoción aplicada */}
+                                {/* Promoción aplicada
                                 <Typography variant="subtitle1"><b>Promoción aplicada</b></Typography>
                                 <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
                                     <Typography variant="body2">Descuento</Typography>
                                     <Typography variant="body2" sx={{ color: "red" }}><b>-{formatCurrency(discount)} MXN</b></Typography>
-                                </Box>
+                                </Box> */}
 
                                 <Divider sx={{ my: 2 }} />
 
