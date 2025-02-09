@@ -36,41 +36,6 @@
     ]
   },
   {
-    "category": "Camioneta Pickup",
-    "abbreviation": "PFAR",
-    "abbreviationMeaning": "Camioneta Pickup PFAR",
-    "abbreviationDescription": "Camioneta pickup con transmisión automática y aire acondicionado.",
-    "name": "Nissan Frontier o Similar",
-    "passengers": 5,
-    "doors": 4,
-    "luggage": 5,
-    "transmission": "Automática",
-    "price": 750.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/frontier/vehicle-profile-assets/2025/model-2025-frontier-crew-cab-pro-4x-boulder-afterburn-orange.png.ximg.l_3_m.smart.png",
-    "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/frontier/vehicle-profile-assets/2025/model-2025-frontier-crew-cab-pro-4x-boulder-afterburn-orange.png.ximg.l_3_m.smart.png",
-      "/cars/f1502.jpg",
-      "/cars/f1503.jpg"
-    ]
-  },
-  {
-    "category": "Deportivo Convertible",
-    "abbreviation": "STMR",
-    "abbreviationMeaning": "Deportivo Convertible STMR",
-    "abbreviationDescription": "Deportivo convertible con transmisión manual y techo retráctil.",
-    "name": "Nissan 370Z o Similar",
-    "passengers": 2,
-    "doors": 2,
-    "luggage": 1,
-    "transmission": "Manual",
-    "price": 800.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/nissan-z/vehicle-profile-assets/2024/model-2024-nissan-z-performance-two-tone-ikazuchi-yellow-tricoat-super-black.png.ximg.l_3_m.smart.png",
-    "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/nissan-z/vehicle-profile-assets/2024/model-2024-nissan-z-performance-two-tone-ikazuchi-yellow-tricoat-super-black.png.ximg.l_3_m.smart.png",
-      "/cars/miata3.jpeg"
-    ]
-  },
-  {
     "category": "Sedán Compacto",
     "abbreviation": "CDMR",
     "abbreviationMeaning": "Sedán Compacto CDMR",
@@ -88,21 +53,22 @@
     ]
   },
   {
-    "category": "Económico",
-    "abbreviation": "ECMR",
-    "abbreviationMeaning": "Económico ECMR",
-    "abbreviationDescription": "Vehículo económico con transmisión manual y aire acondicionado.",
-    "name": "Nissan March o Similar",
+    "category": "SUV Mediano",
+    "abbreviation": "SFAR",
+    "abbreviationMeaning": "SUV Mediano SFAR",
+    "abbreviationDescription": "SUV mediano con transmisión automática y aire acondicionado.",
+    "name": "Nissan Kick o Similar",
     "passengers": 5,
     "doors": 4,
-    "luggage": 2,
-    "transmission": "Manual",
-    "price": 300.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/march/vehicle-profile-assets/2025/model-2025-nissan-march.png",
+    "luggage": 4,
+    "transmission": "Automática",
+    "price": 600.00,
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/march/vehicle-profile-assets/2025/model-2025-nissan-march.png"
-    ],
-    "reservationDate": "20/10/2021"
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
+      "/cars/CRV2.jpeg",
+      "/cars/CRV3.jpeg"
+    ]
   },
   {
     "category": "Compacto",
@@ -115,7 +81,7 @@
     "luggage": 3,
     "transmission": "Automática",
     "price": 350.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/versa/vehicle-profile-assets/2025/model-2025-nissan-versa.png",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/versa/vehicle-profile-assets/2025/model-2025-nissan-versa.png"
     ],
@@ -126,13 +92,13 @@
     "abbreviation": "FDMR",
     "abbreviationMeaning": "Full FDMR",
     "abbreviationDescription": "Vehículo full con transmisión automática y aire acondicionado.",
-    "name": "Nissan Sentra o Similar",
+    "name": "Pathfinder o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
     "transmission": "Automática",
     "price": 450.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra.png",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/pathfinder/my24/vap/nissan-2024-pathfinder-d.jpeg.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra.png"
     ],
@@ -143,13 +109,13 @@
     "abbreviation": "SFAR",
     "abbreviationMeaning": "SUV 5 SFAR",
     "abbreviationDescription": "SUV 5 con transmisión automática y aire acondicionado.",
-    "name": "Nissan Kicks o Similar",
+    "name": "Nissan X-Trail o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
     "transmission": "Automática",
     "price": 600.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/kicks/vehicle-profile-assets/2025/model-2025-nissan-kicks.png",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/kicks/vehicle-profile-assets/2025/model-2025-nissan-kicks.png"
     ],
@@ -160,33 +126,16 @@
     "abbreviation": "SLXR",
     "abbreviationMeaning": "SUV 5 LX SLXR",
     "abbreviationDescription": "SUV 5 LX con transmisión automática y aire acondicionado.",
-    "name": "Nissan Xtrail o Similar",
+    "name": "Nissan Versa o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
     "transmission": "Automática",
     "price": 700.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/xtrail/vehicle-profile-assets/2025/model-2025-nissan-xtrail.png",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/xtrail/vehicle-profile-assets/2025/model-2025-nissan-xtrail.png"
     ],
     "reservationDate": "24/10/2021"
-  },
-  {
-    "category": "SUV 7",
-    "abbreviation": "S7AR",
-    "abbreviationMeaning": "SUV 7 S7AR",
-    "abbreviationDescription": "SUV 7 con transmisión automática y aire acondicionado.",
-    "name": "Suzuki Ertiga o Similar",
-    "passengers": 7,
-    "doors": 4,
-    "luggage": 5,
-    "transmission": "Automática",
-    "price": 800.00,
-    "image": "https://www.suzuki.com/content/dam/Suzuki/us/vehicles/ertiga/vehicle-profile-assets/2025/model-2025-suzuki-ertiga.png",
-    "images": [
-      "https://www.suzuki.com/content/dam/Suzuki/us/vehicles/ertiga/vehicle-profile-assets/2025/model-2025-suzuki-ertiga.png"
-    ],
-    "reservationDate": "25/10/2021"
   }
 ]

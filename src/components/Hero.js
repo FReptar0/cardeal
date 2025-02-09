@@ -44,12 +44,12 @@ export default function Hero() {
           style={{
             width: "80vh",
             position: "absolute",
-            top: "42%",
+            top: "13%",
             left: "15%",
             zIndex: 0,
           }}
-          src="/cars/CRV.png"
-          alt="Auto"
+          src="/cars/camioneta.png"
+          alt="Auto de ejemplo"
         />
       </Grid>
       {/* Sección Derecha */}
