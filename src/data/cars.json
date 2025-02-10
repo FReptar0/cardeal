@@ -12,7 +12,8 @@
     "price": 300.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march-d.jpg.ximg.l_4_m.smart.jpg"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
+      "/cars/versa2.jpg"
     ]
   },
   {
@@ -28,7 +29,8 @@
     "price": 350.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
+      "/cars/versa2.jpg"
     ]
   },
   {
@@ -44,7 +46,8 @@
     "price": 450.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png"
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
+      "/cars/versa2.jpg"
     ]
   },
   {
@@ -60,7 +63,8 @@
     "price": 600.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
+      "/cars/versa2.jpg"
     ]
   },
   {
@@ -76,7 +80,8 @@
     "price": 700.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
+      "/cars/versa2.jpg"
     ]
   },
   {
@@ -90,9 +95,10 @@
     "luggage": 5,
     "transmission": "Automática",
     "price": 800.00,
-    "image": "https://www.suzuki.com.mx/images/autos/ertiga/ertiga-2024-01.png",
+    "image": "/cars/suzuki.avif",
     "images": [
-      "https://www.suzuki.com.mx/images/autos/ertiga/ertiga-2024-01.png"
+      "/cars/suzuki.avif",
+      "/cars/versa2.jpg"
     ]
   }
 ]
