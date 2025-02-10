@@ -1,73 +1,18 @@
 [
   {
-    "category": "Sedán Mediano",
-    "abbreviation": "SDMR",
-    "abbreviationMeaning": "Sedán Mediano SDMR",
-    "abbreviationDescription": "Vehículo sedán mediano con transmisión automática y aire acondicionado.",
-    "name": "Nissan Altima o Similar",
+    "category": "Económico",
+    "abbreviation": "EDMR",
+    "abbreviationMeaning": "Económico EDMR",
+    "abbreviationDescription": "Vehículo económico con transmisión automática y aire acondicionado.",
+    "name": "Nissan March o Similar",
     "passengers": 5,
     "doors": 4,
-    "luggage": 3,
+    "luggage": 2,
     "transmission": "Automática",
-    "price": 450.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/altima/vehicle-profile-assets/2025/model-2025-nissan-altima-sr-fwd-scarlet_ember.png.ximg.l_3_m.smart.png",
+    "price": 300.00,
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/altima/vehicle-profile-assets/2025/model-2025-nissan-altima-sr-fwd-scarlet_ember.png.ximg.l_3_m.smart.png",
-      "/cars/camry2.png",
-      "/cars/camry3.jpg"
-    ]
-  },
-  {
-    "category": "SUV Mediano",
-    "abbreviation": "SFAR",
-    "abbreviationMeaning": "SUV Mediano SFAR",
-    "abbreviationDescription": "SUV mediano con transmisión automática y aire acondicionado.",
-    "name": "Nissan Rogue o Similar",
-    "passengers": 5,
-    "doors": 4,
-    "luggage": 4,
-    "transmission": "Automática",
-    "price": 600.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
-    "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
-      "/cars/CRV2.jpeg",
-      "/cars/CRV3.jpeg"
-    ]
-  },
-  {
-    "category": "Sedán Compacto",
-    "abbreviation": "CDMR",
-    "abbreviationMeaning": "Sedán Compacto CDMR",
-    "abbreviationDescription": "Vehículo sedán compacto con transmisión automática y aire acondicionado.",
-    "name": "Nissan Versa o Similar",
-    "passengers": 5,
-    "doors": 4,
-    "luggage": 3,
-    "transmission": "Automática",
-    "price": 350.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
-    "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
-      "/cars/versa2.jpg"
-    ]
-  },
-  {
-    "category": "SUV Mediano",
-    "abbreviation": "SFAR",
-    "abbreviationMeaning": "SUV Mediano SFAR",
-    "abbreviationDescription": "SUV mediano con transmisión automática y aire acondicionado.",
-    "name": "Nissan Kick o Similar",
-    "passengers": 5,
-    "doors": 4,
-    "luggage": 4,
-    "transmission": "Automática",
-    "price": 600.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
-    "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/rogue/vehicle-profile-assets/2025/model-2025-rogue-platinum-intelligent-awd-two-tone-champagne-silver-metallic-super-black.png.ximg.l_3_m.smart.png",
-      "/cars/CRV2.jpeg",
-      "/cars/CRV3.jpeg"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march-d.jpg.ximg.l_4_m.smart.jpg"
     ]
   },
   {
@@ -83,59 +28,71 @@
     "price": 350.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/versa/vehicle-profile-assets/2025/model-2025-nissan-versa.png"
-    ],
-    "reservationDate": "21/10/2021"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg"
+    ]
   },
   {
     "category": "Full",
     "abbreviation": "FDMR",
     "abbreviationMeaning": "Full FDMR",
     "abbreviationDescription": "Vehículo full con transmisión automática y aire acondicionado.",
-    "name": "Pathfinder o Similar",
+    "name": "Nissan Sentra o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
     "transmission": "Automática",
     "price": 450.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/pathfinder/my24/vap/nissan-2024-pathfinder-d.jpeg.jpg.ximg.l_4_m.smart.jpg",
+    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra.png"
-    ],
-    "reservationDate": "22/10/2021"
+      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png"
+    ]
   },
   {
     "category": "SUV 5",
     "abbreviation": "SFAR",
     "abbreviationMeaning": "SUV 5 SFAR",
     "abbreviationDescription": "SUV 5 con transmisión automática y aire acondicionado.",
-    "name": "Nissan X-Trail o Similar",
+    "name": "Nissan Kicks o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
     "transmission": "Automática",
     "price": 600.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/kicks/vehicle-profile-assets/2025/model-2025-nissan-kicks.png"
-    ],
-    "reservationDate": "23/10/2021"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg"
+    ]
   },
   {
     "category": "SUV 5 LX",
     "abbreviation": "SLXR",
     "abbreviationMeaning": "SUV 5 LX SLXR",
     "abbreviationDescription": "SUV 5 LX con transmisión automática y aire acondicionado.",
-    "name": "Nissan Versa o Similar",
+    "name": "Nissan X-Trail o Similar",
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
     "transmission": "Automática",
     "price": 700.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
+    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/xtrail/vehicle-profile-assets/2025/model-2025-nissan-xtrail.png"
-    ],
-    "reservationDate": "24/10/2021"
+      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg"
+    ]
+  },
+  {
+    "category": "SUV 7",
+    "abbreviation": "SVMR",
+    "abbreviationMeaning": "SUV 7 SVMR",
+    "abbreviationDescription": "SUV 7 con transmisión automática y aire acondicionado.",
+    "name": "Suzuki Ertiga o Similar",
+    "passengers": 7,
+    "doors": 4,
+    "luggage": 5,
+    "transmission": "Automática",
+    "price": 800.00,
+    "image": "https://www.suzuki.com.mx/images/autos/ertiga/ertiga-2024-01.png",
+    "images": [
+      "https://www.suzuki.com.mx/images/autos/ertiga/ertiga-2024-01.png"
+    ]
   }
 ]

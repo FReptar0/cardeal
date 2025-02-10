@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import carData from "../data/cars.json";
 import InfoIcon from "@mui/icons-material/Info";
 import LuggageIcon from "@mui/icons-material/Luggage";
+
 import Hero from "../components/Hero";
 
 // Galería
@@ -49,12 +50,12 @@ export default function Flota() {
               <CardContent sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
                   <Typography variant="h6" fontWeight="bold" fontSize="1rem" textAlign="center">
-                    {car.name}
+                    {car.category}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
                   <Typography variant="subtitle2" color="gray" textAlign="center">
-                    {car.category}
+                    {car.name}
                   </Typography>
                   {car.abbreviation && (
                     <>
