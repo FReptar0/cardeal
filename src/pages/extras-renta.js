@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { Container, Grid, Card, CardContent, CardMedia, Typography, Box, Button, IconButton } from "@mui/material";
+import { Container, Grid, Card, CardContent, CardMedia, Typography, Box, Button, IconButton, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import RentalStepper from "../components/Stepper";
@@ -11,6 +11,14 @@ const extras = [
     nombre: "Responsabilidad Civil (PLI)",
     descripcion: "Esta cobertura deberá ser pagada adicionalmente al monto de la renta diaria del vehículo.",
     precio: 538.24,
+    imagen: "/extras/civil.jpg",
+    unico: true,
+  },
+  {
+    id: "cubre_asientos",
+    nombre: "Cubre asientos",
+    descripcion: "Protege los asientos del vehículo contra derrames, suciedad y desgaste con esta cobertura especial. Ideal para viajes largos, transporte de niños o mascotas, asegurando una experiencia más cómoda y limpia.",
+    precio: 150,
     imagen: "/extras/civil.jpg",
     unico: true,
   },
@@ -32,7 +40,7 @@ const extras = [
     id: "silla_bebe",
     nombre: "Silla para Bebé",
     descripcion: "Proporciona seguridad adicional para bebés y niños pequeños.",
-    precio: 50.0,
+    precio: { chica: 50, mediana: 70, grande: 90 },
     imagen: "/extras/silla.png",
   },
   {
@@ -56,6 +64,7 @@ const extras = [
 const ExtrasRenta = () => {
   const router = useRouter();
   const [cantidadExtras, setCantidadExtras] = useState({});
+  const [sillaBebeSize, setSillaBebeSize] = useState("chica"); // Tamaño por defecto
 
   const modificarCantidad = (id, operacion, unico = false) => {
     setCantidadExtras((prev) => {
@@ -66,7 +75,14 @@ const ExtrasRenta = () => {
 
   const total = extras.reduce((acc, extra) => {
     const cantidad = cantidadExtras[extra.id] || 0;
-    const costo = extra.unico ? cantidad * extra.precio : cantidad * extra.precio * 4;
+    let precio = extra.precio;
+
+    // Si es la silla para bebé, usa el precio del tamaño seleccionado
+    if (extra.id === "silla_bebe") {
+      precio = extra.precio[sillaBebeSize];
+    }
+
+    const costo = extra.unico ? cantidad * precio : cantidad * precio * 4; //esta para una renta de 4 dias
     return acc + costo;
   }, 0);
 
@@ -86,17 +102,32 @@ const ExtrasRenta = () => {
             <Card sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "stretch", height: "100%", overflow: "hidden" }}>
               <CardMedia
                 component="img"
-                sx={{ width: { xs: "100%", md: 250 }, height: { xs: 160, md: "100%" }, objectFit: "cover", borderRadius: "0px" }}
+                sx={{ width: { xs: "100%", md: 250 }, height: { xs: 160, md: "100%" }, objectFit: "cover" }}
                 image={extra.imagen}
                 alt={extra.nombre}
               />
               <CardContent sx={{ flex: 1, textAlign: "left", display: "flex", flexDirection: "column", justifyContent: "center", p: 2 }}>
                 <Typography variant="h6" fontWeight="bold">{extra.nombre}</Typography>
                 <Typography variant="body2" color="textSecondary">{extra.descripcion}</Typography>
+
+                {/* Selector de tamaño para la silla de bebé */}
+                {extra.id === "silla_bebe" && (
+                  <FormControl fullWidth sx={{ mt: 2 }}>
+                    <InputLabel>Tamaño</InputLabel>
+                    <Select value={sillaBebeSize} onChange={(e) => setSillaBebeSize(e.target.value)}>
+                      <MenuItem value="chica">Chica - ${extra.precio.chica} MXN/DÍA</MenuItem>
+                      <MenuItem value="mediana">Mediana - ${extra.precio.mediana} MXN/DÍA</MenuItem>
+                      <MenuItem value="grande">Grande - ${extra.precio.grande} MXN/DÍA</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
               </CardContent>
+
               <Box sx={{ display: "flex", alignItems: "center", flexDirection: { xs: "column", md: "row" }, gap: 2, pr: 2, pb: { xs: 2, md: 0 } }}>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
-                  {extra.precio.toFixed(2)} MXN/DÍA
+                  {extra.id === "silla_bebe"
+                    ? extra.precio[sillaBebeSize].toFixed(2)
+                    : extra.precio.toFixed(2)} MXN/DÍA
                 </Typography>
                 {extra.unico ? (
                   <Button
