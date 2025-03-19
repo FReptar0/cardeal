@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardMedia, Typography, Button, Box, Modal, IconButton, Tabs, Tab, Tooltip, Divider } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
@@ -31,21 +32,43 @@ export default function CarCard({ car }) {
                 flexDirection: { xs: "column", sm: "row" } // Ajuste para móviles
             }}>
                 {/* Imagen - Abre el Modal al hacer clic */}
-                <CardMedia
-                    component="img"
-                    sx={{ width: { xs: "100%", sm: 120 }, height: "auto", marginRight: { sm: 2 }, cursor: "pointer" }}
-                    image={car.image}
-                    alt={car.name}
-                    onClick={() => setOpen(true)}
-                />
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <CardMedia
+                        component="img"
+                        sx={{ width: { xs: "100%", sm: 120 }, height: "auto", cursor: "pointer" }}
+                        image={car.image}
+                        alt={car.name}
+                        onClick={() => setOpen(true)}
+                    />
+
+                    {/* Botón con icono para indicar galería */}
+                    <Button
+                        startIcon={<PhotoLibraryIcon />}
+                        sx={{
+                            marginTop: 1,
+                            fontSize: "12px",
+                            textTransform: "none",
+                            color: "gray",
+                            "&:hover": { color: "black" }
+                        }}
+                        onClick={() => setOpen(true)}
+                    >
+                        Ver galería
+                    </Button>
+                </Box>
 
                 {/* Información */}
                 <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography variant="h6" fontWeight="bold">{car.category} {car.abbreviation && `(${car.abbreviation})`}</Typography>
+                        <Typography variant="h6" fontWeight="bold">{car.category}</Typography>
+                        {car.abbreviation && (
+                            <Typography variant="body2" sx={{ color: "gray" }}>
+                                ({car.abbreviation})
+                            </Typography>
+                        )}
                         {car.abbreviation && car.abbreviationMeaning && car.abbreviationDescription && (
-                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow sx={{ marginLeft: 1, fontSize: "1rem" }}>
-                                <IconButton size="small" sx={{ padding: 0 }} color="primary">
+                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow>
+                                <IconButton size="small" sx={{ padding: 0, color: "gray" }}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
