@@ -15,15 +15,14 @@ export default function RentalPage() {
     };
 
     return (
-        <Container sx={{ marginTop: 4, maxWidth: "100vw", paddingX: 2 }}>
+        <Container sx={{ marginTop: 4, paddingX: 0 }}> {/* Eliminamos maxWidth para evitar recortes */}
             <RentalStepper />
             <Box
                 sx={{
                     display: "flex",
-                    flexDirection: { xs: "column", md: "row" },
-                    minHeight: "85vh",
-                    alignItems: "flex-start",
-                    width: "100%"
+                    flexDirection: "column",
+                    alignItems: "center", // Centrar las tarjetas
+                    width: "100%",
                 }}
             >
                 {/* Contenedor de las cards mejorado */}
@@ -35,8 +34,7 @@ export default function RentalPage() {
                         flexDirection: "column",
                         gap: 3,
                         minHeight: "80vh",
-                        overflowY: "auto",
-                        alignItems: "center", // Centrar las cards
+                        alignItems: "center", // Centra las tarjetas horizontalmente
                     }}
                 >
                     {filteredCars.map((car, index) => (
@@ -44,9 +42,8 @@ export default function RentalPage() {
                             key={index}
                             car={car}
                             sx={{
-                                width: "95%", // Cards más anchas
-                                maxWidth: "1100px", // Límite en pantallas grandes
-                                margin: "auto", // Centradas en el contenedor
+                                width: "100%", // Usa todo el ancho disponible
+                                maxWidth: "1200px", // Límite para que no se expanda demasiado
                             }}
                         />
                     ))}

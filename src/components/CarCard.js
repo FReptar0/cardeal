@@ -29,8 +29,14 @@ export default function CarCard({ car }) {
                 minHeight: 160,
                 borderRadius: 3,
                 boxShadow: 2,
-                flexDirection: { xs: "column", sm: "row" } // Ajuste para móviles
-            }}>
+                flexDirection: { xs: "column", sm: "row" }, // Ajuste para móviles
+                cursor: "pointer",
+                "&:hover": { boxShadow: 5, transform: "scale(1.02)" }
+
+
+            }}
+                onClick={handleReserve}
+            >
                 {/* Imagen - Abre el Modal al hacer clic */}
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <CardMedia
@@ -38,7 +44,10 @@ export default function CarCard({ car }) {
                         sx={{ width: { xs: "100%", sm: 120 }, height: "auto", cursor: "pointer" }}
                         image={car.image}
                         alt={car.name}
-                        onClick={() => setOpen(true)}
+                        onClick={(event) => {
+                            event.stopPropagation(); // Evita que el clic en la imagen afecte la Card
+                            setOpen(true);
+                        }}
                     />
 
                     {/* Botón con icono para indicar galería */}
@@ -51,7 +60,10 @@ export default function CarCard({ car }) {
                             color: "gray",
                             "&:hover": { color: "black" }
                         }}
-                        onClick={() => setOpen(true)}
+                        onClick={(event) => {
+                            event.stopPropagation(); // Evita que el clic en el botón afecte la Card
+                            setOpen(true);
+                        }}
                     >
                         Ver galería
                     </Button>
@@ -117,58 +129,17 @@ export default function CarCard({ car }) {
                         width: "100%"
                     }}>
                         <Box sx={{ textAlign: "center", flex: 1 }}>
-                            <Typography variant="body2" fontWeight="bold" sx={{ color: "blue" }}>Precio en línea</Typography>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "#508a69" }}>Precio en línea</Typography>
                             <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem />
                         <Box sx={{ textAlign: "center", flex: 1 }}>
-                            <Typography variant="body2" fontWeight="bold" sx={{ color: "red" }}>Precio en Sucursal</Typography>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "#d60812" }}>Precio en Sucursal</Typography>
                             <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price2} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
                         </Box>
                     </Box>
 
-                    {/* Botones */}
-                    <Box sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 2,
-                        marginTop: 1,
-                        width: "100%"
-                    }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#007bff",
-                                color: "white",
-                                fontWeight: "bold",
-                                padding: "8px 20px",
-                                fontSize: "14px",
-                                width: "140px",
-                                boxShadow: "none", // Quita el contorno
-                                "&:hover": { backgroundColor: "#0056b3" } // Efecto hover más sutil
-                            }}
-                            onClick={handleReserve}
-                        >
-                            PAGAR EN LÍNEA
-                        </Button>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#d60812",
-                                color: "white",
-                                fontWeight: "bold",
-                                padding: "8px 20px",
-                                fontSize: "14px",
-                                width: "140px",
-                                boxShadow: "none", // Quita el contorno
-                                "&:hover": { backgroundColor: "#a3060e" } // Efecto hover más sutil
-                            }}
-                            onClick={handleReserve}
-                        >
-                            PAGAR EN SUCURSAL
-                        </Button>
-                    </Box>
+
                 </Box>
             </Card>
 
