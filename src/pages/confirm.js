@@ -20,7 +20,7 @@ const extraDriverPrice = 200;
 // Definir valores de descuento, impuestos y cargos adicionales
 const discount = 100; // Puedes ajustar esto según promociones aplicadas
 const subtotal = (dailyRate * rentalDays);
-const ivaLocal = subtotal * 0.16; // 16% de IVA
+const ivaLocal = subtotal * 0.16;
 const locationFee = 65.41;
 const serviceFee = 25.00;
 const total = subtotal + ivaLocal + locationFee + serviceFee;
