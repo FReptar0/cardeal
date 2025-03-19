@@ -41,7 +41,7 @@ const extras = [
     nombre: "Silla para Bebé",
     descripcion: "Proporciona seguridad adicional para bebés y niños pequeños.",
     precio: { chica: 50, mediana: 70, grande: 90 },
-    imagen: "/extras/silla.png",
+    //imagen: "/extras/baby.png",
   },
   {
     id: "gps",
@@ -82,7 +82,7 @@ const ExtrasRenta = () => {
       precio = extra.precio[sillaBebeSize];
     }
 
-    const costo = extra.unico ? cantidad * precio : cantidad * precio * 4; //esta para una renta de 4 dias
+    const costo = extra.unico ? cantidad * precio : cantidad * precio * 4; //el 4 es para una renta de 4 dias (cambiar para que sea dinamico)
     return acc + costo;
   }, 0);
 
