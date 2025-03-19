@@ -10,6 +10,7 @@
     "luggage": 2,
     "transmission": "Automática",
     "price": 300.00,
+    "price2": 350.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
     "images": [
       "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
@@ -27,6 +28,7 @@
     "luggage": 3,
     "transmission": "Automática",
     "price": 350.00,
+    "price2": 390.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
@@ -44,6 +46,7 @@
     "luggage": 3,
     "transmission": "Automática",
     "price": 450.00,
+    "price2": 500.00,
     "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
     "images": [
       "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
@@ -61,6 +64,7 @@
     "luggage": 4,
     "transmission": "Automática",
     "price": 600.00,
+    "price2": 800.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
@@ -78,6 +82,7 @@
     "luggage": 4,
     "transmission": "Automática",
     "price": 700.00,
+    "price2": 720.00,
     "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
     "images": [
       "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
@@ -95,6 +100,7 @@
     "luggage": 5,
     "transmission": "Automática",
     "price": 850.00,
+    "price2": 880.00,
     "image": "/cars/suzuki.avif",
     "images": [
       "/cars/suzuki.avif",

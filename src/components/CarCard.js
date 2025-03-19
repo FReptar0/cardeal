@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Button, Box, Modal, IconButton, Tabs, Tab, Tooltip } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Button, Box, Modal, IconButton, Tabs, Tab, Tooltip, Divider } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import CloseIcon from "@mui/icons-material/Close";
@@ -44,7 +44,7 @@ export default function CarCard({ car }) {
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Typography variant="h6" fontWeight="bold">{car.category} {car.abbreviation && `(${car.abbreviation})`}</Typography>
                         {car.abbreviation && car.abbreviationMeaning && car.abbreviationDescription && (
-                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow sx={{ marginLeft: 1, fontSize: "1rem"}}>
+                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow sx={{ marginLeft: 1, fontSize: "1rem" }}>
                                 <IconButton size="small" sx={{ padding: 0 }} color="primary">
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
@@ -69,30 +69,83 @@ export default function CarCard({ car }) {
                             <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.transmission}</Typography>
                         </Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+                            <img src="/icons/ic-pet.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <Typography variant="body2">Pet friendly</Typography>
+                        </Box>
                     </Box>
                 </CardContent>
 
                 {/* Precio y botón */}
-                <Box sx={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: { xs: "center", sm: "flex-end" }, justifyContent: "center", minWidth: { xs: "100%", sm: "120px" }, marginTop: { xs: 2, sm: 0 } }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography variant="h4" fontWeight="bold" sx={{ color: "black" }}>$ {car.price}</Typography>
-                        <Typography variant="h6" sx={{ color: "gray" }}>MXN/día</Typography>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: { xs: "center", sm: "flex-end" },
+                    justifyContent: "center",
+                    minWidth: { xs: "100%", sm: "250px" },
+                    marginTop: { xs: 2, sm: 0 }
+                }}>
+                    {/* Precios */}
+                    <Box sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 2,
+                        width: "100%"
+                    }}>
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "blue" }}>Precio en línea</Typography>
+                            <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
+                        </Box>
+                        <Divider orientation="vertical" flexItem />
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "red" }}>Precio en Sucursal</Typography>
+                            <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price2} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
+                        </Box>
                     </Box>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            backgroundColor: "#d60812",
-                            color: "white",
-                            fontWeight: "bold",
-                            padding: "8px 20px",
-                            fontSize: "16px",
-                            marginTop: 1,
-                            width: "100px"
-                        }}
-                        onClick={handleReserve}
-                    >
-                        RESERVAR
-                    </Button>
+
+                    {/* Botones */}
+                    <Box sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 2,
+                        marginTop: 1,
+                        width: "100%"
+                    }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#007bff",
+                                color: "white",
+                                fontWeight: "bold",
+                                padding: "8px 20px",
+                                fontSize: "14px",
+                                width: "140px",
+                                boxShadow: "none", // Quita el contorno
+                                "&:hover": { backgroundColor: "#0056b3" } // Efecto hover más sutil
+                            }}
+                            onClick={handleReserve}
+                        >
+                            PAGAR EN LÍNEA
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#d60812",
+                                color: "white",
+                                fontWeight: "bold",
+                                padding: "8px 20px",
+                                fontSize: "14px",
+                                width: "140px",
+                                boxShadow: "none", // Quita el contorno
+                                "&:hover": { backgroundColor: "#a3060e" } // Efecto hover más sutil
+                            }}
+                            onClick={handleReserve}
+                        >
+                            PAGAR EN SUCURSAL
+                        </Button>
+                    </Box>
                 </Box>
             </Card>
 

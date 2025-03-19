@@ -17,15 +17,38 @@ export default function RentalPage() {
     return (
         <Container sx={{ marginTop: 4, maxWidth: "100vw", paddingX: 2 }}>
             <RentalStepper />
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "85vh", alignItems: "flex-start", width: "100%" }}>
-
-                <Box sx={{ width: { xs: "100%", md: "30%" }, paddingRight: { md: 2 }, marginBottom: { xs: 2, md: 0 }, display: "flex", justifyContent: "center" }}>
-                    <SearchBar onSearch={handleSearch} />
-                </Box>
-
-                <Box sx={{ pb: 3, width: { xs: "100%", md: "70%" }, paddingLeft: { md: 2 }, display: "flex", flexDirection: "column", gap: 2, minHeight: "80vh", overflowY: "auto" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    minHeight: "85vh",
+                    alignItems: "flex-start",
+                    width: "100%"
+                }}
+            >
+                {/* Contenedor de las cards mejorado */}
+                <Box
+                    sx={{
+                        pb: 3,
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 3,
+                        minHeight: "80vh",
+                        overflowY: "auto",
+                        alignItems: "center", // Centrar las cards
+                    }}
+                >
                     {filteredCars.map((car, index) => (
-                        <CarCard key={index} car={car} />
+                        <CarCard
+                            key={index}
+                            car={car}
+                            sx={{
+                                width: "95%", // Cards más anchas
+                                maxWidth: "1100px", // Límite en pantallas grandes
+                                margin: "auto", // Centradas en el contenedor
+                            }}
+                        />
                     ))}
                 </Box>
             </Box>
