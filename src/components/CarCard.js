@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Button, Box, Modal, IconButton, Tabs, Tab, Tooltip } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Button, Box, Modal, IconButton, Tabs, Tab, Tooltip, Divider } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
@@ -28,24 +29,58 @@ export default function CarCard({ car }) {
                 minHeight: 160,
                 borderRadius: 3,
                 boxShadow: 2,
-                flexDirection: { xs: "column", sm: "row" } // Ajuste para móviles
-            }}>
+                flexDirection: { xs: "column", sm: "row" }, // Ajuste para móviles
+                cursor: "pointer",
+                "&:hover": { boxShadow: 5, transform: "scale(1.02)" }
+
+
+            }}
+                onClick={handleReserve}
+            >
                 {/* Imagen - Abre el Modal al hacer clic */}
-                <CardMedia
-                    component="img"
-                    sx={{ width: { xs: "100%", sm: 120 }, height: "auto", marginRight: { sm: 2 }, cursor: "pointer" }}
-                    image={car.image}
-                    alt={car.name}
-                    onClick={() => setOpen(true)}
-                />
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <CardMedia
+                        component="img"
+                        sx={{ width: { xs: "100%", sm: 120 }, height: "auto", cursor: "pointer" }}
+                        image={car.image}
+                        alt={car.name}
+                        onClick={(event) => {
+                            event.stopPropagation(); // Evita que el clic en la imagen afecte la Card
+                            setOpen(true);
+                        }}
+                    />
+
+                    {/* Botón con icono para indicar galería */}
+                    <Button
+                        startIcon={<PhotoLibraryIcon />}
+                        sx={{
+                            marginTop: 1,
+                            fontSize: "12px",
+                            textTransform: "none",
+                            color: "gray",
+                            "&:hover": { color: "black" }
+                        }}
+                        onClick={(event) => {
+                            event.stopPropagation(); // Evita que el clic en el botón afecte la Card
+                            setOpen(true);
+                        }}
+                    >
+                        Ver galería
+                    </Button>
+                </Box>
 
                 {/* Información */}
                 <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography variant="h6" fontWeight="bold">{car.category} {car.abbreviation && `(${car.abbreviation})`}</Typography>
+                        <Typography variant="h6" fontWeight="bold">{car.category}</Typography>
+                        {car.abbreviation && (
+                            <Typography variant="body2" sx={{ color: "gray" }}>
+                                ({car.abbreviation})
+                            </Typography>
+                        )}
                         {car.abbreviation && car.abbreviationMeaning && car.abbreviationDescription && (
-                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow sx={{ marginLeft: 1, fontSize: "1rem"}}>
-                                <IconButton size="small" sx={{ padding: 0 }} color="primary">
+                            <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow>
+                                <IconButton size="small" sx={{ padding: 0, color: "gray" }}>
                                     <InfoIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -69,30 +104,42 @@ export default function CarCard({ car }) {
                             <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">{car.transmission}</Typography>
                         </Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+                            <img src="/icons/ic-pet.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <Typography variant="body2">Pet friendly</Typography>
+                        </Box>
                     </Box>
                 </CardContent>
 
                 {/* Precio y botón */}
-                <Box sx={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: { xs: "center", sm: "flex-end" }, justifyContent: "center", minWidth: { xs: "100%", sm: "120px" }, marginTop: { xs: 2, sm: 0 } }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography variant="h4" fontWeight="bold" sx={{ color: "black" }}>$ {car.price}</Typography>
-                        <Typography variant="h6" sx={{ color: "gray" }}>MXN/día</Typography>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: { xs: "center", sm: "flex-end" },
+                    justifyContent: "center",
+                    minWidth: { xs: "100%", sm: "250px" },
+                    marginTop: { xs: 2, sm: 0 }
+                }}>
+                    {/* Precios */}
+                    <Box sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 2,
+                        width: "100%"
+                    }}>
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "#508a69" }}>Precio en línea</Typography>
+                            <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
+                        </Box>
+                        <Divider orientation="vertical" flexItem />
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2" fontWeight="bold" sx={{ color: "#d60812" }}>Precio en Sucursal</Typography>
+                            <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>$ {car.price2} <Typography variant="body2" component="span" sx={{ color: "gray" }}>MXN/día</Typography></Typography>
+                        </Box>
                     </Box>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            backgroundColor: "#d60812",
-                            color: "white",
-                            fontWeight: "bold",
-                            padding: "8px 20px",
-                            fontSize: "16px",
-                            marginTop: 1,
-                            width: "100px"
-                        }}
-                        onClick={handleReserve}
-                    >
-                        RESERVAR
-                    </Button>
+
+
                 </Box>
             </Card>
 
