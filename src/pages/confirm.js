@@ -7,7 +7,7 @@ import Head from "next/head";
 import RentalStepper from "../components/Stepper";
 import cars from "../data/cars.json";
 
-const car = cars[0]; // Usar el primer registro del JSON
+const car = cars[0];
 
 const dailyRate = car.price;
 const rentalDays = 4;
