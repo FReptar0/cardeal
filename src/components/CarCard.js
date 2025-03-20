@@ -108,6 +108,10 @@ export default function CarCard({ car }) {
                             <img src="/icons/ic-pet.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
                             <Typography variant="body2">Pet friendly</Typography>
                         </Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+                            <img src="/icons/ice.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
+                            <Typography variant="body2">Aire acondicionado</Typography>
+                        </Box>
                     </Box>
                 </CardContent>
 
