@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/router"; // Importa useRouter
+import { useRouter } from "next/router"; 
 import {
   Box,
   Typography,
@@ -27,6 +27,14 @@ const availableTimes = [
   "06:00 PM",
   "08:00 PM",
 ];
+
+function convert12to24(time12h) {
+  const [time, modifier] = time12h.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+  if (modifier === "PM" && hours < 12) hours += 12;
+  if (modifier === "AM" && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+}
 
 // Ubicaciones disponibles
 const locations = [
@@ -72,13 +80,21 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
           display: "flex",
           backgroundColor: "#e0e0e0",
           borderRadius: 1,
-          padding: 2,
+          padding: 1,
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ textAlign: "center", width: "50%", position: "relative" }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            width: "50%",
+            position: "relative",
+            cursor: "pointer",
+          }}
+        >
           <Typography variant="body1">{formatDay(date)}</Typography>
+
           {/* Número del día con efecto de hover */}
           <Typography
             variant="h5"
@@ -90,24 +106,46 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
                 textShadow: "0px 0px 8px rgba(211, 47, 47, 0.6)",
               },
             }}
-            onClick={() => dateInputRef.current?.click()}
           >
             {formatNumber(date)}
           </Typography>
+
           <Typography variant="body2">{formatMonthYear(date)}</Typography>
-          {/* Input de fecha oculto, activado al hacer clic en el número */}
-          <TextField
-            type="date"
-            inputRef={dateInputRef}
-            value={format(date, "yyyy-MM-dd")}
-            onChange={(e) => setDate(new Date(e.target.value))}
+
+          {/* Botón invisible que activa el DatePicker */}
+          <Button
             sx={{
-              opacity: 0,
               position: "absolute",
               top: 0,
               left: 0,
               width: "100%",
               height: "100%",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              zIndex: 10,
+            }}
+            disableRipple
+            disableFocusRipple
+            onClick={() => dateInputRef.current?.showPicker()}
+          ></Button>
+
+          <TextField
+            type="date"
+            inputRef={dateInputRef}
+            value={format(date, "yyyy-MM-dd")}
+            onChange={(e) => {
+              const [year, month, day] = e.target.value.split("-"); 
+              const selectedDate = new Date(year, month - 1, day); 
+              setDate(selectedDate);
+            }}
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              opacity: 0,
               cursor: "pointer",
             }}
             inputProps={{ min: getTodayDate() }}
@@ -125,7 +163,9 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
         >
           <Select
             value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => {
+              setTime(e.target.value); 
+            }}
             fullWidth
             variant="standard"
             disableUnderline
@@ -143,8 +183,9 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
   );
 }
 
-export default function SearchBar() {
+export default function SearchBar({ sx = {} }) {
   const router = useRouter();
+  const isRentalPage = router.pathname === "/rental"; // Detecta si está en rental
   const [pickupLocation, setPickupLocation] = useState(locations[0]);
   const [returnLocation, setReturnLocation] = useState(locations[0]);
   const [sameOffice, setSameOffice] = useState(true);
@@ -155,143 +196,242 @@ export default function SearchBar() {
   const [pickupTime, setPickupTime] = useState(availableTimes[0]);
   const [returnTime, setReturnTime] = useState(availableTimes[0]);
 
-  // Lógica para actualizar la fecha de devolución automáticamente si la fecha de recogida cambia
   const handlePickupDateChange = (newDate) => {
-    setPickupDate(newDate);
+    const newPickupDate = new Date(newDate);
+    newPickupDate.setHours(0, 0, 0, 0);
+  
+    const currentReturnDate = new Date(returnDate);
+    currentReturnDate.setHours(0, 0, 0, 0);
+  
+    // 1. Ajustar la fecha de recepción
+    setPickupDate(newPickupDate);
+  
+    // 2. Si la fecha de devolución es anterior, la pasamos al siguiente día
+    if (currentReturnDate < newPickupDate) {
+      const adjustedReturnDate = new Date(newPickupDate);
+      adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
+      setReturnDate(adjustedReturnDate);
+      setReturnTime("08:00 AM"); // Primera hora disponible, o la que prefieras
+      return;
+    }
+  
+    // 3. Si ahora ambas fechas son iguales, verificar horas
+    if (newPickupDate.toDateString() === currentReturnDate.toDateString()) {
+      const pickupMin = convert12to24(pickupTime);
+      const returnMin = convert12to24(returnTime);
+  
+      // Si la hora de recepción >= hora de devolución
+      if (pickupMin >= returnMin) {
+        // Ajustamos la hora de recepción a la primera del día
+        setPickupTime("08:00 AM");
+  
+        // Buscamos un horario de devolución posterior a 08:00 AM
+        const nextAvailable = availableTimes.find(
+          (t) => convert12to24(t) > convert12to24("08:00 AM")
+        );
+  
+        if (nextAvailable) {
+          // Si existe un horario posterior, lo asignamos
+          setReturnTime(nextAvailable);
+        } else {
+          // Si no hay horario posterior, pasamos la devolución al siguiente día
+          const newReturnDate = new Date(returnDate);
+          newReturnDate.setDate(newReturnDate.getDate() + 1);
+          setReturnDate(newReturnDate);
+          setReturnTime("08:00 AM"); // O la hora que prefieras al siguiente día
+        }
+      }
+    }
+  };
+  const handleReturnDateChange = (newDate) => {
+    const newReturnDate = new Date(newDate);
+    newReturnDate.setHours(0, 0, 0, 0);
 
-    // Si la fecha de devolución es anterior a la fecha de recogida, la ajusta automáticamente
-    if (returnDate < newDate) {
-      setReturnDate(new Date(newDate.setDate(newDate.getDate() + 1)));
+    const currentPickupDate = new Date(pickupDate);
+    currentPickupDate.setHours(0, 0, 0, 0);
+
+    setReturnDate(newReturnDate);
+
+    // Si la fecha de recepción es mayor a la de devolución, ajustarla
+    if (newReturnDate < currentPickupDate) {
+      const adjustedPickupDate = new Date(newReturnDate);
+      adjustedPickupDate.setDate(adjustedPickupDate.getDate() - 1);
+      setPickupDate(adjustedPickupDate);
+      setPickupTime("02:00 PM"); // Establecer una hora estándar
     }
   };
 
+  const handlePickupTimeChange = (newTime) => {
+    setPickupTime(newTime);
+  
+    // Solo si ambas fechas son iguales comparamos las horas
+    if (returnDate.toDateString() === pickupDate.toDateString()) {
+      const pickupMin = convert12to24(newTime);
+      const returnMin = convert12to24(returnTime);
+  
+      // Si la hora de devolución es menor o igual a la de recepción
+      if (returnMin <= pickupMin) {
+        // Buscar el siguiente horario disponible ese mismo día
+        const nextAvailable = availableTimes.find(
+          (t) => convert12to24(t) > pickupMin
+        );
+  
+        if (nextAvailable) {
+          // Existe un horario posterior el mismo día
+          setReturnTime(nextAvailable);
+        } else {
+          // No hay horario posterior: mover la fecha de devolución al día siguiente
+          const newReturnDate = new Date(returnDate);
+          newReturnDate.setDate(newReturnDate.getDate() + 1);
+  
+          setReturnDate(newReturnDate);
+          setReturnTime(availableTimes[0]); // El primer horario (08:00 AM)
+        }
+      }
+    }
+  };
+  
+
+  const handleReturnTimeChange = (newTime) => {
+    // Si recepción y devolución son el mismo día
+    if (returnDate.toDateString() === pickupDate.toDateString()) {
+      const pickupMin = convert12to24(pickupTime);
+      const returnMin = convert12to24(newTime);
+  
+      // No permitimos devolución antes o igual a la recepción
+      if (returnMin <= pickupMin) {
+        // Intentar encontrar un horario posterior el mismo día
+        const nextAvailable = availableTimes.find(
+          (t) => convert12to24(t) > pickupMin
+        );
+  
+        if (nextAvailable) {
+          setReturnTime(nextAvailable);
+        } else {
+          // No existe horario posterior; pasar al siguiente día
+          const newReturnDate = new Date(returnDate);
+          newReturnDate.setDate(newReturnDate.getDate() + 1);
+  
+          setReturnDate(newReturnDate);
+          setReturnTime(availableTimes[0]); // 08:00 AM
+        }
+        return;
+      }
+    }
+  
+    // Si la fecha es distinta o la hora es válida, simplemente se asigna
+    setReturnTime(newTime);
+  };
+  
+
   return (
     <Box
-      sx={{
-        padding: 3,
-        backgroundColor: "#f5f5f5",
-        borderRadius: 2,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-        width: "100%",  
-      }}
-      id="containerBox"
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: isRentalPage ? 1 : 3,
+      width: "100%",
+      padding: 3,
+      backgroundColor: "#f5f5f5",
+      borderRadius: 2,
+      boxSizing: "border-box",
+      ...sx,
+    }}
+    id="containerBox"
+  >
+    <Typography
+      variant="h6"
+      sx={{ color: "black", fontWeight: "bold" }}
+      id="ubicacionOrigenSB"
     >
-      <Typography
-        variant="h6"
-        sx={{ color: "black", fontWeight: "bold" }}
-        id="ubicacionOrigenSB"
-      >
-        Ubicación de origen
-      </Typography>
-      <Autocomplete
-        options={locations}
-        getOptionLabel={(option) => `${option.city} - ${option.name}`}
-        groupBy={(option) => option.city}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Selecciona ubicación"
-            variant="outlined"
-          />
-        )}
-        value={pickupLocation}
-        onChange={(event, newValue) => setPickupLocation(newValue)}
-        sx={{ width: "100%" }}
-      />
-      <FormControlLabel
-        id="checkboxSB"
-        control={
-          <Checkbox
-            checked={sameOffice}
-            onChange={() => setSameOffice(!sameOffice)}
-            sx={{ color: "#d32f2f", "&.Mui-checked": { color: "#d32f2f" } }}
-          />
-        }
-        label="Devolver en la misma oficina"
-        sx={{ color: "black", fontWeight: "bold" }}
-      />
-      {!sameOffice && (
-        <>
-          <Typography
-            className="second-select"
-            variant="h6"
-            sx={{ color: "black", fontWeight: "bold" }}
-            id="ubicacionDestinoSB"
-          >
-            Ubicación de destino
-          </Typography>
-          <Autocomplete
-            options={locations}
-            getOptionLabel={(option) => `${option.city} - ${option.name}`}
-            groupBy={(option) => option.city}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Selecciona ubicación"
-                variant="outlined"
-              />
-            )}
-            value={returnLocation}
-            onChange={(event, newValue) => setReturnLocation(newValue)}
-            sx={{ width: "100%" }}
-          />
-        </>
+      Ubicación de origen
+    </Typography>
+    <Autocomplete
+      options={locations}
+      getOptionLabel={(option) => `${option.city} - ${option.name}`}
+      groupBy={(option) => option.city}
+      renderInput={(params) => (
+        <TextField {...params} label="Selecciona ubicación" variant="outlined" />
       )}
-      <div>
-        <div className="date-time-selectors-container" style={{flexDirection: "column"}}>
-          <div className="fh-rec-sbc" style={{marginBottom: "22px"}}>
-            <DateTimeSelector
-              label="Fecha y hora de recepción"
-              date={pickupDate}
-              setDate={handlePickupDateChange}
-              time={pickupTime}
-              setTime={setPickupTime}
-            />
-          </div>
-
-          {/* SVG de flecha en el centro */}
-          <div
-            className="arrow-icon"
-            style={{ position: "relative", top: 50, display: "none" }}
-          >
-            <svg
-              width="30"
-              height="30"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14"></path>
-              <path d="M12 5l7 7-7 7"></path>
-            </svg>
-          </div>
-
-          <div className="fh-dev-sbc">
-            <DateTimeSelector
-              label="Fecha y hora de devolución"
-              date={returnDate}
-              setDate={setReturnDate}
-              time={returnTime}
-              setTime={setReturnTime}
-            />
-          </div>
-        </div>
-      </div>
-      <Button
-        variant="contained"
-        className="btn-buscar-sb"
-        color="primary"
-        sx={{ backgroundColor: "#d60812", width: "100%", margin: "0 auto" }}
-        onClick={() => router.push("/rental")}
-      >
-        {" "}
-        Buscar
-      </Button>
+      value={pickupLocation}
+      onChange={(event, newValue) => setPickupLocation(newValue)}
+      sx={{ width: "100%" }}
+    />
+    <FormControlLabel
+      id="checkboxSB"
+      control={
+        <Checkbox
+          checked={sameOffice}
+          onChange={() => setSameOffice(!sameOffice)}
+          sx={{ color: "#d32f2f", "&.Mui-checked": { color: "#d32f2f" } }}
+        />
+      }
+      label="Devolver en la misma oficina"
+      sx={{ color: "black", fontWeight: "bold" }}
+    />
+    {!sameOffice && (
+      <>
+        <Typography
+          className="second-select"
+          variant="h6"
+          sx={{ color: "black", fontWeight: "bold" }}
+          id="ubicacionDestinoSB"
+        >
+          Ubicación de destino
+        </Typography>
+        <Autocomplete
+          options={locations}
+          getOptionLabel={(option) => `${option.city} - ${option.name}`}
+          groupBy={(option) => option.city}
+          renderInput={(params) => (
+            <TextField {...params} label="Selecciona ubicación" variant="outlined" />
+          )}
+          value={returnLocation}
+          onChange={(event, newValue) => setReturnLocation(newValue)}
+          sx={{ width: "100%" }}
+        />
+      </>
+    )}
+  
+    {/* Fechas y horas alineadas en fila en pantallas grandes y en columna en pantallas pequeñas */}
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" }, // Column en móviles, fila en desktop
+        gap: 2,
+        mt: 1,
+        mb: 2,
+      }}
+    >
+      <Box sx={{ flex: 1 }}>
+        <DateTimeSelector
+          label="Fecha y hora de recepción"
+          date={pickupDate}
+          setDate={handlePickupDateChange}
+          time={pickupTime}
+          setTime={handlePickupTimeChange}
+        />
+      </Box>
+      <Box sx={{ flex: 1 }}>
+        <DateTimeSelector
+          label="Fecha y hora de devolución"
+          date={returnDate}
+          setDate={handleReturnDateChange}
+          time={returnTime}
+          setTime={handleReturnTimeChange}
+        />
+      </Box>
     </Box>
+  
+    <Button
+      variant="contained"
+      className="btn-buscar-sb"
+      color="primary"
+      sx={{ backgroundColor: "#d60812", width: "100%", margin: "0 auto" }}
+      onClick={() => router.push("/rental")}
+    >
+      Buscar
+    </Button>
+  </Box>
   );
 }
