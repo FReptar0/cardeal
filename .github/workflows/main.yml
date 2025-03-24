@@ -1,39 +1,44 @@
-name: Ofuscar y Desplegar Código
+name: Build, Obfuscate and Deploy Next.js App
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  obfuscate:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repositorio
+      - name: Checkout code from cardeal repository
         uses: actions/checkout@v3
 
-      - name: Instalar dependencias
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
         run: npm install
 
-      - name: Ofuscar código
-        run: |
-          # Suponiendo que el código fuente está en la carpeta 'src'
-          # y queremos generar la versión ofuscada en 'dist'
-          npx javascript-obfuscator ./src --output ./dist
+      - name: Build Next.js Application
+        run: npm run build
 
-      - name: Configurar Git para el commit
+      - name: Prepare deployment folder
         run: |
-          git config --global user.email "fmemije00@gmail.com"
-          git config --global user.name "FReptar0"
+          rm -rf deployment
+          mkdir deployment
+          cp -R .next deployment/
 
-      - name: Commit de código ofuscado
+      - name: Initialize Git repository in deployment folder
         run: |
-          cd dist
+          cd deployment
           git init
+          git config user.name "FReptar0"
+          git config user.email "fmemije00@gmail.com"
           git add .
-          git commit -m "Código ofuscado actualizado"
+          git commit -m "Deploy obfuscated build"
 
-      - name: Push al repositorio de despliegue
+      - name: Push to Client Repository (qardeal)
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.CLIENT_REPO_TOKEN }}
