@@ -1,0 +1,46 @@
+name: Ofuscar y Desplegar Código
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  obfuscate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      # Paso opcional: Ejecutar pruebas para asegurarse de que el código es estable
+      - name: Ejecutar pruebas
+        run: npm test
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ofuscar código
+        run: |
+          # Suponiendo que el código fuente está en la carpeta 'src'
+          # y queremos generar la versión ofuscada en 'dist'
+          npx javascript-obfuscator ./src --output ./dist
+
+      - name: Configurar Git para el commit
+        run: |
+          git config --global user.email "fmemije00@gmail.com"
+          git config --global user.name "FReptar0"
+
+      - name: Commit de código ofuscado
+        run: |
+          cd dist
+          git init
+          git add .
+          git commit -m "Código ofuscado actualizado"
+
+      - name: Push al repositorio de despliegue
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.CLIENT_REPO_TOKEN }}
+          repository: FReptar0/qardeal
+          branch: main
+          force: true
