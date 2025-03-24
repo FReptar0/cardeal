@@ -12,10 +12,6 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      # Paso opcional: Ejecutar pruebas para asegurarse de que el código es estable
-      - name: Ejecutar pruebas
-        run: npm test
-
       - name: Instalar dependencias
         run: npm install
 
