@@ -170,7 +170,7 @@ export default function CarCard({ car, isSelected }) {
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, width: "100%" }}>
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography variant="body2" fontWeight="bold" sx={{ color: "#508a69" }}>
-                Precio en línea
+                Pago en línea
               </Typography>
               <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
                 $ {car.price}{" "}
@@ -182,7 +182,7 @@ export default function CarCard({ car, isSelected }) {
             <Divider orientation="vertical" flexItem />
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography variant="body2" fontWeight="bold" sx={{ color: "#d60812" }}>
-                Precio en Sucursal
+                Pago en Sucursal
               </Typography>
               <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
                 $ {car.price2}{" "}
