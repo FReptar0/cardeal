@@ -8,6 +8,12 @@
     "passengers": 5,
     "doors": 4,
     "luggage": 2,
+    "luggageSize": "chicas",
+    "luggageDimensions": {
+      "width": "40cm",
+      "height": "50cm",
+      "depth": "20cm"
+    },
     "transmission": "Automática",
     "airConditioning": true,
     "price": 300.00,
@@ -27,6 +33,12 @@
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
+    "luggageSize": "medianas",
+    "luggageDimensions": {
+      "width": "50cm",
+      "height": "60cm",
+      "depth": "25cm"
+    },
     "transmission": "Automática",
     "airConditioning": true,
     "price": 350.00,
@@ -46,6 +58,12 @@
     "passengers": 5,
     "doors": 4,
     "luggage": 3,
+    "luggageSize": "medianas",
+    "luggageDimensions": {
+      "width": "50cm",
+      "height": "60cm",
+      "depth": "25cm"
+    },
     "transmission": "Automática",
     "airConditioning": true,
     "price": 450.00,
@@ -65,6 +83,12 @@
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
+    "luggageSize": "grandes",
+    "luggageDimensions": {
+      "width": "60cm",
+      "height": "70cm",
+      "depth": "30cm"
+    },
     "transmission": "Automática",
     "airConditioning": true,
     "price": 600.00,
@@ -84,6 +108,12 @@
     "passengers": 5,
     "doors": 4,
     "luggage": 4,
+    "luggageSize": "grandes",
+    "luggageDimensions": {
+      "width": "60cm",
+      "height": "70cm",
+      "depth": "30cm"
+    },
     "transmission": "Automática",
     "airConditioning": true,
     "price": 700.00,

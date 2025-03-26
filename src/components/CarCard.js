@@ -28,7 +28,6 @@ export default function CarCard({ car, isSelected }) {
 
   // Función auxiliar para detener la propagación del evento
   const stopAllPropagation = (event) => {
-    // Detiene otros listeners que pudieran haber sido registrados
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
   };
@@ -132,10 +131,16 @@ export default function CarCard({ car, isSelected }) {
               <img src="/icons/ic-door.svg" alt="Puertas" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">{car.doors} puertas</Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <LuggageIcon fontSize="small" sx={{ color: "black" }} />
-              <Typography variant="body2">{car.luggage} maletas</Typography>
-            </Box>
+            {/* Tooltip para detalles de las maletas */}
+            <Tooltip
+              title={`${car.luggage} maletas ${car.luggageSize} (${car.luggageDimensions.width} x ${car.luggageDimensions.height} x ${car.luggageDimensions.depth})`}
+              arrow
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+                <LuggageIcon fontSize="small" sx={{ color: "black" }} />
+                <Typography variant="body2">{car.luggage} maletas</Typography>
+              </Box>
+            </Tooltip>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
               <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">{car.transmission}</Typography>
