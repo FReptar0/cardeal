@@ -17,7 +17,6 @@ import InfoIcon from "@mui/icons-material/Info";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import CloseIcon from "@mui/icons-material/Close";
-import { useRouter } from "next/router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -26,6 +25,13 @@ import { Navigation } from "swiper/modules";
 export default function CarCard({ car, isSelected }) {
   const [open, setOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+
+  // Función auxiliar para detener la propagación del evento
+  const stopAllPropagation = (event) => {
+    // Detiene otros listeners que pudieran haber sido registrados
+    event.nativeEvent.stopImmediatePropagation();
+    event.stopPropagation();
+  };
 
   return (
     <>
@@ -49,31 +55,21 @@ export default function CarCard({ car, isSelected }) {
           },
         }}
       >
-        {/* Imagen - Abre el Modal al hacer clic */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
+        {/* Imagen y botón para abrir la galería (detienen la propagación) */}
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <CardMedia
             component="img"
-            sx={{
-              width: { xs: "100%", sm: 120 },
-              height: "auto",
-              cursor: "pointer",
-            }}
+            sx={{ width: { xs: "100%", sm: 120 }, height: "auto", cursor: "pointer" }}
             image={car.image}
             alt={car.name}
             onClick={(event) => {
-              event.stopPropagation(); // Evita que el clic en la imagen afecte la Card
+              stopAllPropagation(event);
               setOpen(true);
             }}
           />
 
-          {/* Botón con icono para indicar galería */}
           <Button
+            data-no-select
             startIcon={<PhotoLibraryIcon />}
             sx={{
               marginTop: 1,
@@ -83,7 +79,7 @@ export default function CarCard({ car, isSelected }) {
               "&:hover": { color: "black" },
             }}
             onClick={(event) => {
-              event.stopPropagation(); // Evita que el clic en el botón afecte la Card
+              stopAllPropagation(event);
               setOpen(true);
             }}
           >
@@ -91,7 +87,7 @@ export default function CarCard({ car, isSelected }) {
           </Button>
         </Box>
 
-        {/* Información */}
+        {/* Información del vehículo */}
         <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="h6" fontWeight="bold">
@@ -105,10 +101,7 @@ export default function CarCard({ car, isSelected }) {
             {car.abbreviation &&
               car.abbreviationMeaning &&
               car.abbreviationDescription && (
-                <Tooltip
-                  title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`}
-                  arrow
-                >
+                <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow>
                   <IconButton size="small" sx={{ padding: 0, color: "gray" }}>
                     <InfoIcon fontSize="small" />
                   </IconButton>
@@ -131,108 +124,34 @@ export default function CarCard({ car, isSelected }) {
               justifyContent: { xs: "center", sm: "flex-start" },
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
-              <img
-                src="/icons/ic-pax.svg"
-                alt="Pasajeros"
-                width="20"
-                height="20"
-                style={{ filter: "brightness(0)" }}
-              />
-              <Typography variant="body2">
-                {car.passengers} pasajeros
-              </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <img src="/icons/ic-pax.svg" alt="Pasajeros" width="20" height="20" style={{ filter: "brightness(0)" }} />
+              <Typography variant="body2">{car.passengers} pasajeros</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
-              <img
-                src="/icons/ic-door.svg"
-                alt="Puertas"
-                width="20"
-                height="20"
-                style={{ filter: "brightness(0)" }}
-              />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <img src="/icons/ic-door.svg" alt="Puertas" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">{car.doors} puertas</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
               <LuggageIcon fontSize="small" sx={{ color: "black" }} />
               <Typography variant="body2">{car.luggage} maletas</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
-              <img
-                src="/icons/ic-trans.svg"
-                alt="Transmisión"
-                width="20"
-                height="20"
-                style={{ filter: "brightness(0)" }}
-              />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">{car.transmission}</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
-              <img
-                src="/icons/ic-pet.svg"
-                alt="Pet friendly"
-                width="20"
-                height="20"
-                style={{ filter: "brightness(0)" }}
-              />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <img src="/icons/ic-pet.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">Pet friendly</Typography>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                minWidth: "100px",
-              }}
-            >
-              <img
-                src="/icons/ice.svg"
-                alt="Pet friendly"
-                width="20"
-                height="20"
-                style={{ filter: "brightness(0)" }}
-              />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <img src="/icons/ice.svg" alt="Aire acondicionado" width="20" height="20" style={{ filter: "brightness(0)" }} />
               <Typography variant="body2">Aire acondicionado</Typography>
             </Box>
           </Box>
         </CardContent>
 
-        {/* Precio y botón */}
+        {/* Precio y datos adicionales */}
         <Box
           sx={{
             display: "flex",
@@ -243,59 +162,26 @@ export default function CarCard({ car, isSelected }) {
             marginTop: { xs: 2, sm: 0 },
           }}
         >
-          {/* Precios */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              width: "100%",
-            }}
-          >
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, width: "100%" }}>
             <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{ color: "#508a69" }}
-              >
+              <Typography variant="body2" fontWeight="bold" sx={{ color: "#508a69" }}>
                 Precio en línea
               </Typography>
-              <Typography
-                variant="h5"
-                fontWeight="bold"
-                sx={{ color: "black" }}
-              >
+              <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
                 $ {car.price}{" "}
-                <Typography
-                  variant="body2"
-                  component="span"
-                  sx={{ color: "gray" }}
-                >
+                <Typography variant="body2" component="span" sx={{ color: "gray" }}>
                   MXN/día
                 </Typography>
               </Typography>
             </Box>
             <Divider orientation="vertical" flexItem />
             <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{ color: "#d60812" }}
-              >
+              <Typography variant="body2" fontWeight="bold" sx={{ color: "#d60812" }}>
                 Precio en Sucursal
               </Typography>
-              <Typography
-                variant="h5"
-                fontWeight="bold"
-                sx={{ color: "black" }}
-              >
+              <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
                 $ {car.price2}{" "}
-                <Typography
-                  variant="body2"
-                  component="span"
-                  sx={{ color: "gray" }}
-                >
+                <Typography variant="body2" component="span" sx={{ color: "gray" }}>
                   MXN/día
                 </Typography>
               </Typography>
@@ -304,13 +190,17 @@ export default function CarCard({ car, isSelected }) {
         </Box>
       </Card>
 
-      {/* Modal con Pestañas */}
+      {/* Modal de la galería */}
       <Modal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={(e) => {
+          stopAllPropagation(e);
+          setOpen(false);
+        }}
         sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         <Box
+          onClick={stopAllPropagation}
           sx={{
             backgroundColor: "white",
             padding: 3,
@@ -327,7 +217,10 @@ export default function CarCard({ car, isSelected }) {
         >
           {/* Botón de cierre */}
           <IconButton
-            onClick={() => setOpen(false)}
+            onClick={(e) => {
+              stopAllPropagation(e);
+              setOpen(false);
+            }}
             sx={{ position: "absolute", top: 10, right: 10 }}
           >
             <CloseIcon />
@@ -341,14 +234,15 @@ export default function CarCard({ car, isSelected }) {
             value={tabIndex}
             onChange={(_, newIndex) => setTabIndex(newIndex)}
             centered
+            onClick={stopAllPropagation}
           >
             <Tab label="IMÁGENES" />
             <Tab label="VISTA 360°" />
           </Tabs>
 
-          {/* Contenedor para contenido de cada pestaña */}
           {tabIndex === 0 ? (
             <Box
+              onClick={stopAllPropagation}
               sx={{
                 width: "100%",
                 display: "flex",
@@ -367,10 +261,7 @@ export default function CarCard({ car, isSelected }) {
                 style={{ width: "100%", height: "60vh" }}
               >
                 {(car.images || []).map((img, index) => (
-                  <SwiperSlide
-                    key={index}
-                    style={{ display: "flex", justifyContent: "center" }}
-                  >
+                  <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center" }}>
                     <img
                       src={img}
                       alt={`Imagen ${index + 1}`}
@@ -381,21 +272,25 @@ export default function CarCard({ car, isSelected }) {
                         objectFit: "contain",
                         margin: "0 20px",
                       }}
+                      onClick={stopAllPropagation}
                     />
                   </SwiperSlide>
                 ))}
                 <div
                   className="swiper-button-next"
                   style={{ color: "black" }}
+                  onClick={stopAllPropagation}
                 ></div>
                 <div
                   className="swiper-button-prev"
                   style={{ color: "black" }}
+                  onClick={stopAllPropagation}
                 ></div>
               </Swiper>
 
-              {/* Características del carro debajo de las fotos */}
+              {/* Características del carro debajo de las imágenes */}
               <Box
+                onClick={stopAllPropagation}
                 sx={{
                   display: "flex",
                   flexWrap: "wrap",
@@ -415,9 +310,7 @@ export default function CarCard({ car, isSelected }) {
                     height="20"
                     style={{ filter: "brightness(0)" }}
                   />
-                  <Typography variant="body2">
-                    {car.passengers} pasajeros
-                  </Typography>
+                  <Typography variant="body2">{car.passengers} pasajeros</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <img
@@ -475,6 +368,7 @@ export default function CarCard({ car, isSelected }) {
                 borderRadius: 5,
                 marginTop: 16,
               }}
+              onClick={stopAllPropagation}
             ></iframe>
           )}
         </Box>
