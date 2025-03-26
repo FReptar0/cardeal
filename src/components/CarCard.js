@@ -10,14 +10,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
-export default function CarCard({ car }) {
-    const router = useRouter();
+export default function CarCard({ car, isSelected }) {
     const [open, setOpen] = useState(false);
-    const [tabIndex, setTabIndex] = useState(0); // Controla las pestañas
+    const [tabIndex, setTabIndex] = useState(0); 
 
-    const handleReserve = () => {
-        router.push("/seguro");
-    };
 
     return (
         <>
@@ -28,14 +24,17 @@ export default function CarCard({ car }) {
                 width: "100%",
                 minHeight: 160,
                 borderRadius: 3,
-                boxShadow: 2,
-                flexDirection: { xs: "column", sm: "row" }, // Ajuste para móviles
+                border: isSelected ? "3px solid black" : "3px solid transparent", 
+                boxSizing: "border-box",
+                boxShadow: isSelected ? 5 : 2,
+                flexDirection: { xs: "column", sm: "row" }, 
                 cursor: "pointer",
-                "&:hover": { boxShadow: 5, transform: "scale(1.02)" }
-
-
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  boxShadow: 5,
+                  transform: "scale(1.02)",
+                },
             }}
-                onClick={handleReserve}
             >
                 {/* Imagen - Abre el Modal al hacer clic */}
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
