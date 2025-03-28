@@ -81,14 +81,16 @@ const Footer = () => {
                 paddingBottom: "40px",
               }}
             >
+              
+              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
               <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
                 Ayuda e Información
               </Typography>
-              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "-7px" }}>
                 <Typography
                   component="a"
                   href="/nosotros"
                   sx={{
+                    display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
                     color: "inherit",
@@ -105,6 +107,7 @@ const Footer = () => {
                   component="a"
                   href="/aviso-de-privacidad"
                   sx={{
+                    display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
                     color: "inherit",
@@ -121,6 +124,7 @@ const Footer = () => {
                   component="a"
                   href="/terminos-y-condiciones"
                   sx={{
+                    display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
                     color: "inherit",
@@ -137,6 +141,7 @@ const Footer = () => {
                   component="a"
                   href="/FAQ"
                   sx={{
+                    display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
                     color: "inherit",
