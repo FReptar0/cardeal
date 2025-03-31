@@ -1,23 +1,21 @@
-.custom-search-bar #ubicacionOrigenSB{
+.custom-search-bar #ubicacionOrigenSB {
     text-align: start;
     font-size: 1.1rem;
     margin-left: 4px;
     margin-bottom: -10px;
 }
 
-.custom-search-bar #ubicacionDestinoSB{
+.custom-search-bar #ubicacionDestinoSB {
     text-align: start;
     font-size: 1.1rem;
     margin-left: 4px;
     margin-bottom: -10px;
 }
 
-
-.custom-search-bar .date-time-selectors-container{
+.custom-search-bar .date-time-selectors-container {
     display: flex;
     flex-direction: row !important;
 }
-
 
 .custom-search-bar {
     width: 100% !important;
@@ -27,81 +25,86 @@
 }
 
 #containerBox {
-    max-width: 90%;  /* Limita el ancho */
-    height: auto !important; /* Permite que crezca con el contenido */
-    overflow: visible !important; /* Evita que el contenido se salga */
+    max-width: 90%;
+    /* Limita el ancho */
+    height: auto !important;
+    /* Permite que crezca con el contenido */
+    overflow: visible !important;
+    /* Evita que el contenido se salga */
 }
 
 .date-time-selectors-container {
     display: flex;
-    flex-direction: column; /* En móviles */
+    flex-direction: column;
+    /* En móviles */
     gap: 20px;
 }
 
 @media screen and (min-width: 768px) {
     .date-time-selectors-container {
-        flex-direction: row; /* En escritorio */
+        flex-direction: row;
+        /* En escritorio */
     }
 }
 
 
 
 
-.custom-search-bar h6{
+.custom-search-bar h6 {
     text-align: start;
     font-size: 1.1rem;
     margin-top: -10px;
 }
 
-.custom-search-bar .MuiBox-root .css-js43ba{
+.custom-search-bar .MuiBox-root .css-js43ba {
     padding: 3px;
 }
 
-.custom-search-bar #checkboxSB .MuiFormControlLabel-label{
+.custom-search-bar #checkboxSB .MuiFormControlLabel-label {
     font-size: .9rem;
     margin-left: 2px;
 }
 
-.custom-search-bar  #checkboxSB span {	
-    position:sticky;
+.custom-search-bar #checkboxSB span {
+    position: sticky;
     margin-top: -12px;
 }
 
-.custom-search-bar .date-time-selectors-container{
+.custom-search-bar .date-time-selectors-container {
     display: flex;
     flex-direction: row;
     gap: 20px;
 }
 
-.custom-search-bar .btn-buscar-sb{
+.custom-search-bar .btn-buscar-sb {
     margin-top: -12px;
 }
 
-.custom-search-bar .arrow-icon{
+.custom-search-bar .arrow-icon {
     display: block !important;
 }
 
 .custom-search-bar .fh-rec-sbc,
 .custom-search-bar .fh-dev-sbc {
-    flex: 1; 
+    flex: 1;
 }
 
 .custom-search-bar .fh-rec-sbc {
     margin-bottom: 20px;
 }
 
-.custom-search-bar .second-select{
+.custom-search-bar .second-select {
     margin-top: -20px;
 }
 
 @media screen and (max-width: 1323px) {
-    .custom-search-bar .arrow-icon{
+    .custom-search-bar .arrow-icon {
         display: none !important;
     }
 }
 
 @media screen and (max-width: 1200px) {
-    .custom-search-bar .arrow-icon{
+    .custom-search-bar .arrow-icon {
         display: none !important;
     }
 }
@@ -109,7 +112,7 @@
 
 @media screen and (max-width: 1201px) {
 
-    .custom-search-bar{
+    .custom-search-bar {
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
@@ -117,14 +120,14 @@
         top: -10px !important;
     }
 
-    #sectionDerechaTitle{
+    #sectionDerechaTitle {
         left: 6% !important;
         width: 50%;
         margin-bottom: 50px !important;
     }
 
-    .custom-search-bar #containerBox{
-    width: 90%;
+    .custom-search-bar #containerBox {
+        width: 90%;
     }
 }
 
@@ -133,7 +136,7 @@
         flex-direction: column !important;
     }
 
-    .custom-search-bar .btn-buscar-sb{
+    .custom-search-bar .btn-buscar-sb {
         margin-top: 20px;
     }
 }
@@ -141,11 +144,11 @@
 
 
 @media screen and (max-width: 500px) {
-    #flechaDerecha{
+    #flechaDerecha {
         display: none;
     }
 
-    #flechaIzquierda{
+    #flechaIzquierda {
         display: none;
     }
 }

@@ -17,8 +17,7 @@ body {
 }
 
 @media screen and (max-width: 480px) {
-  #logoHeader{
+  #logoHeader {
     width: 248px !important;
   }
 }
-
