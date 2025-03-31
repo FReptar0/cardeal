@@ -86,7 +86,7 @@ const Header = () => {
   const formatPathName = (path) => {
     if (path === "/") return "Inicio";
     if (path === "/atencion-cliente") return "Atención a Clientes";
-    if (path === "/Vehiculos" || path === "/vehiculos") return "Vehiculos";
+    if (path === "/vehiculos" || path === "/vehiculos") return "Vehiculos";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
