@@ -27,7 +27,7 @@ const extras = [
     descripcion:
       "Esta cobertura deberá ser pagada adicionalmente al monto de la renta diaria del vehículo.",
     precio: 538.24,
-    imagen: "/extras/civil.jpg",
+    imagen: "/extras/PLI.png",
     unico: true,
   },
   {
@@ -36,8 +36,7 @@ const extras = [
     descripcion:
       "Protege los asientos del vehículo contra derrames, suciedad y desgaste con esta cobertura especial. Ideal para viajes largos, transporte de niños o mascotas, asegurando una experiencia más cómoda y limpia.",
     precio: 150,
-    imagen: "/extras/civil.jpg",
-    unico: true,
+    imagen: "/extras/seat.png",
   },
   {
     id: "conductor_adicional",
@@ -45,7 +44,7 @@ const extras = [
     descripcion:
       "Se pueden incluir hasta 3 conductores adicionales con un costo extra por día.",
     precio: 145.0,
-    imagen: "/extras/conductores.jpg",
+    imagen: "/extras/add-person.png",
   },
   {
     id: "conductor_menor",
@@ -53,29 +52,21 @@ const extras = [
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
     precio: 145.0,
-    imagen: "/extras/menor.jpg",
+    imagen: "/extras/user.png",
   },
   {
     id: "silla_bebe",
     nombre: "Silla para Bebé",
     descripcion: "Proporciona seguridad adicional para bebés y niños pequeños.",
     precio: { chica: 50, mediana: 70, grande: 90 },
-    //imagen: "/extras/baby.png",
+    imagen: "/extras/baby-car-seat.png",
   },
   {
     id: "gps",
     nombre: "GPS",
     descripcion: "Navegación GPS integrada para facilitar tu viaje.",
     precio: 60.0,
-    imagen: "/extras/gps.jpg",
-    unico: true,
-  },
-  {
-    id: "wifi",
-    nombre: "WiFi Móvil",
-    descripcion: "Conéctate en cualquier lugar con internet de alta velocidad.",
-    precio: 150.0,
-    imagen: "/extras/wifi.jpg",
+    imagen: "/extras/gps.png",
     unico: true,
   },
 ];
