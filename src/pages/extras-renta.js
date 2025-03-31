@@ -27,17 +27,16 @@ const extras = [
     descripcion:
       "Esta cobertura deberá ser pagada adicionalmente al monto de la renta diaria del vehículo.",
     precio: 538.24,
-    imagen: "/extras/civil.jpg",
+    imagen: "/extras/PLI.png",
     unico: true,
   },
   {
     id: "cubre_asientos",
     nombre: "Cubre asientos",
     descripcion:
-      "Protege los asientos del vehículo contra derrames, suciedad y desgaste con esta cobertura especial. Ideal para viajes largos, transporte de niños o mascotas, asegurando una experiencia más cómoda y limpia.",
+      "Protege los asientos del vehículo contra derrames, suciedad y desgaste. Es un cargo único, no se regresa.",
     precio: 150,
-    imagen: "/extras/civil.jpg",
-    unico: true,
+    imagen: "/extras/seat.png",
   },
   {
     id: "conductor_adicional",
@@ -45,7 +44,7 @@ const extras = [
     descripcion:
       "Se pueden incluir hasta 3 conductores adicionales con un costo extra por día.",
     precio: 145.0,
-    imagen: "/extras/conductores.jpg",
+    imagen: "/extras/add-person.png",
   },
   {
     id: "conductor_menor",
@@ -53,29 +52,21 @@ const extras = [
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
     precio: 145.0,
-    imagen: "/extras/menor.jpg",
+    imagen: "/extras/user.png",
   },
   {
     id: "silla_bebe",
     nombre: "Silla para Bebé",
     descripcion: "Proporciona seguridad adicional para bebés y niños pequeños.",
     precio: { chica: 50, mediana: 70, grande: 90 },
-    //imagen: "/extras/baby.png",
+    imagen: "/extras/baby-car-seat.png",
   },
   {
     id: "gps",
     nombre: "GPS",
     descripcion: "Navegación GPS integrada para facilitar tu viaje.",
     precio: 60.0,
-    imagen: "/extras/gps.jpg",
-    unico: true,
-  },
-  {
-    id: "wifi",
-    nombre: "WiFi Móvil",
-    descripcion: "Conéctate en cualquier lugar con internet de alta velocidad.",
-    precio: 150.0,
-    imagen: "/extras/wifi.jpg",
+    imagen: "/extras/gps.png",
     unico: true,
   },
 ];
@@ -87,12 +78,32 @@ const ExtrasRenta = () => {
 
   const modificarCantidad = (id, operacion, unico = false) => {
     setCantidadExtras((prev) => {
+      const currentQty = prev[id] || 0;
+
+      // Limites específicos
+      if (operacion === "sumar") {
+        if (id === "silla_bebe" && currentQty >= 2) {
+          return prev; // Máx. 2 sillas para bebé
+        }
+        if (id === "conductor_menor" && currentQty >= 1) {
+          return prev; // Máx. 1 conductor menor
+        }
+        if (id === "conductor_adicional" && currentQty >= 2) {
+          return prev; // Máx. 2 conductores adicionales
+        }
+      }
+
       let nuevaCantidad = unico
         ? operacion === "sumar"
           ? 1
           : 0
-        : (prev[id] || 0) + (operacion === "sumar" ? 1 : -1);
-      return { ...prev, [id]: nuevaCantidad < 0 ? 0 : nuevaCantidad };
+        : currentQty + (operacion === "sumar" ? 1 : -1);
+
+      if (nuevaCantidad < 0) {
+        nuevaCantidad = 0;
+      }
+
+      return { ...prev, [id]: nuevaCantidad };
     });
   };
 
@@ -100,12 +111,17 @@ const ExtrasRenta = () => {
     const cantidad = cantidadExtras[extra.id] || 0;
     let precio = extra.precio;
 
-    // Si es la silla para bebé, usa el precio del tamaño seleccionado
+    // Silla de bebé usa el precio del tamaño seleccionado
     if (extra.id === "silla_bebe") {
       precio = extra.precio[sillaBebeSize];
     }
 
-    const costo = extra.unico ? cantidad * precio : cantidad * precio * 4; //el 4 es para una renta de 4 dias (cambiar para que sea dinamico)
+    // "unico" => precio único (no multiplica por día)
+    // No único => multiplicar por 4 (ejemplo)
+    // (Asumiendo que 4 representa los días de renta;
+    //  ajusta según tu lógica real de días)
+    const costo = extra.unico ? cantidad * precio : cantidad * precio * 4;
+
     return acc + costo;
   }, 0);
 
@@ -124,15 +140,15 @@ const ExtrasRenta = () => {
           width: "100%",
           margin: "0 auto",
           boxSizing: "border-box",
-          gap: 1, // Reducimos el espacio entre elementos
+          gap: 1,
         }}
       >
         {/* SearchBar con altura automática */}
         <SearchBar
           sx={{
             width: "100%",
-            transition: "all 0.3s ease-in-out", // Suaviza el crecimiento
-            marginBottom: 0, // Evita espacio extra
+            transition: "all 0.3s ease-in-out",
+            marginBottom: 0,
           }}
         />
 
@@ -141,6 +157,7 @@ const ExtrasRenta = () => {
           <RentalStepper />
         </Box>
       </Box>
+
       <Typography variant="h4" fontWeight="bold">
         Extras para tu renta
       </Typography>
@@ -163,9 +180,12 @@ const ExtrasRenta = () => {
               <CardMedia
                 component="img"
                 sx={{
-                  width: { xs: "100%", md: 250 },
-                  height: { xs: 160, md: "100%" },
-                  objectFit: "cover",
+                  // Margen alrededor de la imagen
+                  m: "8px",
+                  // Reducir el tamaño para que no sea tan grande
+                  width: { xs: "100%", md: 125 },
+                  height: "auto",
+                  objectFit: "contain",
                 }}
                 image={extra.imagen}
                 alt={extra.nombre}
