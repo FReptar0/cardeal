@@ -86,7 +86,8 @@ const Header = () => {
   const formatPathName = (path) => {
     if (path === "/") return "Inicio";
     if (path === "/atencion-cliente") return "Atención a Clientes";
-    if (path === "/Vehiculos") return "Vehiculos";
+    if (path === "/Vehiculos" || path === "/vehiculos") return "Vehiculos";
+    if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
 
@@ -142,7 +143,7 @@ const Header = () => {
                 marginRight: "32px",
               }}
             >
-              {["/", "/Vehiculos", "/Sucursales", "/Soluciones empresariales", "/atencion-cliente",].map((path, index) => (
+              {["/", "/Vehiculos", "/Sucursales", "/Soluciones empresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
@@ -217,7 +218,7 @@ const Header = () => {
             boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
           }}
         >
-          {["/", "/vehiculos", "/atencion-cliente"].map((path, index) => (
+          {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map((path, index) => (
             <Box
               key={index}
               sx={{ display: "flex", width: "100%", justifyContent: "center" }}
