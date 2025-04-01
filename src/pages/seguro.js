@@ -43,7 +43,7 @@ const planesSeguros = [
   },
   {
     id: "basico",
-    nombre: "PAQUETE BASICO",
+    nombre: "PAQUETE BÁSICO",
     total: "$350",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
@@ -55,7 +55,7 @@ const planesSeguros = [
   },
   {
     id: "intermedio",
-    nombre: "PAQUETE ESTANDAR",
+    nombre: "PAQUETE ESTÁNDAR",
     total: "$550",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#d60812",
