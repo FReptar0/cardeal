@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useRouter } from "next/router"; // Importa useRouter
+import { useRouter } from "next/router";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 
@@ -34,10 +34,18 @@ const todasLasCoberturas = [
 
 const planesSeguros = [
   {
+    id: "none",
+    nombre: "SIN PROTECCIÓN",
+    total: "$0",
+    imagen: "/images-seguros/Seguro-cero.png", // imagen para sin protección
+    color: "#999", // color neutro
+    coberturas: [], // sin coberturas
+  },
+  {
     id: "basico",
     nombre: "PAQUETE BASICO",
     total: "$350",
-    imagen: "/images-seguros/camry1.png",
+    imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
     coberturas: [
       "Colisión y daños",
@@ -49,7 +57,7 @@ const planesSeguros = [
     id: "intermedio",
     nombre: "PAQUETE ESTANDAR",
     total: "$550",
-    imagen: "/images-seguros/camry2.png",
+    imagen: "/images-seguros/Seguro-inter.png",
     color: "#d60812",
     coberturas: [
       "Colisión y daños",
@@ -63,7 +71,7 @@ const planesSeguros = [
     id: "completo",
     nombre: "PAQUETE PREMIUM",
     total: "$850",
-    imagen: "/images-seguros/camry3.png",
+    imagen: "/images-seguros/Seguro-completo.png",
     color: "#d60812",
     recomendado: true,
     coberturas: [
@@ -84,7 +92,7 @@ const SeguroVehiculo = () => {
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [recommendedPlan, setRecommendedPlan] = useState(null);
 
-  const router = useRouter(); // Inicializa el router
+  const router = useRouter();
 
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
@@ -109,7 +117,7 @@ const SeguroVehiculo = () => {
       setOpenWarning(true);
     } else {
       console.log("Continuar con el seguro seleccionado: ", seleccionado);
-      router.push("/extras-renta"); // Redirige a la página
+      router.push("/extras-renta");
     }
   };
 
@@ -129,19 +137,17 @@ const SeguroVehiculo = () => {
           width: "100%",
           margin: "0 auto",
           boxSizing: "border-box",
-          gap: 1, // Reducimos el espacio entre elementos
+          gap: 1,
         }}
       >
-        {/* SearchBar con altura automática */}
         <SearchBar
           sx={{
             width: "100%",
-            transition: "all 0.3s ease-in-out", // Suaviza el crecimiento
-            marginBottom: 0, // Evita espacio extra
+            transition: "all 0.3s ease-in-out",
+            marginBottom: 0,
           }}
         />
 
-        {/* RentalStepper sin margen extra */}
         <Box sx={{ width: "100%", marginTop: -12 }}>
           <RentalStepper />
         </Box>
@@ -153,9 +159,17 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
-      <Grid container spacing={3} justifyContent="center" alignItems="stretch">
+      {/* Grid container sin wrap para mantener las cards en una sola fila */}
+      <Grid
+        container
+        spacing={3}
+        wrap="nowrap"
+        justifyContent="center"
+        alignItems="stretch"
+      >
         {planesSeguros.map((plan) => (
-          <Grid item xs={12} sm={6} md={4} key={plan.id}>
+          // Se mantienen las propiedades responsivas y se evita que se encojan
+          <Grid item sx={{ flexShrink: 0 }} xs={12} sm={6} md={4} key={plan.id}>
             <Card
               sx={{
                 boxShadow: seleccionado === plan.id ? 6 : 2,
@@ -196,7 +210,7 @@ const SeguroVehiculo = () => {
                 fontWeight="bold"
                 sx={{ color: "black", display: "inline" }}
               >
-                {plan.total.split(" ")[0]} {/* Solo toma el valor numérico */}
+                {plan.total.split(" ")[0]}
               </Typography>
               <Typography
                 variant="h6"
@@ -227,7 +241,6 @@ const SeguroVehiculo = () => {
                   {plan.nombre}
                 </Typography>
 
-                {/* Mostrar coberturas con CheckCircleIcon o CancelIcon según disponibilidad */}
                 {todasLasCoberturas.map((cobertura, index) => (
                   <ListItem key={index} disablePadding>
                     <ListItemIcon>
@@ -259,7 +272,7 @@ const SeguroVehiculo = () => {
             padding: "12px 30px",
             fontSize: "16px",
           }}
-          onClick={handleContinue} // Ahora redirige a /extras-renta
+          onClick={handleContinue}
         >
           CONTINUAR
         </Button>
