@@ -29,7 +29,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 1 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>1.- MULTAS E INFRACCIONES VEHICULARES:</strong> Se aplicará el
                     cargo de las multas que durante la renta del auto se generen en el
                     vehículo derivada del incumplimiento al reglamento de tránsito
@@ -39,7 +39,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 2 */}
-                <Typography variant="body1" component="div" paragraph>
+                <Typography variant="body1" component="div">
                     <strong>2.- DAÑOS Y/O FALTANTES:</strong> Se realizará el cargo por
                     este concepto cuando el auto haya sufrido un accidente y cuente con
                     daños estéticos y/o mecánicos, el cargo se realizará para cubrir el
@@ -60,7 +60,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 3 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>3.- REMOLQUE:</strong> En caso de que el vehículo objeto del
                     arrendamiento deba ser remolcado o de cualquier forma transportado por
                     medio del uso de otro vehículo para efectos de lograr su devolución a
@@ -69,7 +69,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 4 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>4.- INCAUTACION:</strong> En caso de que el vehículo haya sido
                     incautado por cualquier autoridad (entendiéndose por incautar el hecho
                     de que la autoridad haya tomado posesión del vehículo). El
@@ -78,14 +78,14 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 5 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>5.- ASIENTOS PARA BEBÉ:</strong> Los asientos para bebe
                     tendrán un costo adicional por día. (Será la responsabilidad del
                     arrendatario la colocación en el auto de dicho asiento).
                 </Typography>
 
                 {/* 6 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>6.- CONDUCTOR ADICIONAL:</strong> La tarifa diaria de la renta
                     de auto otorga el derecho al registro de un conductor mayor a 25 años,
                     mismo que queda amparado dentro de las protecciones, el registro de
@@ -96,7 +96,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 7 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>7.- CONDUCTOR MENOR DE 25 AÑOS:</strong> Se cobrará un cargo
                     adicional por día a los conductores jóvenes de 18 a 24 años. Será
                     necesario que cada conductor menor cumpla con los Requisitos de Renta
@@ -105,7 +105,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 8 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>8.- GASOLINA:</strong> Todas las oficinas de Deng Motors, S.A.
                     de C.V. México entregan los autos con tanque lleno de combustible al
                     momento de la renta. Si al momento del regreso de la unidad cuenta con
@@ -116,7 +116,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 9 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>9.- CARGO POR PERDIDA DE USO:</strong> En caso de que la
                     unidad sufra un siniestro y las protecciones queden invalidadas el
                     cliente será responsable también por el pago de los días que el
@@ -130,7 +130,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 10 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>10.- GASTOS ADMINISTRATIVOS:</strong> Se refiere a los costos
                     derivados del uso del Vehículo, y que forman parte de las obligaciones
                     del Arrendatario, incluyendo de manera enunciativa más no limitativa,
@@ -142,7 +142,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 11 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>11.- CUOTA DE LIMPIEZA:</strong> Será la cuota que se aplicará
                     al Arrendatario en el supuesto de que regrese el vehículo con objetos
                     dentro del mismo, manchas en sus vestiduras, alfombras, cielo, vidrios
@@ -150,7 +150,7 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 12 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>12.- CARGO POR DEVOLUCIÓN TARDIA:</strong> Adicional al cobro
                     de los días de alquiler excedentes por el retraso en la devolución,
                     nos reservamos el derecho de cobrar un Cargo por devolución tardía
@@ -158,26 +158,26 @@ export default function TerminosYCondiciones() {
                 </Typography>
 
                 {/* 13 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>13.- CARGO POR CANCELACION:</strong> Se aplicará cargo por
                     cancelación equivalente a un día de renta tiempo y kilometraje.
                 </Typography>
 
                 {/* 14 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>14.- OTROS CARGOS:</strong> Estos incluyen cuotas locales y
                     federales, licencias de uso vehicular
                 </Typography>
 
                 {/* 15 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>15.- DROP OFF:</strong> Cargo correspondiente a la devolución
                     del vehículo en una locación distinta a la entrega, costo y
                     disponibilidad por cada locación de cada ciudad.
                 </Typography>
 
                 {/* 16 */}
-                <Typography variant="body1" paragraph>
+                <Typography variant="body1">
                     <strong>16.- ENTREGA O DEVOLUCION A DOMICILIO:</strong> Cargo por
                     solicitud de entrega o devolución del vehículo en el domicilio del
                     cliente, previa validación de la documentación obligatoria, costo y
