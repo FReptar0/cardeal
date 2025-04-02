@@ -45,7 +45,7 @@ const planesSeguros = [
   {
     id: "basico",
     nombre: "PAQUETE BÁSICO",
-    total: "$350",
+    total: "$570",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
     coberturas: [
@@ -57,7 +57,7 @@ const planesSeguros = [
   {
     id: "intermedio",
     nombre: "PAQUETE ESTÁNDAR",
-    total: "$550",
+    total: "$710",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#d60812",
     coberturas: [
@@ -71,7 +71,7 @@ const planesSeguros = [
   {
     id: "completo",
     nombre: "PAQUETE PREMIUM",
-    total: "$850",
+    total: "$890",
     imagen: "/images-seguros/Seguro-completo.png",
     color: "#d60812",
     recomendado: true,
