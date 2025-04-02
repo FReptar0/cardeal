@@ -144,7 +144,7 @@ export default function Flota() {
                   </Swiper>
                 ) : (
                   <iframe
-                    src="https://360.pymesdigital.com.mx/Grupo%20Andrade%20360/"
+                    src={selectedCar.image360}
                     style={{
                       width: "100%",
                       height: "60vh",
