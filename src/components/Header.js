@@ -147,7 +147,7 @@ const Header = () => {
                 marginRight: "32px",
               }}
             >
-              {["/", "/Vehiculos", "/Sucursales", "/Soluciones empresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
+              {["/", "/vehiculos", "/sucursales", "/solucionesempresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
