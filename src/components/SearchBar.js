@@ -68,8 +68,10 @@ const getTodayDate = () => format(new Date(), "yyyy-MM-dd");
 function DateTimeSelector({ label, date, setDate, time, setTime }) {
   const dateInputRef = useRef(null);
   const router = useRouter(); // Inicializa el router
-  const isRentalPage = router.pathname === "/rental" || router.pathname === "/seguro"
-  || router.pathname === "/extras-renta"; // Detecta si está en rental
+  const isRentalPage =
+    router.pathname === "/rental" ||
+    router.pathname === "/seguro" ||
+    router.pathname === "/extras-renta"; // Detecta si está en rental
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -189,11 +191,16 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { useEffect } from "react";
 
-export default function SearchBar({ sx = {} }) {
+export default function SearchBar({ sx = {}, onValuesChange }) {
   const router = useRouter();
-  const isRentalPage = router.pathname === "/rental" || router.pathname === "/seguro"
-  || router.pathname === "/extras-renta";
+  const isRentalPage =
+    router.pathname === "/rental" ||
+    router.pathname === "/seguro" ||
+    router.pathname === "/extras-renta";
+
+  //SearchData
   const [pickupLocation, setPickupLocation] = useState(locations[0]);
   const [returnLocation, setReturnLocation] = useState(locations[0]);
   const [sameOffice, setSameOffice] = useState(true);
@@ -203,6 +210,27 @@ export default function SearchBar({ sx = {} }) {
   );
   const [pickupTime, setPickupTime] = useState(availableTimes[0]);
   const [returnTime, setReturnTime] = useState(availableTimes[0]);
+
+  // Data for rental page
+  useEffect(() => {
+    onValuesChange?.({
+      pickupLocation,
+      returnLocation,
+      sameOffice,
+      pickupDate,
+      returnDate,
+      pickupTime,
+      returnTime,
+    });
+  }, [
+    pickupLocation,
+    returnLocation,
+    sameOffice,
+    pickupDate,
+    returnDate,
+    pickupTime,
+    returnTime,
+  ]);
 
   const handlePickupDateChange = (newDate) => {
     const newPickupDate = new Date(newDate);
@@ -364,7 +392,9 @@ export default function SearchBar({ sx = {} }) {
         renderInput={(params) => (
           <TextField
             {...params}
-            label={isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"} 
+            label={
+              isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"
+            }
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -419,7 +449,9 @@ export default function SearchBar({ sx = {} }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"} 
+                label={
+                  isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"
+                }
                 variant="outlined"
                 sx={{
                   marginTop: "10px",

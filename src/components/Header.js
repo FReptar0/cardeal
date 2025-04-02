@@ -27,6 +27,10 @@ const Header = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
+  useEffect(() => {
+    localStorage.setItem("isHeaderTop", JSON.stringify(isTop));
+  }, [isTop]);
+
   // Se ejecuta solo en el cliente
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -215,7 +219,6 @@ const Header = () => {
             left: 0,
             width: "100%",
             zIndex: 3,
-            boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
           }}
         >
           {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map((path, index) => (
