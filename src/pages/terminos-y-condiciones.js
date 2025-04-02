@@ -22,7 +22,7 @@ export default function TerminosYCondiciones() {
             {/* Contenedor para el texto, centrado el título pero alineado a la izquierda el contenido */}
             <Box sx={{ maxWidth: "900px", margin: "0 auto", textAlign: "left" }}>
                 <Typography variant="h5" fontWeight="bold" sx={{ marginBottom: 2 }}>
-                    ANEXO “B “
+                    ANEXO “B“
                 </Typography>
 
                 <Typography variant="h6" fontWeight="bold" sx={{ marginBottom: 2 }}>
