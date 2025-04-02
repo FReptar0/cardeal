@@ -91,6 +91,8 @@ const Header = () => {
     if (path === "/") return "Inicio";
     if (path === "/atencion-cliente") return "Atención a Clientes";
     if (path === "/vehiculos" || path === "/vehiculos") return "Vehiculos";
+    if (path === "/sucursales") return "Sucursales";
+    if (path === "/soluciones-empresariales") return "Soluciones Empresariales";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
@@ -147,7 +149,7 @@ const Header = () => {
                 marginRight: "32px",
               }}
             >
-              {["/", "/vehiculos", "/sucursales", "/solucionesempresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
+              {["/", "/vehiculos", "/sucursales", "/soluciones-empresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
