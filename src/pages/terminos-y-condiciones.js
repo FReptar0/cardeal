@@ -8,6 +8,7 @@ export default function TerminosYCondiciones() {
                 width: "100%",
                 textAlign: "center",
                 height: "auto",
+                marginBottom: 10,
             }}
         >
             <Typography
