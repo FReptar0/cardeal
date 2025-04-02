@@ -536,8 +536,9 @@ export default function CarCard({ car, isSelected }) {
                     value={progress}
                     sx={{
                       width: "100%",
+                      backgroundColor: "#d9d9d9", // Gris para la parte vacía
                       "& .MuiLinearProgress-bar": {
-                        backgroundColor: "#d60812",
+                        backgroundColor: "#d60812", // Rojo para la parte llena
                       },
                     }}
                   />
