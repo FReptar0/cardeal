@@ -51,13 +51,12 @@ const AtencionCliente = () => {
       {/* Sección de correos electrónicos */}
       <Box sx={{ mt: 5, textAlign: "center", borderTop: "1px solid gray", pt: 3, pb: 3, width: "100%" }}>
         <EmailIcon fontSize="large" />
-        <Typography variant="h6" fontWeight="bold">Correo electrónico</Typography>
+        <Typography variant="h6" fontWeight="bold">Correos electrónicos</Typography>
         <Typography variant="body2" color="error" fontWeight="bold">
-          reservaciones@qardeal.com
+          reservaciones@qardeal.com.mx
         </Typography>
-        <Typography variant="body2">El tiempo estimado de respuesta por correo electrónico es de hasta 72 horas en días hábiles.</Typography>
         <Typography variant="body2" mt={2} color="error" fontWeight="bold">
-          quejasyservicio@qardeal.com
+          quejasyservicio@qardeal.com.mx
         </Typography>
       </Box>
     </Box>

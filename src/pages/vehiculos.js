@@ -5,11 +5,9 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Grid,
   Modal,
   Tooltip,
   IconButton,
-  Link,
   Tabs,
   Tab,
 } from "@mui/material";
@@ -17,6 +15,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import carData from "../data/cars.json";
 import InfoIcon from "@mui/icons-material/Info";
 import LuggageIcon from "@mui/icons-material/Luggage";
+import Button from "@mui/material/Button";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 
 import Hero from "../components/Hero";
 
@@ -73,158 +73,172 @@ export default function Flota() {
         categoría de vehículos.
       </Typography>
 
-      <Grid container spacing={2} sx={{ mt: 2, maxWidth: "1200px" }}>
+      {/* LISTADO DE AUTOS */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr", // una columna en pantallas pequeñas
+            sm: "1fr 1fr", // dos columnas en pantallas medianas
+            md: "1fr 1fr 1fr 1fr", // cuatro columnas en pantallas grandes
+          },
+          gap: 2,
+          maxWidth: "1200px",
+          mt: 2,
+        }}
+      >
         {carData.map((car, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
+          <Card
+            key={index}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              backgroundColor: "white",
+              color: "black",
+            }}
+          >
+            <Box
               sx={{
+                width: "100%",
+                height: 150,
                 display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                backgroundColor: "white",
-                color: "black",
+                justifyContent: "center",
+                alignItems: "center",
+                overflow: "hidden",
               }}
             >
+              <CardMedia
+                component="img"
+                image={car.image}
+                alt={car.name}
+                sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
+            </Box>
+            <CardContent sx={{ flexGrow: 1 }}>
               <Box
                 sx={{
-                  width: "100%",
-                  height: 150,
                   display: "flex",
-                  justifyContent: "center",
                   alignItems: "center",
-                  overflow: "hidden",
+                  justifyContent: "center",
+                  gap: 1,
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={car.image}
-                  alt={car.name}
-                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
-                />
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  fontSize="1rem"
+                  textAlign="center"
+                >
+                  {car.category}
+                </Typography>
               </Box>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    fontSize="1rem"
-                    textAlign="center"
-                  >
-                    {car.category}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    color="gray"
-                    textAlign="center"
-                  >
-                    {car.name}
-                  </Typography>
-                  {car.abbreviation && (
-                    <>
-                      <Typography
-                        variant="subtitle2"
-                        color="gray"
-                        textAlign="center"
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                }}
+              >
+                <Typography variant="subtitle2" color="gray" textAlign="center">
+                  {car.name}
+                </Typography>
+                {car.abbreviation && (
+                  <>
+                    <Typography
+                      variant="subtitle2"
+                      color="gray"
+                      textAlign="center"
+                    >
+                      ({car.abbreviation})
+                    </Typography>
+                    {car.abbreviationMeaning && car.abbreviationDescription && (
+                      <Tooltip
+                        title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`}
+                        arrow
                       >
-                        ({car.abbreviation})
-                      </Typography>
-                      {car.abbreviationMeaning &&
-                        car.abbreviationDescription && (
-                          <Tooltip
-                            title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`}
-                            arrow
-                          >
-                            <IconButton size="small" sx={{ padding: 0 }}>
-                              <InfoIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                    </>
-                  )}
+                        <IconButton size="small" sx={{ padding: 0 }}>
+                          <InfoIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  justifyContent: "center",
+                  mt: 1,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-pax.svg"
+                    alt="Pasajeros"
+                    width="16"
+                    height="16"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">{car.passengers}</Typography>
                 </Box>
-                <Box
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-door.svg"
+                    alt="Puertas"
+                    width="16"
+                    height="16"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">{car.doors}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LuggageIcon fontSize="small" sx={{ color: "black" }} />
+                  <Typography variant="body2">{car.luggage}</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-trans.svg"
+                    alt="Transmisión"
+                    width="16"
+                    height="16"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">{car.transmission}</Typography>
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mt: 1,
+                }}
+              >
+                <Button
+                  onClick={() => handleOpenModal(car)}
+                  variant="body2"
+                  fontWeight="medium"
+                  color="#10906a"
+                  startIcon={<PhotoLibraryIcon />}
                   sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 1,
-                    justifyContent: "center",
-                    mt: 1,
+                    marginTop: 1,
+                    fontSize: "12px",
+                    textTransform: "none",
+                    color: "gray",
+                    "&:hover": { color: "black" },
                   }}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <img
-                      src="/icons/ic-pax.svg"
-                      alt="Pasajeros"
-                      width="16"
-                      height="16"
-                      style={{ filter: "brightness(0)" }}
-                    />
-                    <Typography variant="body2">{car.passengers}</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <img
-                      src="/icons/ic-door.svg"
-                      alt="Puertas"
-                      width="16"
-                      height="16"
-                      style={{ filter: "brightness(0)" }}
-                    />
-                    <Typography variant="body2">{car.doors}</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <LuggageIcon fontSize="small" sx={{ color: "black" }} />
-                    <Typography variant="body2">{car.luggage}</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <img
-                      src="/icons/ic-trans.svg"
-                      alt="Transmisión"
-                      width="16"
-                      height="16"
-                      style={{ filter: "brightness(0)" }}
-                    />
-                    <Typography variant="body2">{car.transmission}</Typography>
-                  </Box>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mt: 1,
-                  }}
-                >
-                  <Link
-                    onClick={() => handleOpenModal(car)}
-                    variant="body2"
-                    fontWeight="medium"
-                    color="#10906a"
-                    sx={{ cursor: "pointer" }}
-                  >
-                    Ver más detalles
-                  </Link>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                  Ver más detalles
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
 
       {/* MODAL */}
       <Modal
@@ -274,11 +288,13 @@ export default function Flota() {
                 <Tab label="VISTA 360°" />
               </Tabs>
 
+              {/* CONTENEDOR PRINCIPAL DE LA IMAGEN/IFRAME */}
               <Box
                 sx={{
                   width: "100%",
                   height: "100%",
                   display: "flex",
+                  flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -330,6 +346,80 @@ export default function Flota() {
                     }}
                   ></iframe>
                 )}
+              </Box>
+
+              {/* CONTENEDOR DE ÍCONOS ABAJO */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  justifyContent: "center",
+                  mt: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-pax.svg"
+                    alt="Pasajeros"
+                    width="20"
+                    height="20"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">
+                    {selectedCar.passengers} pasajeros
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-door.svg"
+                    alt="Puertas"
+                    width="20"
+                    height="20"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">
+                    {selectedCar.doors} puertas
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LuggageIcon fontSize="small" sx={{ color: "black" }} />
+                  <Typography variant="body2">
+                    {selectedCar.luggage} maletas
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-trans.svg"
+                    alt="Transmisión"
+                    width="20"
+                    height="20"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">
+                    {selectedCar.transmission}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ic-pet.svg"
+                    alt="Pet friendly"
+                    width="20"
+                    height="20"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">Pet friendly</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <img
+                    src="/icons/ice.svg"
+                    alt="Aire acondicionado"
+                    width="20"
+                    height="20"
+                    style={{ filter: "brightness(0)" }}
+                  />
+                  <Typography variant="body2">Aire acondicionado</Typography>
+                </Box>
               </Box>
             </>
           )}
