@@ -408,22 +408,27 @@ export default function CarCard({ car, isSelected }) {
                   prevEl: ".swiper-button-prev",
                 }}
                 modules={[Navigation]}
-                style={{ width: "100%", height: "60vh" }}
+                style={{ width: "100%", height: "60vh" }} // El contenedor del carrusel
               >
                 {(car.images || []).map((img, index) => (
                   <SwiperSlide
                     key={index}
-                    style={{ display: "flex", justifyContent: "center" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                      height: "100%",
+                    }}
                   >
                     <img
                       src={img}
                       alt={`Imagen ${index + 1}`}
                       style={{
-                        maxWidth: "80%",
-                        maxHeight: "50vh",
-                        borderRadius: 5,
+                        width: "100%",
+                        height: "100%",
                         objectFit: "contain",
-                        margin: "0 20px",
+                        borderRadius: 5,
                       }}
                       onClick={stopAllPropagation}
                     />
@@ -440,7 +445,6 @@ export default function CarCard({ car, isSelected }) {
                   onClick={stopAllPropagation}
                 ></div>
               </Swiper>
-
               {/* Características del carro debajo de las imágenes */}
               <Box
                 onClick={stopAllPropagation}
