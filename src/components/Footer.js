@@ -86,7 +86,7 @@ const Footer = () => {
               <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
                 Ayuda e Información
               </Typography>
-                <Typography
+                {/* <Typography
                   component="a"
                   href="/nosotros"
                   sx={{
@@ -102,7 +102,7 @@ const Footer = () => {
                   }}
                 >
                   Nosotros
-                </Typography>
+                </Typography> */}
                 <Typography
                   component="a"
                   href="/aviso-de-privacidad"
