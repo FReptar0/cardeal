@@ -27,6 +27,10 @@ const Header = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
+  useEffect(() => {
+    localStorage.setItem("isHeaderTop", JSON.stringify(isTop));
+  }, [isTop]);
+
   // Se ejecuta solo en el cliente
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -86,7 +90,7 @@ const Header = () => {
   const formatPathName = (path) => {
     if (path === "/") return "Inicio";
     if (path === "/atencion-cliente") return "Atención a Clientes";
-    if (path === "/Vehiculos" || path === "/vehiculos") return "Vehiculos";
+    if (path === "/vehiculos" || path === "/vehiculos") return "Vehiculos";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
@@ -215,7 +219,6 @@ const Header = () => {
             left: 0,
             width: "100%",
             zIndex: 3,
-            boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
           }}
         >
           {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map((path, index) => (
