@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { es } from "date-fns/locale";
 import format from "date-fns/format";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -36,18 +38,23 @@ function convert12to24(time12h) {
   return hours * 60 + minutes;
 }
 
-// Ubicaciones disponibles
+// Ubicaciones actualizadas con propiedad id
 const locations = [
-  { city: "CDMX", name: "Aeropuerto Internacional Benito Juárez" },
-  { city: "CDMX", name: "Polanco" },
-  { city: "CDMX", name: "Santa Fe" },
-  { city: "CDMX", name: "Centro Histórico" },
-  { city: "Monterrey", name: "Aeropuerto Internacional Mariano Escobedo" },
-  { city: "Monterrey", name: "San Pedro Garza García" },
-  { city: "Monterrey", name: "Centro" },
-  { city: "Cancún", name: "Aeropuerto Internacional de Cancún" },
-  { city: "Cancún", name: "Zona Hotelera" },
-  { city: "Cancún", name: "Centro" },
+  {
+    id: "AIBJ-T1-048",
+    city: "CDMX",
+    name: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
+  },
+  {
+    id: "AIBJ-T1-160",
+    city: "CDMX",
+    name: "Interior del AICM T1, local 160 Puerta 7 Internacional, CDMX",
+  },
+  {
+    id: "SAT-001",
+    city: "EDOMEX",
+    name: "Blvd. Manuel Avila Camacho #1834, Col. Ciudad Satélite, CP 53100 Naucalpan Edo. Mex",
+  },
 ];
 
 // Funciones para formatear fechas
@@ -67,11 +74,11 @@ const getTodayDate = () => format(new Date(), "yyyy-MM-dd");
 
 function DateTimeSelector({ label, date, setDate, time, setTime }) {
   const dateInputRef = useRef(null);
-  const router = useRouter(); // Inicializa el router
+  const router = useRouter();
   const isRentalPage =
     router.pathname === "/rental" ||
     router.pathname === "/seguro" ||
-    router.pathname === "/extras-renta"; // Detecta si está en rental
+    router.pathname === "/extras-renta";
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -189,10 +196,6 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
   );
 }
 
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import { useEffect } from "react";
-
 export default function SearchBar({ sx = {}, onValuesChange }) {
   const router = useRouter();
   const isRentalPage =
@@ -200,7 +203,7 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
     router.pathname === "/seguro" ||
     router.pathname === "/extras-renta";
 
-  //SearchData
+  // SearchData
   const [pickupLocation, setPickupLocation] = useState(locations[0]);
   const [returnLocation, setReturnLocation] = useState(locations[0]);
   const [sameOffice, setSameOffice] = useState(true);
@@ -239,46 +242,39 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
     const currentReturnDate = new Date(returnDate);
     currentReturnDate.setHours(0, 0, 0, 0);
 
-    // 1. Ajustar la fecha de recepción
     setPickupDate(newPickupDate);
 
-    // 2. Si la fecha de devolución es anterior, la pasamos al siguiente día
     if (currentReturnDate < newPickupDate) {
       const adjustedReturnDate = new Date(newPickupDate);
       adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
       setReturnDate(adjustedReturnDate);
-      setReturnTime("08:00 AM"); // Primera hora disponible, o la que prefieras
+      setReturnTime("08:00 AM");
       return;
     }
 
-    // 3. Si ahora ambas fechas son iguales, verificar horas
     if (newPickupDate.toDateString() === currentReturnDate.toDateString()) {
       const pickupMin = convert12to24(pickupTime);
       const returnMin = convert12to24(returnTime);
 
-      // Si la hora de recepción >= hora de devolución
       if (pickupMin >= returnMin) {
-        // Ajustamos la hora de recepción a la primera del día
         setPickupTime("08:00 AM");
 
-        // Buscamos un horario de devolución posterior a 08:00 AM
         const nextAvailable = availableTimes.find(
           (t) => convert12to24(t) > convert12to24("08:00 AM")
         );
 
         if (nextAvailable) {
-          // Si existe un horario posterior, lo asignamos
           setReturnTime(nextAvailable);
         } else {
-          // Si no hay horario posterior, pasamos la devolución al siguiente día
           const newReturnDate = new Date(returnDate);
           newReturnDate.setDate(newReturnDate.getDate() + 1);
           setReturnDate(newReturnDate);
-          setReturnTime("08:00 AM"); // O la hora que prefieras al siguiente día
+          setReturnTime("08:00 AM");
         }
       }
     }
   };
+
   const handleReturnDateChange = (newDate) => {
     const newReturnDate = new Date(newDate);
     newReturnDate.setHours(0, 0, 0, 0);
@@ -288,54 +284,44 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
 
     setReturnDate(newReturnDate);
 
-    // Si la fecha de recepción es mayor a la de devolución, ajustarla
     if (newReturnDate < currentPickupDate) {
       const adjustedPickupDate = new Date(newReturnDate);
       adjustedPickupDate.setDate(adjustedPickupDate.getDate() - 1);
       setPickupDate(adjustedPickupDate);
-      setPickupTime("02:00 PM"); // Establecer una hora estándar
+      setPickupTime("02:00 PM");
     }
   };
 
   const handlePickupTimeChange = (newTime) => {
     setPickupTime(newTime);
 
-    // Solo si ambas fechas son iguales comparamos las horas
     if (returnDate.toDateString() === pickupDate.toDateString()) {
       const pickupMin = convert12to24(newTime);
       const returnMin = convert12to24(returnTime);
 
-      // Si la hora de devolución es menor o igual a la de recepción
       if (returnMin <= pickupMin) {
-        // Buscar el siguiente horario disponible ese mismo día
         const nextAvailable = availableTimes.find(
           (t) => convert12to24(t) > pickupMin
         );
 
         if (nextAvailable) {
-          // Existe un horario posterior el mismo día
           setReturnTime(nextAvailable);
         } else {
-          // No hay horario posterior: mover la fecha de devolución al día siguiente
           const newReturnDate = new Date(returnDate);
           newReturnDate.setDate(newReturnDate.getDate() + 1);
-
           setReturnDate(newReturnDate);
-          setReturnTime(availableTimes[0]); // El primer horario (08:00 AM)
+          setReturnTime(availableTimes[0]);
         }
       }
     }
   };
 
   const handleReturnTimeChange = (newTime) => {
-    // Si recepción y devolución son el mismo día
     if (returnDate.toDateString() === pickupDate.toDateString()) {
       const pickupMin = convert12to24(pickupTime);
       const returnMin = convert12to24(newTime);
 
-      // No permitimos devolución antes o igual a la recepción
       if (returnMin <= pickupMin) {
-        // Intentar encontrar un horario posterior el mismo día
         const nextAvailable = availableTimes.find(
           (t) => convert12to24(t) > pickupMin
         );
@@ -343,18 +329,15 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
         if (nextAvailable) {
           setReturnTime(nextAvailable);
         } else {
-          // No existe horario posterior; pasar al siguiente día
           const newReturnDate = new Date(returnDate);
           newReturnDate.setDate(newReturnDate.getDate() + 1);
-
           setReturnDate(newReturnDate);
-          setReturnTime(availableTimes[0]); // 08:00 AM
+          setReturnTime(availableTimes[0]);
         }
         return;
       }
     }
 
-    // Si la fecha es distinta o la hora es válida, simplemente se asigna
     setReturnTime(newTime);
   };
 
@@ -398,18 +381,18 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": {
-                paddingTop: "8px", // Ajusta el padding superior del input
-                paddingBottom: "6px", // Ajusta el padding inferior del input
+                paddingTop: "8px",
+                paddingBottom: "6px",
               },
               "& .MuiInputLabel-root": {
-                fontSize: isRentalPage ? "1.1rem" : "0.9rem", // Aumenta el tamaño del label
-                backgroundColor: "#f5f5f5", // Fondo blanco para evitar que el borde lo cubra
-                paddingRight: "4px", // Agrega un pequeño padding horizontal al label
-                color: "black", //
+                fontSize: isRentalPage ? "1.1rem" : "0.9rem",
+                backgroundColor: "#f5f5f5",
+                paddingRight: "4px",
+                color: "black",
                 top: isRentalPage ? -4 : -2,
               },
               "& .MuiInputLabel-shrink": {
-                transform: "translate(14px, -6px) scale(0.9)", // Ajusta la posición del label cuando está en foco
+                transform: "translate(14px, -6px) scale(0.9)",
               },
             }}
           />
@@ -456,18 +439,18 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
                 sx={{
                   marginTop: "10px",
                   "& .MuiOutlinedInput-root": {
-                    paddingTop: "8px", // Ajusta el padding superior del input
-                    paddingBottom: "6px", // Ajusta el padding inferior del input
+                    paddingTop: "8px",
+                    paddingBottom: "6px",
                   },
                   "& .MuiInputLabel-root": {
-                    fontSize: isRentalPage ? "1.1rem" : "0.9rem", // Aumenta el tamaño del label
-                    backgroundColor: "#f5f5f5", // Fondo blanco para evitar que el borde lo cubra
-                    paddingRight: "4px", // Agrega un pequeño padding horizontal al label
-                    color: "black", //
+                    fontSize: isRentalPage ? "1.1rem" : "0.9rem",
+                    backgroundColor: "#f5f5f5",
+                    paddingRight: "4px",
+                    color: "black",
                     top: isRentalPage ? -4 : -2,
                   },
                   "& .MuiInputLabel-shrink": {
-                    transform: "translate(14px, -6px) scale(0.9)", // Ajusta la posición del label cuando está en foco
+                    transform: "translate(14px, -6px) scale(0.9)",
                   },
                 }}
               />
@@ -479,11 +462,10 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
         </>
       )}
 
-      {/* Fechas y horas alineadas en fila en pantallas grandes y en columna en pantallas pequeñas */}
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row" }, // Column en móviles, fila en desktop
+          flexDirection: { xs: "column", md: "row" },
           gap: 2,
           mt: 1,
           mb: 2,
