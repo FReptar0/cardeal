@@ -247,14 +247,6 @@ const CheckoutPage = () => {
                                 helperText={touched.phone && errors.phone}
                             />
                             <TextField
-                                label="Nota de entrega (opcional)"
-                                name="deliveryNote"
-                                fullWidth
-                                margin="normal"
-                                value={formData.deliveryNote}
-                                onChange={handleChange}
-                            />
-                            <TextField
                                 label="Contraseña (para crear tu cuenta)"
                                 name="password"
                                 type="password"
