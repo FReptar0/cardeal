@@ -18,10 +18,22 @@
     "airConditioning": true,
     "price": 300.00,
     "price2": 350.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
+    "image": "/photos/economico/March-frente.webp",
+    "image360": "https://360.pymesdigital.com.mx/Qardeal%20ECONOMICO/",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/march/my24/vap/nissan-2024-march_sense_tm-d.jpeg.ximg.l_12_m.smart.jpeg",
-      "/cars/versa2.jpg"
+      "/photos/economico/March-frente.webp",
+      "/photos/economico/March-frente-parrilla.webp",
+      "/photos/economico/March-asientos-delanteros.webp",
+      "/photos/economico/March-asientos.webp",
+      "/photos/economico/March-asientos-delanteros.webp",
+      "/photos/economico/March-calavera-detalle-izq.webp",
+      "/photos/economico/March-detalle-faro-izq.webp",
+      "/photos/economico/March-frente-lateral-derecho.webp",
+      "/photos/economico/March-motor.webp",
+      "/photos/economico/March-rin-llanta-delantera.webp",
+      "/photos/economico/March-Tablero-volante.webp",
+      "/photos/economico/March-volante.webp",
+      "/photos/economico/March-tablero.webp"
     ]
   },
   {
@@ -43,10 +55,21 @@
     "airConditioning": true,
     "price": 350.00,
     "price2": 390.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
+    "image": "/photos/compacto/Versa-frente.webp",
+    "image360": "https://360.pymesdigital.com.mx/Qardeal%20COMPACTO/",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/versa/my24/vap/nissan-2024-versa-d.jpg.ximg.l_4_m.smart.jpg",
-      "/cars/versa2.jpg"
+      "/photos/compacto/Versa-frente.webp",
+      "/photos/compacto/Versa-asientos.webp",
+      "/photos/compacto/Versa-detalle-calavera-izq.webp",
+      "/photos/compacto/Versa-detalle-calavera.webp",
+      "/photos/compacto/Versa-detalle-faro-izq.webp",
+      "/photos/compacto/Versa-detalle-rin-trasera.webp",
+      "/photos/compacto/Versa-llanta-derecho.webp",
+      "/photos/compacto/Versa-motor.webp",
+      "/photos/compacto/Versa-tablero.webp",
+      "/photos/compacto/Versa-velocidades.webp",
+      "/photos/compacto/Versa-volante-tablero.webp",
+      "/photos/compacto/Versa-volante.webp"
     ]
   },
   {
@@ -68,10 +91,21 @@
     "airConditioning": true,
     "price": 450.00,
     "price2": 500.00,
-    "image": "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
+    "image": "/photos/full-size/Sentra-lateral-frente.webp",
+    "image360": "https://360.pymesdigital.com.mx/Qardeal%20FULL%20SIZE/",
     "images": [
-      "https://www.nissanusa.com/content/dam/Nissan/us/vehicles/sentra/vehicle-profile-assets/2025/model-2025-nissan-sentra-sr-electric-blue-metallic-super-black.png.ximg.l_3_m.smart.png",
-      "/cars/versa2.jpg"
+      "/photos/full-size/Sentra-lateral-frente.webp",
+      "/photos/full-size/Sentra-frente.webp",
+      "/photos/full-size/Sentra-asientos-quemacocos.webp",
+      "/photos/full-size/Sentra-asientos.webp",
+      "/photos/full-size/Sentra-calavera.webp",
+      "/photos/full-size/Sentra-detalle-faro.webp",
+      "/photos/full-size/Sentra-faro.webp",
+      "/photos/full-size/Sentra-llanta-delantero.webp",
+      "/photos/full-size/Sentra-motor.webp",
+      "/photos/full-size/Sentra-palanca-tablero.webp",
+      "/photos/full-size/Sentra-tablero.webp",
+      "/photos/full-size/Sentra-volante.webp"
     ]
   },
   {
@@ -93,10 +127,19 @@
     "airConditioning": true,
     "price": 600.00,
     "price2": 800.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
+    "image": "/photos/suv-standard/Kicks-lateral-frontal-sombra.webp",
+    "image360": "https://360.pymesdigital.com.mx/Qardeal%20SUV%20STANDARD/",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/kicks/my25/vap/nissan-2025-kicks_platinum-cvt-gris-metalico-bitono_vista_lateral.jpg.ximg.l_4_m.smart.jpg",
-      "/cars/versa2.jpg"
+      "/photos/suv-standard/Kicks-lateral-frontal-alpha.webp",
+      "/photos/suv-standard/Kicks-asientos-delanteros.webp",
+      "/photos/suv-standard/Kicks-calavera.webp",
+      "/photos/suv-standard/Kicks-faro-izq.webp",
+      "/photos/suv-standard/Kicks-lateral-frontal-sombra.webp",
+      "/photos/suv-standard/Kicks-llanta-delantera.webp",
+      "/photos/suv-standard/Kicks-llanta-delantero.webp",
+      "/photos/suv-standard/Kicks-Motor.webp",
+      "/photos/suv-standard/Kicks-palanca-velocidades.webp",
+      "/photos/suv-standard/Kicks-vista-trasera.webp"
     ]
   },
   {
@@ -118,10 +161,19 @@
     "airConditioning": true,
     "price": 700.00,
     "price2": 720.00,
-    "image": "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
+    "image": "/photos/suv-5-lx/Xtrail-lateral-frente.webp",
+    "image360": "https://360.pymesdigital.com.mx/QARDEAL%20SUV%205%20LX/",
     "images": [
-      "https://www.nissan.com.mx/content/dam/Nissan/mexico/assets/xtrail/my25/vap/nissan-2025-xtrail-d.jpg.ximg.l_4_m.smart.jpg",
-      "/cars/versa2.jpg"
+      "/photos/suv-5-lx/Xtrail-lateral-frente.webp",
+      "/photos/suv-5-lx/Xtrail-frente.webp",
+      "/photos/suv-5-lx/Xtrail-asientos.webp",
+      "/photos/suv-5-lx/Xtrail-detalle-calavera.webp",
+      "/photos/suv-5-lx/Xtrail-detalle-faro-derechos.webp",
+      "/photos/suv-5-lx/Xtrail-faro-derecho.webp",
+      "/photos/suv-5-lx/Xtrail-motor.webp",
+      "/photos/suv-5-lx/Xtrail-rin-delantero.webp",
+      "/photos/suv-5-lx/Xtrail-tablero-volante.webp",
+      "/photos/suv-5-lx/Xtrail-volante-tablero.webp"
     ]
   }
 ]

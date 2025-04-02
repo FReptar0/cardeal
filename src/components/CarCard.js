@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
   Tab,
   Tooltip,
   Divider,
+  LinearProgress,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
@@ -25,12 +26,39 @@ import { Navigation } from "swiper/modules";
 export default function CarCard({ car, isSelected }) {
   const [open, setOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const [loading360, setLoading360] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // Función auxiliar para detener la propagación del evento
   const stopAllPropagation = (event) => {
     event.nativeEvent.stopImmediatePropagation();
     event.stopPropagation();
   };
+
+  // Efecto para la barra de carga de 5 segundos en la pestaña de "VISTA 360" o "260"
+  useEffect(() => {
+    let interval;
+    if (tabIndex === 1) {
+      setLoading360(true);
+      setProgress(0);
+      // Actualiza cada 100 ms (5 segundos en total: 5000/100 = 50 pasos)
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setLoading360(false);
+            return 100;
+          }
+          return prev + 2;
+        });
+      }, 100);
+    } else {
+      // Si se cambia a otra pestaña, reiniciamos el loader
+      setLoading360(false);
+      setProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [tabIndex]);
 
   return (
     <>
@@ -54,11 +82,21 @@ export default function CarCard({ car, isSelected }) {
           },
         }}
       >
-        {/* Imagen y botón para abrir la galería (detienen la propagación) */}
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {/* Imagen y botón para abrir la galería */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <CardMedia
             component="img"
-            sx={{ width: { xs: "100%", sm: 120 }, height: "auto", cursor: "pointer" }}
+            sx={{
+              width: { xs: "100%", sm: 120 },
+              height: "auto",
+              cursor: "pointer",
+            }}
             image={car.image}
             alt={car.name}
             onClick={(event) => {
@@ -66,7 +104,6 @@ export default function CarCard({ car, isSelected }) {
               setOpen(true);
             }}
           />
-
           <Button
             data-no-select
             startIcon={<PhotoLibraryIcon />}
@@ -100,7 +137,10 @@ export default function CarCard({ car, isSelected }) {
             {car.abbreviation &&
               car.abbreviationMeaning &&
               car.abbreviationDescription && (
-                <Tooltip title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`} arrow>
+                <Tooltip
+                  title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`}
+                  arrow
+                >
                   <IconButton size="small" sx={{ padding: 0, color: "gray" }}>
                     <InfoIcon fontSize="small" />
                   </IconButton>
@@ -123,34 +163,107 @@ export default function CarCard({ car, isSelected }) {
               justifyContent: { xs: "center", sm: "flex-start" },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <img src="/icons/ic-pax.svg" alt="Pasajeros" width="20" height="20" style={{ filter: "brightness(0)" }} />
-              <Typography variant="body2">{car.passengers} pasajeros</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minWidth: "100px",
+              }}
+            >
+              <img
+                src="/icons/ic-pax.svg"
+                alt="Pasajeros"
+                width="20"
+                height="20"
+                style={{ filter: "brightness(0)" }}
+              />
+              <Typography variant="body2">
+                {car.passengers} pasajeros
+              </Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <img src="/icons/ic-door.svg" alt="Puertas" width="20" height="20" style={{ filter: "brightness(0)" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minWidth: "100px",
+              }}
+            >
+              <img
+                src="/icons/ic-door.svg"
+                alt="Puertas"
+                width="20"
+                height="20"
+                style={{ filter: "brightness(0)" }}
+              />
               <Typography variant="body2">{car.doors} puertas</Typography>
             </Box>
-            {/* Tooltip para detalles de las maletas */}
             <Tooltip
               title={`${car.luggage} maletas ${car.luggageSize} (${car.luggageDimensions.width} x ${car.luggageDimensions.height} x ${car.luggageDimensions.depth})`}
               arrow
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  minWidth: "100px",
+                }}
+              >
                 <LuggageIcon fontSize="small" sx={{ color: "black" }} />
                 <Typography variant="body2">{car.luggage} maletas</Typography>
               </Box>
             </Tooltip>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <img src="/icons/ic-trans.svg" alt="Transmisión" width="20" height="20" style={{ filter: "brightness(0)" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minWidth: "100px",
+              }}
+            >
+              <img
+                src="/icons/ic-trans.svg"
+                alt="Transmisión"
+                width="20"
+                height="20"
+                style={{ filter: "brightness(0)" }}
+              />
               <Typography variant="body2">{car.transmission}</Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <img src="/icons/ic-pet.svg" alt="Pet friendly" width="20" height="20" style={{ filter: "brightness(0)" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minWidth: "100px",
+              }}
+            >
+              <img
+                src="/icons/ic-pet.svg"
+                alt="Pet friendly"
+                width="20"
+                height="20"
+                style={{ filter: "brightness(0)" }}
+              />
               <Typography variant="body2">Pet friendly</Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: "100px" }}>
-              <img src="/icons/ice.svg" alt="Aire acondicionado" width="20" height="20" style={{ filter: "brightness(0)" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                minWidth: "100px",
+              }}
+            >
+              <img
+                src="/icons/ice.svg"
+                alt="Aire acondicionado"
+                width="20"
+                height="20"
+                style={{ filter: "brightness(0)" }}
+              />
               <Typography variant="body2">Aire acondicionado</Typography>
             </Box>
           </Box>
@@ -167,26 +280,58 @@ export default function CarCard({ car, isSelected }) {
             marginTop: { xs: 2, sm: 0 },
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 2,
+              width: "100%",
+            }}
+          >
             <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ color: "#508a69" }}>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#508a69" }}
+              >
                 Pago en línea
               </Typography>
-              <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                sx={{ color: "black" }}
+              >
                 $ {car.price}{" "}
-                <Typography variant="body2" component="span" sx={{ color: "gray" }}>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  sx={{ color: "gray" }}
+                >
                   MXN/día
                 </Typography>
               </Typography>
             </Box>
             <Divider orientation="vertical" flexItem />
             <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography variant="body2" fontWeight="bold" sx={{ color: "#d60812" }}>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#d60812" }}
+              >
                 Pago en Sucursal
               </Typography>
-              <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                sx={{ color: "black" }}
+              >
                 $ {car.price2}{" "}
-                <Typography variant="body2" component="span" sx={{ color: "gray" }}>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  sx={{ color: "gray" }}
+                >
                   MXN/día
                 </Typography>
               </Typography>
@@ -263,19 +408,27 @@ export default function CarCard({ car, isSelected }) {
                   prevEl: ".swiper-button-prev",
                 }}
                 modules={[Navigation]}
-                style={{ width: "100%", height: "60vh" }}
+                style={{ width: "100%", height: "60vh" }} // El contenedor del carrusel
               >
                 {(car.images || []).map((img, index) => (
-                  <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center" }}>
+                  <SwiperSlide
+                    key={index}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <img
                       src={img}
                       alt={`Imagen ${index + 1}`}
                       style={{
-                        maxWidth: "80%",
-                        maxHeight: "50vh",
-                        borderRadius: 5,
+                        width: "100%",
+                        height: "100%",
                         objectFit: "contain",
-                        margin: "0 20px",
+                        borderRadius: 5,
                       }}
                       onClick={stopAllPropagation}
                     />
@@ -292,7 +445,6 @@ export default function CarCard({ car, isSelected }) {
                   onClick={stopAllPropagation}
                 ></div>
               </Swiper>
-
               {/* Características del carro debajo de las imágenes */}
               <Box
                 onClick={stopAllPropagation}
@@ -315,7 +467,9 @@ export default function CarCard({ car, isSelected }) {
                     height="20"
                     style={{ filter: "brightness(0)" }}
                   />
-                  <Typography variant="body2">{car.passengers} pasajeros</Typography>
+                  <Typography variant="body2">
+                    {car.passengers} pasajeros
+                  </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <img
@@ -364,17 +518,48 @@ export default function CarCard({ car, isSelected }) {
               </Box>
             </Box>
           ) : (
-            <iframe
-              src="https://360.pymesdigital.com.mx/Grupo%20Andrade%20360/"
-              style={{
-                width: "100%",
-                height: "60vh",
-                border: "none",
-                borderRadius: 5,
-                marginTop: 16,
-              }}
-              onClick={stopAllPropagation}
-            ></iframe>
+            <>
+              {loading360 ? (
+                <Box
+                  sx={{
+                    width: "450px",
+                    height: "60vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    mx: "auto",
+                  }}
+                >
+                  <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                      width: "100%",
+                      backgroundColor: "#d9d9d9", // Gris para la parte vacía
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#d60812", // Rojo para la parte llena
+                      },
+                    }}
+                  />
+                  <Typography align="center" sx={{ mt: 1 }}>
+                    Cargando vista 360...
+                  </Typography>
+                </Box>
+              ) : (
+                <iframe
+                  src={car.image360}
+                  style={{
+                    width: "100%",
+                    height: "60vh",
+                    border: "none",
+                    borderRadius: 5,
+                    marginTop: 16,
+                  }}
+                  onClick={stopAllPropagation}
+                ></iframe>
+              )}
+            </>
           )}
         </Box>
       </Modal>

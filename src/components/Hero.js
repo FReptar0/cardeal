@@ -44,11 +44,11 @@ export default function Hero() {
           style={{
             width: "80vh",
             position: "absolute",
-            top: "13%",
+            top: "45%",
             left: "15%",
             zIndex: 0,
           }}
-          src="/cars/camioneta.png"
+          src="/photos/suv-5-lx/Xtrail-lateral-frente.webp"
           alt="Auto de ejemplo"
         />
       </Grid>
