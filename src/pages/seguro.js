@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -21,6 +21,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { useRouter } from "next/router"; // Importa useRouter
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
+import format from "date-fns/format";
 
 const todasLasCoberturas = [
   "Colisión y daños",
@@ -86,6 +87,27 @@ const SeguroVehiculo = () => {
 
   const router = useRouter(); // Inicializa el router
 
+  // Details rectangle under header
+  const [isSticky, setIsSticky] = useState(false);
+  const [headerIsTop, setHeaderIsTop] = useState(true);
+  const [showCompactHeader, setShowCompactHeader] = useState(false);
+  const [hideSearchSection, setHideSearchSection] = useState(false);
+
+  // Search bar props
+  const [searchData, setSearchData] = useState(null);
+
+  // Header top handler
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
+      setHeaderIsTop(headerTop);
+      setShowCompactHeader(!headerTop);
+      setHideSearchSection(!headerTop);
+    }, 100); // Verifica cada 100ms
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
     const nextPlan = planesSeguros.find((p) => p.id === getNextPlanId(plan.id));
@@ -122,30 +144,98 @@ const SeguroVehiculo = () => {
     <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          width: "100%",
-          margin: "0 auto",
-          boxSizing: "border-box",
-          gap: 1, // Reducimos el espacio entre elementos
+          overflow: "hidden",
+          maxHeight: hideSearchSection ? 0 : "1000px",
+          opacity: hideSearchSection ? 0 : 1,
+          transform: hideSearchSection ? "translateY(-20px)" : "translateY(0)",
+          transition: "all 0.5s ease-in-out",
         }}
       >
-        {/* SearchBar con altura automática */}
-        <SearchBar
+        <Box
           sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
             width: "100%",
-            transition: "all 0.3s ease-in-out", // Suaviza el crecimiento
-            marginBottom: 0, // Evita espacio extra
+            margin: "0 auto",
+            boxSizing: "border-box",
+            gap: 1,
           }}
-        />
-
-        {/* RentalStepper sin margen extra */}
-        <Box sx={{ width: "100%", marginTop: -12 }}>
-          <RentalStepper />
+        >
+          <SearchBar onValuesChange={setSearchData} />
         </Box>
       </Box>
+
+      <Box
+        sx={{
+          position: "fixed",
+          top: headerIsTop ? "100px" : "60px",
+          left: 0,
+          width: "100%",
+          height: "64px",
+          background: "#D60812",
+          zIndex: 1200,
+          opacity: showCompactHeader ? 1 : 0,
+          transition: "opacity .4s ease, transform .7s ease",
+          pointerEvents: showCompactHeader ? "auto" : "none",
+          visibility: showCompactHeader ? "visible" : "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingX: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            gap: 2,
+            width: "100%",
+            maxWidth: "1200px",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            Destino:{" "}
+            {searchData?.sameOffice
+              ? "Misma oficina"
+              : searchData?.returnLocation?.name || "No seleccionado"}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            {searchData?.pickupDate &&
+              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${
+                searchData.pickupTime
+              } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${
+                searchData.returnTime
+              }`}
+          </Typography>
+        </Box>
+      </Box>
+
+      {showCompactHeader && (
+        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
+      )}
+
+      <Box sx={{ width: "100%", marginTop: -12 }}>
+        <RentalStepper />
+      </Box>
+
+      {/* Espaciador para evitar superposición */}
+      {isSticky && <Box sx={{ height: "120px" }} />}
+
       <Typography variant="h4" fontWeight="bold">
         Elige un tipo de protección
       </Typography>

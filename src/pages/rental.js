@@ -16,10 +16,20 @@ import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
 import RentalStepper from "../components/Stepper";
+import format from "date-fns/format";
 
 export default function RentalPage() {
   const [filteredCars, setFilteredCars] = useState(carsData);
   const [selectedCarIndex, setSelectedCarIndex] = useState(null);
+
+  // Details rectangle under header
+  const [isSticky, setIsSticky] = useState(false);
+  const [headerIsTop, setHeaderIsTop] = useState(true);
+  const [showCompactHeader, setShowCompactHeader] = useState(false);
+  const [hideSearchSection, setHideSearchSection] = useState(false);
+
+  // Search bar props
+  const [searchData, setSearchData] = useState(null);
 
   // NUEVO: guarda la selección previa para revertir si se cierra el modal
   const [previousCarIndex, setPreviousCarIndex] = useState(null);
@@ -42,6 +52,18 @@ export default function RentalPage() {
       });
     }
   }, [selectedCarIndex]);
+
+  // Header top handler
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
+      setHeaderIsTop(headerTop);
+      setShowCompactHeader(!headerTop);
+      setHideSearchSection(!headerTop);
+    }, 100); // Verifica cada 100ms
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (filters) => {
     // Aquí podrías filtrar según tu lógica
@@ -115,27 +137,97 @@ export default function RentalPage() {
       {/* Barra de búsqueda y stepper */}
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          width: "100%",
-          margin: "0 auto",
-          boxSizing: "border-box",
-          gap: 1,
+          overflow: "hidden",
+          maxHeight: hideSearchSection ? 0 : "1000px",
+          opacity: hideSearchSection ? 0 : 1,
+          transform: hideSearchSection ? "translateY(-20px)" : "translateY(0)",
+          transition: "all 0.5s ease-in-out",
         }}
       >
-        <SearchBar
+        <Box
           sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
             width: "100%",
-            transition: "all 0.3s ease-in-out",
-            marginBottom: 0,
+            margin: "0 auto",
+            boxSizing: "border-box",
+            gap: 1,
           }}
-        />
-        <Box sx={{ width: "100%", marginTop: -12 }}>
-          <RentalStepper />
+        >
+          <SearchBar onValuesChange={setSearchData} />
         </Box>
       </Box>
+
+      <Box
+        sx={{
+          position: "fixed",
+          top: headerIsTop ? "100px" : "60px",
+          left: 0,
+          width: "100%",
+          height: "64px",
+          background: "#D60812",
+          zIndex: 1200,
+          opacity: showCompactHeader ? 1 : 0,
+          transition: "opacity .4s ease, transform .7s ease",
+          pointerEvents: showCompactHeader ? "auto" : "none",
+          visibility: showCompactHeader ? "visible" : "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingX: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            gap: 2,
+            width: "100%",
+            maxWidth: "1200px",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            Destino:{" "}
+            {searchData?.sameOffice
+              ? "Misma oficina"
+              : searchData?.returnLocation?.name || "No seleccionado"}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "white", fontSize: "1.1rem" }}
+          >
+            {searchData?.pickupDate &&
+              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${
+                searchData.pickupTime
+              } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${
+                searchData.returnTime
+              }`}
+          </Typography>
+        </Box>
+      </Box>
+
+      {showCompactHeader && (
+        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
+      )}
+
+      <Box sx={{ width: "100%", marginTop: -12 }}>
+        <RentalStepper />
+      </Box>
+
+      {/* Espaciador para evitar superposición */}
+      {isSticky && <Box sx={{ height: "120px" }} />}
 
       {/* Listado de Cards */}
       <Box
