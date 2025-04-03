@@ -299,10 +299,14 @@ const ExtrasRenta = () => {
                 {/* Selector de tamaño para la silla de bebé */}
                 {extra.id === "silla_bebe" && (
                   <FormControl fullWidth sx={{ mt: 2 }}>
-                    <InputLabel>Tamaño</InputLabel>
+                    <InputLabel shrink id="label-tamano">
+                      Tamaño
+                    </InputLabel>
                     <Select
+                      labelId="label-tamano"
                       value={sillaBebeSize}
                       onChange={(e) => setSillaBebeSize(e.target.value)}
+                      label="Tamaño"
                     >
                       <MenuItem value="chica">
                         Chica - ${extra.precio.chica} MXN/DÍA
