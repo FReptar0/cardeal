@@ -14,9 +14,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Divider,
+  Link,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 import format from "date-fns/format";
@@ -102,7 +105,7 @@ const ExtrasRenta = () => {
     setCantidadExtras((prev) => {
       const currentQty = prev[id] || 0;
 
-      // Limites específicos
+      // Límites específicos
       if (operacion === "sumar") {
         if (id === "silla_bebe" && currentQty >= 2) {
           return prev; // Máx. 2 sillas para bebé
@@ -140,8 +143,7 @@ const ExtrasRenta = () => {
 
     // "unico" => precio único (no multiplica por día)
     // No único => multiplicar por 4 (ejemplo)
-    // (Asumiendo que 4 representa los días de renta;
-    //  ajusta según tu lógica real de días)
+    // (Asumiendo que 4 representa los días de renta; ajusta según tu lógica real)
     const costo = extra.unico ? cantidad * precio : cantidad * precio * 4;
 
     return acc + costo;
@@ -153,6 +155,7 @@ const ExtrasRenta = () => {
 
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
+      {/* Sección de búsqueda */}
       <Box
         sx={{
           overflow: "hidden",
@@ -178,6 +181,7 @@ const ExtrasRenta = () => {
         </Box>
       </Box>
 
+      {/* Header compacto fijo con "Return to Top" */}
       <Box
         sx={{
           position: "fixed",
@@ -185,7 +189,7 @@ const ExtrasRenta = () => {
           left: 0,
           width: "100%",
           height: "64px",
-          background: "#D60812",
+          background: "#10906a",
           zIndex: 1200,
           opacity: showCompactHeader ? 1 : 0,
           transition: "opacity .4s ease, transform .7s ease",
@@ -194,11 +198,12 @@ const ExtrasRenta = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingX: 2,
+          px: 2,
         }}
       >
         <Box
           sx={{
+            position: "relative",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
@@ -233,6 +238,31 @@ const ExtrasRenta = () => {
                 searchData.returnTime
               }`}
           </Typography>
+
+          {/* Botón "Return to Top" posicionado 50% abajo del header */}
+          <Box
+            sx={{
+              position: "absolute",
+              left: "50%",
+              bottom: "-75%",
+              transform: "translate(-50%, 50%)",
+              background: "white",
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+              transition: "background 0.3s",
+            }}
+            onClick={() =>
+              window.scrollTo({ top: 0, behavior: "smooth" })
+            }
+          >
+            <ArrowUpwardIcon sx={{ color: "#10906a" }} />
+          </Box>
         </Box>
       </Box>
 
@@ -269,9 +299,7 @@ const ExtrasRenta = () => {
               <CardMedia
                 component="img"
                 sx={{
-                  // Margen alrededor de la imagen
                   m: "8px",
-                  // Reducir el tamaño para que no sea tan grande
                   width: { xs: "100%", md: 125 },
                   height: "auto",
                   objectFit: "contain",

@@ -1,21 +1,36 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Container,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
   Box,
+  Button,
+  IconButton,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Divider,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  Typography,
+  Tooltip,
+  Link,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
-import RentalStepper from "../components/Stepper";
 import format from "date-fns/format";
 
 export default function RentalPage() {
@@ -37,11 +52,9 @@ export default function RentalPage() {
   // Popups
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
-
   const [tempRecommendedCar, setTempRecommendedCar] = useState(null);
 
   const router = useRouter();
-
   const scrollRefs = useRef([]);
 
   useEffect(() => {
@@ -61,7 +74,6 @@ export default function RentalPage() {
       setShowCompactHeader(!headerTop);
       setHideSearchSection(!headerTop);
     }, 100); // Verifica cada 100ms
-
     return () => clearInterval(interval);
   }, []);
 
@@ -74,50 +86,36 @@ export default function RentalPage() {
   const handleCarSelect = (car, index) => {
     // Guarda la selección anterior
     setPreviousCarIndex(selectedCarIndex);
-
     // Actualiza la selección inmediatamente
     setSelectedCarIndex(index);
     console.log("Seleccionaste el índice:", index);
-
-    // Si hay un siguiente auto, guardamos en tempRecommendedCar y abrimos el popup
+    // Si hay un siguiente auto, abrimos el popup de recomendación
     if (index < filteredCars.length - 1) {
       const nextCar = filteredCars[index + 1];
       setTempRecommendedCar(nextCar);
       setOpenRecommendation(true);
     } else {
-      // Si es el último, no hay siguiente
       setTempRecommendedCar(null);
     }
   };
 
-  // NUEVO: si se cierra el modal por fuera (clic o tecla Esc), revertimos la selección
+  // Si se cierra el modal sin elegir, revertimos la selección
   const handleCloseRecommendation = () => {
-    console.log(
-      "Modal cerrado sin elegir un botón. Revirtiendo a:",
-      previousCarIndex
-    );
+    console.log("Modal cerrado sin elegir un botón. Revirtiendo a:", previousCarIndex);
     setSelectedCarIndex(previousCarIndex);
     setOpenRecommendation(false);
   };
 
-  // Mantener la selección actual, cierra el popup (sin revertir)
+  // Mantener la selección actual
   const handleKeepCurrent = () => {
     console.log(`Mantener selección: ${selectedCarIndex}`);
     setOpenRecommendation(false);
   };
 
-  // Seleccionar la siguiente categoría, cierra el popup y actualiza el índice
+  // Seleccionar la siguiente categoría
   const handleSelectNextCar = () => {
-    if (
-      selectedCarIndex !== null &&
-      selectedCarIndex < filteredCars.length - 1
-    ) {
-      console.log(
-        "Seleccionar siguiente. Actual:",
-        selectedCarIndex,
-        "Siguiente:",
-        selectedCarIndex + 1
-      );
+    if (selectedCarIndex !== null && selectedCarIndex < filteredCars.length - 1) {
+      console.log("Seleccionar siguiente. Actual:", selectedCarIndex, "Siguiente:", selectedCarIndex + 1);
       setSelectedCarIndex(selectedCarIndex + 1);
     }
     setOpenRecommendation(false);
@@ -134,7 +132,7 @@ export default function RentalPage() {
 
   return (
     <Container sx={{ marginTop: "148px", paddingX: 2 }}>
-      {/* Barra de búsqueda y stepper */}
+      {/* Barra de búsqueda y Stepper */}
       <Box
         sx={{
           overflow: "hidden",
@@ -160,6 +158,7 @@ export default function RentalPage() {
         </Box>
       </Box>
 
+      {/* Header compacto fijo con "Return to Top" */}
       <Box
         sx={{
           position: "fixed",
@@ -167,7 +166,7 @@ export default function RentalPage() {
           left: 0,
           width: "100%",
           height: "64px",
-          background: "#D60812",
+          background: "#10906a",
           zIndex: 1200,
           opacity: showCompactHeader ? 1 : 0,
           transition: "opacity .4s ease, transform .7s ease",
@@ -176,11 +175,12 @@ export default function RentalPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingX: 2,
+          px: 2,
         }}
       >
         <Box
           sx={{
+            position: "relative",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
@@ -189,44 +189,55 @@ export default function RentalPage() {
             maxWidth: "1200px",
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
             Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
             Destino:{" "}
             {searchData?.sameOffice
               ? "Misma oficina"
               : searchData?.returnLocation?.name || "No seleccionado"}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
             {searchData?.pickupDate &&
-              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${
-                searchData.pickupTime
-              } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${
-                searchData.returnTime
-              }`}
+              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${searchData.pickupTime} → ${format(
+                searchData.returnDate,
+                "dd/MM/yyyy"
+              )} ${searchData.returnTime}`}
           </Typography>
+          {/* Botón "Return to Top" en esquina inferior derecha del header */}
+          <Tooltip title="Volver arriba" arrow>
+            <Box
+              sx={{
+                position: "absolute",
+                left: "50%",
+                bottom: "-75%",
+                transform: "translate(-50%, 50%)",
+                background: "white",
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                transition: "background 0.3s",
+              }}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <ArrowUpwardIcon sx={{ color: "#10906a", fontSize: 20 }} />
+            </Box>
+          </Tooltip>
         </Box>
       </Box>
 
-      {showCompactHeader && (
-        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
-      )}
+      {showCompactHeader && <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />}
 
       <Box sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
       </Box>
 
-      {/* Espaciador para evitar superposición */}
       {isSticky && <Box sx={{ height: "120px" }} />}
 
       {/* Listado de Cards */}
@@ -283,11 +294,7 @@ export default function RentalPage() {
       </Box>
 
       {/* Popup de Recomendación */}
-      <Dialog
-        open={openRecommendation}
-        // NUEVO: al cerrarse por fuera, revertimos la selección
-        onClose={handleCloseRecommendation}
-      >
+      <Dialog open={openRecommendation} onClose={handleCloseRecommendation}>
         <DialogTitle
           sx={{
             textAlign: "center",
@@ -301,23 +308,14 @@ export default function RentalPage() {
         >
           RECOMENDACIÓN
         </DialogTitle>
-
         <DialogContent>
           <Typography
             variant="body1"
-            sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: "1.5",
-              mt: 2,
-            }}
+            sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}
           >
             {tempRecommendedCar ? (
               <>
-                Te recomendamos considerar la categoría{" "}
-                <strong>{tempRecommendedCar.category}</strong> (
-                {tempRecommendedCar.name}) que ofrece mayores prestaciones por
-                un precio competitivo.
+                Te recomendamos considerar la categoría <strong>{tempRecommendedCar.category}</strong> ({tempRecommendedCar.name}) que ofrece mayores prestaciones por un precio competitivo.
               </>
             ) : (
               "No hay una categoría siguiente."
@@ -394,3 +392,4 @@ export default function RentalPage() {
     </Container>
   );
 }
+

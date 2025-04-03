@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
   Container,
   Grid,
@@ -7,21 +8,24 @@ import {
   CardMedia,
   Typography,
   Box,
+  Button,
+  IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tooltip,
+  Divider,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useRouter } from "next/router";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 import format from "date-fns/format";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 const todasLasCoberturas = [
   "Colisión y daños",
@@ -38,9 +42,9 @@ const planesSeguros = [
     id: "none",
     nombre: "SIN PROTECCIÓN",
     total: "$0",
-    imagen: "/images-seguros/Seguro-cero.png", // imagen para sin protección
-    color: "#999", // color neutro
-    coberturas: [], // sin coberturas
+    imagen: "/images-seguros/Seguro-cero.png",
+    color: "#999",
+    coberturas: [],
   },
   {
     id: "basico",
@@ -93,14 +97,12 @@ const SeguroVehiculo = () => {
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [recommendedPlan, setRecommendedPlan] = useState(null);
 
-  const router = useRouter(); // Inicializa el router
-
+  const router = useRouter();
   // Details rectangle under header
   const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
-
   // Search bar props
   const [searchData, setSearchData] = useState(null);
 
@@ -111,27 +113,18 @@ const SeguroVehiculo = () => {
       setHeaderIsTop(headerTop);
       setShowCompactHeader(!headerTop);
       setHideSearchSection(!headerTop);
-    }, 100); // Verifica cada 100ms
-
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
-    const nextPlan = planesSeguros.find((p) => p.id === getNextPlanId(plan.id));
+    const planIndex = planesSeguros.findIndex((p) => p.id === plan.id);
+    const nextPlan = planIndex < planesSeguros.length - 1 ? planesSeguros[planIndex + 1] : null;
     if (nextPlan) {
       setRecommendedPlan(nextPlan);
       setOpenRecommendation(true);
     }
-  };
-
-  const getNextPlanId = (currentPlanId) => {
-    const planIndex = planesSeguros.findIndex(
-      (plan) => plan.id === currentPlanId
-    );
-    return planIndex < planesSeguros.length - 1
-      ? planesSeguros[planIndex + 1].id
-      : null;
   };
 
   const handleContinue = () => {
@@ -150,6 +143,7 @@ const SeguroVehiculo = () => {
 
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
+      {/* Sección de búsqueda */}
       <Box
         sx={{
           overflow: "hidden",
@@ -164,7 +158,6 @@ const SeguroVehiculo = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "flex-start",
             width: "100%",
             margin: "0 auto",
             boxSizing: "border-box",
@@ -175,6 +168,7 @@ const SeguroVehiculo = () => {
         </Box>
       </Box>
 
+      {/* Header compacto fijo con "Return to Top" */}
       <Box
         sx={{
           position: "fixed",
@@ -182,7 +176,7 @@ const SeguroVehiculo = () => {
           left: 0,
           width: "100%",
           height: "64px",
-          background: "#D60812",
+          background: "#10906a",
           zIndex: 1200,
           opacity: showCompactHeader ? 1 : 0,
           transition: "opacity .4s ease, transform .7s ease",
@@ -191,11 +185,12 @@ const SeguroVehiculo = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingX: 2,
+          px: 2,
         }}
       >
         <Box
           sx={{
+            position: "relative",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "space-between",
@@ -204,38 +199,48 @@ const SeguroVehiculo = () => {
             maxWidth: "1200px",
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
             Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
-            Destino:{" "}
-            {searchData?.sameOffice
-              ? "Misma oficina"
-              : searchData?.returnLocation?.name || "No seleccionado"}
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
+            Destino: {searchData?.sameOffice ? "Misma oficina" : searchData?.returnLocation?.name || "No seleccionado"}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
+          <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
             {searchData?.pickupDate &&
-              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${
-                searchData.pickupTime
-              } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${
-                searchData.returnTime
-              }`}
+              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${searchData.pickupTime} → ${format(
+                searchData.returnDate,
+                "dd/MM/yyyy"
+              )} ${searchData.returnTime}`}
           </Typography>
+
+          {/* Botón "Return to Top" en esquina inferior derecha del header */}
+          <Tooltip title="Volver arriba" arrow>
+            <Box
+              sx={{
+                position: "absolute",
+                left: "50%",
+                bottom: "-75%",
+                transform: "translate(-50%, 50%)",
+                background: "white",
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                transition: "background 0.3s",
+              }}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <ArrowUpwardIcon sx={{ color: "#10906a", fontSize: 20 }} />
+            </Box>
+          </Tooltip>
         </Box>
       </Box>
 
-      {showCompactHeader && (
-        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
-      )}
+      {showCompactHeader && <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />}
 
       <Box sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
@@ -260,17 +265,13 @@ const SeguroVehiculo = () => {
         alignItems="stretch"
       >
         {planesSeguros.map((plan) => (
-          // Se mantienen las propiedades responsivas y se evita que se encojan
           <Grid item sx={{ flexShrink: 0 }} xs={12} sm={6} md={4} key={plan.id}>
             <Card
               sx={{
                 boxShadow: seleccionado === plan.id ? 6 : 2,
-                border:
-                  seleccionado === plan.id
-                    ? "3px solid black"
-                    : "1px solid #ddd",
+                border: seleccionado === plan.id ? "3px solid black" : "1px solid #ddd",
                 cursor: "pointer",
-                padding: 3,
+                p: 3,
                 backgroundColor: "#fff",
                 transition: "transform 0.3s",
                 "&:hover": { transform: "scale(1.05)" },
@@ -288,7 +289,7 @@ const SeguroVehiculo = () => {
                     position: "absolute",
                     top: -2,
                     right: -8,
-                    padding: "6px 12px",
+                    p: "6px 12px",
                     background: "black",
                     color: "white",
                     borderRadius: "5px",
@@ -297,23 +298,16 @@ const SeguroVehiculo = () => {
                   Recomendado
                 </Box>
               )}
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                sx={{ color: "black", display: "inline" }}
-              >
+              <Typography variant="h4" fontWeight="bold" sx={{ color: "black", display: "inline" }}>
                 {plan.total.split(" ")[0]}
               </Typography>
-              <Typography
-                variant="h6"
-                sx={{ color: "gray", display: "inline", ml: 1 }}
-              >
+              <Typography variant="h6" sx={{ color: "gray", display: "inline", ml: 1 }}>
                 MXN/día
               </Typography>
 
               <CardMedia
                 component="img"
-                sx={{ height: 200, objectFit: "contain", padding: 1 }}
+                sx={{ height: 200, objectFit: "contain", p: 1 }}
                 image={plan.imagen}
                 alt={plan.nombre}
               />
@@ -325,14 +319,9 @@ const SeguroVehiculo = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  sx={{ color: plan.color, mb: 1 }}
-                >
+                <Typography variant="h6" fontWeight="bold" sx={{ color: plan.color, mb: 1 }}>
                   {plan.nombre}
                 </Typography>
-
                 {todasLasCoberturas.map((cobertura, index) => (
                   <ListItem key={index} disablePadding>
                     <ListItemIcon>
@@ -361,7 +350,7 @@ const SeguroVehiculo = () => {
             backgroundColor: "#d60812",
             color: "white",
             fontWeight: "bold",
-            padding: "12px 30px",
+            p: "12px 30px",
             fontSize: "16px",
           }}
           onClick={handleContinue}
@@ -385,17 +374,8 @@ const SeguroVehiculo = () => {
           🚨 ATENCIÓN 🚨
         </DialogTitle>
         <DialogContent>
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: "1.5",
-              mt: 2,
-            }}
-          >
-            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong>{" "}
-            seleccionar una protección antes de continuar con tu reserva.
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar una protección antes de continuar con tu reserva.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
@@ -406,7 +386,7 @@ const SeguroVehiculo = () => {
               backgroundColor: "#d60812",
               color: "white",
               fontWeight: "bold",
-              padding: "12px 20px",
+              p: "12px 20px",
               borderRadius: "8px",
               fontSize: "16px",
             }}
@@ -436,17 +416,9 @@ const SeguroVehiculo = () => {
         <DialogContent>
           <Typography
             variant="body1"
-            sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: "1.5",
-              mt: 2,
-            }}
+            sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}
           >
-            Te recomendamos considerar el{" "}
-            <strong>{recommendedPlan?.nombre}</strong> por solo{" "}
-            <strong>{recommendedPlan?.total}</strong> al día, que incluye
-            coberturas adicionales para mayor tranquilidad.
+            Te recomendamos considerar el <strong>{recommendedPlan?.nombre}</strong> por solo <strong>{recommendedPlan?.total}</strong> al día, que incluye coberturas adicionales para mayor tranquilidad.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
@@ -456,7 +428,7 @@ const SeguroVehiculo = () => {
             sx={{
               color: "grey",
               fontWeight: "bold",
-              padding: "12px 20px",
+              p: "12px 20px",
               borderRadius: "8px",
               fontSize: "16px",
               borderColor: "grey",
@@ -471,7 +443,7 @@ const SeguroVehiculo = () => {
               backgroundColor: "#d60812",
               color: "white",
               fontWeight: "bold",
-              padding: "12px 20px",
+              p: "12px 20px",
               borderRadius: "8px",
               fontSize: "16px",
             }}
