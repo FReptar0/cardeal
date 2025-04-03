@@ -261,23 +261,27 @@ const CheckoutPage = () => {
 
                             <FormControlLabel
                                 control={<Checkbox name="terms" checked={formData.terms} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
-                                label={<Link component="button" variant="body2"
+                                label={<Link variant="body2"
                                     sx={{
                                         textDecoration: "underline",
                                         color: "#d60812"
                                     }}
-                                    onClick={() => handleOpenModal("Términos y condiciones de renta")}>Acepto términos y condiciones de renta</Link>}
+                                    href="/terminos-y-condiciones"
+                                    target="_blank"
+                                    >Acepto términos y condiciones de renta</Link>}
                                 error={touched.terms && !!errors.terms}
                                 helperText={touched.terms && errors.terms}
                             />
                             <FormControlLabel
                                 control={<Checkbox name="privacy" checked={formData.privacy} onChange={handleChange} onBlur={handleBlur} sx={{ color: "#d60812", '&.Mui-checked': { color: '#d60812' } }} />}
-                                label={<Link component="button" variant="body2"
+                                label={<Link variant="body2"
                                     sx={{
                                         textDecoration: "underline",
                                         color: "#d60812"
                                     }}
-                                    onClick={() => handleOpenModal("Política de datos personales")}>Acepto la política de datos personales</Link>}
+                                    href="/aviso-de-privacidad"
+                                    target="_blank"
+                                    >Acepto la política de datos personales</Link>}
                                 error={touched.privacy && !!errors.privacy}
                                 helperText={touched.privacy && errors.privacy}
                             />
