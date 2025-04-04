@@ -96,7 +96,7 @@ export default function Sucursales() {
                                 {loc.address}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                Visítanos en esta ubicación para un mejor servicio.
+                                Visítanos en esta sucursal para un mejor servicio.
                             </Typography>
                             <Typography variant="body2">
                                 <Link
@@ -118,7 +118,7 @@ export default function Sucursales() {
         <Box sx={{ maxWidth: 1200, mx: "auto", pt: 10, px: { xs: 2, md: 4 }, mt: 8 }}>
             {/* Título principal */}
             <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
-                Ubicaciones
+                Sucursales
             </Typography>
 
             <Typography

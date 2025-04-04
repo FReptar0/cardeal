@@ -102,9 +102,7 @@ const Header = () => {
       <AppBar
         position="fixed"
         sx={{
-          background: isTop
-            ? "#F5F5F5"
-            : "linear-gradient(to bottom, rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.7))",
+          background: '#F5F5F5',
           color: "#000",
           transition: "background 0.3s, height 0.3s",
           height: isTop ? "100px" : "60px",
