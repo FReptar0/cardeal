@@ -56,7 +56,7 @@ export default function Flota() {
         <Hero />
       </div>
 
-      <Box sx={{ marginTop: 30 }}>
+      <Box sx={{ marginTop: 16 }}>
         <Typography variant="h4" gutterBottom textAlign="center" color="black">
           FLOTA DE AUTOS
         </Typography>
@@ -96,12 +96,18 @@ export default function Flota() {
               height: "100%",
               backgroundColor: "white",
               color: "black",
+              border: "1px solid #ddd",
+              borderRadius: 2,
+              transition: "transform 0.2s ease-in-out",
+              "&:hover": {
+                transform: "scale(1.03)",
+              },
             }}
           >
             <Box
               sx={{
                 width: "100%",
-                height: 150,
+                height: 180,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -110,9 +116,10 @@ export default function Flota() {
             >
               <CardMedia
                 component="img"
+                onClick={() => handleOpenModal(car)}
                 image={car.image}
                 alt={car.name}
-                sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                sx={{ width: "90%", height: "100%", objectFit: "contain", cursor: "pointer" }}
               />
             </Box>
             <CardContent sx={{ flexGrow: 1 }}>
@@ -229,7 +236,11 @@ export default function Flota() {
                     fontSize: "12px",
                     textTransform: "none",
                     color: "gray",
-                    "&:hover": { color: "black" },
+                    "&:hover": { 
+                      backgroundColor: "gray",
+                      color: "white",
+                      transition: "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
+                     },
                   }}
                 >
                   Ver más detalles
@@ -253,7 +264,7 @@ export default function Flota() {
             borderRadius: 2,
             width: "80vw",
             maxWidth: "1200px",
-            height: "80vh",
+            height: "90vh",
             position: "relative",
             overflow: "hidden",
             display: "flex",
