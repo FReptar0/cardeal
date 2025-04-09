@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Container,
-  Grid,
+  Grid2,
   Card,
   CardContent,
   CardMedia,
@@ -23,6 +25,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 import format from "date-fns/format";
+import CompactHeader from "../components/CompactHeader"; // Importamos el componente reutilizable
 
 const extras = [
   {
@@ -136,14 +139,13 @@ const ExtrasRenta = () => {
     const cantidad = cantidadExtras[extra.id] || 0;
     let precio = extra.precio;
 
-    // Silla de bebé usa el precio del tamaño seleccionado
+    // La silla para bebé usa el precio del tamaño seleccionado
     if (extra.id === "silla_bebe") {
       precio = extra.precio[sillaBebeSize];
     }
 
     // "unico" => precio único (no multiplica por día)
-    // No único => multiplicar por 4 (ejemplo)
-    // (Asumiendo que 4 representa los días de renta; ajusta según tu lógica real)
+    // No único => multiplicar por 4 (ejemplo, ajuste según tus días de renta)
     const costo = extra.unico ? cantidad * precio : cantidad * precio * 4;
 
     return acc + costo;
@@ -181,90 +183,12 @@ const ExtrasRenta = () => {
         </Box>
       </Box>
 
-      {/* Header compacto fijo con "Return to Top" */}
-      <Box
-        sx={{
-          position: "fixed",
-          top: headerIsTop ? "100px" : "60px",
-          left: 0,
-          width: "100%",
-          height: "64px",
-          background: "#10906a",
-          zIndex: 1200,
-          opacity: showCompactHeader ? 1 : 0,
-          transition: "opacity .4s ease, transform .7s ease",
-          pointerEvents: showCompactHeader ? "auto" : "none",
-          visibility: showCompactHeader ? "visible" : "hidden",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          px: 2,
-        }}
-      >
-        <Box
-          sx={{
-            position: "relative",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            gap: 2,
-            width: "100%",
-            maxWidth: "1200px",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
-            Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
-            Destino:{" "}
-            {searchData?.sameOffice
-              ? "Misma oficina"
-              : searchData?.returnLocation?.name || "No seleccionado"}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "white", fontSize: "1.1rem" }}
-          >
-            {searchData?.pickupDate &&
-              `${format(searchData.pickupDate, "dd/MM/yyyy")} ${
-                searchData.pickupTime
-              } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${
-                searchData.returnTime
-              }`}
-          </Typography>
-
-          {/* Botón "Return to Top" posicionado 50% abajo del header */}
-          <Box
-            sx={{
-              position: "absolute",
-              left: "50%",
-              bottom: "-75%",
-              transform: "translate(-50%, 50%)",
-              background: "white",
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-              transition: "background 0.3s",
-            }}
-            onClick={() =>
-              window.scrollTo({ top: 0, behavior: "smooth" })
-            }
-          >
-            <ArrowUpwardIcon sx={{ color: "#10906a" }} />
-          </Box>
-        </Box>
-      </Box>
+      {/* Usamos el componente CompactHeader en lugar del bloque duplicado */}
+      <CompactHeader
+        searchData={searchData}
+        headerIsTop={headerIsTop}
+        showCompactHeader={showCompactHeader}
+      />
 
       {showCompactHeader && (
         <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
@@ -284,9 +208,9 @@ const ExtrasRenta = () => {
         Añade servicios adicionales para mejorar tu experiencia
       </Typography>
 
-      <Grid container spacing={3} justifyContent="center">
+      <Grid2 container spacing={3} justifyContent="center">
         {extras.map((extra) => (
-          <Grid item xs={12} sm={6} md={12} key={extra.id}>
+          <Grid2 item xs={12} sm={6} md={12} key={extra.id}>
             <Card
               sx={{
                 display: "flex",
@@ -413,9 +337,9 @@ const ExtrasRenta = () => {
                 )}
               </Box>
             </Card>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
 
       <Box
         sx={{
