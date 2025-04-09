@@ -354,51 +354,75 @@ const SeguroVehiculo = () => {
       <Dialog
         open={openRecommendation}
         onClose={() => setOpenRecommendation(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+            boxShadow: 8,
+            maxWidth: "500px",
+            width: "90%",
+          },
+        }}
       >
-        <DialogTitle
+        {/* Título sin fondo pero con jerarquía */}
+        <Box sx={{ py: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              fontSize: "20px",
+            }}
+          >
+            RECOMENDACIÓN
+          </Typography>
+        </Box>
+
+        {/* Contenido del modal */}
+        <DialogContent
           sx={{
+            pt: 0,
+            pb: 2,
+            px: 3,
             textAlign: "center",
-            fontSize: "24px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
           }}
         >
-          RECOMENDACIÓN
-        </DialogTitle>
-        <DialogContent>
           <Typography
             variant="body1"
             sx={{
               textAlign: "justify",
               fontSize: "16px",
-              lineHeight: "1.5",
-              mt: 2,
+              lineHeight: 1.6,
             }}
           >
             Te recomendamos considerar el{" "}
             <strong>{recommendedPlan?.nombre}</strong> por solo{" "}
-            <strong>{recommendedPlan?.total}</strong> al día, que incluye
-            coberturas adicionales para mayor tranquilidad.
+            <strong>{recommendedPlan?.total}</strong> al día. Este paquete
+            incluye coberturas adicionales que te darán mayor tranquilidad,
+            seguridad y respaldo durante tu viaje.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+
+        {/* Acciones */}
+        <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
           <Button
             onClick={() => setOpenRecommendation(false)}
             variant="outlined"
             sx={{
-              color: "grey",
+              color: "#333",
               fontWeight: "bold",
-              p: "12px 20px",
+              padding: "10px 16px",
               borderRadius: "8px",
-              fontSize: "16px",
-              borderColor: "grey",
+              fontSize: "14px",
+              borderColor: "#ccc",
+              backgroundColor: "#f5f5f5",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
             }}
           >
-            Mantener seguro actual
+            MANTENER SEGURO ACTUAL
           </Button>
+
           <Button
             onClick={handleSelectNextPlan}
             variant="contained"
@@ -406,12 +430,12 @@ const SeguroVehiculo = () => {
               backgroundColor: "#d60812",
               color: "white",
               fontWeight: "bold",
-              p: "12px 20px",
+              padding: "10px 16px",
               borderRadius: "8px",
-              fontSize: "16px",
+              fontSize: "14px",
             }}
           >
-            Seleccionar {recommendedPlan?.nombre}
+            SELECCIONAR {recommendedPlan?.nombre.toUpperCase()}
           </Button>
         </DialogActions>
       </Dialog>
