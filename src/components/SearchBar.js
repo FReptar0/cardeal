@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -18,6 +18,7 @@ import { es } from "date-fns/locale";
 import format from "date-fns/format";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { useSearch } from "@/contexts/SearchContext"; // Importamos nuestro contexto
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -30,6 +31,7 @@ const availableTimes = [
   "08:00 PM",
 ];
 
+// Función para convertir formato 12h a minutos (para comparaciones)
 function convert12to24(time12h) {
   const [time, modifier] = time12h.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
@@ -38,7 +40,7 @@ function convert12to24(time12h) {
   return hours * 60 + minutes;
 }
 
-// Ubicaciones actualizadas con propiedad id
+// Ubicaciones disponibles (estáticas)
 const locations = [
   {
     id: "AIBJ-T1-048",
@@ -107,8 +109,6 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
           }}
         >
           <Typography variant="body1">{formatDay(date)}</Typography>
-
-          {/* Número del día con efecto de hover */}
           <Typography
             variant="h5"
             sx={{
@@ -122,9 +122,7 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
           >
             {formatNumber(date)}
           </Typography>
-
           <Typography variant="body2">{formatMonthYear(date)}</Typography>
-
           {/* Botón invisible que activa el DatePicker */}
           <Button
             sx={{
@@ -142,7 +140,6 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
             disableFocusRipple
             onClick={() => dateInputRef.current?.showPicker()}
           ></Button>
-
           <TextField
             type="date"
             inputRef={dateInputRef}
@@ -184,9 +181,9 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
             disableUnderline
             sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
           >
-            {availableTimes.map((time, index) => (
-              <MenuItem key={index} value={time}>
-                {time}
+            {availableTimes.map((t, index) => (
+              <MenuItem key={index} value={t}>
+                {t}
               </MenuItem>
             ))}
           </Select>
@@ -196,150 +193,63 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
   );
 }
 
-export default function SearchBar({ sx = {}, onValuesChange }) {
+export default function SearchBar({ sx = {} }) {
   const router = useRouter();
+  const { searchData, setSearchData } = useSearch(); // Usamos el contexto global
   const isRentalPage =
     router.pathname === "/rental" ||
     router.pathname === "/seguro" ||
     router.pathname === "/extras-renta";
 
-  // SearchData
-  const [pickupLocation, setPickupLocation] = useState(locations[0]);
-  const [returnLocation, setReturnLocation] = useState(locations[0]);
-  const [sameOffice, setSameOffice] = useState(true);
-  const [pickupDate, setPickupDate] = useState(new Date());
-  const [returnDate, setReturnDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() + 1))
-  );
-  const [pickupTime, setPickupTime] = useState(availableTimes[0]);
-  const [returnTime, setReturnTime] = useState(availableTimes[0]);
+  // Funciones para actualizar el contexto al cambiar valores:
+  const handlePickupLocationChange = (event, newValue) =>
+    setSearchData({ ...searchData, pickupLocation: newValue });
 
-  // Data for rental page
-  useEffect(() => {
-    onValuesChange?.({
-      pickupLocation,
-      returnLocation,
-      sameOffice,
-      pickupDate,
-      returnDate,
-      pickupTime,
-      returnTime,
-    });
-  }, [
-    pickupLocation,
-    returnLocation,
-    sameOffice,
-    pickupDate,
-    returnDate,
-    pickupTime,
-    returnTime,
-  ]);
+  const handleReturnLocationChange = (event, newValue) =>
+    setSearchData({ ...searchData, returnLocation: newValue });
+
+  const handleSameOfficeChange = () =>
+    setSearchData({ ...searchData, sameOffice: !searchData.sameOffice });
 
   const handlePickupDateChange = (newDate) => {
     const newPickupDate = new Date(newDate);
     newPickupDate.setHours(0, 0, 0, 0);
-
-    const currentReturnDate = new Date(returnDate);
-    currentReturnDate.setHours(0, 0, 0, 0);
-
-    setPickupDate(newPickupDate);
-
-    if (currentReturnDate < newPickupDate) {
-      const adjustedReturnDate = new Date(newPickupDate);
-      adjustedReturnDate.setDate(adjustedReturnDate.getDate() + 1);
-      setReturnDate(adjustedReturnDate);
-      setReturnTime("08:00 AM");
-      return;
+    let newReturnDate = new Date(searchData.returnDate);
+    newReturnDate.setHours(0, 0, 0, 0);
+    if (newReturnDate < newPickupDate) {
+      newReturnDate = new Date(newPickupDate);
+      newReturnDate.setDate(newReturnDate.getDate() + 1);
     }
-
-    if (newPickupDate.toDateString() === currentReturnDate.toDateString()) {
-      const pickupMin = convert12to24(pickupTime);
-      const returnMin = convert12to24(returnTime);
-
-      if (pickupMin >= returnMin) {
-        setPickupTime("08:00 AM");
-
-        const nextAvailable = availableTimes.find(
-          (t) => convert12to24(t) > convert12to24("08:00 AM")
-        );
-
-        if (nextAvailable) {
-          setReturnTime(nextAvailable);
-        } else {
-          const newReturnDate = new Date(returnDate);
-          newReturnDate.setDate(newReturnDate.getDate() + 1);
-          setReturnDate(newReturnDate);
-          setReturnTime("08:00 AM");
-        }
-      }
-    }
+    setSearchData({
+      ...searchData,
+      pickupDate: newPickupDate,
+      returnDate: newReturnDate,
+      pickupTime: "08:00 AM",
+      returnTime: "08:00 AM",
+    });
   };
 
   const handleReturnDateChange = (newDate) => {
     const newReturnDate = new Date(newDate);
     newReturnDate.setHours(0, 0, 0, 0);
-
-    const currentPickupDate = new Date(pickupDate);
+    let currentPickupDate = new Date(searchData.pickupDate);
     currentPickupDate.setHours(0, 0, 0, 0);
-
-    setReturnDate(newReturnDate);
-
     if (newReturnDate < currentPickupDate) {
-      const adjustedPickupDate = new Date(newReturnDate);
-      adjustedPickupDate.setDate(adjustedPickupDate.getDate() - 1);
-      setPickupDate(adjustedPickupDate);
-      setPickupTime("02:00 PM");
+      currentPickupDate = new Date(newReturnDate);
+      currentPickupDate.setDate(currentPickupDate.getDate() - 1);
     }
+    setSearchData({
+      ...searchData,
+      returnDate: newReturnDate,
+      pickupDate: currentPickupDate,
+    });
   };
 
-  const handlePickupTimeChange = (newTime) => {
-    setPickupTime(newTime);
+  const handlePickupTimeChange = (newTime) =>
+    setSearchData({ ...searchData, pickupTime: newTime });
 
-    if (returnDate.toDateString() === pickupDate.toDateString()) {
-      const pickupMin = convert12to24(newTime);
-      const returnMin = convert12to24(returnTime);
-
-      if (returnMin <= pickupMin) {
-        const nextAvailable = availableTimes.find(
-          (t) => convert12to24(t) > pickupMin
-        );
-
-        if (nextAvailable) {
-          setReturnTime(nextAvailable);
-        } else {
-          const newReturnDate = new Date(returnDate);
-          newReturnDate.setDate(newReturnDate.getDate() + 1);
-          setReturnDate(newReturnDate);
-          setReturnTime(availableTimes[0]);
-        }
-      }
-    }
-  };
-
-  const handleReturnTimeChange = (newTime) => {
-    if (returnDate.toDateString() === pickupDate.toDateString()) {
-      const pickupMin = convert12to24(pickupTime);
-      const returnMin = convert12to24(newTime);
-
-      if (returnMin <= pickupMin) {
-        const nextAvailable = availableTimes.find(
-          (t) => convert12to24(t) > pickupMin
-        );
-
-        if (nextAvailable) {
-          setReturnTime(nextAvailable);
-        } else {
-          const newReturnDate = new Date(returnDate);
-          newReturnDate.setDate(newReturnDate.getDate() + 1);
-          setReturnDate(newReturnDate);
-          setReturnTime(availableTimes[0]);
-        }
-        return;
-      }
-    }
-
-    setReturnTime(newTime);
-  };
+  const handleReturnTimeChange = (newTime) =>
+    setSearchData({ ...searchData, returnTime: newTime });
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -361,7 +271,7 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
     >
       {!isRentalPage && (
         <Typography
-          variant={"h6"}
+          variant="h6"
           sx={{ color: "black", fontWeight: "bold", marginBottom: "6px" }}
           id="ubicacionOrigenSB"
         >
@@ -375,9 +285,7 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
         renderInput={(params) => (
           <TextField
             {...params}
-            label={
-              isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"
-            }
+            label={isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"}
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -397,28 +305,28 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
             }}
           />
         )}
-        value={pickupLocation}
-        onChange={(event, newValue) => setPickupLocation(newValue)}
+        value={searchData.pickupLocation}
+        onChange={handlePickupLocationChange}
         sx={{ width: "100%" }}
       />
       <FormControlLabel
         id="checkboxSB"
         control={
           <Checkbox
-            checked={sameOffice}
-            onChange={() => setSameOffice(!sameOffice)}
+            checked={searchData.sameOffice}
+            onChange={handleSameOfficeChange}
             sx={{ color: "#d32f2f", "&.Mui-checked": { color: "#d32f2f" } }}
           />
         }
         label="Devolver en la misma oficina"
         sx={{ color: "black", fontWeight: "bold" }}
       />
-      {!sameOffice && (
+      {!searchData.sameOffice && (
         <>
           {!isRentalPage && (
             <Typography
               className="second-select"
-              variant={"h6"}
+              variant="h6"
               sx={{ color: "black", fontWeight: "bold", marginBottom: "6px" }}
               id="ubicacionDestinoSB"
             >
@@ -432,9 +340,7 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={
-                  isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"
-                }
+                label={isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"}
                 variant="outlined"
                 sx={{
                   marginTop: "10px",
@@ -455,13 +361,12 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
                 }}
               />
             )}
-            value={returnLocation}
-            onChange={(event, newValue) => setReturnLocation(newValue)}
+            value={searchData.returnLocation}
+            onChange={handleReturnLocationChange}
             sx={{ width: "100%" }}
           />
         </>
       )}
-
       <Box
         sx={{
           display: "flex",
@@ -474,23 +379,22 @@ export default function SearchBar({ sx = {}, onValuesChange }) {
         <Box sx={{ flex: 1 }}>
           <DateTimeSelector
             label="Fecha y hora de recepción"
-            date={pickupDate}
+            date={searchData.pickupDate}
             setDate={handlePickupDateChange}
-            time={pickupTime}
+            time={searchData.pickupTime}
             setTime={handlePickupTimeChange}
           />
         </Box>
         <Box sx={{ flex: 1 }}>
           <DateTimeSelector
             label="Fecha y hora de devolución"
-            date={returnDate}
+            date={searchData.returnDate}
             setDate={handleReturnDateChange}
-            time={returnTime}
+            time={searchData.returnTime}
             setTime={handleReturnTimeChange}
           />
         </Box>
       </Box>
-
       <Button
         variant="contained"
         className="btn-buscar-sb"
