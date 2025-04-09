@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Container,
@@ -22,8 +22,8 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RentalStepper from "../components/Stepper";
-import CompactHeader from "../components/CompactHeader"; 
-import dynamic from "next/dynamic"; 
+import CompactHeader from "../components/CompactHeader";
+import dynamic from "next/dynamic";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -100,17 +100,17 @@ const SeguroVehiculo = () => {
   const [recommendedPlan, setRecommendedPlan] = useState(null);
 
   const router = useRouter();
-  // Details rectangle under header
+  // Estados para el header
   const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
-  // Search bar props
+  // Datos de la SearchBar
   const [searchData, setSearchData] = useState(null);
 
-  // Header top handler
   useEffect(() => {
     const interval = setInterval(() => {
+      // Se obtiene el estado del header desde localStorage
       const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
       setHeaderIsTop(headerTop);
       setShowCompactHeader(!headerTop);
@@ -122,7 +122,10 @@ const SeguroVehiculo = () => {
   const handleSelect = (plan) => {
     setSeleccionado(plan.id);
     const planIndex = planesSeguros.findIndex((p) => p.id === plan.id);
-    const nextPlan = planIndex < planesSeguros.length - 1 ? planesSeguros[planIndex + 1] : null;
+    const nextPlan =
+      planIndex < planesSeguros.length - 1
+        ? planesSeguros[planIndex + 1]
+        : null;
     if (nextPlan) {
       setRecommendedPlan(nextPlan);
       setOpenRecommendation(true);
@@ -133,7 +136,7 @@ const SeguroVehiculo = () => {
     if (!seleccionado) {
       setOpenWarning(true);
     } else {
-      console.log("Continuar con el seguro seleccionado: ", seleccionado);
+      console.log("Continuar con el seguro seleccionado:", seleccionado);
       router.push("/extras-renta");
     }
   };
@@ -144,7 +147,7 @@ const SeguroVehiculo = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
+    <Container maxWidth="xl" sx={{ textAlign: "center", marginTop: "148px" }}>
       {/* Sección de búsqueda */}
       <Box
         sx={{
@@ -170,20 +173,20 @@ const SeguroVehiculo = () => {
         </Box>
       </Box>
 
-      {/* Usamos el componente CompactHeader en lugar del bloque duplicado */}
       <CompactHeader
         searchData={searchData}
         headerIsTop={headerIsTop}
         showCompactHeader={showCompactHeader}
       />
 
-      {showCompactHeader && <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />}
+      {showCompactHeader && (
+        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
+      )}
 
       <Box sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
       </Box>
 
-      {/* Espaciador para evitar superposición */}
       {isSticky && <Box sx={{ height: "120px" }} />}
 
       <Typography variant="h4" fontWeight="bold">
@@ -193,20 +196,24 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
-      {/* Grid container sin wrap para mantener las cards en una sola fila */}
       <Grid
         container
         spacing={3}
-        wrap="nowrap"
+        wrap="wrap"
         justifyContent="center"
         alignItems="stretch"
       >
         {planesSeguros.map((plan) => (
-          <Grid item sx={{ flexShrink: 0 }} xs={12} sm={6} md={4} key={plan.id}>
+          <Grid item xs={12} sm={6} md={3} key={plan.id}>
             <Card
               sx={{
+                // En escritorio, se define un ancho mínimo mayor para que sean "más anchas"
+                minWidth: { xs: "auto", md: 320 },
                 boxShadow: seleccionado === plan.id ? 6 : 2,
-                border: seleccionado === plan.id ? "3px solid black" : "1px solid #ddd",
+                border:
+                  seleccionado === plan.id
+                    ? "3px solid black"
+                    : "1px solid #ddd",
                 cursor: "pointer",
                 p: 3,
                 backgroundColor: "#fff",
@@ -235,13 +242,19 @@ const SeguroVehiculo = () => {
                   Recomendado
                 </Box>
               )}
-              <Typography variant="h4" fontWeight="bold" sx={{ color: "black", display: "inline" }}>
+              <Typography
+                variant="h4"
+                fontWeight="bold"
+                sx={{ color: "black", display: "inline" }}
+              >
                 {plan.total.split(" ")[0]}
               </Typography>
-              <Typography variant="h6" sx={{ color: "gray", display: "inline", ml: 1 }}>
+              <Typography
+                variant="h6"
+                sx={{ color: "gray", display: "inline", ml: 1 }}
+              >
                 MXN/día
               </Typography>
-
               <CardMedia
                 component="img"
                 sx={{ height: 200, objectFit: "contain", p: 1 }}
@@ -256,7 +269,11 @@ const SeguroVehiculo = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <Typography variant="h6" fontWeight="bold" sx={{ color: plan.color, mb: 1 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{ color: plan.color, mb: 1 }}
+                >
                   {plan.nombre}
                 </Typography>
                 {todasLasCoberturas.map((cobertura, index) => (
@@ -312,7 +329,8 @@ const SeguroVehiculo = () => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ mt: 2 }}>
-            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar una protección antes de continuar con tu reserva.
+            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong>{" "}
+            seleccionar una protección antes de continuar con tu reserva.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
@@ -336,43 +354,75 @@ const SeguroVehiculo = () => {
       <Dialog
         open={openRecommendation}
         onClose={() => setOpenRecommendation(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+            boxShadow: 8,
+            maxWidth: "500px",
+            width: "90%",
+          },
+        }}
       >
-        <DialogTitle
+        {/* Título sin fondo pero con jerarquía */}
+        <Box sx={{ py: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              fontSize: "20px",
+            }}
+          >
+            RECOMENDACIÓN
+          </Typography>
+        </Box>
+
+        {/* Contenido del modal */}
+        <DialogContent
           sx={{
+            pt: 0,
+            pb: 2,
+            px: 3,
             textAlign: "center",
-            fontSize: "24px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
           }}
         >
-          RECOMENDACIÓN
-        </DialogTitle>
-        <DialogContent>
           <Typography
             variant="body1"
-            sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}
+            sx={{
+              textAlign: "justify",
+              fontSize: "16px",
+              lineHeight: 1.6,
+            }}
           >
-            Te recomendamos considerar el <strong>{recommendedPlan?.nombre}</strong> por solo <strong>{recommendedPlan?.total}</strong> al día, que incluye coberturas adicionales para mayor tranquilidad.
+            Te recomendamos considerar el{" "}
+            <strong>{recommendedPlan?.nombre}</strong> por solo{" "}
+            <strong>{recommendedPlan?.total}</strong> al día. Este paquete
+            incluye coberturas adicionales que te darán mayor tranquilidad,
+            seguridad y respaldo durante tu viaje.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+
+        {/* Acciones */}
+        <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
           <Button
             onClick={() => setOpenRecommendation(false)}
             variant="outlined"
             sx={{
-              color: "grey",
+              color: "#333",
               fontWeight: "bold",
-              p: "12px 20px",
+              padding: "10px 16px",
               borderRadius: "8px",
-              fontSize: "16px",
-              borderColor: "grey",
+              fontSize: "14px",
+              borderColor: "#ccc",
+              backgroundColor: "#f5f5f5",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
             }}
           >
-            Mantener seguro actual
+            MANTENER SEGURO ACTUAL
           </Button>
+
           <Button
             onClick={handleSelectNextPlan}
             variant="contained"
@@ -380,12 +430,12 @@ const SeguroVehiculo = () => {
               backgroundColor: "#d60812",
               color: "white",
               fontWeight: "bold",
-              p: "12px 20px",
+              padding: "10px 16px",
               borderRadius: "8px",
-              fontSize: "16px",
+              fontSize: "14px",
             }}
           >
-            Seleccionar {recommendedPlan?.nombre}
+            SELECCIONAR {recommendedPlan?.nombre.toUpperCase()}
           </Button>
         </DialogActions>
       </Dialog>
