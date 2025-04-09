@@ -1,14 +1,16 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Tooltip } from "@mui/material";
+import { Box, Typography, Tooltip, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import format from "date-fns/format";
-import { useSearch } from "../contexts/SearchContext"; // Importamos el hook del contexto
+import { useSearch } from "../contexts/SearchContext";
 
 const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
-    // Obtenemos la data global de reserva
     const { searchData } = useSearch();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     return (
         <Box
@@ -17,56 +19,92 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
                 top: headerIsTop ? "100px" : "60px",
                 left: 0,
                 width: "100%",
-                height: "64px",
-                background: "#10906a",
+                backgroundColor: "#10906a",
                 zIndex: 1200,
                 opacity: showCompactHeader ? 1 : 0,
-                transition: "opacity .4s ease, transform .7s ease",
                 pointerEvents: showCompactHeader ? "auto" : "none",
                 visibility: showCompactHeader ? "visible" : "hidden",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                px: 2,
+                transition: "opacity 0.4s ease, transform 0.7s ease",
             }}
         >
             <Box
                 sx={{
                     position: "relative",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    justifyContent: "space-between",
-                    gap: 2,
-                    width: "100%",
                     maxWidth: "1200px",
+                    margin: "0 auto",
+                    px: 2,
+                    py: 1,
                 }}
             >
-                <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
-                    Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
-                    Destino:{" "}
-                    {searchData?.sameOffice
-                        ? "Misma oficina"
-                        : searchData?.returnLocation?.name || "No seleccionado"}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "white", fontSize: "1.1rem" }}>
-                    {searchData?.pickupDate &&
-                        `${format(searchData.pickupDate, "dd/MM/yyyy")} ${searchData.pickupTime} → ${format(
-                            searchData.returnDate,
-                            "dd/MM/yyyy"
-                        )} ${searchData.returnTime}`}
-                </Typography>
+                {/* Sección de textos: Origen, Destino, y Fechas */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        flexWrap: "wrap",
+                        gap: 2,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    {/* Origen */}
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "white",
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            textAlign: { xs: "center", sm: "left" },
+                            flexBasis: { xs: "100%", sm: "auto" },
+                        }}
+                    >
+                        Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
+                    </Typography>
+
+                    {/* Destino */}
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "white",
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            textAlign: { xs: "center", sm: "left" },
+                            flexBasis: { xs: "100%", sm: "auto" },
+                        }}
+                    >
+                        Destino:{" "}
+                        {searchData?.sameOffice
+                            ? "Misma oficina"
+                            : searchData?.returnLocation?.name || "No seleccionado"}
+                    </Typography>
+
+                    {/* Fecha y hora */}
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "white",
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            flexBasis: "100%",
+                            marginBottom: 2,
+                            textAlign: "center",
+                        }}
+                    >
+                        {searchData?.pickupDate &&
+                            `${format(searchData.pickupDate, "dd/MM/yyyy")} ${searchData.pickupTime
+                            } → ${format(searchData.returnDate, "dd/MM/yyyy")} ${searchData.returnTime
+                            }`}
+                    </Typography>
+                </Box>
+
+                {/* Botón flotando a mitad fuera del contenedor */}
                 <Tooltip title="Volver arriba" arrow>
                     <Box
                         sx={{
                             position: "absolute",
                             left: "50%",
-                            bottom: "-75%",
-                            transform: "translate(-50%, 50%)",
+                            bottom: "-20px",
+                            transform: "translateX(-50%)",
                             background: "white",
-                            width: 40,
-                            height: 40,
+                            width: 35,
+                            height: 35,
                             borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",
