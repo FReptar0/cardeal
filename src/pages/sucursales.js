@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Divider, Grid2, Link } from "@mui/material";
+import { Box, Typography, Divider, Grid, Link } from "@mui/material";
 
 export default function Sucursales() {
     // Ubicaciones para CDMX
@@ -44,14 +44,14 @@ export default function Sucursales() {
                     boxShadow: 2,
                 }}
             >
-                <Grid2
+                <Grid
                     container
                     spacing={4}
                     direction={{ xs: "column", md: "row" }}
                     alignItems="stretch"
                 >
                     {/* Contenedor para el mapa con relación 16:9 */}
-                    <Grid2 item xs={12} md={6}>
+                    <Grid item xs={12} md={6}>
                         <Box
                             sx={{
                                 position: "relative",
@@ -78,10 +78,10 @@ export default function Sucursales() {
                                 referrerPolicy="no-referrer-when-downgrade"
                             ></iframe>
                         </Box>
-                    </Grid2>
+                    </Grid>
 
                     {/* Texto de la ubicación */}
-                    <Grid2
+                    <Grid
                         item
                         xs={12}
                         md={6}
@@ -109,8 +109,8 @@ export default function Sucursales() {
                                 </Link>
                             </Typography>
                         </Box>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </Box>
         ));
 

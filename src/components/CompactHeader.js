@@ -1,9 +1,15 @@
+"use client";
+
 import React from "react";
 import { Box, Typography, Tooltip } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import format from "date-fns/format";
+import { useSearch } from "../contexts/SearchContext"; // Importamos el hook del contexto
 
-const CompactHeader = ({ searchData, headerIsTop, showCompactHeader }) => {
+const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
+    // Obtenemos la data global de reserva
+    const { searchData } = useSearch();
+
     return (
         <Box
             sx={{
@@ -51,7 +57,6 @@ const CompactHeader = ({ searchData, headerIsTop, showCompactHeader }) => {
                             "dd/MM/yyyy"
                         )} ${searchData.returnTime}`}
                 </Typography>
-                {/* Botón "Return to Top" */}
                 <Tooltip title="Volver arriba" arrow>
                     <Box
                         sx={{

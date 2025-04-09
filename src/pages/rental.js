@@ -11,10 +11,14 @@ import {
   DialogActions,
 } from "@mui/material";
 import RentalStepper from "../components/Stepper";
-import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import CompactHeader from "../components/CompactHeader"; // Nuevo componente
 import carsData from "../data/cars.json";
+import dynamic from "next/dynamic"; // Importar dynamic para cargar componentes de forma diferida
+
+const SearchBar = dynamic(() => import("../components/SearchBar"), {
+  ssr: false,
+});
 
 export default function RentalPage() {
   const [filteredCars, setFilteredCars] = useState(carsData);
