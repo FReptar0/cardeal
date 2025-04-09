@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // next/navigation para componentes client
 import {
   Container,
   Grid,
@@ -21,12 +21,17 @@ import dynamic from "next/dynamic"; // Importar dinámicamente el componente
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import RentalStepper from "../components/Stepper";
-import CompactHeader from "../components/CompactHeader"; // Importamos el componente reutilizable
+import CompactHeader from "../components/CompactHeader";
 
+// Importa SearchBar dinámicamente
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
+// Importa el hook del contexto para extras
+import { useBooking } from "../contexts/BookingContext";
+
+// Arreglo de extras
 const extras = [
   {
     id: "responsabilidad_civil",
@@ -80,19 +85,21 @@ const extras = [
 
 const ExtrasRenta = () => {
   const router = useRouter();
-  const [cantidadExtras, setCantidadExtras] = useState({});
-  const [sillaBebeSize, setSillaBebeSize] = useState("chica"); // Tamaño por defecto
 
-  // Details rectangle under header
+  // Usamos el estado global para extras a través del contexto
+  const { selectedExtras, setSelectedExtras } = useBooking();
+
+  // Mantenemos el estado para el tamaño de la silla de bebé de forma local
+  const [sillaBebeSize, setSillaBebeSize] = useState("chica");
+
+  // Estados para header y SearchBar
   const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
-
-  // Search bar props
   const [searchData, setSearchData] = useState(null);
 
-  // Header top handler
+  // Manejo del header
   useEffect(() => {
     const interval = setInterval(() => {
       const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
@@ -100,25 +107,19 @@ const ExtrasRenta = () => {
       setShowCompactHeader(!headerTop);
       setHideSearchSection(!headerTop);
     }, 100); // Verifica cada 100ms
-
     return () => clearInterval(interval);
   }, []);
 
+  // Función para modificar la cantidad de un extra; actúa directamente sobre el estado global
   const modificarCantidad = (id, operacion, unico = false) => {
-    setCantidadExtras((prev) => {
+    setSelectedExtras((prev) => {
       const currentQty = prev[id] || 0;
 
-      // Límites específicos
+      // Límites específicos para ciertos extras
       if (operacion === "sumar") {
-        if (id === "silla_bebe" && currentQty >= 2) {
-          return prev; // Máx. 2 sillas para bebé
-        }
-        if (id === "conductor_menor" && currentQty >= 1) {
-          return prev; // Máx. 1 conductor menor
-        }
-        if (id === "conductor_adicional" && currentQty >= 2) {
-          return prev; // Máx. 2 conductores adicionales
-        }
+        if (id === "silla_bebe" && currentQty >= 2) return prev; // Máx. 2 sillas para bebé
+        if (id === "conductor_menor" && currentQty >= 1) return prev; // Máx. 1 conductor menor
+        if (id === "conductor_adicional" && currentQty >= 2) return prev; // Máx. 2 conductores adicionales
       }
 
       let nuevaCantidad = unico
@@ -127,27 +128,22 @@ const ExtrasRenta = () => {
           : 0
         : currentQty + (operacion === "sumar" ? 1 : -1);
 
-      if (nuevaCantidad < 0) {
-        nuevaCantidad = 0;
-      }
+      if (nuevaCantidad < 0) nuevaCantidad = 0;
 
       return { ...prev, [id]: nuevaCantidad };
     });
   };
 
+  // Cálculo del total de extras usando los extras globales seleccionados
   const total = extras.reduce((acc, extra) => {
-    const cantidad = cantidadExtras[extra.id] || 0;
+    const cantidad = selectedExtras[extra.id] || 0;
     let precio = extra.precio;
-
-    // La silla para bebé usa el precio del tamaño seleccionado
+    // Para la silla de bebé, se usa el precio según el tamaño seleccionado
     if (extra.id === "silla_bebe") {
       precio = extra.precio[sillaBebeSize];
     }
-
-    // "unico" => precio único (no multiplica por día)
-    // No único => multiplicar por 4 (ejemplo, ajuste según tus días de renta)
+    // Si el extra es "unico" se toma el precio unitario, de lo contrario se multiplica (ej: 4 días de renta)
     const costo = extra.unico ? cantidad * precio : cantidad * precio * 4;
-
     return acc + costo;
   }, 0);
 
@@ -183,7 +179,7 @@ const ExtrasRenta = () => {
         </Box>
       </Box>
 
-      {/* Usamos el componente CompactHeader en lugar del bloque duplicado */}
+      {/* Se utiliza el CompactHeader */}
       <CompactHeader
         searchData={searchData}
         headerIsTop={headerIsTop}
@@ -198,7 +194,6 @@ const ExtrasRenta = () => {
         <RentalStepper />
       </Box>
 
-      {/* Espaciador para evitar superposición */}
       {isSticky && <Box sx={{ height: "120px" }} />}
 
       <Typography variant="h4" fontWeight="bold">
@@ -298,7 +293,7 @@ const ExtrasRenta = () => {
                   <Button
                     variant="contained"
                     sx={{
-                      backgroundColor: cantidadExtras[extra.id]
+                      backgroundColor: selectedExtras[extra.id]
                         ? "#A0A0A0"
                         : "#d60812",
                       color: "white",
@@ -310,23 +305,23 @@ const ExtrasRenta = () => {
                     onClick={() =>
                       modificarCantidad(
                         extra.id,
-                        cantidadExtras[extra.id] ? "restar" : "sumar",
+                        selectedExtras[extra.id] ? "restar" : "sumar",
                         true
                       )
                     }
                   >
-                    {cantidadExtras[extra.id] ? "CANCELAR" : "AGREGAR"}
+                    {selectedExtras[extra.id] ? "CANCELAR" : "AGREGAR"}
                   </Button>
                 ) : (
                   <>
                     <IconButton
                       onClick={() => modificarCantidad(extra.id, "restar")}
-                      disabled={cantidadExtras[extra.id] === 0}
+                      disabled={selectedExtras[extra.id] === 0}
                     >
                       <RemoveIcon />
                     </IconButton>
                     <Typography variant="h6">
-                      {cantidadExtras[extra.id] || 0}
+                      {selectedExtras[extra.id] || 0}
                     </Typography>
                     <IconButton
                       onClick={() => modificarCantidad(extra.id, "sumar")}
