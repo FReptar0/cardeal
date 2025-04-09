@@ -16,11 +16,15 @@ import CompactHeader from "../components/CompactHeader";
 import carsData from "../data/cars.json";
 import dynamic from "next/dynamic";
 
+// Importa el contexto global
+import { useBooking } from "../contexts/BookingContext";
+
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
 export default function RentalPage() {
+  // Estados locales
   const [filteredCars, setFilteredCars] = useState(carsData);
   const [selectedCarIndex, setSelectedCarIndex] = useState(null);
   const [isSticky, setIsSticky] = useState(false);
@@ -35,6 +39,9 @@ export default function RentalPage() {
 
   const router = useRouter();
   const scrollRefs = useRef([]);
+
+  // Extrae del contexto el auto seleccionado y su setter
+  const { selectedCar, setSelectedCar } = useBooking();
 
   useEffect(() => {
     if (selectedCarIndex !== null && scrollRefs.current[selectedCarIndex]) {
@@ -55,6 +62,18 @@ export default function RentalPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // NUEVO: Sincroniza el índice local con el vehículo seleccionado en el contexto
+  useEffect(() => {
+    if (selectedCar) {
+      const index = filteredCars.findIndex(
+        (car) => car.name === selectedCar.name
+      );
+      if (index !== -1) {
+        setSelectedCarIndex(index);
+      }
+    }
+  }, [selectedCar, filteredCars]);
+
   const handleSearch = (filters) => {
     setFilteredCars(carsData); // Aplica filtros si es necesario
   };
@@ -62,6 +81,7 @@ export default function RentalPage() {
   const handleCarSelect = (car, index) => {
     setPreviousCarIndex(selectedCarIndex);
     setSelectedCarIndex(index);
+    setSelectedCar(car); // Guarda el auto seleccionado en el contexto
     console.log("Seleccionaste el índice:", index);
 
     if (index < filteredCars.length - 1) {
@@ -90,7 +110,9 @@ export default function RentalPage() {
       selectedCarIndex < filteredCars.length - 1
     ) {
       console.log("Seleccionar siguiente:", selectedCarIndex + 1);
-      setSelectedCarIndex(selectedCarIndex + 1);
+      const newIndex = selectedCarIndex + 1;
+      setSelectedCarIndex(newIndex);
+      setSelectedCar(filteredCars[newIndex]); // Actualizamos la selección global con el auto siguiente
     }
     setOpenRecommendation(false);
   };
@@ -197,28 +219,63 @@ export default function RentalPage() {
         </Button>
       </Box>
 
-      {/* MODAL DE RECOMENDACIÓN */}
+      {/* Modal de recomendación */}
+      <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontSize: "24px",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+          }}
+        >
+          🚨 ATENCIÓN 🚨
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong>{" "}
+            seleccionar un vehículo antes de continuar.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <Button
+            onClick={() => setOpenWarning(false)}
+            variant="contained"
+            sx={{
+              backgroundColor: "#d60812",
+              color: "white",
+              fontWeight: "bold",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              fontSize: "16px",
+            }}
+          >
+            SELECCIONAR UN VEHÍCULO
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog
         open={openRecommendation}
-        onClose={handleCloseRecommendation}
+        onClose={() => setOpenRecommendation(false)}
         PaperProps={{
           sx: {
             borderRadius: "12px",
-            overflow: "hidden",
             boxShadow: 8,
             maxWidth: "500px",
             width: "90%",
           },
         }}
       >
-        {/* Título sin fondo, pero con negritas */}
         <Box sx={{ py: 2 }}>
           <Typography
             variant="h6"
             sx={{
               fontWeight: "bold",
               textAlign: "center",
-              margin: 0,
               fontSize: "20px",
             }}
           >
@@ -226,58 +283,31 @@ export default function RentalPage() {
           </Typography>
         </Box>
 
-        {/* Contenido del modal */}
         <DialogContent
           sx={{
             pt: 0,
             pb: 2,
             px: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
             textAlign: "center",
           }}
         >
-          {tempRecommendedCar ? (
-            <>
-              <Typography
-                variant="body1"
-                sx={{
-                  mb: 2,
-                  fontSize: "16px",
-                  maxWidth: 400,
-                  textAlign: "justify",
-                  lineHeight: 1.6,
-                }}
-              >
-                Te recomendamos considerar la categoría{" "}
-                <strong>{tempRecommendedCar.category}</strong> (
-                {tempRecommendedCar.name}) que ofrece mayores prestaciones por
-                un precio competitivo.
-              </Typography>
-
-              {/* Imagen del auto */}
-              <Box
-                component="img"
-                src={tempRecommendedCar.image || "/images/default-car.jpg"}
-                alt={tempRecommendedCar.name}
-                sx={{
-                  width: "100%",
-                  maxWidth: 280,
-                  borderRadius: 2,
-                  mb: 3,
-                  objectFit: "contain",
-                }}
-              />
-            </>
-          ) : (
-            <Typography variant="body1">
-              No hay una categoría siguiente.
-            </Typography>
-          )}
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "justify",
+              fontSize: "16px",
+              lineHeight: 1.6,
+            }}
+          >
+            Te recomendamos considerar el{" "}
+            <strong>
+              {tempRecommendedCar ? tempRecommendedCar.category : ""}
+            </strong>{" "}
+            ({tempRecommendedCar ? tempRecommendedCar.name : ""}) que ofrece
+            mayores prestaciones por un precio competitivo.
+          </Typography>
         </DialogContent>
 
-        {/* Botones de acción con rediseño */}
         <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
           <Button
             onClick={handleKeepCurrent}
@@ -311,7 +341,10 @@ export default function RentalPage() {
                 fontSize: "14px",
               }}
             >
-              SELECCIONAR {tempRecommendedCar.category.toUpperCase()}
+              SELECCIONAR{" "}
+              {tempRecommendedCar
+                ? tempRecommendedCar.category.toUpperCase()
+                : ""}
             </Button>
           )}
         </DialogActions>
