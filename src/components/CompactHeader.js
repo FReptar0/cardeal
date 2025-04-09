@@ -1,16 +1,13 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Tooltip, useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Box, Typography, Tooltip } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import format from "date-fns/format";
 import { useSearch } from "../contexts/SearchContext";
 
 const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
     const { searchData } = useSearch();
-    const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     return (
         <Box
