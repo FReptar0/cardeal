@@ -1,4 +1,4 @@
-import { Container, Grid2, Typography, Box } from "@mui/material";
+import { Grid2, Typography, Box } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import CallIcon from "@mui/icons-material/Call";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";

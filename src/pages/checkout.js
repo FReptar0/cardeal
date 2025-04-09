@@ -268,7 +268,7 @@ const CheckoutPage = () => {
                                     }}
                                     href="/terminos-y-condiciones"
                                     target="_blank"
-                                    >Acepto términos y condiciones de renta</Link>}
+                                >Acepto términos y condiciones de renta</Link>}
                                 error={touched.terms && !!errors.terms}
                                 helperText={touched.terms && errors.terms}
                             />
@@ -281,7 +281,7 @@ const CheckoutPage = () => {
                                     }}
                                     href="/aviso-de-privacidad"
                                     target="_blank"
-                                    >Acepto la política de datos personales</Link>}
+                                >Acepto la política de datos personales</Link>}
                                 error={touched.privacy && !!errors.privacy}
                                 helperText={touched.privacy && errors.privacy}
                             />

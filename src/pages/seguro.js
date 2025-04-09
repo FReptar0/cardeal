@@ -11,7 +11,6 @@ import {
   Typography,
   Box,
   Button,
-  IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -19,15 +18,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tooltip,
-  Divider,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
-import format from "date-fns/format";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CompactHeader from "../components/CompactHeader"; // Se importa el nuevo componente
 
 const todasLasCoberturas = [

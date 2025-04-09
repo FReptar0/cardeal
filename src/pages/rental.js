@@ -2,35 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Container,
-  Grid2,
-  Card,
-  CardContent,
-  CardMedia,
   Typography,
   Box,
   Button,
-  IconButton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Divider,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tooltip,
-  Link,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import RentalStepper from "../components/Stepper";
 import SearchBar from "../components/SearchBar";
 import CarCard from "../components/CarCard";
 import CompactHeader from "../components/CompactHeader"; // Nuevo componente
 import carsData from "../data/cars.json";
-import format from "date-fns/format";
 
 export default function RentalPage() {
   const [filteredCars, setFilteredCars] = useState(carsData);
