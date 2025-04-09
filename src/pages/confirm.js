@@ -3,7 +3,6 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import InfoIcon from "@mui/icons-material/Info";
-import Head from "next/head";
 import RentalStepper from "../components/Stepper";
 import cars from "../data/cars.json";
 

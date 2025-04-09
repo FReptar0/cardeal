@@ -1,6 +1,5 @@
 import { Box, Card, CardContent, Typography, Avatar, Button, Divider, Container, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { useState } from "react";
 import cars from "../data/cars.json"; // Importar datos del JSON
 
 const UserProfile = () => {

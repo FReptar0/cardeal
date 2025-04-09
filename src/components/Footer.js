@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, IconButton } from "@mui/material";
+import { Box, Grid2, Typography, IconButton } from "@mui/material";
 import { Facebook, Instagram, Twitter, LinkedIn } from "@mui/icons-material";
 
 const Footer = () => {
@@ -13,9 +13,9 @@ const Footer = () => {
         height: "auto",
       }}
     >
-      <Grid container spacing={2} sx={{ height: "100%" }}>
+      <Grid2 container spacing={2} sx={{ height: "100%" }}>
         {/* Columna 1 */}
-        <Grid item xs={12} sm={12} md={4}>
+        <Grid2 item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
@@ -65,10 +65,10 @@ const Footer = () => {
               </Box>
             </Box>
           </Box>
-        </Grid>
+        </Grid2>
 
         {/* Columna 2 */}
-        <Grid item xs={12} sm={12} md={4}>
+        <Grid2 item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
@@ -157,10 +157,10 @@ const Footer = () => {
               </Box>
             </Box>
           </Box>
-        </Grid>
+        </Grid2>
 
         {/* Columna 3 */}
-        <Grid item xs={12} sm={12} md={4}>
+        <Grid2 item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
@@ -197,8 +197,8 @@ const Footer = () => {
               </Box>
             </Box>
           </Box>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };
