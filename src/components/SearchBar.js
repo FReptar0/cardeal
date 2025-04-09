@@ -18,7 +18,7 @@ import { es } from "date-fns/locale";
 import format from "date-fns/format";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { useSearch } from "@/contexts/SearchContext"; // Importamos nuestro contexto
+import { useSearch } from "@/contexts/SearchContext"; // Usamos el contexto global
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -71,8 +71,14 @@ const formatMonthYear = (date) =>
     ? format(date, "MMMM yyyy", { locale: es })
     : "Fecha inválida";
 
-// Obtener fecha actual en formato YYYY-MM-DD
-const getTodayDate = () => format(new Date(), "yyyy-MM-dd");
+// Función para obtener la fecha actual en la zona "America/Mexico_City"
+const getTodayDate = () => {
+  // Se obtiene la fecha en formato de CDMX y se formatea a YYYY-MM-DD
+  const mexicoDate = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" })
+  );
+  return format(mexicoDate, "yyyy-MM-dd");
+};
 
 function DateTimeSelector({ label, date, setDate, time, setTime }) {
   const dateInputRef = useRef(null);

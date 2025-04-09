@@ -1,4 +1,4 @@
-import { Grid2, Typography, Box } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import CallIcon from "@mui/icons-material/Call";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -23,29 +23,29 @@ const AtencionCliente = () => {
         <Typography variant="h5" fontWeight="bold">
           Ponte en contacto con nosotros a través de los siguientes medios:
         </Typography>
-        <Grid2 container spacing={4} justifyContent="center" mt={3}>
+        <Grid container spacing={4} justifyContent="center" mt={3}>
           {/* Chat Online */}
-          <Grid2 item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <ChatIcon fontSize="large" color="error" />
             <Typography variant="h6" fontWeight="bold">Chat online</Typography>
             <Typography variant="body2">Recibe asistencia personalizada de un agente.</Typography>
             <Typography variant="body2">Tiempo estimado de respuesta: 15 minutos.</Typography>
-          </Grid2>
+          </Grid>
 
           {/* Teléfono México */}
-          <Grid2 item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <CallIcon fontSize="large" color="error" />
             <Typography variant="h6" fontWeight="bold">(800) 062 1705</Typography>
             <Typography variant="body2">Lada sin costo desde México</Typography>
-          </Grid2>
+          </Grid>
 
           {/* WhatsApp */}
-          <Grid2 item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3}>
             <WhatsAppIcon fontSize="large" color="error" />
             <Typography variant="h6" fontWeight="bold">WhatsApp</Typography>
             <Typography variant="body2">Contacto directo desde la aplicación</Typography>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Box>
 
       {/* Sección de correos electrónicos */}

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-import SearchBar from "../components/SearchBar";
 import carsData from "../data/cars.json";
+import dynamic from "next/dynamic"; 
+
+
+const SearchBar = dynamic(() => import("../components/SearchBar"), {
+  ssr: false,
+});
 
 export default function Hero() {
   const [filteredCars, setFilteredCars] = useState(carsData);

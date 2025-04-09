@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Container,
-  Grid2,
+  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -17,11 +17,15 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+import dynamic from "next/dynamic"; // Importar dinámicamente el componente
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import RentalStepper from "../components/Stepper";
-import SearchBar from "../components/SearchBar";
 import CompactHeader from "../components/CompactHeader"; // Importamos el componente reutilizable
+
+const SearchBar = dynamic(() => import("../components/SearchBar"), {
+  ssr: false,
+});
 
 const extras = [
   {
@@ -204,9 +208,9 @@ const ExtrasRenta = () => {
         Añade servicios adicionales para mejorar tu experiencia
       </Typography>
 
-      <Grid2 container spacing={3} justifyContent="center">
+      <Grid container spacing={3} justifyContent="center">
         {extras.map((extra) => (
-          <Grid2 item xs={12} sm={6} md={12} key={extra.id}>
+          <Grid item xs={12} sm={6} md={12} key={extra.id}>
             <Card
               sx={{
                 display: "flex",
@@ -333,9 +337,9 @@ const ExtrasRenta = () => {
                 )}
               </Box>
             </Card>
-          </Grid2>
+          </Grid>
         ))}
-      </Grid2>
+      </Grid>
 
       <Box
         sx={{

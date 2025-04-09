@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Container,
-  Grid2,
+  Grid,
   Card,
   CardContent,
   CardMedia,
@@ -22,8 +22,12 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RentalStepper from "../components/Stepper";
-import SearchBar from "../components/SearchBar";
-import CompactHeader from "../components/CompactHeader"; // Se importa el nuevo componente
+import CompactHeader from "../components/CompactHeader"; 
+import dynamic from "next/dynamic"; 
+
+const SearchBar = dynamic(() => import("../components/SearchBar"), {
+  ssr: false,
+});
 
 const todasLasCoberturas = [
   "Colisión y daños",
@@ -189,8 +193,8 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
-      {/* Grid2 container sin wrap para mantener las cards en una sola fila */}
-      <Grid2
+      {/* Grid container sin wrap para mantener las cards en una sola fila */}
+      <Grid
         container
         spacing={3}
         wrap="nowrap"
@@ -198,7 +202,7 @@ const SeguroVehiculo = () => {
         alignItems="stretch"
       >
         {planesSeguros.map((plan) => (
-          <Grid2 item sx={{ flexShrink: 0 }} xs={12} sm={6} md={4} key={plan.id}>
+          <Grid item sx={{ flexShrink: 0 }} xs={12} sm={6} md={4} key={plan.id}>
             <Card
               sx={{
                 boxShadow: seleccionado === plan.id ? 6 : 2,
@@ -272,9 +276,9 @@ const SeguroVehiculo = () => {
                 ))}
               </CardContent>
             </Card>
-          </Grid2>
+          </Grid>
         ))}
-      </Grid2>
+      </Grid>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
         <Button
