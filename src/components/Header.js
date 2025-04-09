@@ -92,7 +92,7 @@ const Header = () => {
     if (path === "/atencion-cliente") return "Atención a Clientes";
     if (path === "/vehiculos" || path === "/vehiculos") return "Vehiculos";
     if (path === "/sucursales") return "Sucursales";
-    if (path === "/soluciones-empresariales") return "Soluciones Empresariales";
+    if (path === "/soluciones-empresariales") return "Convenios Corporativos";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
@@ -102,7 +102,7 @@ const Header = () => {
       <AppBar
         position="fixed"
         sx={{
-          background: '#F5F5F5',
+          background: "#F5F5F5",
           color: "#000",
           transition: "background 0.3s, height 0.3s",
           height: isTop ? "100px" : "60px",
@@ -147,7 +147,14 @@ const Header = () => {
                 marginRight: "32px",
               }}
             >
-              {["/", "/vehiculos", "/sucursales", "/soluciones-empresariales", "/atencion-cliente", "/FAQ"].map((path, index) => (
+              {[
+                "/",
+                "/vehiculos",
+                "/sucursales",
+                "/soluciones-empresariales",
+                "/atencion-cliente",
+                "/FAQ",
+              ].map((path, index) => (
                 <Button
                   key={index}
                   sx={{
@@ -221,39 +228,45 @@ const Header = () => {
             zIndex: 3,
           }}
         >
-          {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map((path, index) => (
-            <Box
-              key={index}
-              sx={{ display: "flex", width: "100%", justifyContent: "center" }}
-            >
-              <Link
-                href={path}
+          {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map(
+            (path, index) => (
+              <Box
+                key={index}
                 sx={{
-                  color: "#000",
-                  display: "block",
-                  textDecoration: "none",
-                  width: "90%",
-                  py: 1,
-                  fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-                  fontWeight: 500,
-                  fontSize: "0.875rem",
-                  lineHeight: 1.75,
-                  letterSpacing: "0.02857em",
-                  textTransform: "uppercase",
-                  borderBottom:
-                    activePath === path ? "2px solid #141414" : "none",
-                  cursor: "pointer",
-                  transition: "background 0.3s",
-                  borderRadius: "5px",
-                  "&:hover": {
-                    backgroundColor: "#D6D6D6",
-                  },
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "center",
                 }}
               >
-                {formatPathName(path)}
-              </Link>
-            </Box>
-          ))}
+                <Link
+                  href={path}
+                  sx={{
+                    color: "#000",
+                    display: "block",
+                    textDecoration: "none",
+                    width: "90%",
+                    py: 1,
+                    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    lineHeight: 1.75,
+                    letterSpacing: "0.02857em",
+                    textTransform: "uppercase",
+                    borderBottom:
+                      activePath === path ? "2px solid #141414" : "none",
+                    cursor: "pointer",
+                    transition: "background 0.3s",
+                    borderRadius: "5px",
+                    "&:hover": {
+                      backgroundColor: "#D6D6D6",
+                    },
+                  }}
+                >
+                  {formatPathName(path)}
+                </Link>
+              </Box>
+            )
+          )}
         </Box>
       </Collapse>
     </>

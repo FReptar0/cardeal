@@ -9,12 +9,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  // Solo agrega Paper para el nuevo diseño si deseas
+  Paper,
 } from "@mui/material";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
-import CompactHeader from "../components/CompactHeader"; // Nuevo componente
+import CompactHeader from "../components/CompactHeader";
 import carsData from "../data/cars.json";
-import dynamic from "next/dynamic"; // Importar dynamic para cargar componentes de forma diferida
+import dynamic from "next/dynamic";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -60,12 +62,12 @@ export default function RentalPage() {
       setHeaderIsTop(headerTop);
       setShowCompactHeader(!headerTop);
       setHideSearchSection(!headerTop);
-    }, 100); // Verifica cada 100ms
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
   const handleSearch = (filters) => {
-    // Aquí podrías filtrar según tu lógica
+    // Lógica de filtrado (si aplica)
     setFilteredCars(carsData);
   };
 
@@ -76,6 +78,7 @@ export default function RentalPage() {
     // Actualiza la selección inmediatamente
     setSelectedCarIndex(index);
     console.log("Seleccionaste el índice:", index);
+
     // Si hay un siguiente auto, abrimos el popup de recomendación
     if (index < filteredCars.length - 1) {
       const nextCar = filteredCars[index + 1];
@@ -88,7 +91,10 @@ export default function RentalPage() {
 
   // Si se cierra el modal sin elegir, revertimos la selección
   const handleCloseRecommendation = () => {
-    console.log("Modal cerrado sin elegir un botón. Revirtiendo a:", previousCarIndex);
+    console.log(
+      "Modal cerrado sin elegir un botón. Revirtiendo a:",
+      previousCarIndex
+    );
     setSelectedCarIndex(previousCarIndex);
     setOpenRecommendation(false);
   };
@@ -101,8 +107,16 @@ export default function RentalPage() {
 
   // Seleccionar la siguiente categoría
   const handleSelectNextCar = () => {
-    if (selectedCarIndex !== null && selectedCarIndex < filteredCars.length - 1) {
-      console.log("Seleccionar siguiente. Actual:", selectedCarIndex, "Siguiente:", selectedCarIndex + 1);
+    if (
+      selectedCarIndex !== null &&
+      selectedCarIndex < filteredCars.length - 1
+    ) {
+      console.log(
+        "Seleccionar siguiente. Actual:",
+        selectedCarIndex,
+        "Siguiente:",
+        selectedCarIndex + 1
+      );
       setSelectedCarIndex(selectedCarIndex + 1);
     }
     setOpenRecommendation(false);
@@ -145,14 +159,16 @@ export default function RentalPage() {
         </Box>
       </Box>
 
-      {/* Usamos nuestro nuevo componente CompactHeader */}
+      {/* Nuestro componente CompactHeader */}
       <CompactHeader
         searchData={searchData}
         headerIsTop={headerIsTop}
         showCompactHeader={showCompactHeader}
       />
 
-      {showCompactHeader && <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />}
+      {showCompactHeader && (
+        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
+      )}
 
       <Box sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
@@ -213,35 +229,53 @@ export default function RentalPage() {
         </Button>
       </Box>
 
-      {/* Popup de Recomendación */}
-      <Dialog open={openRecommendation} onClose={handleCloseRecommendation}>
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            fontSize: "24px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-          }}
-        >
-          RECOMENDACIÓN
-        </DialogTitle>
-        <DialogContent>
+      {/* Popup de Recomendación (DISEÑO MEJORADO) */}
+      <Dialog
+        open={openRecommendation}
+        onClose={handleCloseRecommendation}
+        // Opcional: Mejora la apariencia del "papel" del dialog
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+            overflow: "hidden",
+            boxShadow: 8,
+            maxWidth: "500px", // Ajusta el ancho máximo si deseas
+          },
+        }}
+      >
+        {/* Encabezado con fondo de color y tipografía clara */}
+        <Box sx={{ backgroundColor: "#d60812", p: 2 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: "#fff",
+              fontWeight: "bold",
+              textAlign: "center",
+              margin: 0,
+            }}
+          >
+            RECOMENDACIÓN
+          </Typography>
+        </Box>
+
+        <DialogContent sx={{ pt: 3, pb: 2, px: 3 }}>
           <Typography
             variant="body1"
-            sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5", mt: 2 }}
+            sx={{ textAlign: "justify", fontSize: "16px", lineHeight: "1.5" }}
           >
             {tempRecommendedCar ? (
               <>
-                Te recomendamos considerar la categoría <strong>{tempRecommendedCar.category}</strong> ({tempRecommendedCar.name}) que ofrece mayores prestaciones por un precio competitivo.
+                Te recomendamos considerar la categoría{" "}
+                <strong>{tempRecommendedCar.category}</strong> (
+                {tempRecommendedCar.name}) que ofrece mayores prestaciones por
+                un precio competitivo.
               </>
             ) : (
               "No hay una categoría siguiente."
             )}
           </Typography>
         </DialogContent>
+
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
           <Button
             onClick={handleKeepCurrent}
@@ -253,10 +287,12 @@ export default function RentalPage() {
               borderRadius: "8px",
               fontSize: "16px",
               borderColor: "grey",
+              mr: 1,
             }}
           >
-            Mantener selección actual
+            MANTENER SELECCIÓN ACTUAL
           </Button>
+
           {tempRecommendedCar && (
             <Button
               onClick={handleSelectNextCar}
@@ -270,7 +306,7 @@ export default function RentalPage() {
                 fontSize: "16px",
               }}
             >
-              Seleccionar {tempRecommendedCar.category}
+              SELECCIONAR {tempRecommendedCar.category.toUpperCase()}
             </Button>
           )}
         </DialogActions>
