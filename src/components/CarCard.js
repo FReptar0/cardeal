@@ -319,7 +319,7 @@ export default function CarCard({ car, isSelected }) {
                 fontWeight="bold"
                 sx={{ color: "#d60812" }}
               >
-                Pago en Sucursal
+                Pago en Mostrador
               </Typography>
               <Typography
                 variant="h5"
