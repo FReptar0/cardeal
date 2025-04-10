@@ -6,28 +6,28 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import darkTheme from "../utils/theme";
 import Layout from "../components/Layout";
-import { SearchProvider } from "../contexts/SearchContext"; // Si ya lo usas
-import { BookingProvider } from "../contexts/BookingContext"; // Importa el nuevo contexto
+import { SearchProvider } from "../contexts/SearchContext";
+import { BookingProvider } from "../contexts/BookingContext";
 
 function MyApp({ Component, pageProps }) {
-  return (
-    <>
-      <Head>
-        <link rel="icon" href="/logos/logo.png" />
-        <title>Qardeal</title>
-      </Head>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <SearchProvider>
-          <BookingProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </BookingProvider>
-        </SearchProvider>
-      </ThemeProvider>
-    </>
-  );
+    return (
+        <>
+            <Head>
+                <link rel="icon" href="/logos/logo.png" />
+                <title>Qardeal</title>
+            </Head>
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
+                <SearchProvider>
+                    <BookingProvider>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </BookingProvider>
+                </SearchProvider>
+            </ThemeProvider>
+        </>
+    );
 }
 
 export default MyApp;
