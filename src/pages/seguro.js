@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // Cambiado a next/navigation
 import {
   Container,
   Grid,
@@ -24,6 +24,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import RentalStepper from "../components/Stepper";
 import CompactHeader from "../components/CompactHeader";
 import dynamic from "next/dynamic";
+// Importa el hook del contexto global
+import { useBooking } from "../contexts/BookingContext";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -39,7 +41,8 @@ const todasLasCoberturas = [
   "Asistencia Vial",
 ];
 
-const planesSeguros = [
+// Arreglo base de planes de seguros sin precios específicos
+const basePlanesSeguros = [
   {
     id: "none",
     nombre: "SIN PROTECCIÓN",
@@ -51,7 +54,7 @@ const planesSeguros = [
   {
     id: "basico",
     nombre: "PAQUETE BÁSICO",
-    total: "$570",
+    total: "$570", // Se actualizará según la categoría
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
     coberturas: [
@@ -93,24 +96,57 @@ const planesSeguros = [
   },
 ];
 
+// Función que recibe la categoría del auto y retorna los planes con precios ajustados
+const getPlanesSeguros = (carCategory) => {
+  // Conjuntos de precios para cada grupo
+  const preciosBajos = {
+    basico: "$570",
+    intermedio: "$710",
+    completo: "$890",
+  };
+
+  const preciosAltos = {
+    basico: "$610",
+    intermedio: "$740",
+    completo: "$917",
+  };
+
+  // Por defecto usamos precios bajos para "Económico", "Compacto", "Fullsize"
+  let precios = preciosBajos;
+  if (carCategory === "SUV 5 STANDARD" || carCategory === "SUV 5 LX") {
+    precios = preciosAltos;
+  }
+
+  return basePlanesSeguros.map((plan) => {
+    if (plan.id === "basico") {
+      return { ...plan, total: precios.basico };
+    } else if (plan.id === "intermedio") {
+      return { ...plan, total: precios.intermedio };
+    } else if (plan.id === "completo") {
+      return { ...plan, total: precios.completo };
+    }
+    return plan;
+  });
+};
+
 const SeguroVehiculo = () => {
-  const [seleccionado, setSeleccionado] = useState(null);
+  // Usamos el contexto: obtenemos el seguro seleccionado, su setter y el vehículo seleccionado
+  const { selectedInsurance, setSelectedInsurance, selectedCar } = useBooking();
+
   const [openWarning, setOpenWarning] = useState(false);
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [recommendedPlan, setRecommendedPlan] = useState(null);
-
   const router = useRouter();
-  // Estados para el header
+
+  // Estados para header y SearchBar
   const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
-  // Datos de la SearchBar
   const [searchData, setSearchData] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Se obtiene el estado del header desde localStorage
       const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
       setHeaderIsTop(headerTop);
       setShowCompactHeader(!headerTop);
@@ -119,12 +155,16 @@ const SeguroVehiculo = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Obtiene los planes ajustados según la categoría del auto; si no hay auto seleccionado se obtienen los precios del arreglo base
+  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
+
+  // Al seleccionar un plan se actualiza el seguro en el contexto
   const handleSelect = (plan) => {
-    setSeleccionado(plan.id);
-    const planIndex = planesSeguros.findIndex((p) => p.id === plan.id);
+    setSelectedInsurance(plan);
+    const planIndex = effectivePlanesSeguros.findIndex((p) => p.id === plan.id);
     const nextPlan =
-      planIndex < planesSeguros.length - 1
-        ? planesSeguros[planIndex + 1]
+      planIndex < effectivePlanesSeguros.length - 1
+        ? effectivePlanesSeguros[planIndex + 1]
         : null;
     if (nextPlan) {
       setRecommendedPlan(nextPlan);
@@ -133,16 +173,18 @@ const SeguroVehiculo = () => {
   };
 
   const handleContinue = () => {
-    if (!seleccionado) {
+    if (!selectedInsurance) {
       setOpenWarning(true);
     } else {
-      console.log("Continuar con el seguro seleccionado:", seleccionado);
+      console.log("Continuar con el seguro seleccionado:", selectedInsurance);
       router.push("/extras-renta");
     }
   };
 
   const handleSelectNextPlan = () => {
-    setSeleccionado(recommendedPlan.id);
+    if (recommendedPlan) {
+      setSelectedInsurance(recommendedPlan);
+    }
     setOpenRecommendation(false);
   };
 
@@ -203,15 +245,14 @@ const SeguroVehiculo = () => {
         justifyContent="center"
         alignItems="stretch"
       >
-        {planesSeguros.map((plan) => (
+        {effectivePlanesSeguros.map((plan) => (
           <Grid item xs={12} sm={6} md={3} key={plan.id}>
             <Card
               sx={{
-                // En escritorio, se define un ancho mínimo mayor para que sean "más anchas"
                 minWidth: { xs: "auto", md: 320 },
-                boxShadow: seleccionado === plan.id ? 6 : 2,
+                boxShadow: selectedInsurance?.id === plan.id ? 6 : 2,
                 border:
-                  seleccionado === plan.id
+                  selectedInsurance?.id === plan.id
                     ? "3px solid black"
                     : "1px solid #ddd",
                 cursor: "pointer",
@@ -363,7 +404,6 @@ const SeguroVehiculo = () => {
           },
         }}
       >
-        {/* Título sin fondo pero con jerarquía */}
         <Box sx={{ py: 2 }}>
           <Typography
             variant="h6"
@@ -377,7 +417,6 @@ const SeguroVehiculo = () => {
           </Typography>
         </Box>
 
-        {/* Contenido del modal */}
         <DialogContent
           sx={{
             pt: 0,
@@ -395,14 +434,13 @@ const SeguroVehiculo = () => {
             }}
           >
             Te recomendamos considerar el{" "}
-            <strong>{recommendedPlan?.nombre}</strong> por solo{" "}
-            <strong>{recommendedPlan?.total}</strong> al día. Este paquete
-            incluye coberturas adicionales que te darán mayor tranquilidad,
-            seguridad y respaldo durante tu viaje.
+            <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong> por
+            solo <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong>{" "}
+            al día. Este paquete incluye coberturas adicionales que te darán
+            mayor tranquilidad, seguridad y respaldo durante tu viaje.
           </Typography>
         </DialogContent>
 
-        {/* Acciones */}
         <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
           <Button
             onClick={() => setOpenRecommendation(false)}
@@ -435,7 +473,8 @@ const SeguroVehiculo = () => {
               fontSize: "14px",
             }}
           >
-            SELECCIONAR {recommendedPlan?.nombre.toUpperCase()}
+            SELECCIONAR{" "}
+            {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
           </Button>
         </DialogActions>
       </Dialog>
