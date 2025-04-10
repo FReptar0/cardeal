@@ -13,15 +13,32 @@ import {
 const LoginPage = () => {
   // Por defecto, se muestra login (true)
   const [isLoginActive, setIsLoginActive] = useState(true);
+  const [isFormVisible, setIsFormVisible] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const imageUrl = isLoginActive
-    ? "/photos/compacto/Versa-detalle-calavera-izq.webp"
-    : "/photos/full-size/Sentra-calavera.webp";
+    ? "/photos/full-size/Sentra-calavera.webp"
+    : "/photos/suv-standard/Kicks-calavera.webp";
 
   const handleToggle = () => {
-    setIsLoginActive(!isLoginActive);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setIsFormVisible(false); // ocultamos formulario inmediatamente
+
+    setTimeout(() => {
+      setIsLoginActive((prev) => !prev); // cambiamos formulario
+      setIsFormVisible(true); // lo volvemos a mostrar
+      setIsTransitioning(false);
+    }, 50); // igual al tiempo que tarda en moverse la imagen
+  };
+
+  const fadeInUpAnimation = {
+    "@keyframes fadeInUp": {
+      from: { opacity: 0, transform: "translateY(20px)" },
+      to: { opacity: 1, transform: "translateY(0)" },
+    },
   };
 
   const renderLoginForm = () => (
@@ -33,7 +50,8 @@ const LoginPage = () => {
         sx={{
           display: "block",
           margin: "0 auto",
-          maxWidth: "400px",
+          width: { xs: "80%", sm: "300px", md: "400px" },
+          height: "auto",
           mb: -5,
         }}
       />
@@ -86,23 +104,16 @@ const LoginPage = () => {
     </Box>
   );
 
-  /**
-   * Ajuste para adelgazar inputs y alinear labels:
-   * - Reducimos padding vertical (6px).
-   * - Ajustamos las transformaciones de la etiqueta
-   *   para que no quede "chueca" al encogerse o en modo normal.
-   */
   const thinInputSX = {
     "& .MuiOutlinedInput-input": {
-      paddingTop: "8px",
-      paddingBottom: "8px",
+      paddingTop: "12px",
+      paddingBottom: "6px",
     },
-    // Ajuste de la posición del label cuando está normal y cuando se encoge
     "& .MuiInputLabel-root": {
-      transform: "translate(14px, 6px) scale(1)", // Ajusta 9px si lo deseas más alto/bajo
+      transform: "translate(14px, 9px) scale(1)",
     },
     "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-      transform: "translate(14px, -4px) scale(0.75)", // Ajusta -4px según tu preferencia
+      transform: "translate(14px, -4px) scale(0.75)",
     },
   };
 
@@ -115,7 +126,8 @@ const LoginPage = () => {
         sx={{
           display: "block",
           margin: "0 auto",
-          maxWidth: "400px",
+          width: { xs: "80%", sm: "300px", md: "400px" },
+          height: "auto",
           mb: -5,
         }}
       />
@@ -220,42 +232,64 @@ const LoginPage = () => {
       }}
     >
       {isMobile ? (
-        /* En mobile: contenedor a ancho completo */
         <Box
           sx={{
             width: "100%",
-            px: 6,
-            mt: -10,
+            minHeight: "100vh",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            px: 2,
+            py: 4,
+            boxSizing: "border-box",
+            overflowY: "auto",
             zIndex: 2,
-            marginTop: -5,
           }}
         >
-          {isLoginActive ? renderLoginForm() : renderRegisterForm()}
+          {isFormVisible && (
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: 400,
+                animation: "fadeInUp 0.4s ease forwards",
+                mt: -5,
+                opacity: 0,
+                ...fadeInUpAnimation,
+              }}
+            >
+              {isLoginActive ? renderLoginForm() : renderRegisterForm()}
+            </Box>
+          )}
         </Box>
       ) : (
-        /* En desktop */
         <Box
           sx={{
             position: "absolute",
             top: 0,
             left: isLoginActive ? "0%" : "50%",
+            mt: -5,
             width: "50%",
             height: "100%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             zIndex: 2,
-            marginTop: -5,
           }}
         >
-          {isLoginActive ? renderLoginForm() : renderRegisterForm()}
+          {isFormVisible && (
+            <Box
+              sx={{
+                opacity: 0,
+                animation: "fadeInUp 0.4s ease forwards",
+                ...fadeInUpAnimation,
+              }}
+            >
+              {isLoginActive ? renderLoginForm() : renderRegisterForm()}
+            </Box>
+          )}
         </Box>
       )}
 
-      {/* Imagen en desktop */}
       {!isMobile && (
         <Box
           sx={{
