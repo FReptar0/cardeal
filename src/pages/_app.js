@@ -10,24 +10,33 @@ import { SearchProvider } from "../contexts/SearchContext";
 import { BookingProvider } from "../contexts/BookingContext";
 
 function MyApp({ Component, pageProps }) {
+    const useLayout = Component.useLayout ?? true;
+
     return (
         <>
             <Head>
                 <link rel="icon" href="/logos/logo.png" />
+                <link href="/logos/logo.png" rel="shortcut icon" type="image/x-icon" />
                 <title>Qardeal</title>
             </Head>
+
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
                 <SearchProvider>
                     <BookingProvider>
-                        <Layout>
+                        {useLayout ? (
+                            <Layout>
+                                <Component {...pageProps} />
+                            </Layout>
+                        ) : (
                             <Component {...pageProps} />
-                        </Layout>
+                        )}
                     </BookingProvider>
                 </SearchProvider>
             </ThemeProvider>
         </>
     );
 }
+
 
 export default MyApp;
