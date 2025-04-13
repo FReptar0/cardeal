@@ -6,8 +6,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import darkTheme from "../utils/theme";
 import Layout from "../components/Layout";
-import { SearchProvider } from "../contexts/SearchContext"; // Si ya lo usas
-import { BookingProvider } from "../contexts/BookingContext"; // Importa el nuevo contexto
+import { SearchProvider } from "../contexts/SearchContext"; // Provider para los datos de búsqueda
+import { BookingProvider } from "../contexts/BookingContext"; // Provider para el flujo de reserva (vehículo, seguro, extras, etc.)
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -18,6 +18,7 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
+        {/* Envolvemos toda la aplicación con los contextos */}
         <SearchProvider>
           <BookingProvider>
             <Layout>
