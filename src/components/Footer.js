@@ -188,11 +188,11 @@ const Footer = () => {
                     },
                   }}
                 >
-                  +506 8888 8888
+                  800 333 2866
                 </Typography>
                 <Typography sx={{ fontSize: "1.1rem" }}>
                   Correo:{" "}
-                  <span style={{ color: "#ff3f60" }}>support@qardeal.com.mx</span>
+                  <span style={{ color: "#ff3f60" }}>soporte@qardeal.com.mx</span>
                 </Typography>
               </Box>
             </Box>
