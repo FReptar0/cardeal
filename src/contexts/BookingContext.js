@@ -1,17 +1,16 @@
-// contexts/BookingContext.js
 "use client";
 import React, { createContext, useState, useEffect, useContext } from "react";
 
 const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
-  // Define estados globales para auto, seguro, extras y datos del usuario
+  // Define estados globales para vehículo, seguro, extras y datos del usuario
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedInsurance, setSelectedInsurance] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState({});
   const [userData, setUserData] = useState({});
 
-  // Cuando se monta, intenta leer los datos del localStorage
+  // Al montar, intenta leer los datos del localStorage
   useEffect(() => {
     const carFromStorage = localStorage.getItem("selectedCar");
     const insuranceFromStorage = localStorage.getItem("selectedInsurance");
@@ -27,18 +26,22 @@ export const BookingProvider = ({ children }) => {
 
   // Sincroniza cada estado con localStorage cuando cambia
   useEffect(() => {
-    selectedCar
-      ? localStorage.setItem("selectedCar", JSON.stringify(selectedCar))
-      : localStorage.removeItem("selectedCar");
+    if (selectedCar) {
+      localStorage.setItem("selectedCar", JSON.stringify(selectedCar));
+    } else {
+      localStorage.removeItem("selectedCar");
+    }
   }, [selectedCar]);
 
   useEffect(() => {
-    selectedInsurance
-      ? localStorage.setItem(
-          "selectedInsurance",
-          JSON.stringify(selectedInsurance)
-        )
-      : localStorage.removeItem("selectedInsurance");
+    if (selectedInsurance) {
+      localStorage.setItem(
+        "selectedInsurance",
+        JSON.stringify(selectedInsurance)
+      );
+    } else {
+      localStorage.removeItem("selectedInsurance");
+    }
   }, [selectedInsurance]);
 
   useEffect(() => {

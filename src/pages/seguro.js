@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Cambiado a next/navigation
+import { useRouter } from "next/navigation";
 import {
   Container,
   Grid,
@@ -31,17 +31,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
-const todasLasCoberturas = [
-  "Colisión y daños",
-  "Responsabilidad Civil",
-  "Protección de Robo",
-  "Cristales y Llantas",
-  "Gastos Médicos Ocupantes",
-  "Cobertura 0% Deducible",
-  "Asistencia Vial",
-];
-
-// Arreglo base de planes de seguros sin precios específicos
+// Se reemplazan las coberturas de cada plan con la información de tu tabla
 const basePlanesSeguros = [
   {
     id: "none",
@@ -49,69 +39,76 @@ const basePlanesSeguros = [
     total: "$0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
-    coberturas: [],
+    coberturas: [
+      "Colisión y daños: RESPONSABLE 100%",
+      "Responsabilidad Civil: RASGO 300 MIL",
+      "Protección de Robo: RESPONSABLE 100%",
+      "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
+      "Gastos médicos ocupantes: NO INCLUYE",
+      "Asistencia Vial: NO INCLUYE",
+    ],
   },
   {
     id: "basico",
-    nombre: "PAQUETE BÁSICO",
-    total: "$570", // Se actualizará según la categoría
+    nombre: "PAQUETE BÁSICO", // Equivale a PROTECCIÓN CDW 80%
+    total: "$570",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
     coberturas: [
-      "Colisión y daños",
-      "Responsabilidad Civil",
-      "Protección de Robo",
+      "Colisión y daños: RESPONSABLE 20%",
+      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Protección de Robo: RESPONSABLE 20%",
+      "Asistencia Vial: SI INCLUYE",
+      "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
+      "Gastos médicos ocupantes: NO INCLUYE",
     ],
   },
   {
     id: "intermedio",
-    nombre: "PAQUETE ESTÁNDAR",
+    nombre: "PAQUETE ESTÁNDAR", // Equivale a PROTECCIÓN CDW 90%
     total: "$710",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#d60812",
     coberturas: [
-      "Colisión y daños",
-      "Responsabilidad Civil",
-      "Protección de Robo",
-      "Cristales y Llantas",
-      "Gastos Médicos Ocupantes",
+      "Colisión y daños: RESPONSABLE 10%",
+      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Protección de Robo: RESPONSABLE 10%",
+      "Gastos médicos ocupantes: COBERTURA 100 MIL",
+      "Asistencia Vial: SI INCLUYE",
+      "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
   },
   {
     id: "completo",
-    nombre: "PAQUETE PREMIUM",
+    nombre: "PAQUETE PREMIUM", // Equivale a PROTECCIÓN PDW 95%
     total: "$890",
     imagen: "/images-seguros/Seguro-completo.png",
     color: "#d60812",
     recomendado: true,
     coberturas: [
-      "Colisión y daños",
-      "Responsabilidad Civil",
-      "Protección de Robo",
-      "Cobertura 0% Deducible",
-      "Asistencia Vial",
-      "Cristales y Llantas",
-      "Gastos Médicos Ocupantes",
+      "Colisión y daños: RESPONSABLE 5%",
+      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Protección de Robo: RESPONSABLE 5%",
+      "Gastos médicos ocupantes: COBERTURA 100 MIL",
+      "Asistencia Vial: SI INCLUYE",
+      "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
   },
 ];
 
-// Función que recibe la categoría del auto y retorna los planes con precios ajustados
+// Ajusta los precios de los planes según la categoría de auto seleccionada
 const getPlanesSeguros = (carCategory) => {
-  // Conjuntos de precios para cada grupo
   const preciosBajos = {
     basico: "$570",
     intermedio: "$710",
     completo: "$890",
   };
-
   const preciosAltos = {
     basico: "$610",
     intermedio: "$740",
     completo: "$917",
   };
 
-  // Por defecto usamos precios bajos para "Económico", "Compacto", "Fullsize"
   let precios = preciosBajos;
   if (carCategory === "SUV 5 STANDARD" || carCategory === "SUV 5 LX") {
     precios = preciosAltos;
@@ -130,7 +127,7 @@ const getPlanesSeguros = (carCategory) => {
 };
 
 const SeguroVehiculo = () => {
-  // Usamos el contexto: obtenemos el seguro seleccionado, su setter y el vehículo seleccionado
+  // Usamos el contexto global
   const { selectedInsurance, setSelectedInsurance, selectedCar } = useBooking();
 
   const [openWarning, setOpenWarning] = useState(false);
@@ -155,10 +152,10 @@ const SeguroVehiculo = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Obtiene los planes ajustados según la categoría del auto; si no hay auto seleccionado se obtienen los precios del arreglo base
+  // Planes ajustados según la categoría del auto
   const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
 
-  // Al seleccionar un plan se actualiza el seguro en el contexto
+  // Seleccionar un plan
   const handleSelect = (plan) => {
     setSelectedInsurance(plan);
     const planIndex = effectivePlanesSeguros.findIndex((p) => p.id === plan.id);
@@ -172,6 +169,7 @@ const SeguroVehiculo = () => {
     }
   };
 
+  // Continuar
   const handleContinue = () => {
     if (!selectedInsurance) {
       setOpenWarning(true);
@@ -181,6 +179,7 @@ const SeguroVehiculo = () => {
     }
   };
 
+  // Aceptar recomendación de upgrade
   const handleSelectNextPlan = () => {
     if (recommendedPlan) {
       setSelectedInsurance(recommendedPlan);
@@ -238,6 +237,7 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
+      {/* Listado de planes */}
       <Grid
         container
         spacing={3}
@@ -283,6 +283,8 @@ const SeguroVehiculo = () => {
                   Recomendado
                 </Box>
               )}
+
+              {/* Precio */}
               <Typography
                 variant="h4"
                 fontWeight="bold"
@@ -296,6 +298,7 @@ const SeguroVehiculo = () => {
               >
                 MXN/día
               </Typography>
+
               <CardMedia
                 component="img"
                 sx={{ height: 200, objectFit: "contain", p: 1 }}
@@ -317,27 +320,36 @@ const SeguroVehiculo = () => {
                 >
                   {plan.nombre}
                 </Typography>
-                {todasLasCoberturas.map((cobertura, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemIcon>
-                      {plan.coberturas.includes(cobertura) ? (
-                        <CheckCircleIcon color="error" />
-                      ) : (
-                        <CancelIcon sx={{ color: "gray" }} />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText
-                      primaryTypographyProps={{ style: { fontSize: "14px" } }}
-                      primary={cobertura}
-                    />
-                  </ListItem>
-                ))}
+
+                {/* Render de cada línea de cobertura */}
+                {plan.coberturas.map((detalle, index) => {
+                  // Muestra CancelIcon si la línea contiene "NO INCLUYE"
+                  const isNoIncluye = detalle
+                    .toLowerCase()
+                    .includes("no incluye");
+                  return (
+                    <ListItem key={index} disablePadding>
+                      <ListItemIcon>
+                        {isNoIncluye ? (
+                          <CancelIcon sx={{ color: "gray" }} />
+                        ) : (
+                          <CheckCircleIcon color="error" />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText
+                        primaryTypographyProps={{ style: { fontSize: "14px" } }}
+                        primary={detalle}
+                      />
+                    </ListItem>
+                  );
+                })}
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
+      {/* Botón continuar */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
         <Button
           variant="contained"
@@ -354,6 +366,7 @@ const SeguroVehiculo = () => {
         </Button>
       </Box>
 
+      {/* Diálogo de advertencia si no se selecciona un seguro */}
       <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
         <DialogTitle
           sx={{
@@ -392,6 +405,7 @@ const SeguroVehiculo = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Diálogo de recomendación para subir de plan */}
       <Dialog
         open={openRecommendation}
         onClose={() => setOpenRecommendation(false)}
