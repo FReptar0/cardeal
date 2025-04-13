@@ -31,12 +31,14 @@ export default function Sucursales() {
         },
     ];
 
-    // Renderizado de cada lista de ubicaciones
-    const renderLocations = (locations) =>
+    // Renderizado de las ubicaciones
+    // Agregamos un segundo parámetro 'withLabel' para indicar si se muestra la etiqueta "Próxima apertura".
+    const renderLocations = (locations, withLabel = false) =>
         locations.map((loc, index) => (
             <Box
                 key={index}
                 sx={{
+                    position: "relative", // Para poder posicionar la etiqueta arriba a la derecha
                     mb: 6,
                     p: 2,
                     backgroundColor: "background.paper",
@@ -44,6 +46,25 @@ export default function Sucursales() {
                     boxShadow: 2,
                 }}
             >
+                {/* Etiqueta "Próxima apertura" en la esquina superior derecha */}
+                {withLabel && (
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            backgroundColor: "#D32F2F",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            px: 2,
+                            py: 1,
+                            borderRadius: "0 0 0 8px",
+                        }}
+                    >
+                        Próxima apertura
+                    </Box>
+                )}
+
                 <Grid
                     container
                     spacing={4}
@@ -96,7 +117,7 @@ export default function Sucursales() {
                                 {loc.address}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                Visítanos en esta sucursal para un mejor servicio.
+                                {!withLabel && "Visítanos en esta sucursal para un mejor servicio."}
                             </Typography>
                             <Typography variant="body2">
                                 <Link
@@ -131,24 +152,17 @@ export default function Sucursales() {
 
             {/* Sección CDMX */}
             <Box sx={{ mb: 8 }}>
-                <Typography
-                    variant="h5"
-                    align="center"
-                    sx={{ fontWeight: "medium", mb: 1 }}
-                >
+                <Typography variant="h5" align="center" sx={{ fontWeight: "medium", mb: 1 }}>
                     CDMX
                 </Typography>
                 <Divider sx={{ mb: 4, width: "50%", mx: "auto" }} />
-                {renderLocations(cdmxLocations)}
+                {/* Se indica 'withLabel = true' para mostrar el indicador de "Próxima apertura" */}
+                {renderLocations(cdmxLocations, true)}
             </Box>
 
             {/* Sección EDOMEX */}
             <Box sx={{ mb: 6 }}>
-                <Typography
-                    variant="h5"
-                    align="center"
-                    sx={{ fontWeight: "medium", mb: 1 }}
-                >
+                <Typography variant="h5" align="center" sx={{ fontWeight: "medium", mb: 1 }}>
                     EDOMEX
                 </Typography>
                 <Divider sx={{ mb: 4, width: "50%", mx: "auto" }} />

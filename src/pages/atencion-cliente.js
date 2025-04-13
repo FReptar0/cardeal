@@ -35,7 +35,7 @@ const AtencionCliente = () => {
           {/* Teléfono México */}
           <Grid item xs={12} sm={6} md={3}>
             <CallIcon fontSize="large" color="error" />
-            <Typography variant="h6" fontWeight="bold">(800) 062 1705</Typography>
+            <Typography variant="h6" fontWeight="bold">(800) 333 2886</Typography>
             <Typography variant="body2">Lada sin costo desde México</Typography>
           </Grid>
 
@@ -51,12 +51,9 @@ const AtencionCliente = () => {
       {/* Sección de correos electrónicos */}
       <Box sx={{ mt: 5, textAlign: "center", borderTop: "1px solid gray", pt: 3, pb: 3, width: "100%" }}>
         <EmailIcon fontSize="large" />
-        <Typography variant="h6" fontWeight="bold">Correos electrónicos</Typography>
+        <Typography variant="h6" fontWeight="bold">Correo electrónico</Typography>
         <Typography variant="body2" color="error" fontWeight="bold">
-          reservaciones@qardeal.com.mx
-        </Typography>
-        <Typography variant="body2" mt={2} color="error" fontWeight="bold">
-          quejasyservicio@qardeal.com.mx
+          atencionaclientes@qardeal.com.mx
         </Typography>
       </Box>
     </Box>
