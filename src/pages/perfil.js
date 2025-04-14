@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+// /pages/perfil.js
+import React from "react";
 import {
     Box,
     Card,
@@ -11,31 +12,26 @@ import {
     List,
     ListItem,
     ListItemAvatar,
-    ListItemText
+    ListItemText,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import cars from "../data/cars.json"; // Importar datos del JSON
-import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/AuthContext";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useUserProfile from "@/hooks/useUserProfile";
+import cars from "../data/cars.json";
 
 const UserProfile = () => {
-    const { isLoggedIn } = useAuth();
-    const router = useRouter();
+    const { userData, loading } = useUserProfile();
 
-    // Si el usuario no está autenticado, redirigir a /login
-    useEffect(() => {
-        if (!isLoggedIn) {
-            router.replace("/login");
-        }
-    }, [isLoggedIn, router]);
-
-    // Mientras se redirige, no renderizamos nada
-    if (!isLoggedIn) return null;
+    // Mientras se consulta la información o se redirige, no renderizamos nada
+    if (loading || !userData) return null;
 
     return (
-        <Container
-            sx={{ marginTop: 20, marginBottom: 10, maxWidth: "100vw", paddingX: 2 }}
-        >
+        <Container sx={{ mt: 20, mb: 10, maxWidth: "100vw", px: 2 }}>
+            <ToastContainer position="top-center" autoClose={5000} />
+
             {/* Encabezado del perfil */}
             <Box
                 sx={{
@@ -46,30 +42,22 @@ const UserProfile = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: 2,
-                    marginBottom: 2,
+                    p: 2,
+                    mb: 2,
                 }}
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Avatar
-                        src="/user-avatar.png"
-                        sx={{
-                            width: 80,
-                            height: 80,
-                            border: "4px solid white",
-                        }}
+                        src={userData.avatar || "/user-avatar.png"}
+                        sx={{ width: 80, height: 80, border: "4px solid white" }}
                     />
                     <Box>
                         <Typography variant="h5" color="white">
-                            Juan Pérez
+                            {userData.fullName}
                         </Typography>
                     </Box>
                 </Box>
-                <Button
-                    variant="outlined"
-                    sx={{ color: "white", borderColor: "white" }}
-                    startIcon={<EditIcon />}
-                >
+                <Button variant="outlined" sx={{ color: "white", borderColor: "white" }} startIcon={<EditIcon />}>
                     Editar perfil
                 </Button>
             </Box>
@@ -80,8 +68,8 @@ const UserProfile = () => {
                     display: "flex",
                     flexDirection: { xs: "column", md: "row" },
                     gap: 2,
-                    marginTop: 2,
-                    marginBottom: 2,
+                    mt: 2,
+                    mb: 2,
                 }}
             >
                 {/* Acerca de mí */}
@@ -91,31 +79,35 @@ const UserProfile = () => {
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="subtitle2">BIOGRAFÍA</Typography>
                         <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
+                            {userData.bio || "Aquí se mostrará la biografía del usuario si está definida."}
                         </Typography>
                         <Typography variant="subtitle2">POSICIÓN</Typography>
                         <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Diseñador de temas en <b>Bootstrap</b>.
+                            {userData.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                             <Box>
                                 <Typography variant="subtitle2">TELÉFONO</Typography>
-                                <Typography variant="body2">+52 55 1234 5678</Typography>
+                                <Typography variant="body2">{userData.phone}</Typography>
                             </Box>
                             <Box>
                                 <Typography variant="subtitle2">FECHA DE NACIMIENTO</Typography>
-                                <Typography variant="body2">01.10.1997</Typography>
+                                <Typography variant="body2">
+                                    {userData.birthDate
+                                        ? format(new Date(userData.birthDate), "dd/MM/yyyy", { locale: es })
+                                        : "Fecha no disponible"}
+                                </Typography>
                             </Box>
                         </Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
                             <Box>
                                 <Typography variant="subtitle2">CORREO ELECTRÓNICO</Typography>
-                                <Typography variant="body2">juanperez@gmail.com</Typography>
+                                <Typography variant="body2">{userData.email}</Typography>
                             </Box>
                             <Box>
                                 <Typography variant="subtitle2">UBICACIÓN</Typography>
-                                <Typography variant="body2">CDMX, México</Typography>
+                                <Typography variant="body2">{userData.location}</Typography>
                             </Box>
                         </Box>
                     </CardContent>
@@ -134,12 +126,10 @@ const UserProfile = () => {
                                         border: "1px solid #ddd",
                                         borderRadius: 2,
                                         transition: "transform 0.3s",
-                                        "&:hover": {
-                                            transform: "scale(1.05)"
-                                        }
+                                        "&:hover": { transform: "scale(1.05)" },
                                     }}
                                 >
-                                    <ListItemAvatar sx={{ maxWidth: 100, marginRight: 2 }}>
+                                    <ListItemAvatar sx={{ maxWidth: 100, mr: 2 }}>
                                         <img
                                             src={car.image}
                                             alt={car.name}
@@ -147,7 +137,7 @@ const UserProfile = () => {
                                                 width: "100%",
                                                 height: "100%",
                                                 objectFit: "contain",
-                                                borderRadius: "8px"
+                                                borderRadius: "8px",
                                             }}
                                         />
                                     </ListItemAvatar>
@@ -155,11 +145,7 @@ const UserProfile = () => {
                                         primary={car.name.replace(" o Similar", "")}
                                         secondary={car.category}
                                     />
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ marginLeft: "auto" }}
-                                    >
+                                    <Typography variant="body2" color="text.secondary" sx={{ ml: "auto" }}>
                                         20/10/2021
                                     </Typography>
                                 </ListItem>
