@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Método no permitido' });
     }
 
-    const { email, password } = req.body;
+    const { email, password, remember } = req.body; // Ahora también se recibe el flag 'remember'
 
     if (!email || !password) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
@@ -30,14 +30,14 @@ export default async function handler(req, res) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
-        // Generar JWT (expira en 1 hora)
+        // Generar JWT: si "remember" es true, no se asigna expiración (token sin expirar), de lo contrario expira en 1 hora.
         const token = jwt.sign(
             {
                 userId: user._id,
                 email: user.email,
             },
             JWT_SECRET,
-            { expiresIn: '1h' }
+            remember ? {} : { expiresIn: '1h' }
         );
 
         return res.status(200).json({ token, sessionStart: new Date() });

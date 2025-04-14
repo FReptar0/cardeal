@@ -46,6 +46,7 @@ const LoginForm = ({ onToggle }) => {
                 body: JSON.stringify({
                     email: data.email,
                     password: data.password,
+                    remember: data.remember, // Enviar el flag "remember"
                 }),
             });
 
