@@ -8,35 +8,41 @@ import darkTheme from "../utils/theme";
 import Layout from "../components/Layout";
 import { SearchProvider } from "../contexts/SearchContext";
 import { BookingProvider } from "../contexts/BookingContext";
+import { AuthProvider } from "../contexts/AuthContext"; // Importamos el AuthProvider
 
 function MyApp({ Component, pageProps }) {
-    const useLayout = Component.useLayout ?? true;
+  const useLayout = Component.useLayout ?? true;
 
-    return (
-        <>
-            <Head>
-                <link rel="icon" href="/logos/logo.png" />
-                <link href="/logos/logo.png" rel="shortcut icon" type="image/x-icon" />
-                <title>Qardeal</title>
-            </Head>
+  return (
+    <>
+      <Head>
+        <link rel="icon" href="/logos/logo.png" />
+        <link
+          href="/logos/logo.png"
+          rel="shortcut icon"
+          type="image/x-icon"
+        />
+        <title>Qardeal</title>
+      </Head>
 
-            <ThemeProvider theme={darkTheme}>
-                <CssBaseline />
-                <SearchProvider>
-                    <BookingProvider>
-                        {useLayout ? (
-                            <Layout>
-                                <Component {...pageProps} />
-                            </Layout>
-                        ) : (
-                            <Component {...pageProps} />
-                        )}
-                    </BookingProvider>
-                </SearchProvider>
-            </ThemeProvider>
-        </>
-    );
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <SearchProvider>
+          <BookingProvider>
+            <AuthProvider>
+              {useLayout ? (
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              ) : (
+                <Component {...pageProps} />
+              )}
+            </AuthProvider>
+          </BookingProvider>
+        </SearchProvider>
+      </ThemeProvider>
+    </>
+  );
 }
-
 
 export default MyApp;
