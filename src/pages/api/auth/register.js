@@ -1,6 +1,7 @@
 import { connectToDatabase } from '@/utils/mongodb';
 import bcrypt from 'bcryptjs';
 import { generateUuid } from '@/utils/uuid';
+import { positions } from '@mui/system';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -34,6 +35,9 @@ export default async function handler(req, res) {
             password: hashedPassword,
             birthDate,
             location,
+            position: '',
+            bio: '',
+            profilePicture: '',
             userType: 'user', 
             createdAt: new Date(),
             updatedAt: new Date(),
