@@ -33,7 +33,17 @@ const Footer = () => {
               >
                 Síguenos
               </Typography>
-              <Box sx={{ mt: 1 }}>
+              <Typography
+                sx={{
+                  fontSize: "1.1rem",
+                  marginTop: "10px",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                Siguenos en nuestras proximas redes sociales
+              </Typography>
+              {/* <Box sx={{ mt: 1 }}>
                 <IconButton
                   color="inherit"
                   href="https://www.facebook.com"
@@ -62,7 +72,7 @@ const Footer = () => {
                 >
                   <LinkedIn fontSize="large" />
                 </IconButton>
-              </Box>
+              </Box> */}
             </Box>
           </Box>
         </Grid>
@@ -81,11 +91,10 @@ const Footer = () => {
                 paddingBottom: "40px",
               }}
             >
-              
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
-              <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                Ayuda e Información
-              </Typography>
+                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                  Ayuda e Información
+                </Typography>
                 {/* <Typography
                   component="a"
                   href="/nosotros"
@@ -192,7 +201,9 @@ const Footer = () => {
                 </Typography>
                 <Typography sx={{ fontSize: "1.1rem" }}>
                   Correo:{" "}
-                  <span style={{ color: "#ff3f60" }}>soporte@qardeal.com.mx</span>
+                  <span style={{ color: "#ff3f60" }}>
+                    soporte@qardeal.com.mx
+                  </span>
                 </Typography>
               </Box>
             </Box>
