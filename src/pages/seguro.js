@@ -439,6 +439,21 @@ const SeguroVehiculo = () => {
             textAlign: "center",
           }}
         >
+          {/* FRASE NUEVA */}
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "justify",
+              fontSize: "16px",
+              lineHeight: 1.6,
+              mb: 2,
+            }}
+          >
+            Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
+            ofrecemos el{" "}
+            <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
+          </Typography>
+
           <Typography
             variant="body1"
             sx={{

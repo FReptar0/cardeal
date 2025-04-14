@@ -95,6 +95,7 @@ const CheckoutPage = () => {
 
   let extrasInfo = [];
   let totalExtrasCost = 0;
+
   for (const extraId in selectedExtras) {
     const cantidad = selectedExtras[extraId];
     if (cantidad > 0) {
@@ -114,7 +115,11 @@ const CheckoutPage = () => {
     }
   }
 
-  const grandTotal = totalCarCost + totalInsuranceCost + totalExtrasCost;
+  // Subtotal, IVA y total
+  const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost;
+  const taxRate = 0.16; // IVA al 16%
+  const ivaCost = subTotal * taxRate;
+  const totalWithIva = subTotal + ivaCost;
 
   // Manejo del formulario del usuario
   const [formData, setFormData] = useState({
@@ -352,6 +357,18 @@ const CheckoutPage = () => {
 
               <Divider sx={{ my: 2 }} />
 
+              {/* IVA antes del Total */}
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+              >
+                <Typography variant="body2" fontWeight="bold">
+                  IVA (16%)
+                </Typography>
+                <Typography variant="body2" fontWeight="bold">
+                  {formatCurrency(ivaCost)}
+                </Typography>
+              </Box>
+
               {/* Total General */}
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
@@ -364,7 +381,7 @@ const CheckoutPage = () => {
                   fontWeight="bold"
                   sx={{ color: "#d60812" }}
                 >
-                  {formatCurrency(grandTotal)}
+                  {formatCurrency(totalWithIva)}
                 </Typography>
               </Box>
             </CardContent>

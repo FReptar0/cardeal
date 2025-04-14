@@ -35,7 +35,7 @@ export default function CarCard({ car, isSelected }) {
     event.stopPropagation();
   };
 
-  // Efecto para la barra de carga de 5 segundos en la pestaña de "VISTA 360" o "260"
+  // Efecto para la barra de carga de 5 segundos en la pestaña de "VISTA 360°"
   useEffect(() => {
     let interval;
     if (tabIndex === 1) {
@@ -289,16 +289,26 @@ export default function CarCard({ car, isSelected }) {
               width: "100%",
             }}
           >
-            <Box sx={{ textAlign: "center", flex: 1 }}>
+            {/* Pago en línea con mayor tamaño y efecto hover */}
+            <Box
+              sx={{
+                textAlign: "center",
+                flex: 1,
+                transition: "transform 0.2s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                },
+              }}
+            >
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: "#508a69" }}
+                sx={{ color: "#508a69", fontSize: "1.2rem" }}
               >
                 Pago en línea
               </Typography>
               <Typography
-                variant="h5"
+                variant="h4"
                 fontWeight="bold"
                 sx={{ color: "black" }}
               >
@@ -312,7 +322,10 @@ export default function CarCard({ car, isSelected }) {
                 </Typography>
               </Typography>
             </Box>
+
             <Divider orientation="vertical" flexItem />
+
+            {/* Pago en Mostrador sin modificaciones */}
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography
                 variant="body2"
@@ -408,7 +421,7 @@ export default function CarCard({ car, isSelected }) {
                   prevEl: ".swiper-button-prev",
                 }}
                 modules={[Navigation]}
-                style={{ width: "100%", height: "60vh" }} // El contenedor del carrusel
+                style={{ width: "100%", height: "60vh" }} // Contenedor del carrusel
               >
                 {(car.images || []).map((img, index) => (
                   <SwiperSlide
