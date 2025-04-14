@@ -1,15 +1,16 @@
+// /contexts/AuthContext.js
 "use client";
 import React, { createContext, useState, useEffect, useContext } from "react";
+import jwtDecode from "jwt-decode";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // Estado para almacenar el token JWT, la fecha/hora de inicio de sesión y el status de autenticación
     const [jwt, setJwt] = useState(null);
     const [sessionStart, setSessionStart] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Al montar el componente, intenta leer los datos del localStorage
+    // Al montar, intenta leer los datos del localStorage
     useEffect(() => {
         const storedJwt = localStorage.getItem("authJwt");
         const storedSessionStart = localStorage.getItem("sessionStart");
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    // Sincroniza el JWT con localStorage
+    // Sincroniza cada estado con localStorage
     useEffect(() => {
         if (jwt) {
             localStorage.setItem("authJwt", jwt);
@@ -31,7 +32,6 @@ export const AuthProvider = ({ children }) => {
         }
     }, [jwt]);
 
-    // Sincroniza la fecha/hora de inicio de sesión con localStorage
     useEffect(() => {
         if (sessionStart) {
             localStorage.setItem("sessionStart", sessionStart.toString());
@@ -40,10 +40,26 @@ export const AuthProvider = ({ children }) => {
         }
     }, [sessionStart]);
 
-    // Sincroniza el status de autenticación con localStorage
     useEffect(() => {
         localStorage.setItem("isLoggedIn", isLoggedIn.toString());
     }, [isLoggedIn]);
+
+    // Verificar automáticamente si el token sigue siendo válido
+    useEffect(() => {
+        if (jwt) {
+            try {
+                const decoded = jwtDecode(jwt);
+                // Si el token tiene la propiedad "exp"
+                if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+                    // El token ha expirado; cerrar sesión
+                    logout();
+                }
+            } catch (error) {
+                console.error("Error decodificando el token", error);
+                logout();
+            }
+        }
+    }, [jwt]);
 
     // Función para iniciar sesión: guarda el JWT, la fecha de inicio y establece el status en true
     const login = (token) => {
@@ -64,7 +80,13 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider
-            value={{ jwt, sessionStart, isLoggedIn, login, logout }}
+            value={{
+                jwt,
+                sessionStart,
+                isLoggedIn,
+                login,
+                logout,
+            }}
         >
             {children}
         </AuthContext.Provider>
