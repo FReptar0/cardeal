@@ -90,14 +90,19 @@ const ExtrasRenta = () => {
   const [hideSearchSection, setHideSearchSection] = useState(false);
   const [searchDataLocal, setSearchDataLocal] = useState(null);
 
+  // Lógica que accede a localStorage se ejecuta solo en el cliente
   useEffect(() => {
-    const interval = setInterval(() => {
-      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
-      setHeaderIsTop(headerTop);
-      setShowCompactHeader(!headerTop);
-      setHideSearchSection(!headerTop);
-    }, 100);
-    return () => clearInterval(interval);
+    if (typeof window !== "undefined") {
+      const interval = setInterval(() => {
+        const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
+        if (headerTop === null) return; // Evitamos ejecutar si no existe la clave
+        setHeaderIsTop(headerTop);
+        setShowCompactHeader(!headerTop);
+        setHideSearchSection(!headerTop);
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
   }, []);
 
   // Función para modificar la cantidad de un extra
@@ -105,10 +110,19 @@ const ExtrasRenta = () => {
     setSelectedExtras((prev) => {
       const currentQty = prev[id] || 0;
       let nuevaCantidad = currentQty;
+
       if (operacion === "sumar") {
-        if (id === "baby_seat" && currentQty >= 2) return prev;
-        if (id === "child_seat" && currentQty >= 2) return prev;
-        if (id === "booster" && currentQty >= 2) return prev;
+        // Para "baby_seat", "child_seat" y "booster", validamos que la suma combinada no exceda 2
+        if (
+          (id === "baby_seat" || id === "child_seat" || id === "booster") &&
+          (prev["baby_seat"] || 0) +
+            (prev["child_seat"] || 0) +
+            (prev["booster"] || 0) >=
+            2
+        ) {
+          return prev;
+        }
+        // Límites para otros extras
         if (id === "conductor_menor" && currentQty >= 1) return prev;
         if (id === "conductor_adicional" && currentQty >= 2) return prev;
         nuevaCantidad += 1;
@@ -194,17 +208,20 @@ const ExtrasRenta = () => {
                 overflow: "hidden",
               }}
             >
+              {/* Imagen del extra, ajustada para que luzca mejor en móvil */}
               <CardMedia
                 component="img"
                 sx={{
                   m: "8px",
-                  width: { xs: "100%", md: 125 },
+                  width: { xs: 90, sm: 110, md: 125 }, // Ajuste responsivo
                   height: "auto",
                   objectFit: "contain",
+                  marginX: "auto", // Centrar en móviles
                 }}
                 image={extra.imagen}
                 alt={extra.nombre}
               />
+
               <CardContent
                 sx={{
                   flex: 1,
@@ -223,16 +240,19 @@ const ExtrasRenta = () => {
                 </Typography>
               </CardContent>
 
+              {/* Sección del precio (arriba) y el contador (abajo) */}
               <Box
                 sx={{
                   display: "flex",
+                  flexDirection: "column", // Precio arriba, contador abajo
                   alignItems: "center",
-                  flexDirection: { xs: "column", md: "row" },
-                  gap: 2,
+                  justifyContent: "center",
+                  gap: 1,
                   pr: 2,
                   pb: { xs: 2, md: 0 },
                 }}
               >
+                {/* Precio */}
                 <Typography
                   variant="h6"
                   fontWeight="bold"
@@ -240,26 +260,51 @@ const ExtrasRenta = () => {
                 >
                   {extra.precio.toFixed(2)} MXN/DÍA
                 </Typography>
-                <IconButton
-                  onClick={() => modificarCantidad(extra.id, "restar")}
-                  disabled={(selectedExtras[extra.id] || 0) === 0}
+
+                {/* Contador: – / + alineado en fila */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
                 >
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="h6">
-                  {selectedExtras[extra.id] || 0}
-                </Typography>
-                <IconButton
-                  onClick={() => modificarCantidad(extra.id, "sumar")}
-                >
-                  <AddIcon />
-                </IconButton>
+                  <IconButton
+                    onClick={() => modificarCantidad(extra.id, "restar")}
+                    disabled={(selectedExtras[extra.id] || 0) === 0}
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        // Íconos más pequeños en móviles
+                        fontSize: { xs: "1.3rem", md: "1.8rem" },
+                      },
+                    }}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+
+                  <Typography variant="h6">
+                    {selectedExtras[extra.id] || 0}
+                  </Typography>
+
+                  <IconButton
+                    onClick={() => modificarCantidad(extra.id, "sumar")}
+                    sx={{
+                      "& .MuiSvgIcon-root": {
+                        fontSize: { xs: "1.3rem", md: "1.8rem" },
+                      },
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
               </Box>
             </Card>
           </Grid>
         ))}
       </Grid>
 
+      {/* Total de extras */}
       <Box
         sx={{
           display: "flex",
@@ -279,6 +324,7 @@ const ExtrasRenta = () => {
         </Typography>
       </Box>
 
+      {/* Botón Continuar */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
         <Button
           variant="contained"

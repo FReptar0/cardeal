@@ -270,6 +270,7 @@ export default function RentalPage() {
           },
         }}
       >
+        {/* Título */}
         <Box sx={{ py: 2 }}>
           <Typography
             variant="h6"
@@ -283,6 +284,7 @@ export default function RentalPage() {
           </Typography>
         </Box>
 
+        {/* Contenido del diálogo */}
         <DialogContent
           sx={{
             pt: 0,
@@ -297,6 +299,7 @@ export default function RentalPage() {
               textAlign: "justify",
               fontSize: "16px",
               lineHeight: 1.6,
+              mb: 3,
             }}
           >
             Te recomendamos considerar el{" "}
@@ -306,32 +309,12 @@ export default function RentalPage() {
             ({tempRecommendedCar ? tempRecommendedCar.name : ""}) que ofrece
             mayores prestaciones por un precio competitivo.
           </Typography>
-        </DialogContent>
-
-        <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
-          <Button
-            onClick={handleKeepCurrent}
-            variant="outlined"
-            sx={{
-              color: "#333",
-              fontWeight: "bold",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              fontSize: "14px",
-              borderColor: "#ccc",
-              backgroundColor: "#f5f5f5",
-              "&:hover": {
-                backgroundColor: "#e0e0e0",
-              },
-            }}
-          >
-            MANTENER SELECCIÓN ACTUAL
-          </Button>
 
           {tempRecommendedCar && (
             <Button
               onClick={handleSelectNextCar}
               variant="contained"
+              fullWidth
               sx={{
                 backgroundColor: "#d60812",
                 color: "white",
@@ -347,7 +330,23 @@ export default function RentalPage() {
                 : ""}
             </Button>
           )}
-        </DialogActions>
+
+          {/* Texto debajo del botón rojo */}
+          <Box sx={{ textAlign: "center", mt: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#333",
+                fontWeight: "bold",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+              onClick={handleKeepCurrent}
+            >
+              Mantener la selección actual
+            </Typography>
+          </Box>
+        </DialogContent>
       </Dialog>
     </Container>
   );

@@ -418,6 +418,7 @@ const SeguroVehiculo = () => {
           },
         }}
       >
+        {/* Encabezado del diálogo */}
         <Box sx={{ py: 2 }}>
           <Typography
             variant="h6"
@@ -431,6 +432,7 @@ const SeguroVehiculo = () => {
           </Typography>
         </Box>
 
+        {/* Contenido principal (ahora contiene todo, incluyendo los botones) */}
         <DialogContent
           sx={{
             pt: 0,
@@ -460,6 +462,7 @@ const SeguroVehiculo = () => {
               textAlign: "justify",
               fontSize: "16px",
               lineHeight: 1.6,
+              mb: 3, // Agregamos un margen inferior para separar del botón
             }}
           >
             Te recomendamos considerar el{" "}
@@ -468,31 +471,11 @@ const SeguroVehiculo = () => {
             al día. Este paquete incluye coberturas adicionales que te darán
             mayor tranquilidad, seguridad y respaldo durante tu viaje.
           </Typography>
-        </DialogContent>
 
-        <DialogActions sx={{ justifyContent: "center", pb: 3, px: 2, gap: 1 }}>
+          {/* Botón rojo a todo el ancho */}
           <Button
-            onClick={() => setOpenRecommendation(false)}
-            variant="outlined"
-            sx={{
-              color: "#333",
-              fontWeight: "bold",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              fontSize: "14px",
-              borderColor: "#ccc",
-              backgroundColor: "#f5f5f5",
-              "&:hover": {
-                backgroundColor: "#e0e0e0",
-              },
-            }}
-          >
-            MANTENER SEGURO ACTUAL
-          </Button>
-
-          <Button
-            onClick={handleSelectNextPlan}
             variant="contained"
+            fullWidth
             sx={{
               backgroundColor: "#d60812",
               color: "white",
@@ -501,11 +484,28 @@ const SeguroVehiculo = () => {
               borderRadius: "8px",
               fontSize: "14px",
             }}
+            onClick={handleSelectNextPlan}
           >
             SELECCIONAR{" "}
             {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
           </Button>
-        </DialogActions>
+
+          {/* Texto subrayado para 'Mantener Seguro Actual' */}
+          <Box sx={{ mt: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#333",
+                fontWeight: "bold",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+              onClick={() => setOpenRecommendation(false)}
+            >
+              Mantener protección actual
+            </Typography>
+          </Box>
+        </DialogContent>
       </Dialog>
     </Container>
   );
