@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { useRouter } from "next/router";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginPage = () => {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
   const [isLoginActive, setIsLoginActive] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // Redirige a /perfil si el usuario ya está logeado
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.replace("/perfil");
+    }
+  }, [isLoggedIn, router]);
+
+  // Mientras se redirige, podemos retornar null para no renderizar nada
+  if (isLoggedIn) return null;
 
   const handleToggle = () => {
     setIsLoginActive((prev) => !prev);
@@ -92,7 +106,8 @@ const LoginPage = () => {
               backgroundImage: `url(${imageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              transition: "left 0.4s ease-in-out, background-image 0.2s linear",
+              transition:
+                "left 0.4s ease-in-out, background-image 0.2s linear",
               zIndex: 1,
             }}
           />

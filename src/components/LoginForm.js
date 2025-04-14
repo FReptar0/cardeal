@@ -10,6 +10,8 @@ import {
     FormControlLabel,
     Checkbox,
 } from "@mui/material";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/router";
 
 // Esquema de validación para el login
 const loginSchema = yup.object().shape({
@@ -29,9 +31,44 @@ const LoginForm = ({ onToggle }) => {
         resolver: yupResolver(loginSchema),
     });
 
-    const onSubmit = (data) => {
-        console.log("Datos de login:", data);
-        // Aquí puedes implementar la llamada a la API de autenticación o cualquier lógica adicional.
+    const { login } = useAuth();
+    const router = useRouter();
+    const [loading, setLoading] = React.useState(false);
+    const [errorMessage, setErrorMessage] = React.useState("");
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        setErrorMessage("");
+
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password,
+                }),
+            });
+
+            const json = await res.json();
+
+            if (!res.ok) {
+                setErrorMessage(json.message || "Error al iniciar sesión");
+                setLoading(false);
+                return;
+            }
+
+            // Llamamos a la función login del AuthContext para guardar el token
+            login(json.token);
+
+            // Redirigimos a /perfil tras el inicio de sesión correcto
+            router.push("/perfil");
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Error de conexión");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -88,6 +125,12 @@ const LoginForm = ({ onToggle }) => {
                     </Typography>
                 </Box>
 
+                {errorMessage && (
+                    <Typography color="error" textAlign="center">
+                        {errorMessage}
+                    </Typography>
+                )}
+
                 <Button
                     type="submit"
                     fullWidth
@@ -101,8 +144,9 @@ const LoginForm = ({ onToggle }) => {
                         fontSize: "16px",
                         ":hover": { backgroundColor: "#a91c24" },
                     }}
+                    disabled={loading}
                 >
-                    INICIAR SESIÓN
+                    {loading ? "Iniciando..." : "INICIAR SESIÓN"}
                 </Button>
             </form>
 

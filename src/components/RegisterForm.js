@@ -2,12 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {
-    Box,
-    TextField,
-    Button,
-    Typography,
-} from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
 
 // Esquema de validación para el registro
 const registerSchema = yup.object().shape({
@@ -38,10 +33,8 @@ const RegisterForm = ({ onToggle }) => {
         resolver: yupResolver(registerSchema),
     });
 
-    const onSubmit = (data) => {
-        console.log("Datos de registro:", data);
-        // Aquí puedes implementar la lógica para registrar al usuario
-    };
+    const [loading, setLoading] = React.useState(false);
+    const [message, setMessage] = React.useState("");
 
     // Estilo para los campos del formulario
     const thinInputSX = {
@@ -55,6 +48,45 @@ const RegisterForm = ({ onToggle }) => {
         "& .MuiInputLabel-root.MuiInputLabel-shrink": {
             transform: "translate(14px, -4px) scale(0.75)",
         },
+    };
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        setMessage("");
+
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    fullName: data.fullName,
+                    phone: data.phone,
+                    email: data.email,
+                    password: data.password,
+                    birthDate: data.birthDate,
+                    location: data.location,
+                }),
+            });
+
+            const json = await res.json();
+
+            if (!res.ok) {
+                setMessage(json.message || "Error al registrar");
+                setLoading(false);
+                return;
+            }
+
+            // Registro exitoso: mostramos mensaje de éxito y luego cambiamos al login
+            setMessage("Usuario registrado exitosamente. Inicia sesión.");
+            setTimeout(() => {
+                onToggle(); // Cambia de formulario a login
+            }, 2000);
+        } catch (error) {
+            console.error(error);
+            setMessage("Error de conexión");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -155,6 +187,12 @@ const RegisterForm = ({ onToggle }) => {
                     />
                 </Box>
 
+                {message && (
+                    <Typography color="error" textAlign="center">
+                        {message}
+                    </Typography>
+                )}
+
                 <Button
                     type="submit"
                     fullWidth
@@ -168,8 +206,9 @@ const RegisterForm = ({ onToggle }) => {
                         fontSize: "16px",
                         ":hover": { backgroundColor: "#306c4a" },
                     }}
+                    disabled={loading}
                 >
-                    REGISTRARSE
+                    {loading ? "Registrando..." : "REGISTRARSE"}
                 </Button>
             </form>
 
