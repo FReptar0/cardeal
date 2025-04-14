@@ -15,6 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useTheme } from "@mui/material/styles";
+import { useAuth } from "../contexts/AuthContext"; // Asegúrate de que la ruta sea correcta
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -27,18 +28,21 @@ const Header = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
+  // Obtener el estado de autenticación del AuthContext
+  const { isLoggedIn, logout } = useAuth();
+
   useEffect(() => {
     localStorage.setItem("isHeaderTop", JSON.stringify(isTop));
   }, [isTop]);
 
-  // Se ejecuta solo en el cliente
+  // Se ejecuta solo en el cliente para obtener la ruta activa
   useEffect(() => {
     if (typeof window !== "undefined") {
       setActivePath(window.location.pathname);
     }
   }, []);
 
-  // Cierra el menú cuando la pantalla se agranda
+  // Cierra el menú de navegación si la pantalla es grande
   useEffect(() => {
     if (isDesktop) {
       setOpen(false);
@@ -51,21 +55,29 @@ const Header = () => {
     }
   };
 
-  // Abre el menú de usuario
+  // Maneja la apertura del menú del usuario
   const handleClickUserIcon = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Cierra el menú de usuario
+  // Cierra el menú del usuario
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
   // Función para cerrar sesión
   const handleLogout = () => {
-    // Aquí podrías agregar la lógica de cierre de sesión
     console.log("Cerrar sesión");
-    handleCloseMenu(); // Cierra el menú al hacer clic en cerrar sesión
+    handleCloseMenu(); // Cierra el menú
+    logout();
+    // Opcionalmente, redirigir a la página principal
+    handleNavigation("/");
+  };
+
+  // Función para iniciar sesión: redirige a la página de login
+  const handleLogin = () => {
+    handleCloseMenu();
+    handleNavigation("/login");
   };
 
   useEffect(() => {
@@ -74,25 +86,22 @@ const Header = () => {
         window.pageYOffset || document.documentElement.scrollTop;
       setIsTop(scrollTop === 0);
       setShowMenu(scrollTop === 0);
-
-      // Cierra el menú toggle si el header se minimiza
       if (scrollTop > 0) {
         setOpen(false);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const formatPathName = (path) => {
     if (path === "/") return "Inicio";
     if (path === "/atencion-cliente") return "Atención a Clientes";
-    if (path === "/vehiculos" || path === "/vehiculos") return "Vehiculos";
+    if (path === "/vehiculos") return "Vehiculos";
     if (path === "/sucursales") return "Sucursales";
-    if (path === "/soluciones-empresariales") return "Convenios Corporativos";
+    if (path === "/soluciones-empresariales")
+      return "Convenios Corporativos";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
@@ -194,10 +203,16 @@ const Header = () => {
                   horizontal: "right",
                 }}
               >
-                <MenuItem onClick={() => handleNavigation("/perfil")}>
-                  Mi perfil
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
+                {isLoggedIn ? (
+                  <>
+                    <MenuItem onClick={() => handleNavigation("/perfil")}>
+                      Mi perfil
+                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
+                  </>
+                ) : (
+                  <MenuItem onClick={handleLogin}>Iniciar Sesión</MenuItem>
+                )}
               </Menu>
 
               {/* ÍCONO MENÚ (SOLO EN MÓVILES) */}

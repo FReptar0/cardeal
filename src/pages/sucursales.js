@@ -59,6 +59,7 @@ export default function Sucursales() {
                             px: 2,
                             py: 1,
                             borderRadius: "0 0 0 8px",
+                            zIndex: 999,
                         }}
                     >
                         Próxima apertura
