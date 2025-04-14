@@ -90,14 +90,19 @@ const ExtrasRenta = () => {
   const [hideSearchSection, setHideSearchSection] = useState(false);
   const [searchDataLocal, setSearchDataLocal] = useState(null);
 
+  // Lógica que accede a localStorage se ejecuta solo en el cliente
   useEffect(() => {
-    const interval = setInterval(() => {
-      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
-      setHeaderIsTop(headerTop);
-      setShowCompactHeader(!headerTop);
-      setHideSearchSection(!headerTop);
-    }, 100);
-    return () => clearInterval(interval);
+    if (typeof window !== "undefined") {
+      const interval = setInterval(() => {
+        const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
+        if (headerTop === null) return; // Evitamos ejecutar si no existe la clave
+        setHeaderIsTop(headerTop);
+        setShowCompactHeader(!headerTop);
+        setHideSearchSection(!headerTop);
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
   }, []);
 
   // Función para modificar la cantidad de un extra
@@ -105,11 +110,19 @@ const ExtrasRenta = () => {
     setSelectedExtras((prev) => {
       const currentQty = prev[id] || 0;
       let nuevaCantidad = currentQty;
+
       if (operacion === "sumar") {
-        // Se controlan límites de ejemplo para cada extra
-        if (id === "baby_seat" && currentQty >= 2) return prev;
-        if (id === "child_seat" && currentQty >= 2) return prev;
-        if (id === "booster" && currentQty >= 2) return prev;
+        // Para "baby_seat", "child_seat" y "booster", validamos que la suma combinada no exceda 2
+        if (
+          (id === "baby_seat" || id === "child_seat" || id === "booster") &&
+          (prev["baby_seat"] || 0) +
+            (prev["child_seat"] || 0) +
+            (prev["booster"] || 0) >=
+            2
+        ) {
+          return prev;
+        }
+        // Límites para otros extras
         if (id === "conductor_menor" && currentQty >= 1) return prev;
         if (id === "conductor_adicional" && currentQty >= 2) return prev;
         nuevaCantidad += 1;
@@ -227,7 +240,7 @@ const ExtrasRenta = () => {
                 </Typography>
               </CardContent>
 
-              {/* Sección del precio arriba y el contador horizontal debajo */}
+              {/* Sección del precio (arriba) y el contador (abajo) */}
               <Box
                 sx={{
                   display: "flex",
