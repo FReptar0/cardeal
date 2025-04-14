@@ -1,6 +1,7 @@
 // pages/_app.js
 import "../styles/global.css";
 import "../styles/index.css";
+import "react-toastify/dist/ReactToastify.css";
 import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";

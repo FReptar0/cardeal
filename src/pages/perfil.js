@@ -1,23 +1,89 @@
-import { Box, Card, CardContent, Typography, Avatar, Button, Divider, Container, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import React, { useEffect } from "react";
+import {
+    Box,
+    Card,
+    CardContent,
+    Typography,
+    Avatar,
+    Button,
+    Divider,
+    Container,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import cars from "../data/cars.json"; // Importar datos del JSON
+import { useRouter } from "next/router";
+import { useAuth } from "@/contexts/AuthContext";
 
 const UserProfile = () => {
+    const { isLoggedIn } = useAuth();
+    const router = useRouter();
+
+    // Si el usuario no está autenticado, redirigir a /login
+    useEffect(() => {
+        if (!isLoggedIn) {
+            router.replace("/login");
+        }
+    }, [isLoggedIn, router]);
+
+    // Mientras se redirige, no renderizamos nada
+    if (!isLoggedIn) return null;
+
     return (
-        <Container sx={{ marginTop: 20, marginBottom: 10, maxWidth: "100vw", paddingX: 2 }}>
+        <Container
+            sx={{ marginTop: 20, marginBottom: 10, maxWidth: "100vw", paddingX: 2 }}
+        >
             {/* Encabezado del perfil */}
-            <Box sx={{ position: "relative", background: "linear-gradient(90deg, #0B5D3C, #10906A)", height: 150, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "space-between", padding: 2, marginBottom: 2 }}>
+            <Box
+                sx={{
+                    position: "relative",
+                    background: "linear-gradient(90deg, #0B5D3C, #10906A)",
+                    height: 150,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: 2,
+                    marginBottom: 2,
+                }}
+            >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar src="/user-avatar.png" sx={{ width: 80, height: 80, border: "4px solid white" }} />
+                    <Avatar
+                        src="/user-avatar.png"
+                        sx={{
+                            width: 80,
+                            height: 80,
+                            border: "4px solid white",
+                        }}
+                    />
                     <Box>
-                        <Typography variant="h5" color="white">Juan Pérez</Typography>
+                        <Typography variant="h5" color="white">
+                            Juan Pérez
+                        </Typography>
                     </Box>
                 </Box>
-                <Button variant="outlined" sx={{ color: "white", borderColor: "white" }} startIcon={<EditIcon />}>Editar perfil</Button>
+                <Button
+                    variant="outlined"
+                    sx={{ color: "white", borderColor: "white" }}
+                    startIcon={<EditIcon />}
+                >
+                    Editar perfil
+                </Button>
             </Box>
 
             {/* Contenido */}
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, marginTop: 2, marginBottom: 2 }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    gap: 2,
+                    marginTop: 2,
+                    marginBottom: 2,
+                }}
+            >
                 {/* Acerca de mí */}
                 <Card sx={{ flex: 1, border: "1px solid #ddd", borderRadius: 2 }}>
                     <CardContent>
@@ -62,25 +128,38 @@ const UserProfile = () => {
                         <Divider sx={{ my: 2 }} />
                         <List>
                             {cars.map((car) => (
-                                <ListItem 
-                                    key={car.name} 
-                                    sx={{ 
-                                        border: "1px solid #ddd", 
+                                <ListItem
+                                    key={car.name}
+                                    sx={{
+                                        border: "1px solid #ddd",
                                         borderRadius: 2,
-                                        transition: "transform 0.3s", 
-                                        "&:hover": { 
-                                            transform: "scale(1.05)" 
-                                        } 
+                                        transition: "transform 0.3s",
+                                        "&:hover": {
+                                            transform: "scale(1.05)"
+                                        }
                                     }}
                                 >
                                     <ListItemAvatar sx={{ maxWidth: 100, marginRight: 2 }}>
-                                        <img src={car.image} alt={car.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
+                                        <img
+                                            src={car.image}
+                                            alt={car.name}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "contain",
+                                                borderRadius: "8px"
+                                            }}
+                                        />
                                     </ListItemAvatar>
-                                    <ListItemText 
-                                        primary={car.name.replace(" o Similar", "")} 
-                                        secondary={car.category} 
+                                    <ListItemText
+                                        primary={car.name.replace(" o Similar", "")}
+                                        secondary={car.category}
                                     />
-                                    <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 'auto' }}>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ marginLeft: "auto" }}
+                                    >
                                         20/10/2021
                                     </Typography>
                                 </ListItem>
