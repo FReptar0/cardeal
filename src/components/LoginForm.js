@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
 
 // Esquema de validación para el login
 const loginSchema = yup.object().shape({
@@ -34,11 +35,9 @@ const LoginForm = ({ onToggle }) => {
     const { login } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = React.useState(false);
-    const [errorMessage, setErrorMessage] = React.useState("");
 
     const onSubmit = async (data) => {
         setLoading(true);
-        setErrorMessage("");
 
         try {
             const res = await fetch("/api/auth/login", {
@@ -53,7 +52,7 @@ const LoginForm = ({ onToggle }) => {
             const json = await res.json();
 
             if (!res.ok) {
-                setErrorMessage(json.message || "Error al iniciar sesión");
+                toast.error(json.message || "Error al iniciar sesión");
                 setLoading(false);
                 return;
             }
@@ -65,7 +64,7 @@ const LoginForm = ({ onToggle }) => {
             router.push("/perfil");
         } catch (error) {
             console.error(error);
-            setErrorMessage("Error de conexión");
+            toast.error("Error de conexión");
         } finally {
             setLoading(false);
         }
@@ -73,6 +72,9 @@ const LoginForm = ({ onToggle }) => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 400 }}>
+            {/* Toast Container para mostrar los mensajes */}
+            <ToastContainer position="top-center" autoClose={5000} />
+
             <Box
                 component="img"
                 src="/logos/Qardeal_logo completo verde y rojo.png"
@@ -124,12 +126,6 @@ const LoginForm = ({ onToggle }) => {
                         ¿Olvidaste tu contraseña?
                     </Typography>
                 </Box>
-
-                {errorMessage && (
-                    <Typography color="error" textAlign="center">
-                        {errorMessage}
-                    </Typography>
-                )}
 
                 <Button
                     type="submit"

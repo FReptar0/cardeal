@@ -2,7 +2,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import {
+    Box,
+    TextField,
+    Button,
+    Typography,
+} from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
 
 // Esquema de validación para el registro
 const registerSchema = yup.object().shape({
@@ -34,7 +40,6 @@ const RegisterForm = ({ onToggle }) => {
     });
 
     const [loading, setLoading] = React.useState(false);
-    const [message, setMessage] = React.useState("");
 
     // Estilo para los campos del formulario
     const thinInputSX = {
@@ -52,7 +57,6 @@ const RegisterForm = ({ onToggle }) => {
 
     const onSubmit = async (data) => {
         setLoading(true);
-        setMessage("");
 
         try {
             const res = await fetch("/api/auth/register", {
@@ -71,19 +75,18 @@ const RegisterForm = ({ onToggle }) => {
             const json = await res.json();
 
             if (!res.ok) {
-                setMessage(json.message || "Error al registrar");
+                toast.error(json.message || "Error al registrar");
                 setLoading(false);
                 return;
             }
 
-            // Registro exitoso: mostramos mensaje de éxito y luego cambiamos al login
-            setMessage("Usuario registrado exitosamente. Inicia sesión.");
+            toast.success("Usuario registrado exitosamente. Inicia sesión.");
             setTimeout(() => {
                 onToggle(); // Cambia de formulario a login
             }, 2000);
         } catch (error) {
             console.error(error);
-            setMessage("Error de conexión");
+            toast.error("Error de conexión");
         } finally {
             setLoading(false);
         }
@@ -91,6 +94,9 @@ const RegisterForm = ({ onToggle }) => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 400 }}>
+            {/* Toast Container */}
+            <ToastContainer position="top-center" autoClose={5000} />
+
             <Box
                 component="img"
                 src="/logos/Qardeal_logo completo verde y rojo.png"
@@ -186,12 +192,6 @@ const RegisterForm = ({ onToggle }) => {
                         helperText={errors.confirmPassword?.message}
                     />
                 </Box>
-
-                {message && (
-                    <Typography color="error" textAlign="center">
-                        {message}
-                    </Typography>
-                )}
 
                 <Button
                     type="submit"
