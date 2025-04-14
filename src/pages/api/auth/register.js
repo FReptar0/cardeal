@@ -1,5 +1,6 @@
 import { connectToDatabase } from '@/utils/mongodb';
 import bcrypt from 'bcryptjs';
+import { generateUuid } from '@/utils/uuid';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -26,13 +27,19 @@ export default async function handler(req, res) {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = {
+            _id: generateUuid(),
             fullName,
             phone,
             email,
             password: hashedPassword,
             birthDate,
             location,
+            userType: 'user', 
             createdAt: new Date(),
+            updatedAt: new Date(),
+            lastLogin: null,
+            isActive: true,
+            isVerified: false,
         };
 
         await db.collection('users').insertOne(newUser);
