@@ -42,7 +42,7 @@ function convert12to24(time12h) {
 
 // Ubicaciones disponibles (estáticas)
 const locations = [
-  {
+  /*{
     id: "AIBJ-T1-048",
     city: "CDMX",
     name: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
@@ -51,7 +51,7 @@ const locations = [
     id: "AIBJ-T1-160",
     city: "CDMX",
     name: "Interior del AICM T1, local 160 Puerta 7 Internacional, CDMX",
-  },
+  },*/
   {
     id: "SAT-001",
     city: "EDOMEX",
