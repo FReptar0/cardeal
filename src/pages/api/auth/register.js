@@ -39,6 +39,7 @@ export default async function handler(req, res) {
             bio: '',
             profilePicture: '',
             userType: 'user', 
+            avatar: '',
             createdAt: new Date(),
             updatedAt: new Date(),
             lastLogin: null,

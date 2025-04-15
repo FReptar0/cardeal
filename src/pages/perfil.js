@@ -1,5 +1,5 @@
 // /pages/perfil.js
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Card,
@@ -20,12 +20,13 @@ import { es } from "date-fns/locale";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useUserProfile from "@/hooks/useUserProfile";
+import EditProfileModal from "@/components/EditProfileModal";
 import cars from "../data/cars.json";
 
 const UserProfile = () => {
     const { userData, loading } = useUserProfile();
+    const [openEditModal, setOpenEditModal] = useState(false);
 
-    // Mientras se consulta la información o se redirige, no renderizamos nada
     if (loading || !userData) return null;
 
     return (
@@ -57,12 +58,17 @@ const UserProfile = () => {
                         </Typography>
                     </Box>
                 </Box>
-                <Button variant="outlined" sx={{ color: "white", borderColor: "white" }} startIcon={<EditIcon />}>
-                    Editar perfil
+                <Button
+                    variant="outlined"
+                    sx={{ color: "white", borderColor: "white" }}
+                    startIcon={<EditIcon />}
+                    onClick={() => setOpenEditModal(true)}
+                >
+                    Editar info
                 </Button>
             </Box>
 
-            {/* Contenido */}
+            {/* Información del Perfil */}
             <Box
                 sx={{
                     display: "flex",
@@ -154,6 +160,14 @@ const UserProfile = () => {
                     </CardContent>
                 </Card>
             </Box>
+
+            {/* Modal de Edición */}
+            <EditProfileModal
+                open={openEditModal}
+                onClose={() => setOpenEditModal(false)}
+                onRefresh={() => window.location.reload()}
+                defaultValues={userData}
+            />
         </Container>
     );
 };
