@@ -51,9 +51,26 @@ export default async function handler(req, res) {
     try {
         const { db } = await connectToDatabase();
 
+        const generateOrderNumber = () => {
+            return Math.floor(100000 + Math.random() * 900000).toString(); // Generar un número de 6 dígitos
+        };
+
+        let orderNumber;
+        let isUnique = false;
+
+        // Intentar generar un número único
+        while (!isUnique) {
+            orderNumber = generateOrderNumber();
+            const existingOrder = await db.collection('bookings').findOne({ orderNumber });
+            if (!existingOrder) {
+                isUnique = true;
+            }
+        }
+
         const newBooking = {
             _id: generateUuid(),
             userId,
+            orderNumber, // Agregar el número de orden único
             contact: {
                 fullName: contactName,
                 email: contactEmail,

@@ -239,7 +239,7 @@ export default function BookingConfirmation() {
                         <Typography variant="body1" color="text.secondary" sx={{ fontSize: "1.2rem" }}>
                             <b>Gracias por elegir nuestro servicio.</b>
                         </Typography>
-                        <Typography variant="h5">Número de confirmación #{booking._id}</Typography>
+                        <Typography variant="h5">Número de confirmación #{booking.orderNumber}</Typography>
                         <Typography variant="body1">
                             <b>Nombre completo:</b> {contact.fullName}
                         </Typography>
