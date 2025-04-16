@@ -20,7 +20,13 @@ const steps = [
 export default function RentalStepper() {
   const router = useRouter();
   const pathname = usePathname();
-  const activeStep = steps.findIndex((step) => step.path === pathname);
+  const activeStep = steps.findIndex((step) => {
+    if (!pathname) return false; // Verificar si pathname es válido
+    if (step.path === "/confirm") {
+      return pathname.startsWith(step.path);
+    }
+    return step.path === pathname;
+  });
 
   // refs para centrar el paso activo en móvil
   const stepRefs = useRef([]);

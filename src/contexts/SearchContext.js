@@ -1,8 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import format from "date-fns/format"; // Si lo necesitas para formateo en algún lado
-import { es } from "date-fns/locale";
 
 // Zona horaria de la Ciudad de México
 const timeZone = "America/Mexico_City";
