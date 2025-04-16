@@ -18,7 +18,8 @@ import { es } from "date-fns/locale";
 import format from "date-fns/format";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { useSearch } from "@/contexts/SearchContext"; // Usamos el contexto global
+import { useSearch } from "@/contexts/SearchContext"; 
+import { locations } from "@/utils/locations";
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -39,25 +40,6 @@ function convert12to24(time12h) {
   if (modifier === "AM" && hours === 12) hours = 0;
   return hours * 60 + minutes;
 }
-
-// Ubicaciones disponibles (estáticas)
-const locations = [
-  /*{
-    id: "AIBJ-T1-048",
-    city: "CDMX",
-    name: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
-  },
-  {
-    id: "AIBJ-T1-160",
-    city: "CDMX",
-    name: "Interior del AICM T1, local 160 Puerta 7 Internacional, CDMX",
-  },*/
-  {
-    id: "SAT-001",
-    city: "EDOMEX",
-    name: "Blvd. Manuel Avila Camacho #1834, Col. Ciudad Satélite, CP 53100 Naucalpan Edo. Mex",
-  },
-];
 
 // Funciones para formatear fechas
 const formatDay = (date) =>
