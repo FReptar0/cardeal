@@ -1,6 +1,6 @@
 // pages/confirm/[id].js
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";              // ← IMPORT desde next/router
+import { useRouter } from "next/router";
 import {
     Container,
     Box,
@@ -12,7 +12,7 @@ import {
     Button,
     Tooltip,
     IconButton,
-    CircularProgress,
+    Skeleton,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import InfoIcon from "@mui/icons-material/Info";
@@ -31,15 +31,15 @@ const extrasDefinitions = {
 export default function BookingConfirmation() {
     const router = useRouter();
     const { jwt } = useAuth();
-    const { id } = router.query;                         // ← YA NO SE DESCALELOTA
+    const { id } = router.query;
 
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
     const [qrCodeUrl, setQrCodeUrl] = useState("");
 
-    // Espera a que `id` exista
     useEffect(() => {
         if (!id || !jwt) return;
+        setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
         fetch(`/api/bookings/${id}`, {
             headers: { Authorization: `Bearer ${jwt}` },
         })
@@ -58,16 +58,43 @@ export default function BookingConfirmation() {
     }, [booking]);
 
     if (loading) {
+        // Skeleton placeholders
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-                <CircularProgress />
-            </Box>
+            <Container sx={{ mt: 24, maxWidth: "100vw", px: 2 }}>
+                <RentalStepper />
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        gap: 4,
+                        mt: -4,
+                    }}
+                >
+                    {/* Left skeleton */}
+                    <Box sx={{ flex: 1 }}>
+                        <Skeleton variant="rectangular" height={300} />
+                        <Skeleton height={40} sx={{ my: 2 }} />
+                        <Skeleton height={20} />
+                        <Skeleton height={20} width="60%" />
+                        <Skeleton height={20} sx={{ mt: 1 }} />
+                        <Skeleton height={20} width="80%" />
+                    </Box>
+
+                    {/* Right skeleton */}
+                    <Box sx={{ flex: 1 }}>
+                        <Skeleton variant="circular" width={50} height={50} />
+                        <Skeleton height={40} width="70%" sx={{ mt: 1 }} />
+                        <Skeleton height={20} width="50%" sx={{ mt: 2 }} />
+                        <Skeleton height={20} width="80%" sx={{ mt: 1 }} />
+                        <Skeleton height={20} width="60%" sx={{ mt: 1 }} />
+                    </Box>
+                </Box>
+            </Container>
         );
     }
 
-    if (!booking) {
-        return null; // o un mensaje de "No encontrado"
-    }
+    if (!booking) return null;
 
     const { car, insurance, extras, search, contact, createdAt } = booking;
     const days =
@@ -106,7 +133,7 @@ export default function BookingConfirmation() {
                 }}
             >
                 {/* Resumen del pedido */}
-                <Box sx={{ width: { xs: "100%", md: "35%" }, display: "flex", justifyContent: "center" }}>
+                <Box sx={{ flex: 1 }}>
                     <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
                         <CardContent>
                             <Typography variant="h6" align="center" gutterBottom>
@@ -114,13 +141,27 @@ export default function BookingConfirmation() {
                             </Typography>
                             <Divider sx={{ my: 2 }} />
 
-                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    gap: 2,
+                                }}
+                            >
                                 <img
                                     src={car.image}
                                     alt={car.name}
                                     style={{ width: "100%", maxWidth: 300, borderRadius: 8 }}
                                 />
-                                <Box sx={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 1 }}>
+                                <Box
+                                    sx={{
+                                        textAlign: "center",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: 1,
+                                    }}
+                                >
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                         <Typography variant="body1" sx={{ mx: 1 }}>
                                             {car.abbreviationMeaning}
@@ -180,7 +221,7 @@ export default function BookingConfirmation() {
                 {/* Contenedor de información de confirmación y QR */}
                 <Box
                     sx={{
-                        width: { xs: "100%", md: "65%" },
+                        flex: 1,
                         display: "flex",
                         flexDirection: { xs: "column", md: "row" },
                         alignItems: "center",

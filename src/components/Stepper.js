@@ -21,6 +21,7 @@ export default function RentalStepper() {
   const router = useRouter();
   const pathname = usePathname();
   const activeStep = steps.findIndex((step) => {
+    if (!pathname) return false; // Verificar si pathname es válido
     if (step.path === "/confirm") {
       return pathname.startsWith(step.path);
     }
