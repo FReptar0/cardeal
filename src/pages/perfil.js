@@ -1,4 +1,3 @@
-// /pages/perfil.js
 import React, { useState } from "react";
 import {
     Box,
@@ -9,10 +8,7 @@ import {
     Button,
     Divider,
     Container,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
+    Skeleton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { format } from "date-fns";
@@ -21,13 +17,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useUserProfile from "@/hooks/useUserProfile";
 import EditProfileModal from "@/components/EditProfileModal";
-import cars from "../data/cars.json";
+import ReservationsList from "@/components/ReservationsList";
 
 const UserProfile = () => {
     const { userData, loading } = useUserProfile();
     const [openEditModal, setOpenEditModal] = useState(false);
-
-    if (loading || !userData) return null;
 
     return (
         <Container sx={{ mt: 20, mb: 10, maxWidth: "100vw", px: 2 }}>
@@ -48,27 +42,39 @@ const UserProfile = () => {
                 }}
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar
-                        src={userData.avatar || "/user-avatar.png"}
-                        sx={{ width: 80, height: 80, border: "4px solid white" }}
-                    />
+                    {loading ? (
+                        <Skeleton variant="circular" width={80} height={80} sx={{ border: "4px solid white" }} />
+                    ) : (
+                        <Avatar
+                            src={userData.avatar || "/user-avatar.png"}
+                            sx={{ width: 80, height: 80, border: "4px solid white" }}
+                        />
+                    )}
                     <Box>
-                        <Typography variant="h5" color="white">
-                            {userData.fullName}
-                        </Typography>
+                        {loading ? (
+                            <Skeleton variant="text" width={200} height={40} sx={{ bgcolor: "grey.300" }} />
+                        ) : (
+                            <Typography variant="h5" color="white">
+                                {userData.fullName}
+                            </Typography>
+                        )}
                     </Box>
                 </Box>
-                <Button
-                    variant="outlined"
-                    sx={{ color: "white", borderColor: "white" }}
-                    startIcon={<EditIcon />}
-                    onClick={() => setOpenEditModal(true)}
-                >
-                    Editar info
-                </Button>
+                {loading ? (
+                    <Skeleton variant="rectangular" width={120} height={40} sx={{ borderRadius: 1 }} />
+                ) : (
+                    <Button
+                        variant="outlined"
+                        sx={{ color: "white", borderColor: "white" }}
+                        startIcon={<EditIcon />}
+                        onClick={() => setOpenEditModal(true)}
+                    >
+                        Editar info
+                    </Button>
+                )}
             </Box>
 
-            {/* Información del Perfil */}
+            {/* Sección de Información del Perfil */}
             <Box
                 sx={{
                     display: "flex",
@@ -81,82 +87,77 @@ const UserProfile = () => {
                 {/* Acerca de mí */}
                 <Card sx={{ flex: 1, border: "1px solid #ddd", borderRadius: 2 }}>
                     <CardContent>
-                        <Typography variant="h6">Acerca de mí</Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Typography variant="subtitle2">BIOGRAFÍA</Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {userData.bio || "Aquí se mostrará la biografía del usuario si está definida."}
-                        </Typography>
-                        <Typography variant="subtitle2">POSICIÓN</Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {userData.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
-                        </Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                            <Box>
-                                <Typography variant="subtitle2">TELÉFONO</Typography>
-                                <Typography variant="body2">{userData.phone}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography variant="subtitle2">FECHA DE NACIMIENTO</Typography>
-                                <Typography variant="body2">
-                                    {userData.birthDate
-                                        ? format(new Date(userData.birthDate), "dd/MM/yyyy", { locale: es })
-                                        : "Fecha no disponible"}
+                        {loading ? (
+                            <>
+                                <Skeleton variant="text" width="60%" height={30} />
+                                <Divider sx={{ my: 2 }} />
+                                <Skeleton variant="text" width="40%" height={20} />
+                                <Skeleton variant="text" width="90%" height={20} />
+                                <Skeleton variant="text" width="80%" height={20} />
+                                <Divider sx={{ my: 2 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Skeleton variant="text" width="40%" height={20} />
+                                    <Skeleton variant="text" width="40%" height={20} />
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                                    <Skeleton variant="text" width="40%" height={20} />
+                                    <Skeleton variant="text" width="40%" height={20} />
+                                </Box>
+                            </>
+                        ) : (
+                            <>
+                                <Typography variant="h6">Acerca de mí</Typography>
+                                <Divider sx={{ my: 2 }} />
+                                <Typography variant="subtitle2">BIOGRAFÍA</Typography>
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    {userData.bio || "Aquí se mostrará la biografía del usuario si está definida."}
                                 </Typography>
-                            </Box>
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-                            <Box>
-                                <Typography variant="subtitle2">CORREO ELECTRÓNICO</Typography>
-                                <Typography variant="body2">{userData.email}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography variant="subtitle2">UBICACIÓN</Typography>
-                                <Typography variant="body2">{userData.location}</Typography>
-                            </Box>
-                        </Box>
+                                <Typography variant="subtitle2">POSICIÓN</Typography>
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    {userData.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
+                                </Typography>
+                                <Divider sx={{ my: 2 }} />
+                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Box>
+                                        <Typography variant="subtitle2">TELÉFONO</Typography>
+                                        <Typography variant="body2">{userData.phone}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="subtitle2">FECHA DE NACIMIENTO</Typography>
+                                        <Typography variant="body2">
+                                            {userData.birthDate
+                                                ? format(new Date(userData.birthDate), "dd/MM/yyyy", { locale: es })
+                                                : "Fecha no disponible"}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                                    <Box>
+                                        <Typography variant="subtitle2">CORREO ELECTRÓNICO</Typography>
+                                        <Typography variant="body2">{userData.email}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="subtitle2">UBICACIÓN</Typography>
+                                        <Typography variant="body2">{userData.location}</Typography>
+                                    </Box>
+                                </Box>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
 
                 {/* Mis reservas */}
                 <Card sx={{ flex: 1, border: "1px solid #ddd", borderRadius: 2 }}>
                     <CardContent>
-                        <Typography variant="h6">Mis reservas</Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <List>
-                            {cars.map((car) => (
-                                <ListItem
-                                    key={car.name}
-                                    sx={{
-                                        border: "1px solid #ddd",
-                                        borderRadius: 2,
-                                        transition: "transform 0.3s",
-                                        "&:hover": { transform: "scale(1.05)" },
-                                    }}
-                                >
-                                    <ListItemAvatar sx={{ maxWidth: 100, mr: 2 }}>
-                                        <img
-                                            src={car.image}
-                                            alt={car.name}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "contain",
-                                                borderRadius: "8px",
-                                            }}
-                                        />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={car.name.replace(" o Similar", "")}
-                                        secondary={car.category}
-                                    />
-                                    <Typography variant="body2" color="text.secondary" sx={{ ml: "auto" }}>
-                                        20/10/2021
-                                    </Typography>
-                                </ListItem>
-                            ))}
-                        </List>
+                        {loading ? (
+                            <Skeleton variant="rectangular" height={200} />
+                        ) : (
+                            <>
+                                <Typography variant="h6">Mis reservas</Typography>
+                                <Divider sx={{ my: 2 }} />
+                                <ReservationsList />
+                            </>
+                        )}
                     </CardContent>
                 </Card>
             </Box>
