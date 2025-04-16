@@ -39,17 +39,32 @@ export default function BookingConfirmation() {
 
     useEffect(() => {
         if (!id || !jwt) return;
-        setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
-        fetch(`/api/bookings/${id}`, {
-            headers: { Authorization: `Bearer ${jwt}` },
-        })
-            .then((res) => {
+
+        const fetchBooking = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`/api/bookings/${id}`, {
+                    headers: { Authorization: `Bearer ${jwt}` },
+                });
+
                 if (!res.ok) throw new Error("No autorizado");
-                return res.json();
-            })
-            .then((data) => setBooking(data.booking))
-            .catch(() => router.replace("/login"))
-            .finally(() => setLoading(false));
+
+                const data = await res.json();
+
+                // Verificar si el userId del booking coincide con el userId del jwt
+                if (data.booking.userId !== jwt.userId) {
+                    throw new Error("Usuario no autorizado");
+                }
+
+                setBooking(data.booking);
+            } catch (error) {
+                router.replace("/");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBooking();
     }, [id, jwt, router]);
 
     useEffect(() => {
