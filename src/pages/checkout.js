@@ -1,40 +1,40 @@
 // /pages/checkout.js
 "use client";
 
-import React from 'react';
-import { Container, Box } from '@mui/material';
-import RentalStepper from '@/components/Stepper';
-import { useBooking } from '@/contexts/BookingContext';
-import { useSearch } from '@/contexts/SearchContext';
-import OrderSummary from '@/components/OrderSummary';
-import UserForm from '@/components/UserForm';
+import React from "react";
+import { Container, Box } from "@mui/material";
+import RentalStepper from "@/components/Stepper";
+import { useBooking } from "@/contexts/BookingContext";
+import { useSearch } from "@/contexts/SearchContext";
+import OrderSummary from "@/components/OrderSummary";
+import UserForm from "@/components/UserForm";
 
 const formatCurrency = (amount) =>
-  amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+  amount.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 
 export default function CheckoutPage() {
   const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
   const { searchData } = useSearch();
 
   const pickupDateString = searchData.pickupDate
-    ? new Date(searchData.pickupDate).toLocaleDateString('es-MX')
-    : '';
+    ? new Date(searchData.pickupDate).toLocaleDateString("es-MX")
+    : "";
   const returnDateString = searchData.returnDate
-    ? new Date(searchData.returnDate).toLocaleDateString('es-MX')
-    : '';
+    ? new Date(searchData.returnDate).toLocaleDateString("es-MX")
+    : "";
   const rentalDays =
     searchData.pickupDate && searchData.returnDate
       ? Math.ceil(
-        (new Date(searchData.returnDate) - new Date(searchData.pickupDate)) /
-        (1000 * 60 * 60 * 24)
-      )
+          (new Date(searchData.returnDate) - new Date(searchData.pickupDate)) /
+            (1000 * 60 * 60 * 24)
+        )
       : 1;
 
   const dailyCarCost = selectedCar?.price || 0;
   const totalCarCost = dailyCarCost * rentalDays;
 
   const parseInsuranceCost = (s) => {
-    const n = s ? s.replace(/[^\d.]/g, '') : '0';
+    const n = s ? s.replace(/[^\d.]/g, "") : "0";
     return parseFloat(n) || 0;
   };
   const dailyInsuranceCost = selectedInsurance
@@ -44,11 +44,15 @@ export default function CheckoutPage() {
 
   // extras calculation...
   const baseExtras = [
-    { id: 'conductor_adicional', nombre: 'Conductor Adicional', precio: 110 },
-    { id: 'conductor_menor', nombre: 'Conductor Menor de 25 Años', precio: 110 },
-    { id: 'baby_seat', nombre: 'Baby Seat (Grupo 0+)', precio: 150 },
-    { id: 'child_seat', nombre: 'Child Seat (Grupo 0/1/2)', precio: 150 },
-    { id: 'booster', nombre: 'Booster', precio: 150 },
+    { id: "conductor_adicional", nombre: "Conductor Adicional", precio: 110 },
+    {
+      id: "conductor_menor",
+      nombre: "Conductor Menor de 25 Años",
+      precio: 110,
+    },
+    { id: "baby_seat", nombre: "Baby Seat (Grupo 0+)", precio: 150 },
+    { id: "child_seat", nombre: "Child Seat (Grupo 0/1/2)", precio: 150 },
+    { id: "booster", nombre: "Booster", precio: 150 },
   ];
   let extrasInfo = [];
   let totalExtrasCost = 0;
@@ -69,19 +73,19 @@ export default function CheckoutPage() {
   const totalWithIva = subTotal + ivaCost;
 
   return (
-    <Container sx={{ mt: 4, mb: 3, maxWidth: '100vw', px: 2 }}>
+    <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>
       <RentalStepper />
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
           gap: 4,
-          justifyContent: 'center',
-          alignItems: 'flex-start',
+          justifyContent: "center",
+          alignItems: "flex-start",
           mt: 3,
         }}
       >
-        <Box sx={{ width: { xs: '100%', md: '40%' } }}>
+        <Box sx={{ width: { xs: "100%", md: "40%" } }}>
           <OrderSummary
             selectedCar={selectedCar}
             pickupDateString={pickupDateString}
@@ -97,7 +101,7 @@ export default function CheckoutPage() {
             formatCurrency={formatCurrency}
           />
         </Box>
-        <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
           <UserForm />
         </Box>
       </Box>
