@@ -38,38 +38,18 @@ export default function BookingConfirmation() {
     const [qrCodeUrl, setQrCodeUrl] = useState("");
 
     useEffect(() => {
-        if (!jwt) {
-            router.replace("/login");
-            return;
-        }
-
-        if (!id) return;
-
-        const fetchBooking = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/bookings/${id}`, {
-                    headers: { Authorization: `Bearer ${jwt}` },
-                });
-
+        if (!id || !jwt) return;
+        setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
+        fetch(`/api/bookings/${id}`, {
+            headers: { Authorization: `Bearer ${jwt}` },
+        })
+            .then((res) => {
                 if (!res.ok) throw new Error("No autorizado");
-
-                const data = await res.json();
-
-                // Verificar si el userId del booking coincide con el userId del jwt
-                if (data.booking.userId !== jwt.userId) {
-                    throw new Error("Usuario no autorizado");
-                }
-
-                setBooking(data.booking);
-            } catch (error) {
-                router.replace("/");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBooking();
+                return res.json();
+            })
+            .then((data) => setBooking(data.booking))
+            .catch(() => router.replace("/login"))
+            .finally(() => setLoading(false));
     }, [id, jwt, router]);
 
     useEffect(() => {
