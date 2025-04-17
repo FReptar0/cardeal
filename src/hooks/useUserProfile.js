@@ -13,6 +13,11 @@ export default function useUserProfile() {
 
     useEffect(() => {
         if (!isLoggedIn) {
+            // Evitar redireccionar al login si estamos en la página de checkout
+            if (router.pathname === "/checkout") {
+                setLoading(false);
+                return;
+            }
             router.replace("/login");
             return;
         }

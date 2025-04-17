@@ -87,6 +87,7 @@ export default function UserForm() {
         }
     }, [isLoggedIn, loadingProfile, userData, reset]);
 
+    // Se eliminó el redireccionamiento si no está iniciada la sesión en la pantalla de checkout
     const onSubmit = async (data) => {
         try {
             // registro automático si no está logueado
