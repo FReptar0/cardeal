@@ -187,34 +187,36 @@ const Header = () => {
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: "column", // Asegura que el texto esté debajo del icono
+                  alignItems: "center", // Centra el texto horizontalmente
                   cursor: "pointer",
+                  width: "80px", // Aumenta el ancho del contenedor
                 }}
                 onClick={handleClickUserIcon}
               >
+                <IconButton color="inherit" sx={{ marginBottom: "2px" }}>
+                  <AccountCircleIcon />
+                </IconButton>
                 <Typography
                   variant="caption"
                   sx={{
                     color: "#000",
                     display: "block",
                     textDecoration: "none",
-                    width: isLoggedIn ? "73px" : "120px",
+                    textAlign: "center", // Centra el texto
                     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
                     fontWeight: 500,
-                    fontSize: "0.875rem",
+                    fontSize: "0.75rem", // Tamaño más pequeño
                     letterSpacing: "0.02857em",
                     textTransform: "uppercase",
                     cursor: "pointer",
                     transition: "background 0.3s",
                     borderRadius: "5px",
+                    marginTop: "4px", // Espaciado entre el icono y el texto
                   }}
                 >
                   {isLoggedIn ? "Mi perfil" : "Iniciar sesión"}
                 </Typography>
-                <IconButton color="inherit" sx={{ marginBottom: "2px" }}>
-                  <AccountCircleIcon />
-                </IconButton>
               </Box>
 
               {/* MENÚ DESPLEGABLE DE USUARIO */}
