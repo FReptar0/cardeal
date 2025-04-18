@@ -70,8 +70,12 @@ const ReservationsList = () => {
                             border: "1px solid #ddd",
                             borderRadius: 2,
                             transition: "transform 0.3s",
-                            "&:hover": { transform: "scale(1.05)" },
+                            "&:hover": { 
+                                transform: "scale(1.05)", 
+                                cursor: "pointer" 
+                            },
                         }}
+                        onClick={() => window.location.href = `/confirm/${booking._id}`}
                     >
                         <ListItemAvatar sx={{ maxWidth: 100, mr: 2 }}>
                             <Avatar
@@ -90,9 +94,13 @@ const ReservationsList = () => {
                             secondary={booking.car.category}
                         />
                         <Typography variant="body2" color="text.secondary" sx={{ ml: "auto" }}>
-                            {booking.createdAt
+                            {booking.search.pickupDate
                                 ? format(new Date(booking.createdAt), "dd/MM/yyyy", { locale: es })
-                                : ""}
+                                : ""} - {
+                                    booking.search.returnDate
+                                        ? format(new Date(booking.search.returnDate), "dd/MM/yyyy", { locale: es })
+                                        : ""
+                                }
                         </Typography>
                     </ListItem>
                 ))}
