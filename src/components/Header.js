@@ -100,8 +100,7 @@ const Header = () => {
     if (path === "/atencion-cliente") return "Atención a Clientes";
     if (path === "/vehiculos") return "Vehiculos";
     if (path === "/sucursales") return "Sucursales";
-    if (path === "/soluciones-empresariales")
-      return "Convenios Corporativos";
+    if (path === "/soluciones-empresariales") return "Convenios Corporativos";
     if (path === "/FAQ") return "Preguntas frecuentes";
     return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
   };
@@ -150,7 +149,7 @@ const Header = () => {
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
-                gap: 5,
+                gap: 3,
                 width: "100%",
                 justifyContent: "end",
                 marginRight: "32px",
@@ -185,9 +184,38 @@ const Header = () => {
           {/* ICONOS Y MENÚ HAMBURGUESA */}
           {isTop && (
             <Box sx={{ display: "flex", gap: 2 }}>
-              <IconButton color="inherit" onClick={handleClickUserIcon}>
-                <AccountCircleIcon />
-              </IconButton>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={handleClickUserIcon}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "#000",
+                    display: "block",
+                    textDecoration: "none",
+                    width: isLoggedIn ? "73px" : "120px",
+                    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    letterSpacing: "0.02857em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    transition: "background 0.3s",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {isLoggedIn ? "Mi perfil" : "Iniciar sesión"}
+                </Typography>
+                <IconButton color="inherit" sx={{ marginBottom: "2px" }}>
+                  <AccountCircleIcon />
+                </IconButton>
+              </Box>
 
               {/* MENÚ DESPLEGABLE DE USUARIO */}
               <Menu
