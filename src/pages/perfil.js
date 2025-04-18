@@ -46,7 +46,7 @@ const UserProfile = () => {
                         <Skeleton variant="circular" width={80} height={80} sx={{ border: "4px solid white" }} />
                     ) : (
                         <Avatar
-                            src={userData.avatar || "/user-avatar.png"}
+                            src={userData?.avatar || "/user-avatar.png"}
                             sx={{ width: 80, height: 80, border: "4px solid white" }}
                         />
                     )}
@@ -55,7 +55,7 @@ const UserProfile = () => {
                             <Skeleton variant="text" width={200} height={40} sx={{ bgcolor: "grey.300" }} />
                         ) : (
                             <Typography variant="h5" color="white">
-                                {userData.fullName}
+                                {userData?.fullName}
                             </Typography>
                         )}
                     </Box>
@@ -110,23 +110,23 @@ const UserProfile = () => {
                                 <Divider sx={{ my: 2 }} />
                                 <Typography variant="subtitle2">BIOGRAFÍA</Typography>
                                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    {userData.bio || "Aquí se mostrará la biografía del usuario si está definida."}
+                                    {userData?.bio || "Aquí se mostrará la biografía del usuario si está definida."}
                                 </Typography>
                                 <Typography variant="subtitle2">POSICIÓN</Typography>
                                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    {userData.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
+                                    {userData?.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
                                 </Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                                     <Box>
                                         <Typography variant="subtitle2">TELÉFONO</Typography>
-                                        <Typography variant="body2">{userData.phone}</Typography>
+                                        <Typography variant="body2">{userData?.phone}</Typography>
                                     </Box>
                                     <Box>
                                         <Typography variant="subtitle2">FECHA DE NACIMIENTO</Typography>
                                         <Typography variant="body2">
-                                            {userData.birthDate
-                                                ? format(new Date(userData.birthDate), "dd/MM/yyyy", { locale: es })
+                                            {userData?.birthDate
+                                                ? format(new Date(userData?.birthDate), "dd/MM/yyyy", { locale: es })
                                                 : "Fecha no disponible"}
                                         </Typography>
                                     </Box>
@@ -134,11 +134,11 @@ const UserProfile = () => {
                                 <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
                                     <Box>
                                         <Typography variant="subtitle2">CORREO ELECTRÓNICO</Typography>
-                                        <Typography variant="body2">{userData.email}</Typography>
+                                        <Typography variant="body2">{userData?.email}</Typography>
                                     </Box>
                                     <Box>
                                         <Typography variant="subtitle2">UBICACIÓN</Typography>
-                                        <Typography variant="body2">{userData.location}</Typography>
+                                        <Typography variant="body2">{userData?.location}</Typography>
                                     </Box>
                                 </Box>
                             </>

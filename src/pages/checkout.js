@@ -99,6 +99,7 @@ export default function CheckoutPage() {
             ivaCost={ivaCost}
             totalWithIva={totalWithIva}
             formatCurrency={formatCurrency}
+            subtotal={formatCurrency(subTotal)}
           />
         </Box>
         <Box sx={{ width: { xs: "100%", md: "50%" } }}>

@@ -3,18 +3,19 @@ import React from "react";
 import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
 
 export default function OrderSummary({
-  selectedCar,
-  pickupDateString,
-  returnDateString,
-  rentalDays,
-  dailyCarCost,
-  totalCarCost,
-  selectedInsurance,
-  totalInsuranceCost,
-  extrasInfo,
-  ivaCost,
-  totalWithIva,
-  formatCurrency,
+    selectedCar,
+    pickupDateString,
+    returnDateString,
+    rentalDays,
+    dailyCarCost,
+    totalCarCost,
+    selectedInsurance,
+    totalInsuranceCost,
+    extrasInfo,
+    ivaCost,
+    totalWithIva,
+    formatCurrency,
+    subtotal
 }) {
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
 
@@ -152,26 +153,22 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* IVA y Total */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2" fontWeight="bold">
-            IVA (16%)
-          </Typography>
-          <Typography variant="body2" fontWeight="bold">
-            {formatCurrency(ivaCost)}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ my: 2 }} />
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="h6" fontWeight="bold">
-            TOTAL:
-          </Typography>
-          <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
-            {formatCurrency(totalWithIva)}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
+                {/* Subtotal, IVA y Total */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                    <Typography variant="body2" >Subtotal:</Typography>
+                    <Typography variant="body2" >{subtotal}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                    <Typography variant="body2" fontWeight="bold">IVA (16%)</Typography>
+                    <Typography variant="body2" fontWeight="bold">{formatCurrency(ivaCost)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                    <Typography variant="h6" fontWeight="bold">TOTAL:</Typography>
+                    <Typography variant="h6" fontWeight="bold" sx={{ color: '#d60812' }}>
+                        {formatCurrency(totalWithIva)}
+                    </Typography>
+                </Box>
+            </CardContent>
+        </Card>
+    );
 }
