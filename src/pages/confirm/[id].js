@@ -267,23 +267,6 @@ export default function BookingConfirmation() {
                         alignItems="center"
                         sx={{ width: "100%" }}
                     >
-                        <Box display="flex" gap={2}>
-                            <Button variant="text">
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Add_to_Google_Wallet_badge.svg"
-                                    alt="Agregar a Google Wallet"
-                                    style={{ height: 48 }}
-                                />
-                            </Button>
-                            <Button variant="text">
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/3/30/Add_to_Apple_Wallet_badge.svg"
-                                    alt="Agregar a Apple Wallet"
-                                    style={{ height: 48 }}
-                                />
-                            </Button>
-                        </Box>
-
                         <Button
                             type="submit"
                             fullWidth
