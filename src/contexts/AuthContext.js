@@ -4,71 +4,77 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // Estado para almacenar el token JWT, la fecha/hora de inicio de sesión y el status de autenticación
-    const [jwt, setJwt] = useState(null);
-    const [sessionStart, setSessionStart] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Estado para almacenar el token JWT, la fecha/hora de inicio de sesión y el status de autenticación
+  const [jwt, setJwt] = useState(null);
+  const [sessionStart, setSessionStart] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Al montar el componente, intenta leer los datos del localStorage
-    useEffect(() => {
-        const storedJwt = localStorage.getItem("authJwt");
-        const storedSessionStart = localStorage.getItem("sessionStart");
-        const storedIsLoggedIn = localStorage.getItem("isLoggedIn");
+  // Al montar el componente, intenta leer los datos del localStorage
+  useEffect(() => {
+    const storedJwt = localStorage.getItem("authJwt");
+    const storedSessionStart = localStorage.getItem("sessionStart");
+    const storedIsLoggedIn = localStorage.getItem("isLoggedIn");
 
-        if (storedJwt && storedSessionStart && storedIsLoggedIn === "true") {
-            setJwt(storedJwt);
-            setSessionStart(new Date(storedSessionStart));
-            setIsLoggedIn(true);
-        }
-    }, []);
+    if (storedJwt && storedSessionStart && storedIsLoggedIn === "true") {
+      setJwt(storedJwt);
+      setSessionStart(new Date(storedSessionStart));
+      setIsLoggedIn(true);
+    }
+  }, []);
 
-    // Sincroniza el JWT con localStorage
-    useEffect(() => {
-        if (jwt) {
-            localStorage.setItem("authJwt", jwt);
-        } else {
-            localStorage.removeItem("authJwt");
-        }
-    }, [jwt]);
+  // Sincroniza el JWT con localStorage
+  useEffect(() => {
+    if (jwt) {
+      localStorage.setItem("authJwt", jwt);
+    } else {
+      localStorage.removeItem("authJwt");
+    }
+  }, [jwt]);
 
-    // Sincroniza la fecha/hora de inicio de sesión con localStorage
-    useEffect(() => {
-        if (sessionStart) {
-            localStorage.setItem("sessionStart", sessionStart.toString());
-        } else {
-            localStorage.removeItem("sessionStart");
-        }
-    }, [sessionStart]);
+  // Sincroniza la fecha/hora de inicio de sesión con localStorage
+  useEffect(() => {
+    if (sessionStart) {
+      localStorage.setItem("sessionStart", sessionStart.toString());
+    } else {
+      localStorage.removeItem("sessionStart");
+    }
+  }, [sessionStart]);
 
-    // Sincroniza el status de autenticación con localStorage
-    useEffect(() => {
-        localStorage.setItem("isLoggedIn", isLoggedIn.toString());
-    }, [isLoggedIn]);
+  // Sincroniza el status de autenticación con localStorage
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", isLoggedIn.toString());
+  }, [isLoggedIn]);
 
-    // Función para iniciar sesión: guarda el JWT, la fecha de inicio y establece el status en true
-    const login = (token) => {
-        setJwt(token);
-        setSessionStart(new Date());
-        setIsLoggedIn(true);
-    };
+  // Función para iniciar sesión: guarda el JWT, la fecha de inicio y establece el status en true
+  const login = (token) => {
+    return new Promise((resolve) => {
+      setJwt(token);
+      setSessionStart(new Date());
+      setIsLoggedIn(true);
 
-    // Función para cerrar sesión: limpia todos los estados y el localStorage
-    const logout = () => {
-        setJwt(null);
-        setSessionStart(null);
-        setIsLoggedIn(false);
-        localStorage.removeItem("authJwt");
-        localStorage.removeItem("sessionStart");
-        localStorage.removeItem("isLoggedIn");
-    };
+      setTimeout(() => {
+        resolve(token);
+      }, 0);
+    });
+  };
 
-    return (
-        <AuthContext.Provider
-            value={{ jwt, sessionStart, isLoggedIn, login, logout }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  // Función para cerrar sesión: limpia todos los estados y el localStorage
+  const logout = () => {
+    setJwt(null);
+    setSessionStart(null);
+    setIsLoggedIn(false);
+    localStorage.removeItem("authJwt");
+    localStorage.removeItem("sessionStart");
+    localStorage.removeItem("isLoggedIn");
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ jwt, sessionStart, isLoggedIn, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
