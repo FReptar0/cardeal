@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import differenceInYears from "date-fns/differenceInYears";
 import {
   Box,
   TextField,
@@ -15,7 +16,11 @@ import {
   Card,
   Divider,
   CircularProgress,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -32,6 +37,8 @@ export default function UserForm() {
   const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
   const { searchData, setSearchData } = useSearch();
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   // Validaciones dinámicas
   const schema = yup.object().shape({
@@ -41,17 +48,33 @@ export default function UserForm() {
       .oneOf([true], "Debes aceptar la política de privacidad"),
     ...(!isLoggedIn && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
-      phone: yup.string().required("El teléfono es obligatorio"),
+      phone: yup
+        .string()
+        .matches(
+          /^\d{10}$/,
+          "El teléfono debe tener exactamente 10 dígitos, no se permiten letras ni espacios"
+        )
+        .required("El teléfono es obligatorio"),
       email: yup
         .string()
         .email("Correo inválido")
         .required("El correo es obligatorio"),
-      birthDate: yup.date().required("La fecha de nacimiento es obligatoria"),
+      birthDate: yup
+        .date()
+        .required("La fecha de nacimiento es obligatoria")
+        .test(
+          "is-adult",
+          "Debes tener al menos 18 años",
+          (value) =>
+            value && differenceInYears(new Date(), new Date(value)) >= 18
+        ),
       location: yup.string().required("La ubicación es obligatoria"),
       password: yup
         .string()
-        .min(6, "Mínimo 6 caracteres")
-        .required("La contraseña es obligatoria"),
+        .required("La contraseña es obligatoria")
+        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
+        .matches(/\d/, "Debe contener al menos un número"),
       confirmPassword: yup
         .string()
         .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
@@ -235,21 +258,45 @@ export default function UserForm() {
             />
             <TextField
               label="Contraseña"
-              type="password"
+              type={showPassword ? "text" : "password"}
               fullWidth
               margin="normal"
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                     {showPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }}/> : <VisibilityOutlined sx={{ fontSize: 20 }}/>}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               label="Confirmar contraseña"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               fullWidth
               margin="normal"
               {...register("confirmPassword")}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }}/> : <VisibilityOutlined sx={{ fontSize: 20 }}/>}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
           </>
         )}
