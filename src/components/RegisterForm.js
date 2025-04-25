@@ -7,8 +7,12 @@ import {
     TextField,
     Button,
     Typography,
+    IconButton,
+    InputAdornment,
 } from "@mui/material";
+import { VisibilityOutlined, VisibilityOffOutlined } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
+import { differenceInYears } from "date-fns";
 
 // Esquema de validación para el registro
 const registerSchema = yup.object().shape({
@@ -18,12 +22,23 @@ const registerSchema = yup.object().shape({
         .string()
         .required("El correo electrónico es obligatorio")
         .email("Correo inválido"),
-    birthDate: yup.date().required("La fecha de nacimiento es obligatoria"),
+    birthDate: yup
+        .date()
+        .required("La fecha de nacimiento es obligatoria")
+        .typeError("Por favor, ingresa una fecha válida")
+        .test(
+            "is-adult",
+            "Debes tener al menos 18 años para registrarte",
+            (value) => value && differenceInYears(new Date(), new Date(value)) >= 18
+        ),
     location: yup.string().required("La ubicación es obligatoria"),
     password: yup
         .string()
         .required("La contraseña es obligatoria")
-        .min(6, "Debe contener al menos 6 caracteres"),
+        .min(8, "Debe contener al menos 8 caracteres")
+        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
+        .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
+        .matches(/\d/, "Debe contener al menos un número"),
     confirmPassword: yup
         .string()
         .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
@@ -40,6 +55,8 @@ const RegisterForm = ({ onToggle }) => {
     });
 
     const [loading, setLoading] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
     // Estilo para los campos del formulario
     const thinInputSX = {
@@ -173,23 +190,51 @@ const RegisterForm = ({ onToggle }) => {
 
                     <TextField
                         label="Contraseña"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         fullWidth
                         margin="dense"
                         sx={{ ...thinInputSX }}
                         {...register("password")}
                         error={!!errors.password}
                         helperText={errors.password?.message}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOffOutlined /> : <VisibilityOutlined />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
+                    <Typography variant="caption" color="textSecondary">
+                        La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una letra minúscula y un número.
+                    </Typography>
+
                     <TextField
                         label="Confirmar contraseña"
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         fullWidth
                         margin="dense"
                         sx={{ ...thinInputSX }}
                         {...register("confirmPassword")}
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword?.message}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                        edge="end"
+                                    >
+                                        {showConfirmPassword ? <VisibilityOffOutlined /> : <VisibilityOutlined />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Box>
 

@@ -1,5 +1,5 @@
 // /components/EditProfileModal.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
@@ -16,6 +16,8 @@ import {
     Avatar,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,7 +39,10 @@ const passwordSchema = yup.object().shape({
     newPassword: yup
         .string()
         .required("La nueva contraseña es obligatoria")
-        .min(6, "Debe tener al menos 6 caracteres"),
+        .min(8, "Debe contener al menos 8 caracteres")
+        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
+        .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
+        .matches(/\d/, "Debe contener al menos un número"),
     confirmPassword: yup
         .string()
         .oneOf([yup.ref("newPassword"), null], "Las contraseñas deben coincidir")
@@ -160,6 +165,11 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         ":hover": { backgroundColor: "#b0060f" },
     };
 
+    // Estados para mostrar/ocultar contraseñas
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle sx={{ m: 0, p: 2, position: "relative" }}>
@@ -263,26 +273,56 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                             <TextField
                                 fullWidth
                                 label="Contraseña Actual"
-                                type="password"
+                                type={showCurrentPassword ? "text" : "password"}
                                 {...registerPassword("currentPassword")}
                                 error={!!passwordErrors.currentPassword}
                                 helperText={passwordErrors.currentPassword?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                            edge="end"
+                                        >
+                                            {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    ),
+                                }}
                             />
                             <TextField
                                 fullWidth
                                 label="Nueva Contraseña"
-                                type="password"
+                                type={showNewPassword ? "text" : "password"}
                                 {...registerPassword("newPassword")}
                                 error={!!passwordErrors.newPassword}
                                 helperText={passwordErrors.newPassword?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            edge="end"
+                                        >
+                                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    ),
+                                }}
                             />
                             <TextField
                                 fullWidth
                                 label="Confirmar Nueva Contraseña"
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 {...registerPassword("confirmPassword")}
                                 error={!!passwordErrors.confirmPassword}
                                 helperText={passwordErrors.confirmPassword?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            edge="end"
+                                        >
+                                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    ),
+                                }}
                             />
                             <Box sx={{ mt: 2 }}>
                                 <Button type="submit" variant="contained" fullWidth sx={{ ...updateButtonStyle }}>

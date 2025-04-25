@@ -73,6 +73,7 @@ export default function UserForm() {
         .string()
         .required("La contraseña es obligatoria")
         .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número"),
       confirmPassword: yup
