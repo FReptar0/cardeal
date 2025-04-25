@@ -67,7 +67,7 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
   const router = useRouter();
   const isRentalPage =
     router.pathname === "/rental" ||
-    router.pathname === "/seguro" ||
+    router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
 
   return (
@@ -186,7 +186,7 @@ export default function SearchBar({ sx = {} }) {
   const { searchData, setSearchData } = useSearch(); // Usamos el contexto global
   const isRentalPage =
     router.pathname === "/rental" ||
-    router.pathname === "/seguro" ||
+    router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
 
   // Funciones para actualizar el contexto al cambiar valores:

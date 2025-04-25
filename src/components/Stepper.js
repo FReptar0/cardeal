@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 
 const steps = [
   { label: "Renta", icon: DirectionsCarIcon, path: "/rental" },
-  { label: "Protección", icon: SecurityIcon, path: "/seguro" },
+  { label: "Protección", icon: SecurityIcon, path: "/proteccion" },
   { label: "Extras", icon: AddCircleIcon, path: "/extras-renta" },
   { label: "Checkout", icon: ShoppingCartIcon, path: "/checkout" },
   { label: "Confirmación", icon: CheckCircleIcon, path: "/confirm" },

@@ -111,8 +111,25 @@ export default function CarCard({ car, isSelected }) {
               marginTop: 1,
               fontSize: "12px",
               textTransform: "none",
-              color: "gray",
+              color: "#3e9279",
               "&:hover": { color: "black" },
+              // usar 10906a
+              backgroundColor: "white",
+              border: "1px solid #d9d9d9",
+              borderRadius: 1,
+              padding: "4px 8px",
+              "&:hover": {
+                backgroundColor: "#d9d9d9",
+                color: "#10906a",
+              },
+              "&:active": {
+                backgroundColor: "#d9d9d9",
+                color: "#10906a",
+              },
+              "&:focus": {
+                backgroundColor: "#d9d9d9",
+                color: "#10906a",
+              },
             }}
             onClick={(event) => {
               stopAllPropagation(event);

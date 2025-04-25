@@ -10,6 +10,7 @@ export default function Sucursales() {
             iframeSrc:
                 "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.474563694194!2d-99.0877233135102!3d19.43509573503314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1fc0a6b509847%3A0x984b414774d46f0!2sTerminal%201%2C%20M%C3%A9xico%20(Lic.%20Benito%20Ju%C3%A1rez)%2C%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1743634450270!5m2!1ses!2smx",
             link: "https://maps.app.goo.gl/J7ZVacAc4VoH67DV8",
+            wazeLink: "https://ul.waze.com/ul?place=ChIJo2vFDQr80YURR4-CxwwHcH0&ll=19.43531000%2C-99.08367000&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
         },
         {
             address:
@@ -17,6 +18,7 @@ export default function Sucursales() {
             iframeSrc:
                 "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.474563694194!2d-99.0877233135102!3d19.43509573503314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1fc0a6b509847%3A0x984b414774d46f0!2sTerminal%201%2C%20M%C3%A9xico%20(Lic.%20Benito%20Ju%C3%A1rez)%2C%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1743634450270!5m2!1ses!2smx",
             link: "https://maps.app.goo.gl/J7ZVacAc4VoH67DV8",
+            wazeLink: "https://ul.waze.com/ul?place=ChIJo2vFDQr80YURR4-CxwwHcH0&ll=19.43531000%2C-99.08367000&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
         },
     ];
 
@@ -28,6 +30,8 @@ export default function Sucursales() {
             iframeSrc:
                 "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3760.949854941677!2d-99.24005131930578!3d19.50079309678385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d20321b44a6373%3A0x1166a8c037637600!2sPerif.%20Blvd.%20Manuel%20%C3%81vila%20Camacho%201834%2C%20Cd.%20Sat%C3%A9lite%2C%2053100%20Naucalpan%20de%20Ju%C3%A1rez%2C%20M%C3%A9x.!5e0!3m2!1ses!2smx!4v1743634604254!5m2!1ses!2smx",
             link: "https://maps.app.goo.gl/7VXfPvDwTpXLHX6f7",
+            wazeLink: "https://ul.waze.com/ul?place=ChIJc2NKtCED0oURAHZjN8CoZhE&ll=19.50052010%2C-99.23726180&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
+            hours: "Horario de atención: 9:00 AM - 6:00 PM",
         },
     ];
 
@@ -117,19 +121,65 @@ export default function Sucursales() {
                             <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
                                 {loc.address}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                {!withLabel && "Visítanos en esta sucursal para un mejor servicio."}
-                            </Typography>
-                            <Typography variant="body2">
+                            <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
                                 <Link
                                     href={loc.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    underline="hover"
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: 60,
+                                        height: 60,
+                                        borderRadius: "50%",
+                                        border: "1px solid #cecece",
+                                        cursor: "pointer",
+                                        transition: "transform 0.2s",
+                                        ":hover": {
+                                            transform: "scale(1.1)",
+                                        },
+                                    }}
                                 >
-                                    Ver en Google Maps
+                                    <img
+                                        src="/icons/ic-google-maps.png"
+                                        alt="Google Maps"
+                                        style={{ width: 32, height: 32 }}
+                                    />
                                 </Link>
-                            </Typography>
+                                {loc.wazeLink && (
+                                    <Link
+                                        href={loc.wazeLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            width: 60,
+                                            height: 60,
+                                            borderRadius: "50%",
+                                            border: "1px solid #cecece",
+                                            cursor: "pointer",
+                                            transition: "transform 0.2s",
+                                            ":hover": {
+                                                transform: "scale(1.1)",
+                                            },
+                                        }}
+                                    >
+                                        <img
+                                            src="/icons/ic-waze.svg"
+                                            alt="Waze"
+                                            style={{ width: 32, height: 32 }}
+                                        />
+                                    </Link>
+                                )}
+                            </Box>
+                            {loc.hours && (
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                    {loc.hours}
+                                </Typography>
+                            )}
                         </Box>
                     </Grid>
                 </Grid>

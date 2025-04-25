@@ -73,6 +73,7 @@ export default function UserForm() {
         .string()
         .required("La contraseña es obligatoria")
         .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número"),
       confirmPassword: yup
@@ -410,18 +411,19 @@ export default function UserForm() {
           </Button>
 
           <Button
-            variant="text"
+            variant="contained"
             fullWidth
-            sx={{ height: 55 }}
+            sx={{
+              height: 55,
+              backgroundColor: "#ffc439",
+              color: "#000",
+              ":hover": { backgroundColor: "#ffb300" },
+            }}
             disabled={
               !watch("terms") || !watch("privacy") || (!isLoggedIn && !isValid)
             }
           >
-            <img
-              src="https://www.mtbguatemala.com/wp-content/plugins/woocommerce-paypal-payments/modules/ppcp-wc-gateway/assets/images/paypal-button.svg"
-              alt="Comprar ahora con PayPal"
-              style={{ width: "100%" }}
-            />
+            Pago en línea
           </Button>
         </Box>
       </Box>

@@ -9,7 +9,10 @@ import {
     Typography,
     FormControlLabel,
     Checkbox,
+    InputAdornment,
+    IconButton,
 } from "@mui/material";
+import { VisibilityOutlined, VisibilityOffOutlined } from "@mui/icons-material";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
@@ -35,6 +38,7 @@ const LoginForm = ({ onToggle }) => {
     const { login } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -104,11 +108,23 @@ const LoginForm = ({ onToggle }) => {
                 <TextField
                     fullWidth
                     label="Contraseña"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     margin="normal"
                     {...register("password")}
                     error={!!errors.password}
                     helperText={errors.password?.message}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOffOutlined /> : <VisibilityOutlined />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
 
                 <Box

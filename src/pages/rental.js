@@ -121,7 +121,7 @@ export default function RentalPage() {
     if (selectedCarIndex === null) {
       setOpenWarning(true);
     } else {
-      router.push("/seguro");
+      router.push("/proteccion");
     }
   };
 

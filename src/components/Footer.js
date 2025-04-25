@@ -163,6 +163,23 @@ const Footer = () => {
                 >
                   Preguntas Frecuentes
                 </Typography>
+                <Typography
+                  component="a"
+                  href="/facturacion"
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                    textDecoration: "none",
+                    "&:hover": {
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  Facturación
+                </Typography>
               </Box>
             </Box>
           </Box>
