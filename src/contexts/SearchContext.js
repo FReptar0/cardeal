@@ -62,6 +62,23 @@ export const SearchProvider = ({ children }) => {
     }
   }, [searchData]);
 
+  // Verificación de fechas para evitar fechas pasadas
+  useEffect(() => {
+    const today = getCurrentMexicoDate();
+
+    if (searchData.pickupDate < today || searchData.returnDate < today) {
+      const updatedPickupDate = today;
+      const updatedReturnDate = new Date(today);
+      updatedReturnDate.setDate(today.getDate() + 1);
+
+      setSearchData((prev) => ({
+        ...prev,
+        pickupDate: updatedPickupDate,
+        returnDate: updatedReturnDate,
+      }));
+    }
+  }, [searchData]);
+
   return (
     <SearchContext.Provider value={{ searchData, setSearchData }}>
       {children}
