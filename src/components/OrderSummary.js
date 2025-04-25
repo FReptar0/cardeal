@@ -87,7 +87,7 @@ export default function OrderSummary({
 
         {/* Seguro */}
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Seguro Seleccionado:</b>
+          <b>Protección Seleccionada:</b>
         </Typography>
         {selectedInsurance ? (
           <>
@@ -107,7 +107,7 @@ export default function OrderSummary({
           </>
         ) : (
           <Typography variant="body2">
-            No se ha seleccionado un seguro.
+            No se ha seleccionado una protección.
           </Typography>
         )}
 
