@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, IconButton, Paper } from "@mui/material";
-import ChatIcon from "@mui/icons-material/SmartToy";
 import CloseIcon from "@mui/icons-material/Close";
 
 const ChatBubble = () => {
@@ -16,16 +15,21 @@ const ChatBubble = () => {
             <IconButton 
                 onClick={toggleChat} 
                 sx={{
-                    backgroundColor: "#10906a",
+                    backgroundColor: "transparent", // Sin fondo
                     color: "white",
-                    width: 64,
-                    height: 64,
+                    width: { xs: 90, md: 110 }, // Tamaño más pequeño en móvil
+                    height: { xs: 90, md: 110 }, // Tamaño más pequeño en móvil
                     borderRadius: "50%",
                     boxShadow: 3,
-                    "&:hover": { backgroundColor: "#0d7b5f" }
+                    "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" } // Fondo ligero al hacer hover
                 }}
             >
-                <ChatIcon fontSize="large" />
+                <Box
+                    component="img"
+                    src="/bot/Bot-IA-Alpha-Cabeza.webp"
+                    alt="Chatbot Icon"
+                    sx={{ width: { xs: 70, md: 100 }, height: { xs: 70, md: 100 } }} // Imagen más pequeña en móvil
+                />
             </IconButton>
 
             {/* Ventana de chat con iframe */}
