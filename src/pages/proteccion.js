@@ -413,66 +413,78 @@ const SeguroVehiculo = () => {
           sx: {
             borderRadius: "12px",
             boxShadow: 8,
-            maxWidth: "500px",
+            maxWidth: "650px",
+            padding: 4,
             width: "90%",
           },
         }}
       >
-        {/* Encabezado del diálogo */}
-        <Box sx={{ py: 2 }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              fontSize: "20px",
-            }}
-          >
-            RECOMENDACIÓN
-          </Typography>
-        </Box>
-
-        {/* Contenido principal (ahora contiene todo, incluyendo los botones) */}
         <DialogContent
           sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
             pt: 0,
             pb: 2,
             px: 3,
-            textAlign: "center",
+            maxHeight: "90vh", // Limitar la altura máxima del contenido
+            overflow: "auto", // Habilitar scroll si es necesario
           }}
         >
-          {/* FRASE NUEVA */}
-          <Typography
-            variant="body1"
+          {/* Contenedor de la imagen */}
+          <Box
             sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: 1.6,
-              mb: 2,
+              flex: 1,
+              display: { xs: "none", md: "block" },
+              maxHeight: "300px", // Tamaño máximo para evitar scroll
+              maxWidth: "300px", // Tamaño máximo para evitar scroll
             }}
           >
-            Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
-            ofrecemos el{" "}
-            <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
-          </Typography>
+            <Box
+              component="img"
+              src="/bot/Bot-IA-Alpha-Escudo.webp"
+              alt="Recomendación Icono"
+              sx={{
+                height: "100%",
+                width: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </Box>
 
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: 1.6,
-              mb: 3, // Agregamos un margen inferior para separar del botón
-            }}
-          >
-            Te recomendamos considerar el{" "}
-            <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong> por
-            solo <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong>{" "}
-            al día. Este paquete incluye coberturas adicionales que te darán
-            mayor tranquilidad, seguridad y respaldo durante tu viaje.
-          </Typography>
+          {/* Contenedor del texto */}
+          <Box sx={{ flex: 2, textAlign: "justify" }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "16px",
+                lineHeight: 1.6,
+                mb: 2,
+              }}
+            >
+              Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
+              ofrecemos el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
+            </Typography>
 
-          {/* Botón rojo a todo el ancho */}
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "16px",
+                lineHeight: 1.6,
+                mb: 3,
+              }}
+            >
+              Te recomendamos considerar el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong> por
+              solo <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al día. Este paquete incluye coberturas adicionales que te darán
+              mayor tranquilidad, seguridad y respaldo durante tu viaje.
+            </Typography>
+          </Box>
+        </DialogContent>
+
+        {/* Contenedor de los botones */}
+        <Box sx={{ width: "100%", mt: 2 }}>
           <Button
             variant="contained"
             fullWidth
@@ -483,29 +495,27 @@ const SeguroVehiculo = () => {
               padding: "10px 16px",
               borderRadius: "8px",
               fontSize: "14px",
+              mb: 2, // Margen inferior entre botones
             }}
             onClick={handleSelectNextPlan}
           >
-            SELECCIONAR{" "}
-            {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
+            SELECCIONAR {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
           </Button>
 
-          {/* Texto subrayado para 'Mantener Seguro Actual' */}
-          <Box sx={{ mt: 2 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#333",
-                fontWeight: "bold",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={() => setOpenRecommendation(false)}
-            >
-              Mantener protección actual
-            </Typography>
-          </Box>
-        </DialogContent>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#333",
+              fontWeight: "bold",
+              textDecoration: "underline",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+            onClick={() => setOpenRecommendation(false)}
+          >
+            Mantener protección actual
+          </Typography>
+        </Box>
       </Dialog>
     </Container>
   );
