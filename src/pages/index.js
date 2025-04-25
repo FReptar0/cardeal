@@ -24,7 +24,7 @@ export default function Index() {
         }}
       >
         <video
-          src="/videos/Qardeal.mp4"
+          src="/videos/LOGO.mp4"
           autoPlay
           loop
           muted
