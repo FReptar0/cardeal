@@ -106,16 +106,7 @@ const UserProfile = () => {
                             </>
                         ) : (
                             <>
-                                <Typography variant="h6">Acerca de mí</Typography>
-                                <Divider sx={{ my: 2 }} />
-                                <Typography variant="subtitle2">BIOGRAFÍA</Typography>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    {userData?.bio || "Aquí se mostrará la biografía del usuario si está definida."}
-                                </Typography>
-                                <Typography variant="subtitle2">POSICIÓN</Typography>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    {userData?.position || "Información de la posición (ej. Diseñador de temas en Bootstrap)."}
-                                </Typography>
+                                <Typography variant="h6">Información personal</Typography>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                                     <Box>
