@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
@@ -13,8 +13,9 @@ import {
 import { VisibilityOutlined, VisibilityOffOutlined } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
 import { differenceInYears } from "date-fns";
+import PhoneInput from "react-phone-input-2";
 
-// Esquema de validación para el registro
+// Esquema de validación
 const registerSchema = yup.object().shape({
     fullName: yup.string().required("El nombre completo es obligatorio"),
     phone: yup.string().required("El teléfono es obligatorio"),
@@ -49,6 +50,7 @@ const RegisterForm = ({ onToggle }) => {
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(registerSchema),
@@ -58,7 +60,6 @@ const RegisterForm = ({ onToggle }) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-    // Estilo para los campos del formulario
     const thinInputSX = {
         "& .MuiOutlinedInput-input": {
             paddingTop: "12px",
@@ -99,7 +100,7 @@ const RegisterForm = ({ onToggle }) => {
 
             toast.success("Usuario registrado exitosamente. Inicia sesión.");
             setTimeout(() => {
-                onToggle(); // Cambia de formulario a login
+                onToggle(); // Cambia a formulario de login
             }, 2000);
         } catch (error) {
             console.error(error);
@@ -111,7 +112,6 @@ const RegisterForm = ({ onToggle }) => {
 
     return (
         <Box sx={{ width: "100%", maxWidth: 400 }}>
-            {/* Toast Container */}
             <ToastContainer position="top-center" autoClose={5000} />
 
             <Box
@@ -135,7 +135,7 @@ const RegisterForm = ({ onToggle }) => {
                     sx={{
                         display: "flex",
                         flexWrap: "wrap",
-                        justifyContent: "space-between",
+                        flexDirection: "column", // Cambiamos para apilar
                         gap: 1,
                     }}
                 >
@@ -143,19 +143,42 @@ const RegisterForm = ({ onToggle }) => {
                         label="Nombre completo"
                         fullWidth
                         margin="dense"
-                        sx={{ flex: "1 1 48%", ...thinInputSX }}
+                        sx={{ width: "100%", ...thinInputSX }} // Ocupar 100%
                         {...register("fullName")}
                         error={!!errors.fullName}
                         helperText={errors.fullName?.message}
                     />
-                    <TextField
-                        label="Teléfono"
-                        fullWidth
-                        margin="dense"
-                        sx={{ flex: "1 1 48%", ...thinInputSX }}
-                        {...register("phone")}
-                        error={!!errors.phone}
-                        helperText={errors.phone?.message}
+
+                    <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                            <Box sx={{ width: "100%", mt: 1 }}>
+                                <PhoneInput
+                                    {...field}
+                                    country={'mx'}
+                                    enableSearch
+                                    inputStyle={{
+                                        width: '100%',
+                                        height: '56px',
+                                        fontSize: '16px',
+                                        paddingLeft: '48px',
+                                        borderRadius: '4px',
+                                        border: `1px solid ${errors.phone ? '#d32f2f' : '#c4c4c4'}`,
+                                    }}
+                                    buttonStyle={{
+                                        border: 'none',
+                                        backgroundColor: 'transparent',
+                                    }}
+                                    containerStyle={{ width: '100%' }}
+                                />
+                                {errors.phone && (
+                                    <Typography variant="caption" color="error">
+                                        {errors.phone.message}
+                                    </Typography>
+                                )}
+                            </Box>
+                        )}
                     />
 
                     <TextField
@@ -178,6 +201,7 @@ const RegisterForm = ({ onToggle }) => {
                         error={!!errors.birthDate}
                         helperText={errors.birthDate?.message}
                     />
+
                     <TextField
                         label="Ubicación"
                         fullWidth
@@ -210,6 +234,7 @@ const RegisterForm = ({ onToggle }) => {
                             ),
                         }}
                     />
+
                     <Typography variant="caption" color="textSecondary">
                         La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una letra minúscula y un número.
                     </Typography>

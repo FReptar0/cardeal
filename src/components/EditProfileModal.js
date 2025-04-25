@@ -1,19 +1,18 @@
-// /components/EditProfileModal.jsx
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions,
-    Button,
-    Box,
-    TextField,
     Divider,
     IconButton,
     Avatar,
+    Box,
+    TextField,
+    Button,
+    Typography,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Visibility from '@mui/icons-material/Visibility';
@@ -21,6 +20,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/contexts/AuthContext";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 // Esquema para actualizar la información general (sin contraseña)
 const profileSchema = yup.object().shape({
@@ -30,21 +31,19 @@ const profileSchema = yup.object().shape({
     location: yup.string().required("La ubicación es obligatoria"),
     bio: yup.string(),
     position: yup.string(),
-    avatar: yup.string().notRequired(), // Se llenará con la imagen en Base64
+    avatar: yup.string().notRequired(),
 });
 
 // Esquema para actualizar la contraseña
 const passwordSchema = yup.object().shape({
     currentPassword: yup.string().required("La contraseña actual es obligatoria"),
-    newPassword: yup
-        .string()
+    newPassword: yup.string()
         .required("La nueva contraseña es obligatoria")
         .min(8, "Debe contener al menos 8 caracteres")
         .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número"),
-    confirmPassword: yup
-        .string()
+    confirmPassword: yup.string()
         .oneOf([yup.ref("newPassword"), null], "Las contraseñas deben coincidir")
         .required("Confirma la nueva contraseña"),
 });
@@ -52,30 +51,27 @@ const passwordSchema = yup.object().shape({
 const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
     const { jwt, logout } = useAuth();
 
-    // Formulario para actualización de información general
     const {
         register: registerProfile,
         handleSubmit: handleSubmitProfile,
         setValue: setProfileValue,
         reset: resetProfile,
         watch,
+        control,
         formState: { errors: profileErrors },
     } = useForm({
         resolver: yupResolver(profileSchema),
         defaultValues: defaultValues || {},
     });
 
-    // Obtenemos el valor actual del avatar
     const avatarPreview = watch("avatar");
 
-    // Actualizar valores cuando defaultValues cambien
     useEffect(() => {
         if (defaultValues) {
             resetProfile(defaultValues);
         }
     }, [defaultValues, resetProfile]);
 
-    // Formulario para actualización de contraseña
     const {
         register: registerPassword,
         handleSubmit: handleSubmitPassword,
@@ -85,7 +81,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         resolver: yupResolver(passwordSchema),
     });
 
-    // Convertir el archivo seleccionado a Base64 para el avatar
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -97,7 +92,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         }
     };
 
-    // Enviar formulario de información general
     const onSubmitProfile = async (data) => {
         try {
             const res = await fetch("/api/user/update", {
@@ -122,7 +116,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         }
     };
 
-    // Enviar formulario de actualización de contraseña
     const onSubmitPassword = async (data) => {
         try {
             const res = await fetch("/api/user/update-password", {
@@ -149,7 +142,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         }
     };
 
-    // Estilo para los botones (para la sección de upload, se usa el color #10906a solo en borde y texto)
     const uploadButtonStyle = {
         borderColor: "#10906a",
         color: "#10906a",
@@ -165,7 +157,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
         ":hover": { backgroundColor: "#b0060f" },
     };
 
-    // Estados para mostrar/ocultar contraseñas
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -190,7 +181,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
             <DialogContent dividers>
                 <ToastContainer position="top-center" autoClose={5000} />
                 <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
-                    {/* Sección: Información General */}
                     <Box sx={{ flex: 1 }}>
                         <Box component="form" onSubmit={handleSubmitProfile(onSubmitProfile)} noValidate sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <TextField
@@ -200,13 +190,39 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 error={!!profileErrors.fullName}
                                 helperText={profileErrors.fullName?.message}
                             />
-                            <TextField
-                                fullWidth
-                                label="Teléfono"
-                                {...registerProfile("phone")}
-                                error={!!profileErrors.phone}
-                                helperText={profileErrors.phone?.message}
+
+                            <Controller
+                                name="phone"
+                                control={control}
+                                render={({ field }) => (
+                                    <Box sx={{ width: "100%" }}>
+                                        <PhoneInput
+                                            {...field}
+                                            country={"mx"}
+                                            enableSearch
+                                            inputStyle={{
+                                                width: "100%",
+                                                height: "56px",
+                                                fontSize: "16px",
+                                                paddingLeft: "48px",
+                                                borderRadius: "4px",
+                                                border: `1px solid ${profileErrors.phone ? "#d32f2f" : "#c4c4c4"}`,
+                                            }}
+                                            buttonStyle={{
+                                                border: "none",
+                                                backgroundColor: "transparent",
+                                            }}
+                                            containerStyle={{ width: "100%" }}
+                                        />
+                                        {profileErrors.phone && (
+                                            <Typography variant="caption" color="error">
+                                                {profileErrors.phone.message}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                )}
                             />
+
                             <TextField
                                 fullWidth
                                 label="Fecha de nacimiento"
@@ -237,6 +253,7 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 error={!!profileErrors.position}
                                 helperText={profileErrors.position?.message}
                             />
+
                             <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                                 <Button variant="outlined" component="label" sx={{ ...uploadButtonStyle }}>
                                     Subir Avatar (png, jpg, webp)
@@ -247,7 +264,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                         onChange={handleFileChange}
                                     />
                                 </Button>
-                                {/* Previsualización del Avatar */}
                                 {avatarPreview && (
                                     <Avatar
                                         src={avatarPreview}
@@ -255,6 +271,7 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                     />
                                 )}
                             </Box>
+
                             <Box sx={{ mt: 2 }}>
                                 <Button type="submit" variant="contained" fullWidth sx={{ ...updateButtonStyle }}>
                                     Actualizar Información
@@ -263,11 +280,11 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                         </Box>
                     </Box>
 
-                    {/* Divisor visual */}
+                    {/* Divisores */}
                     <Divider orientation="vertical" flexItem sx={{ display: { xs: "none", md: "block" } }} />
                     <Divider orientation="horizontal" flexItem sx={{ display: { xs: "block", md: "none" } }} />
 
-                    {/* Sección: Actualización de Contraseña */}
+                    {/* Sección de cambio de contraseña */}
                     <Box sx={{ flex: 1 }}>
                         <Box component="form" onSubmit={handleSubmitPassword(onSubmitPassword)} noValidate sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             <TextField
@@ -279,15 +296,13 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 helperText={passwordErrors.currentPassword?.message}
                                 InputProps={{
                                     endAdornment: (
-                                        <IconButton
-                                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                            edge="end"
-                                        >
+                                        <IconButton onClick={() => setShowCurrentPassword(!showCurrentPassword)} edge="end">
                                             {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     ),
                                 }}
                             />
+
                             <TextField
                                 fullWidth
                                 label="Nueva Contraseña"
@@ -297,15 +312,13 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 helperText={passwordErrors.newPassword?.message}
                                 InputProps={{
                                     endAdornment: (
-                                        <IconButton
-                                            onClick={() => setShowNewPassword(!showNewPassword)}
-                                            edge="end"
-                                        >
+                                        <IconButton onClick={() => setShowNewPassword(!showNewPassword)} edge="end">
                                             {showNewPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     ),
                                 }}
                             />
+
                             <TextField
                                 fullWidth
                                 label="Confirmar Nueva Contraseña"
@@ -315,15 +328,13 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 helperText={passwordErrors.confirmPassword?.message}
                                 InputProps={{
                                     endAdornment: (
-                                        <IconButton
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            edge="end"
-                                        >
+                                        <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
                                             {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
                                     ),
                                 }}
                             />
+
                             <Box sx={{ mt: 2 }}>
                                 <Button type="submit" variant="contained" fullWidth sx={{ ...updateButtonStyle }}>
                                     Actualizar Contraseña

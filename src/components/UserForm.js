@@ -1,6 +1,5 @@
-// /components/UserForm.jsx
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import differenceInYears from "date-fns/differenceInYears";
@@ -29,6 +28,8 @@ import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
 import { locations } from "@/utils/locations";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function UserForm() {
   const router = useRouter();
@@ -37,47 +38,27 @@ export default function UserForm() {
   const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
   const { searchData, setSearchData } = useSearch();
   const [submitting, setSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Validaciones dinámicas
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup
-      .boolean()
-      .oneOf([true], "Debes aceptar la política de privacidad"),
+    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
     ...(!isLoggedIn && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
-      phone: yup
-        .string()
-        .matches(
-          /^\d{10}$/,
-          "El teléfono debe tener exactamente 10 dígitos, no se permiten letras ni espacios"
-        )
-        .required("El teléfono es obligatorio"),
-      email: yup
-        .string()
-        .email("Correo inválido")
-        .required("El correo es obligatorio"),
-      birthDate: yup
-        .date()
+      phone: yup.string().required("El teléfono es obligatorio"),
+      email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+      birthDate: yup.date()
         .required("La fecha de nacimiento es obligatoria")
-        .test(
-          "is-adult",
-          "Debes tener al menos 18 años",
-          (value) =>
-            value && differenceInYears(new Date(), new Date(value)) >= 18
-        ),
+        .test("is-adult", "Debes tener al menos 18 años", (value) => value && differenceInYears(new Date(), new Date(value)) >= 18),
       location: yup.string().required("La ubicación es obligatoria"),
-      password: yup
-        .string()
+      password: yup.string()
         .required("La contraseña es obligatoria")
-        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .min(8, "Debe contener al menos 8 caracteres")
         .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número"),
-      confirmPassword: yup
-        .string()
+      confirmPassword: yup.string()
         .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
         .required("Confirma la contraseña"),
     }),
@@ -86,6 +67,7 @@ export default function UserForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isValid },
     watch,
     reset,
@@ -105,7 +87,6 @@ export default function UserForm() {
     },
   });
 
-  // Prefill form with profile data when logged in
   useEffect(() => {
     if (isLoggedIn && !loadingProfile && userData) {
       reset({
@@ -120,15 +101,13 @@ export default function UserForm() {
     }
   }, [isLoggedIn, loadingProfile, userData, reset]);
 
-  // Se eliminó el redireccionamiento si no está iniciada la sesión en la pantalla de checkout
   const onSubmit = async (data) => {
     setSubmitting(true);
     try {
       let token = jwt;
       let justRegistered = false;
-      // registro automático si no está logueado
+
       if (!isLoggedIn) {
-        // Registra al usario si no esta logueado
         const res = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -144,7 +123,7 @@ export default function UserForm() {
         const json = await res.json();
         if (!res.ok) return toast.error(json.message);
         toast.success("Usuario registrado");
-        // login automático
+
         const loginRes = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -157,11 +136,10 @@ export default function UserForm() {
         justRegistered = true;
       }
 
-      // datos de contacto
       const contactName = justRegistered ? data.fullName : userData.fullName;
       const contactEmail = justRegistered ? data.email : userData.email;
       const contactPhone = justRegistered ? data.phone : userData.phone;
-      // crear reserva
+
       const bookingRes = await fetch("/api/bookings/create", {
         method: "POST",
         headers: {
@@ -192,7 +170,6 @@ export default function UserForm() {
     }
   };
 
-  // mostrar loader si perfil aún no cargó
   if (isLoggedIn && loadingProfile) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
@@ -205,9 +182,7 @@ export default function UserForm() {
     <Card sx={{ p: 3, width: "100%" }}>
       <ToastContainer position="top-center" autoClose={5000} />
       <Typography variant="h5" gutterBottom>
-        {isLoggedIn
-          ? "Finaliza tu reserva"
-          : "Completa tus datos para registrarte"}
+        {isLoggedIn ? "Finaliza tu reserva" : "Completa tus datos para registrarte"}
       </Typography>
       <Divider sx={{ my: 2 }} />
 
@@ -222,14 +197,39 @@ export default function UserForm() {
               error={!!errors.fullName}
               helperText={errors.fullName?.message}
             />
-            <TextField
-              label="Teléfono"
-              fullWidth
-              margin="normal"
-              {...register("phone")}
-              error={!!errors.phone}
-              helperText={errors.phone?.message}
+
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <Box sx={{ width: "100%", mt: 1 }}>
+                  <PhoneInput
+                    {...field}
+                    country={"mx"}
+                    enableSearch
+                    inputStyle={{
+                      width: "100%",
+                      height: "56px",
+                      fontSize: "16px",
+                      paddingLeft: "48px",
+                      borderRadius: "4px",
+                      border: `1px solid ${errors.phone ? "#d32f2f" : "#c4c4c4"}`,
+                    }}
+                    buttonStyle={{
+                      border: "none",
+                      backgroundColor: "transparent",
+                    }}
+                    containerStyle={{ width: "100%" }}
+                  />
+                  {errors.phone && (
+                    <Typography variant="caption" color="error">
+                      {errors.phone.message}
+                    </Typography>
+                  )}
+                </Box>
+              )}
             />
+
             <TextField
               label="Correo electrónico"
               type="email"
@@ -239,6 +239,7 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
+
             <TextField
               label="Fecha de nacimiento"
               type="date"
@@ -249,6 +250,7 @@ export default function UserForm() {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
+
             <TextField
               label="Ubicación"
               fullWidth
@@ -257,6 +259,7 @@ export default function UserForm() {
               error={!!errors.location}
               helperText={errors.location?.message}
             />
+
             <TextField
               label="Contraseña"
               type={showPassword ? "text" : "password"}
@@ -268,16 +271,14 @@ export default function UserForm() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                     {showPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }}/> : <VisibilityOutlined sx={{ fontSize: 20 }}/>}
+                    <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                      {showPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }} /> : <VisibilityOutlined sx={{ fontSize: 20 }} />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
             />
+
             <TextField
               label="Confirmar contraseña"
               type={showConfirmPassword ? "text" : "password"}
@@ -289,11 +290,8 @@ export default function UserForm() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }}/> : <VisibilityOutlined sx={{ fontSize: 20 }}/>}
+                    <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
+                      {showConfirmPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }} /> : <VisibilityOutlined sx={{ fontSize: 20 }} />}
                     </IconButton>
                   </InputAdornment>
                 ),
