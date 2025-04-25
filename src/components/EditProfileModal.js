@@ -29,8 +29,6 @@ const profileSchema = yup.object().shape({
     phone: yup.string().required("El teléfono es obligatorio"),
     birthDate: yup.date().required("La fecha de nacimiento es obligatoria"),
     location: yup.string().required("La ubicación es obligatoria"),
-    bio: yup.string(),
-    position: yup.string(),
     avatar: yup.string().notRequired(),
 });
 
@@ -239,21 +237,6 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
                                 error={!!profileErrors.location}
                                 helperText={profileErrors.location?.message}
                             />
-                            <TextField
-                                fullWidth
-                                label="Biografía"
-                                {...registerProfile("bio")}
-                                error={!!profileErrors.bio}
-                                helperText={profileErrors.bio?.message}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Posición"
-                                {...registerProfile("position")}
-                                error={!!profileErrors.position}
-                                helperText={profileErrors.position?.message}
-                            />
-
                             <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                                 <Button variant="outlined" component="label" sx={{ ...uploadButtonStyle }}>
                                     Subir Avatar (png, jpg, webp)
