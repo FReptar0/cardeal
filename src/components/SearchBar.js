@@ -191,6 +191,9 @@ export default function SearchBar({ sx = {} }) {
     router.pathname === "/rental" ||
     router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
+  const showCarImage = 
+    router.pathname === "/extras-renta" ||
+    router.pathname === "/proteccion";
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -413,7 +416,7 @@ export default function SearchBar({ sx = {} }) {
       }}
       id="containerBox"
     >
-      {router.pathname === "/proteccion" ? (
+      {showCarImage ? (
         <Box
           sx={{
             display: "flex",
@@ -423,13 +426,13 @@ export default function SearchBar({ sx = {} }) {
         >
           {/* Columna de auto */}
           {selectedCar && (
-            <Box sx={{ flex: 1, minWidth: "250px" }}>
+            <Box sx={{ flex: 1, minWidth: "250px", display: "flex", justifyContent: "center", alignItems: "center" }} >
               <Box
                 sx={{
-                  border: "1px solid #ccc",
+                  border: "none",
                   borderRadius: "8px",
                   padding: 2,
-                  backgroundColor: "#fff",
+                  backgroundColor: "transparent",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",

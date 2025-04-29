@@ -1,21 +1,21 @@
 // /components/OrderSummary.jsx
 import React from "react";
-import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
+import { Box, Card, CardContent, Typography, Divider, TextField } from "@mui/material";
 
 export default function OrderSummary({
-    selectedCar,
-    pickupDateString,
-    returnDateString,
-    rentalDays,
-    dailyCarCost,
-    totalCarCost,
-    selectedInsurance,
-    totalInsuranceCost,
-    extrasInfo,
-    ivaCost,
-    totalWithIva,
-    formatCurrency,
-    subtotal
+  selectedCar,
+  pickupDateString,
+  returnDateString,
+  rentalDays,
+  dailyCarCost,
+  totalCarCost,
+  selectedInsurance,
+  totalInsuranceCost,
+  extrasInfo,
+  ivaCost,
+  totalWithIva,
+  formatCurrency,
+  subtotal,
 }) {
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
 
@@ -153,22 +153,47 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-                {/* Subtotal, IVA y Total */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                    <Typography variant="body2" >Subtotal:</Typography>
-                    <Typography variant="body2" >{subtotal}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                    <Typography variant="body2" fontWeight="bold">IVA (16%)</Typography>
-                    <Typography variant="body2" fontWeight="bold">{formatCurrency(ivaCost)}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                    <Typography variant="h6" fontWeight="bold">TOTAL:</Typography>
-                    <Typography variant="h6" fontWeight="bold" sx={{ color: '#d60812' }}>
-                        {formatCurrency(totalWithIva)}
-                    </Typography>
-                </Box>
-            </CardContent>
-        </Card>
-    );
+        {/* Subtotal, IVA y Total */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="body2">Subtotal:</Typography>
+          <Typography variant="body2">{subtotal}</Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="body2" fontWeight="bold">
+            IVA (16%)
+          </Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {formatCurrency(ivaCost)}
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="h6" fontWeight="bold">
+            TOTAL:
+          </Typography>
+          <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
+            {formatCurrency(totalWithIva)}
+          </Typography>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Campo para ingresar código de cupón */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 2 }}>
+          <Typography variant="body2" fontWeight="bold">
+            Ingresa código de cupón:
+          </Typography>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Código de descuento"
+            sx={{
+              width: "100%",
+              backgroundColor: "#f5f5f5",
+              borderRadius: 1,
+            }}
+          />
+        </Box>
+      </CardContent>
+    </Card>
+  );
 }
