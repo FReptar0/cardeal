@@ -1,6 +1,14 @@
 // /components/OrderSummary.jsx
 import React from "react";
-import { Box, Card, CardContent, Typography, Divider, TextField } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Divider,
+  TextField,
+  Button
+} from "@mui/material";
 
 export default function OrderSummary({
   selectedCar,
@@ -182,17 +190,32 @@ export default function OrderSummary({
           <Typography variant="body2" fontWeight="bold">
             Ingresa código de cupón:
           </Typography>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Código de descuento"
-            sx={{
-              width: "100%",
-              backgroundColor: "#f5f5f5",
-              borderRadius: 1,
-            }}
-            disabled
-          />
+
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Código de descuento"
+              sx={{
+                flex: 1,
+                backgroundColor: "#f5f5f5",
+                borderRadius: 1,
+              }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{
+                backgroundColor: "#d60812",
+                fontWeight: "bold",
+                textTransform: "none",
+                borderRadius: 1,
+              }}
+            >
+              APLICAR
+            </Button>
+          </Box>
         </Box>
       </CardContent>
     </Card>
