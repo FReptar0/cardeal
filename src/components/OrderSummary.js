@@ -191,6 +191,7 @@ export default function OrderSummary({
               backgroundColor: "#f5f5f5",
               borderRadius: 1,
             }}
+            disabled
           />
         </Box>
       </CardContent>
