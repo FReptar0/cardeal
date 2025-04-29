@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -18,8 +18,10 @@ import { es } from "date-fns/locale";
 import format from "date-fns/format";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { useSearch } from "@/contexts/SearchContext"; 
+import { useSearch } from "@/contexts/SearchContext";
 import { locations } from "@/utils/locations";
+import { useBooking } from "@/contexts/BookingContext";
+
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -184,10 +186,20 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
 export default function SearchBar({ sx = {} }) {
   const router = useRouter();
   const { searchData, setSearchData } = useSearch(); // Usamos el contexto global
+  const { selectedCar } = useBooking();
   const isRentalPage =
     router.pathname === "/rental" ||
     router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
+  const showCarImage = 
+    router.pathname === "/extras-renta" ||
+    router.pathname === "/proteccion";
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
 
   // Funciones para actualizar el contexto al cambiar valores:
   const handlePickupLocationChange = (event, newValue) =>
@@ -242,21 +254,11 @@ export default function SearchBar({ sx = {} }) {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: isRentalPage ? 0.5 : 3,
-        width: "100%",
-        padding: 3,
-        backgroundColor: "#f5f5f5",
-        borderRadius: 2,
-        boxSizing: "border-box",
-        ...sx,
-      }}
-      id="containerBox"
-    >
+  if (!isMounted) return null;
+
+
+  const searchForm = (
+    <>
       {!isRentalPage && (
         <Typography
           variant="h6"
@@ -273,7 +275,9 @@ export default function SearchBar({ sx = {} }) {
         renderInput={(params) => (
           <TextField
             {...params}
-            label={isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"}
+            label={
+              isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"
+            }
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -307,7 +311,7 @@ export default function SearchBar({ sx = {} }) {
           />
         }
         label="Devolver en la misma oficina"
-        sx={{ color: "black", fontWeight: "bold" }}
+        sx={{ color: "black", fontWeight: "bold", width: "100%", justifyContent: "start" }}
       />
       {!searchData.sameOffice && (
         <>
@@ -328,7 +332,9 @@ export default function SearchBar({ sx = {} }) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"}
+                label={
+                  isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"
+                }
                 variant="outlined"
                 sx={{
                   marginTop: "10px",
@@ -392,6 +398,69 @@ export default function SearchBar({ sx = {} }) {
       >
         Buscar
       </Button>
+    </>
+  );
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: isRentalPage ? 0.5 : 3,
+        width: "100%",
+        padding: 3,
+        backgroundColor: "#f5f5f5",
+        borderRadius: 2,
+        boxSizing: "border-box",
+        ...sx,
+      }}
+      id="containerBox"
+    >
+      {showCarImage ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 2,
+          }}
+        >
+          {/* Columna de auto */}
+          {selectedCar && (
+            <Box sx={{ flex: 1, minWidth: "250px", display: "flex", justifyContent: "center", alignItems: "center" }} >
+              <Box
+                sx={{
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: 2,
+                  backgroundColor: "transparent",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                {selectedCar?.image && (
+                  <Box
+                    component="img"
+                    src={selectedCar.image}
+                    alt={selectedCar.name}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      maxHeight: "218px",
+                      objectFit: "contain",
+                      marginBottom: 2,
+                      borderRadius: "8px",
+                    }}
+                  />
+                )}
+              </Box>
+            </Box>
+          )}
+          <Box sx={{ flex: 2 }}>{searchForm}</Box>
+        </Box>
+      ) : (
+        searchForm
+      )}
     </Box>
   );
 }
