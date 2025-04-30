@@ -79,8 +79,13 @@ export const SearchProvider = ({ children }) => {
     }
   }, [searchData]);
 
+  const clearSearch = () => {
+    setSearchData(initialSearchData);
+    localStorage.removeItem("searchData");
+  };
+
   return (
-    <SearchContext.Provider value={{ searchData, setSearchData }}>
+    <SearchContext.Provider value={{ searchData, setSearchData, clearSearch  }}>
       {children}
     </SearchContext.Provider>
   );

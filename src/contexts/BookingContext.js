@@ -12,6 +12,10 @@ export const BookingProvider = ({ children }) => {
 
   // Al montar, intenta leer los datos del localStorage
   useEffect(() => {
+    if (sessionStorage.getItem("bookingCleared") === "true") {
+      sessionStorage.removeItem("bookingCleared"); 
+      return;
+    }
     const carFromStorage = localStorage.getItem("selectedCar");
     const insuranceFromStorage = localStorage.getItem("selectedInsurance");
     const extrasFromStorage = localStorage.getItem("selectedExtras");
@@ -62,6 +66,9 @@ export const BookingProvider = ({ children }) => {
     localStorage.removeItem("selectedInsurance");
     localStorage.removeItem("selectedExtras");
     localStorage.removeItem("userData");
+  
+    // Flag temporal para que no se vuelva a cargar localStorage
+    sessionStorage.setItem("bookingCleared", "true");
   };
 
   return (

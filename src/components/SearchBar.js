@@ -426,7 +426,7 @@ export default function SearchBar({ sx = {} }) {
         >
           {/* Columna de auto */}
           {selectedCar && (
-            <Box sx={{ flex: 1, minWidth: "250px", display: "flex", justifyContent: "center", alignItems: "center" }} >
+            <Box sx={{ flex: 1, minWidth: "250px", display: "flex", justifyContent: "center", alignItems: "center", mb:-3 }} >
               <Box
                 sx={{
                   border: "none",
@@ -436,6 +436,7 @@ export default function SearchBar({ sx = {} }) {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  mt: -4
                 }}
               >
                 {selectedCar?.image && (
@@ -453,6 +454,13 @@ export default function SearchBar({ sx = {} }) {
                     }}
                   />
                 )}
+                
+                  <Typography sx={{ color: "black", textAlign: "center", fontWeight: "bold", fontSize: "1.1rem" }}>
+                    {selectedCar.name}
+                  </Typography>
+                <Typography variant="body2" sx={{ color: "gray", textAlign: "center", fontStyle: "italic" }}>
+                  {selectedCar.category}
+                </Typography>
               </Box>
             </Box>
           )}
