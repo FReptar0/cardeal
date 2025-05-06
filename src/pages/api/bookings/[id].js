@@ -45,7 +45,15 @@ export default async function handler(req, res) {
             return res.status(403).json({ message: 'Prohibido' });
         }
 
-        return res.status(200).json({ booking });
+        // Asegurar que el descuento esté incluido en la respuesta
+        const { discount, ...otherBookingData } = booking;
+
+        return res.status(200).json({
+            booking: {
+                ...otherBookingData,
+                discount: discount || 0, // Incluir el descuento o 0 si no está definido
+            },
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Error al obtener la reserva' });

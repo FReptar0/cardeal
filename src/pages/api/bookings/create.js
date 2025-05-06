@@ -33,6 +33,7 @@ export default async function handler(req, res) {
         contactEmail,
         contactPhone,
         paid,               // ahora lo recibimos del cliente
+        discount, // Agregar el descuento como parte de la reserva
     } = req.body;
 
     if (
@@ -67,6 +68,7 @@ export default async function handler(req, res) {
             }
         }
 
+        // Modificar la lógica para enviar solo el campo `price` si el pago es al entregar
         const newBooking = {
             _id: generateUuid(),
             userId,
@@ -89,6 +91,8 @@ export default async function handler(req, res) {
                 returnTime: searchData.returnTime,
             },
             paid,        // guardamos el flag que venga del cliente
+            price: paid ? totals.price : undefined, // Solo enviar `price` si el pago es al entregar
+            discount: discount || 0, // Guardar el descuento recibido o 0 si no se proporciona
             createdAt: new Date(),
             updatedAt: new Date(),
         };

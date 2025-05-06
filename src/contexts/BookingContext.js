@@ -9,6 +9,7 @@ export const BookingProvider = ({ children }) => {
   const [selectedInsurance, setSelectedInsurance] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState({});
   const [userData, setUserData] = useState({});
+  const [discount, setDiscount] = useState(null); // Nuevo estado para el descuento
 
   // Al montar, intenta leer los datos del localStorage
   useEffect(() => {
@@ -20,12 +21,14 @@ export const BookingProvider = ({ children }) => {
     const insuranceFromStorage = localStorage.getItem("selectedInsurance");
     const extrasFromStorage = localStorage.getItem("selectedExtras");
     const userFromStorage = localStorage.getItem("userData");
+    const discountFromStorage = localStorage.getItem("discount");
 
     if (carFromStorage) setSelectedCar(JSON.parse(carFromStorage));
     if (insuranceFromStorage)
       setSelectedInsurance(JSON.parse(insuranceFromStorage));
     if (extrasFromStorage) setSelectedExtras(JSON.parse(extrasFromStorage));
     if (userFromStorage) setUserData(JSON.parse(userFromStorage));
+    if (discountFromStorage) setDiscount(JSON.parse(discountFromStorage));
   }, []);
 
   // Sincroniza cada estado con localStorage cuando cambia
@@ -56,19 +59,27 @@ export const BookingProvider = ({ children }) => {
     localStorage.setItem("userData", JSON.stringify(userData));
   }, [userData]);
 
+  useEffect(() => {
+    if (discount !== null) {
+      localStorage.setItem("discount", JSON.stringify(discount));
+    } else {
+      localStorage.removeItem("discount");
+    }
+  }, [discount]);
+
   // Función para limpiar toda la data (por ejemplo, al finalizar la reserva)
   const clearBooking = () => {
     setSelectedCar(null);
     setSelectedInsurance(null);
     setSelectedExtras({});
     setUserData({});
+    setDiscount(null);
     localStorage.removeItem("selectedCar");
     localStorage.removeItem("selectedInsurance");
     localStorage.removeItem("selectedExtras");
     localStorage.removeItem("userData");
-  
-    // Flag temporal para que no se vuelva a cargar localStorage
     sessionStorage.setItem("bookingCleared", "true");
+    localStorage.removeItem("discount");
   };
 
   return (
@@ -82,6 +93,8 @@ export const BookingProvider = ({ children }) => {
         setSelectedExtras,
         userData,
         setUserData,
+        discount,
+        setDiscount, // Nuevo campo
         clearBooking,
       }}
     >

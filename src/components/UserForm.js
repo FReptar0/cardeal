@@ -35,8 +35,8 @@ export default function UserForm() {
   const router = useRouter();
   const { jwt, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
-  const { selectedCar, selectedInsurance, selectedExtras, clearBooking } = useBooking();
-  const { searchData, setSearchData, clearSearch} = useSearch();
+  const { selectedCar, selectedInsurance, selectedExtras, discount, clearBooking } = useBooking();
+  const { searchData, setSearchData, clearSearch } = useSearch();
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -171,6 +171,7 @@ export default function UserForm() {
           contactEmail,
           contactPhone,
           paid: false,
+          discount, // Incluir el descuento en la solicitud
         }),
       });
       const bookingJson = await bookingRes.json();
@@ -422,7 +423,7 @@ export default function UserForm() {
                 <CircularProgress size={20} sx={{ color: "#a00612" }} />
               </>
             ) : (
-              "Pago al entregar"
+              "Pago en mostrador"
             )}
           </Button>
 
