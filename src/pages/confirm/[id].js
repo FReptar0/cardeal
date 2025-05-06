@@ -282,12 +282,24 @@ export default function BookingConfirmation() {
                             fullWidth
                             variant="contained"
                             sx={{
-                                backgroundColor: "#d60812",
+                                backgroundColor: "#10906a",
                                 height: 48,
-                                ":hover": { backgroundColor: "#a00612" },
+                                ":hover": { backgroundColor: "#0b704e" },
                             }}
                         >
                             Descargar detalles de la reserva
+                        </Button>
+                        <Button
+                            type="button"
+                            fullWidth
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#10906a",
+                                height: 48,
+                                ":hover": { backgroundColor: "#0b704e" },
+                            }}
+                        >
+                            Facturar
                         </Button>
                     </Box>
                 </Box>
