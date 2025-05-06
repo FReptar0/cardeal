@@ -1,5 +1,6 @@
 // /components/OrderSummary.jsx
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 import {
   Box,
   Card,
@@ -9,6 +10,8 @@ import {
   TextField,
   Button
 } from "@mui/material";
+import PropTypes from "prop-types";
+import { useBooking } from "../contexts/BookingContext";
 
 export default function OrderSummary({
   selectedCar,
@@ -24,8 +27,30 @@ export default function OrderSummary({
   totalWithIva,
   formatCurrency,
   subtotal,
+  totals,
+  discount, // Agregar el descuento como parámetro
 }) {
+  const router = useRouter();
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [couponError, setCouponError] = useState(false);
+  const [discountApplied, setDiscountApplied] = useState(false);
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
+  const { setDiscount } = useBooking(); // Importar el descuento del contexto
+
+  const handleApplyCoupon = () => {
+    if (appliedCoupon === "00001") {
+      setCouponError(false);
+      setDiscount(totalCarCost * 0.1); // Guardar el descuento en el contexto
+      setDiscountApplied(true);
+      setAppliedCoupon(""); // Limpiar el input
+    } else {
+      setCouponError(true);
+      setAppliedCoupon(""); // Limpiar el input incluso si hay error
+    }
+  };
+
+  // Cambiar la lógica para detectar la página de confirmación
+  const isConfirmationPage = router.asPath.startsWith("/confirm/");
 
   return (
     <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
@@ -147,6 +172,26 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
+        {/* Otros cargos */}
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          <b>Otros Cargos:</b>
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="body2">Costos adicionales</Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {formatCurrency((totalCarCost + totalExtrasCost) * 0.23)}
+          </Typography>
+        </Box>
+        <Typography
+          variant="caption"
+          sx={{ display: "block", mt: 1 }}
+          color="textSecondary"
+        >
+          * Este cargo incluye costos administrativos y operativos adicionales. Consulta más detalles en los <a href="/terminos-y-condiciones" target="_blank" style={{ textDecoration: "underline" }}>Términos y Condiciones</a>.
+        </Typography>
+
+        <Divider sx={{ my: 2 }} />
+
         {/* Subtotal */}
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="body2" fontWeight="bold">
@@ -174,50 +219,159 @@ export default function OrderSummary({
             {formatCurrency(ivaCost)}
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="h6" fontWeight="bold">
-            TOTAL:
-          </Typography>
-          <Typography variant="h6" fontWeight="bold" sx={{ color: "#d60812" }}>
-            {formatCurrency(totalWithIva)}
-          </Typography>
-        </Box>
+
+        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
+        {totals && totals.price && totals.price2 ? (
+          <Box sx={{ mt: 2, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Box>
+              <Typography variant="body2" fontWeight="bold">
+                Pago en mostrador:
+              </Typography>
+              <Typography variant="h6" sx={{ color: "#d60812" }} fontWeight="bold">
+                {formatCurrency(totals.price)}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2" fontWeight="bold">
+                Pago en línea:
+              </Typography>
+              <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
+                {formatCurrency(totals.price2)}
+              </Typography>
+            </Box>
+          </Box>
+        ) : totals ? (
+          <Box sx={{ mt: 2, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="body2" fontWeight="bold">
+              Pago único:
+            </Typography>
+            <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
+              {formatCurrency(totals.price || totals.price2)}
+            </Typography>
+          </Box>
+        ) : null}
+
+        {/* Descuento */}
+        {discountApplied && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              <b>Descuento aplicado:</b>
+            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="body2">10% de descuento</Typography>
+              <Typography variant="body2" fontWeight="bold">
+                -{formatCurrency(totalCarCost * 0.1)}
+              </Typography>
+            </Box>
+          </>
+        )}
+
+        {/* Descuento */}
+        {discount > 0 && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              <b>Descuento aplicado:</b>
+            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="body2">Descuento</Typography>
+              <Typography variant="body2" fontWeight="bold">
+                -{formatCurrency(discount)}
+              </Typography>
+            </Box>
+          </>
+        )}
 
         <Divider sx={{ my: 2 }} />
 
         {/* Campo para ingresar código de cupón */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 2 }}>
-          <Typography variant="body2" fontWeight="bold">
-            Ingresa código de cupón:
-          </Typography>
+        {router.pathname !== "/confirm/[id]" && (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 2 }}>
+            <Typography variant="body2" fontWeight="bold">
+              Ingresa código de cupón:
+            </Typography>
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Código de descuento"
-              sx={{
-                flex: 1,
-                backgroundColor: "#f5f5f5",
-                borderRadius: 1,
-              }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{
-                backgroundColor: "#d60812",
-                fontWeight: "bold",
-                textTransform: "none",
-                borderRadius: 1,
-              }}
-            >
-              APLICAR
-            </Button>
+            <Box sx={{ display: "flex", gap: 1, width: "100%" }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Código de descuento"
+                sx={{
+                  flex: 0.85, // Relación 85% del ancho
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: 1,
+                }}
+                value={appliedCoupon}
+                onChange={(e) => setAppliedCoupon(e.target.value)}
+                error={couponError}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{
+                  flex: 0.15, // Relación 15% del ancho
+                  height: "40px", // Asegurar que el grosor sea consistente
+                  backgroundColor: "#d60812",
+                  fontWeight: "bold",
+                  textTransform: "none",
+                  borderRadius: 1,
+                }}
+                onClick={handleApplyCoupon}
+              >
+                APLICAR
+              </Button>
+            </Box>
+            {couponError && (
+              <Typography
+                variant="caption"
+                color="error"
+                sx={{ mt: 1, textAlign: "left", width: "100%" }}
+              >
+                Código de cupón no válido
+              </Typography>
+            )}
           </Box>
-        </Box>
+        )}
+
+        {/* Mostrar la sección de totales adaptada para la página de confirmación */}
+        {isConfirmationPage && (
+          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography variant="h6" fontWeight="bold">
+                Total a pagar:
+              </Typography>
+              <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
+                {formatCurrency(totalWithIva + (totalCarCost + totalExtrasCost) * 0.23)}
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );
 }
+
+OrderSummary.propTypes = {
+  selectedCar: PropTypes.object,
+  pickupDateString: PropTypes.string,
+  returnDateString: PropTypes.string,
+  rentalDays: PropTypes.number,
+  dailyCarCost: PropTypes.number,
+  totalCarCost: PropTypes.number,
+  selectedInsurance: PropTypes.object,
+  totalInsuranceCost: PropTypes.number,
+  extrasInfo: PropTypes.array,
+  ivaCost: PropTypes.number,
+  totalWithIva: PropTypes.number,
+  formatCurrency: PropTypes.func,
+  subtotal: PropTypes.string,
+  totals: PropTypes.shape({
+    price: PropTypes.number,
+    price2: PropTypes.number,
+  }),
+  discount: PropTypes.number, // Agregar el descuento como parámetro
+};

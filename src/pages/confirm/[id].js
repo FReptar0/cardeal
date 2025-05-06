@@ -20,6 +20,7 @@ import OrderSummary from "@/components/OrderSummary";
 import QRCode from "qrcode";
 import RentalStepper from "@/components/Stepper";
 import { useAuth } from "@/contexts/AuthContext";
+import { useBooking } from "@/contexts/BookingContext";
 
 const extrasDefinitions = {
     conductor_adicional: { precio: 110, nombre: "Conductor Adicional" },
@@ -33,6 +34,7 @@ export default function BookingConfirmation() {
     const router = useRouter();
     const { jwt } = useAuth();
     const { id } = router.query;
+    const { totals, discount } = useBooking(); // Obtener el descuento del contexto
 
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -51,6 +53,8 @@ export default function BookingConfirmation() {
             .catch(() => router.replace("/login"))
             .finally(() => setTimeout(() => setLoading(false), 2000));
     }, [id, jwt, router]);
+
+    console.log("Booking data:", booking);
 
     if (loading) {
         // Skeleton placeholders
@@ -125,6 +129,10 @@ export default function BookingConfirmation() {
     const iva = (subtotal + insuranceCost + extrasCost) * 0.16;
     const total = subtotal + insuranceCost + extrasCost + iva;
 
+    const totalWithDiscount = booking.discount > 0 ? total - booking.discount : total; // Aplicar el descuento si es mayor a 0
+
+    const totalLabel = booking.paid ? "Total" : "Total a pagar"; // Cambiar el texto si el pago está completado
+
     return (
         <Container sx={{ mt: 10, maxWidth: "100vw", px: 2 }}>
             <RentalStepper />
@@ -188,9 +196,11 @@ export default function BookingConfirmation() {
                                 totalInsuranceCost={insuranceCost}
                                 extrasInfo={extrasInfo}
                                 ivaCost={iva}
-                                totalWithIva={total}
+                                totalWithIva={totalWithDiscount} // Usar el total con descuento
                                 formatCurrency={formatCurrency}
                                 subtotal={formatCurrency(subTotal)}
+                                totalLabel={totalLabel} // Pasar el texto dinámico
+                                discount={booking.discount} // Asegurar que el descuento provenga de los datos de la reserva
                             />
                         </CardContent>
                     </Card>

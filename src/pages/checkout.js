@@ -30,7 +30,7 @@ export default function CheckoutPage() {
         )
       : 1;
 
-  const dailyCarCost = selectedCar?.price || 0;
+  const dailyCarCost = selectedCar?.price2 || 0;
   const totalCarCost = dailyCarCost * rentalDays;
 
   const parseInsuranceCost = (s) => {
@@ -100,6 +100,10 @@ export default function CheckoutPage() {
             totalWithIva={totalWithIva}
             formatCurrency={formatCurrency}
             subtotal={formatCurrency(subTotal)}
+            totals={{
+              price: totalWithIva, // Precio para pago en línea
+              price2: subTotal, // Precio para pago en mostrador (sin IVA)
+            }}
           />
         </Box>
         <Box sx={{ width: { xs: "100%", md: "50%" } }}>
