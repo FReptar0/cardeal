@@ -35,7 +35,7 @@ export default function UserForm() {
   const router = useRouter();
   const { jwt, isLoggedIn, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
-  const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
+  const { selectedCar, selectedInsurance, selectedExtras, discount } = useBooking();
   const { searchData, setSearchData } = useSearch();
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -155,6 +155,7 @@ export default function UserForm() {
           contactEmail,
           contactPhone,
           paid: false,
+          discount, // Incluir el descuento en la solicitud
         }),
       });
       const bookingJson = await bookingRes.json();
