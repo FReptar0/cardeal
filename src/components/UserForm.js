@@ -405,7 +405,7 @@ export default function UserForm() {
                 <CircularProgress size={20} sx={{ color: "#a00612" }} />
               </>
             ) : (
-              "Pago al entregar"
+              "Pago en mostrador"
             )}
           </Button>
 
