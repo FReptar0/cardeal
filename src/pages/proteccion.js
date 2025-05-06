@@ -155,6 +155,25 @@ const SeguroVehiculo = () => {
   // Planes ajustados según la categoría del auto
   const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
 
+  // Temporizador para el diálogo de recomendación
+  const [timer, setTimer] = useState(20);
+
+  // temporizador regresivo para el descuento
+  useEffect(() => {
+    if (!openRecommendation) return;
+    setTimer(20);
+    const countdown = setInterval(() => {
+      setTimer((t) => {
+        if (t <= 1) {
+          clearInterval(countdown);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(countdown);
+  }, [openRecommendation]);
+
   // Seleccionar un plan
   const handleSelect = (plan) => {
     setSelectedInsurance(plan);
@@ -465,7 +484,8 @@ const SeguroVehiculo = () => {
               }}
             >
               Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
-              ofrecemos el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
+              ofrecemos el{" "}
+              <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
             </Typography>
 
             <Typography
@@ -476,15 +496,29 @@ const SeguroVehiculo = () => {
                 mb: 3,
               }}
             >
-              Te recomendamos considerar el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong> por
-              solo <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al día. Este paquete incluye coberturas adicionales que te darán
+              Te recomendamos considerar el{" "}
+              <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>{" "}
+              por solo{" "}
+              <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al
+              día. Este paquete incluye coberturas adicionales que te darán
               mayor tranquilidad, seguridad y respaldo durante tu viaje.
             </Typography>
           </Box>
         </DialogContent>
 
         {/* Contenedor de los botones */}
-        <Box sx={{ width: "100%", mt: 2 }}>
+        <Box sx={{ width: "100%", mt: 1 }}>
+          <Typography variant="body2" mb={2} textAlign="center">
+            {timer > 0 ? (
+              <>
+                Si contratas la protección en los próximos{" "}
+                <strong>{timer} segundos</strong> obtendrás un descuento
+                especial del 10%.
+              </>
+            ) : (
+              "El descuento especial ha expirado."
+            )}
+          </Typography>
           <Button
             variant="contained"
             fullWidth
@@ -499,7 +533,8 @@ const SeguroVehiculo = () => {
             }}
             onClick={handleSelectNextPlan}
           >
-            SELECCIONAR {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
+            SELECCIONAR{" "}
+            {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
           </Button>
 
           <Typography
