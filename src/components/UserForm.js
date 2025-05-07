@@ -117,7 +117,7 @@ export default function UserForm() {
     }
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = (isOnline) => async (data) => {
     setSubmitting(true);
     try {
       let token = jwt;
@@ -171,6 +171,7 @@ export default function UserForm() {
           contactEmail,
           contactPhone,
           paid: false,
+          paidOnline: isOnline,
           discount, // Incluir el descuento en la solicitud
         }),
       });
@@ -398,7 +399,6 @@ export default function UserForm() {
           }}
         >
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             sx={{
@@ -410,6 +410,7 @@ export default function UserForm() {
               justifyContent: "center",
               gap: 1.5,
             }}
+            onClick={handleSubmit(onSubmit(false))} // Pago en mostrador
             disabled={
               submitting ||
               !watch("terms") ||
@@ -436,6 +437,7 @@ export default function UserForm() {
               color: "#000",
               ":hover": { backgroundColor: "#ffb300" },
             }}
+            onClick={handleSubmit(onSubmit(true))} // Pago en línea
             disabled={
               !watch("terms") || !watch("privacy") || (tokenIsInvalid && !isValid)
             }
