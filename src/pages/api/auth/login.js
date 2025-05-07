@@ -37,7 +37,7 @@ export default async function handler(req, res) {
                 email: user.email,
             },
             JWT_SECRET,
-            remember ? {} : { expiresIn: '1m' }
+            remember ? {} : { expiresIn: '1h' }
         );
 
         return res.status(200).json({ token, sessionStart: new Date() });

@@ -29,9 +29,11 @@ export default function CheckoutPage() {
             (1000 * 60 * 60 * 24)
         )
       : 1;
-
+  
   const dailyCarCost = selectedCar?.price2 || 0;
+  const dailyCarCost2 = selectedCar?.price || 0;
   const totalCarCost = dailyCarCost * rentalDays;
+  const totalCarCost2 = dailyCarCost2 * rentalDays;
 
   const parseInsuranceCost = (s) => {
     const n = s ? s.replace(/[^\d.]/g, "") : "0";
@@ -68,9 +70,15 @@ export default function CheckoutPage() {
     }
   }
 
-  const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost;
+  const otherCharges = (totalCarCost + totalExtrasCost) * .23;
+  const otherCharges2 = (totalCarCost2 + totalExtrasCost) * .23;
+
+  const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
+  const subTotal2 = totalCarCost2 + totalInsuranceCost + totalExtrasCost + otherCharges2;
   const ivaCost = subTotal * 0.16;
+  const ivaCost2 = subTotal2 * 0.16;
   const totalWithIva = subTotal + ivaCost;
+  const totalWithIva2 = subTotal2 + ivaCost2;
 
   return (
     <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>
@@ -93,16 +101,22 @@ export default function CheckoutPage() {
             rentalDays={rentalDays}
             dailyCarCost={dailyCarCost}
             totalCarCost={totalCarCost}
+            dailyCarCost2={dailyCarCost2}
+            totalCarCost2={totalCarCost2}
             selectedInsurance={selectedInsurance}
             totalInsuranceCost={totalInsuranceCost}
             extrasInfo={extrasInfo}
             ivaCost={ivaCost}
+            ivaCost2={ivaCost2}
             totalWithIva={totalWithIva}
+            otherCharges={otherCharges}
+            otherCharges2={otherCharges2}
             formatCurrency={formatCurrency}
-            subtotal={formatCurrency(subTotal)}
+            subtotal={subTotal}
+            subtotal2={subTotal2}
             totals={{
               price: totalWithIva, // Precio para pago en línea
-              price2: subTotal, // Precio para pago en mostrador (sin IVA)
+              price2: totalWithIva2, // Precio para pago en mostrador
             }}
           />
         </Box>

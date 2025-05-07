@@ -20,13 +20,19 @@ export default function OrderSummary({
   rentalDays,
   dailyCarCost,
   totalCarCost,
+  dailyCarCost2,
+  totalCarCost2,
   selectedInsurance,
   totalInsuranceCost,
   extrasInfo,
   ivaCost,
+  ivaCost2,
   totalWithIva,
+  otherCharges,
+  otherCharges2,
   formatCurrency,
   subtotal,
+  subtotal2,
   totals,
   discount, // Agregar el descuento como parámetro
 }) {
@@ -103,10 +109,20 @@ export default function OrderSummary({
               sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
             >
               <Typography variant="body2" fontStyle="italic">
-                {formatCurrency(dailyCarCost)} /día
+                {formatCurrency(dailyCarCost)} /día (precio mostrador)
               </Typography>
               <Typography variant="body2" fontWeight="bold">
                 {formatCurrency(totalCarCost)}
+              </Typography>
+            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+            >
+              <Typography variant="body2" fontStyle="italic">
+                {formatCurrency(dailyCarCost2)} /día (precio en línea)
+              </Typography>
+              <Typography variant="body2" fontWeight="bold">
+                {formatCurrency(totalCarCost2)}
               </Typography>
             </Box>
           </>
@@ -177,9 +193,15 @@ export default function OrderSummary({
           <b>Otros Cargos:</b>
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales</Typography>
+          <Typography variant="body2">Costos adicionales por pago en mostrador</Typography>
           <Typography variant="body2" fontWeight="bold">
-            {formatCurrency((totalCarCost + totalExtrasCost) * 0.23)}
+            {formatCurrency(otherCharges)}
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="body2">Costos adicionales por pago en línea</Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {formatCurrency(otherCharges2)} 
           </Typography>
         </Box>
         <Typography
@@ -195,28 +217,40 @@ export default function OrderSummary({
         {/* Subtotal */}
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="body2" fontWeight="bold">
-            Subtotal
+            Subtotal /mostrador
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {formatCurrency(
-              totalCarCost + totalInsuranceCost + totalExtrasCost
-            )}
+            {formatCurrency(subtotal)}
+          </Typography>
+        </Box>
+
+        {/* Subtotal */}
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="body2" fontWeight="bold">
+            Subtotal /en línea
+          </Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {formatCurrency(subtotal2)}
           </Typography>
         </Box>
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Subtotal, IVA y Total */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2">Subtotal:</Typography>
-          <Typography variant="body2">{subtotal}</Typography>
-        </Box>
+        {/* IVA y Total */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
           <Typography variant="body2" fontWeight="bold">
-            IVA (16%)
+            IVA (16%) mostrador
           </Typography>
           <Typography variant="body2" fontWeight="bold">
             {formatCurrency(ivaCost)}
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="body2" fontWeight="bold">
+            IVA (16%) en línea
+          </Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {formatCurrency(ivaCost2)}
           </Typography>
         </Box>
 
@@ -362,6 +396,8 @@ OrderSummary.propTypes = {
   rentalDays: PropTypes.number,
   dailyCarCost: PropTypes.number,
   totalCarCost: PropTypes.number,
+  dailyCarCost2: PropTypes.number,
+  totalCarCost2: PropTypes.number,
   selectedInsurance: PropTypes.object,
   totalInsuranceCost: PropTypes.number,
   extrasInfo: PropTypes.array,
