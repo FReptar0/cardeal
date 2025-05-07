@@ -33,18 +33,34 @@ import "react-phone-input-2/lib/style.css";
 
 export default function UserForm() {
   const router = useRouter();
-  const { jwt, isLoggedIn, login } = useAuth();
+  const { jwt, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
-  const { selectedCar, selectedInsurance, selectedExtras, discount } = useBooking();
-  const { searchData, setSearchData } = useSearch();
+  const { selectedCar, selectedInsurance, selectedExtras, discount, clearBooking } = useBooking();
+  const { searchData, setSearchData, clearSearch } = useSearch();
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+
+  const isJwtExpired = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (!payload.exp) return false;
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch (e) {
+      return true;
+    }
+  };
+
+  const tokenIsInvalid = !jwt || isJwtExpired(jwt);
+
+  
+
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
     privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
-    ...(!isLoggedIn && {
+    ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
       email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
@@ -88,7 +104,7 @@ export default function UserForm() {
   });
 
   useEffect(() => {
-    if (isLoggedIn && !loadingProfile && userData) {
+    if (!tokenIsInvalid && !loadingProfile && userData) {
       reset({
         fullName: userData.fullName,
         phone: userData.phone,
@@ -99,15 +115,15 @@ export default function UserForm() {
         privacy: false,
       });
     }
-  }, [isLoggedIn, loadingProfile, userData, reset]);
+  }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = (isOnline) => async (data) => {
     setSubmitting(true);
     try {
       let token = jwt;
       let justRegistered = false;
 
-      if (!isLoggedIn) {
+      if (tokenIsInvalid) {
         const res = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -155,6 +171,7 @@ export default function UserForm() {
           contactEmail,
           contactPhone,
           paid: false,
+          paidOnline: isOnline,
           discount, // Incluir el descuento en la solicitud
         }),
       });
@@ -162,6 +179,8 @@ export default function UserForm() {
       if (!bookingRes.ok) {
         return toast.error(bookingJson.message || "Error al crear la reserva");
       }
+      clearBooking();
+      clearSearch();
       router.push(`/confirm/${bookingJson.bookingId}`);
     } catch (err) {
       console.error(err);
@@ -171,7 +190,7 @@ export default function UserForm() {
     }
   };
 
-  if (isLoggedIn && loadingProfile) {
+  if (!tokenIsInvalid && loadingProfile) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
         <CircularProgress />
@@ -183,12 +202,12 @@ export default function UserForm() {
     <Card sx={{ p: 3, width: "100%" }}>
       <ToastContainer position="top-center" autoClose={5000} />
       <Typography variant="h5" gutterBottom>
-        {isLoggedIn ? "Finaliza tu reserva" : "Completa tus datos para registrarte"}
+        {!tokenIsInvalid ? "Finaliza tu reserva" : "Completa tus datos para registrarte"}
       </Typography>
       <Divider sx={{ my: 2 }} />
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-        {!isLoggedIn && (
+        {tokenIsInvalid && (
           <>
             <TextField
               label="Nombre completo"
@@ -380,7 +399,6 @@ export default function UserForm() {
           }}
         >
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             sx={{
@@ -392,11 +410,12 @@ export default function UserForm() {
               justifyContent: "center",
               gap: 1.5,
             }}
+            onClick={handleSubmit(onSubmit(false))} // Pago en mostrador
             disabled={
               submitting ||
               !watch("terms") ||
               !watch("privacy") ||
-              (!isLoggedIn && !isValid)
+              (!tokenIsInvalid && !isValid)
             }
           >
             {submitting ? (
@@ -418,8 +437,9 @@ export default function UserForm() {
               color: "#000",
               ":hover": { backgroundColor: "#ffb300" },
             }}
+            onClick={handleSubmit(onSubmit(true))} // Pago en línea
             disabled={
-              !watch("terms") || !watch("privacy") || (!isLoggedIn && !isValid)
+              !watch("terms") || !watch("privacy") || (tokenIsInvalid && !isValid)
             }
           >
             Pago en línea

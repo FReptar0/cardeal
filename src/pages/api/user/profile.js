@@ -34,6 +34,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ user });
     } catch (error) {
         console.error("Error en la verificación del token:", error);
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ expired: true, message: 'Token expirado' });
+        }
         return res.status(401).json({ message: 'Token inválido o expirado' });
     }
 }

@@ -33,6 +33,7 @@ export default async function handler(req, res) {
         contactEmail,
         contactPhone,
         paid,               // ahora lo recibimos del cliente
+        paidOnline,
         discount, // Agregar el descuento como parte de la reserva
     } = req.body;
 
@@ -42,7 +43,8 @@ export default async function handler(req, res) {
         !contactName ||
         !contactEmail ||
         !contactPhone ||
-        typeof paid !== 'boolean'
+        typeof paid !== 'boolean' || 
+        typeof paidOnline !== 'boolean'
     ) {
         return res
             .status(400)
@@ -91,6 +93,7 @@ export default async function handler(req, res) {
                 returnTime: searchData.returnTime,
             },
             paid,        // guardamos el flag que venga del cliente
+            paidOnline,  // guardamos el flag que venga del cliente
             price: paid ? totals.price : undefined, // Solo enviar `price` si el pago es al entregar
             discount: discount || 0, // Guardar el descuento recibido o 0 si no se proporciona
             createdAt: new Date(),

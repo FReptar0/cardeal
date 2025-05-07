@@ -9,6 +9,17 @@ export const AuthProvider = ({ children }) => {
   const [sessionStart, setSessionStart] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const isJwtExpired = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (!payload.exp) return false; // Token sin expiración (remember=true)
+      const now = Math.floor(Date.now() / 1000); // en segundos
+      return payload.exp < now;
+    } catch (e) {
+      return true; // Token corrupto o mal formado
+    }
+  };
+
   // Al montar el componente, intenta leer los datos del localStorage
   useEffect(() => {
     const storedJwt = localStorage.getItem("authJwt");
@@ -16,9 +27,13 @@ export const AuthProvider = ({ children }) => {
     const storedIsLoggedIn = localStorage.getItem("isLoggedIn");
 
     if (storedJwt && storedSessionStart && storedIsLoggedIn === "true") {
-      setJwt(storedJwt);
-      setSessionStart(new Date(storedSessionStart));
-      setIsLoggedIn(true);
+      if (isJwtExpired(storedJwt)) {
+        logout();
+      } else {
+        setJwt(storedJwt);
+        setSessionStart(new Date(storedSessionStart));
+        setIsLoggedIn(true);
+      }
     }
   }, []);
 
