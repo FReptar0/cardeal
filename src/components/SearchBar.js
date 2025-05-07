@@ -19,9 +19,7 @@ import format from "date-fns/format";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
-import { locations } from "@/utils/locations";
 import { useBooking } from "@/contexts/BookingContext";
-
 
 // Lista de horarios disponibles
 const availableTimes = [
@@ -57,7 +55,6 @@ const formatMonthYear = (date) =>
 
 // Función para obtener la fecha actual en la zona "America/Mexico_City"
 const getTodayDate = () => {
-  // Se obtiene la fecha en formato de CDMX y se formatea a YYYY-MM-DD
   const mexicoDate = new Date(
     new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" })
   );
@@ -129,7 +126,7 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
             disableRipple
             disableFocusRipple
             onClick={() => dateInputRef.current?.showPicker()}
-          ></Button>
+          />
           <TextField
             type="date"
             inputRef={dateInputRef}
@@ -163,16 +160,14 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
         >
           <Select
             value={time}
-            onChange={(e) => {
-              setTime(e.target.value);
-            }}
+            onChange={(e) => setTime(e.target.value)}
             fullWidth
             variant="standard"
             disableUnderline
             sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
           >
-            {availableTimes.map((t, index) => (
-              <MenuItem key={index} value={t}>
+            {availableTimes.map((t, i) => (
+              <MenuItem key={i} value={t}>
                 {t}
               </MenuItem>
             ))}
@@ -185,69 +180,70 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
 
 export default function SearchBar({ sx = {} }) {
   const router = useRouter();
-  const { searchData, setSearchData } = useSearch(); // Usamos el contexto global
+  const { searchData, setSearchData } = useSearch(); // Contexto global
   const { selectedCar } = useBooking();
   const isRentalPage =
     router.pathname === "/rental" ||
     router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
-  const showCarImage = 
-    router.pathname === "/extras-renta" ||
-    router.pathname === "/proteccion";
+  const showCarImage =
+    router.pathname === "/extras-renta" || router.pathname === "/proteccion";
   const [isMounted, setIsMounted] = useState(false);
+
+  // ——— NUEVO: estado y fetch de sucursales desde API ———
+  const [locations, setLocations] = useState([]);
+  useEffect(() => {
+    fetch("/api/locations/locations")
+      .then((res) => {
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setLocations(data.locations || []))
+      .catch((err) => console.error("Error al cargar sucursales:", err));
+  }, []);
+  //
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-
-  // Funciones para actualizar el contexto al cambiar valores:
-  const handlePickupLocationChange = (event, newValue) =>
+  // Handlers sin tocar
+  const handlePickupLocationChange = (e, newValue) =>
     setSearchData({ ...searchData, pickupLocation: newValue });
-
-  const handleReturnLocationChange = (event, newValue) =>
+  const handleReturnLocationChange = (e, newValue) =>
     setSearchData({ ...searchData, returnLocation: newValue });
-
   const handleSameOfficeChange = () =>
     setSearchData({ ...searchData, sameOffice: !searchData.sameOffice });
-
   const handlePickupDateChange = (newDate) => {
-    const newPickupDate = new Date(newDate);
-    newPickupDate.setHours(0, 0, 0, 0);
-    let newReturnDate = new Date(searchData.returnDate);
-    newReturnDate.setHours(0, 0, 0, 0);
-    if (newReturnDate < newPickupDate) {
-      newReturnDate = new Date(newPickupDate);
-      newReturnDate.setDate(newReturnDate.getDate() + 1);
+    const np = new Date(newDate);
+    np.setHours(0, 0, 0, 0);
+    let nr = new Date(searchData.returnDate);
+    nr.setHours(0, 0, 0, 0);
+    if (nr < np) {
+      nr = new Date(np);
+      nr.setDate(nr.getDate() + 1);
     }
     setSearchData({
       ...searchData,
-      pickupDate: newPickupDate,
-      returnDate: newReturnDate,
+      pickupDate: np,
+      returnDate: nr,
       pickupTime: "08:00 AM",
       returnTime: "08:00 AM",
     });
   };
-
   const handleReturnDateChange = (newDate) => {
-    const newReturnDate = new Date(newDate);
-    newReturnDate.setHours(0, 0, 0, 0);
-    let currentPickupDate = new Date(searchData.pickupDate);
-    currentPickupDate.setHours(0, 0, 0, 0);
-    if (newReturnDate < currentPickupDate) {
-      currentPickupDate = new Date(newReturnDate);
-      currentPickupDate.setDate(currentPickupDate.getDate() - 1);
+    const nr = new Date(newDate);
+    nr.setHours(0, 0, 0, 0);
+    let np = new Date(searchData.pickupDate);
+    np.setHours(0, 0, 0, 0);
+    if (nr < np) {
+      np = new Date(nr);
+      np.setDate(np.getDate() - 1);
     }
-    setSearchData({
-      ...searchData,
-      returnDate: newReturnDate,
-      pickupDate: currentPickupDate,
-    });
+    setSearchData({ ...searchData, returnDate: nr, pickupDate: np });
   };
-
   const handlePickupTimeChange = (newTime) =>
     setSearchData({ ...searchData, pickupTime: newTime });
-
   const handleReturnTimeChange = (newTime) =>
     setSearchData({ ...searchData, returnTime: newTime });
 
@@ -256,14 +252,12 @@ export default function SearchBar({ sx = {} }) {
 
   if (!isMounted) return null;
 
-
   const searchForm = (
     <>
       {!isRentalPage && (
         <Typography
           variant="h6"
-          sx={{ color: "black", fontWeight: "bold", marginBottom: "6px" }}
-          id="ubicacionOrigenSB"
+          sx={{ color: "black", fontWeight: "bold", mb: 1 }}
         >
           Ubicación de origen
         </Typography>
@@ -280,14 +274,11 @@ export default function SearchBar({ sx = {} }) {
             }
             variant="outlined"
             sx={{
-              "& .MuiOutlinedInput-root": {
-                paddingTop: "8px",
-                paddingBottom: "6px",
-              },
+              "& .MuiOutlinedInput-root": { pt: "8px", pb: "6px" },
               "& .MuiInputLabel-root": {
                 fontSize: isRentalPage ? "1.1rem" : "0.9rem",
                 backgroundColor: "#f5f5f5",
-                paddingRight: "4px",
+                pr: "4px",
                 color: "black",
                 top: isRentalPage ? -4 : -2,
               },
@@ -301,26 +292,34 @@ export default function SearchBar({ sx = {} }) {
         onChange={handlePickupLocationChange}
         sx={{ width: "100%" }}
       />
+
       <FormControlLabel
-        id="checkboxSB"
         control={
           <Checkbox
             checked={searchData.sameOffice}
             onChange={handleSameOfficeChange}
-            sx={{ color: "#d32f2f", "&.Mui-checked": { color: "#d32f2f" } }}
+            sx={{
+              color: "#d32f2f",
+              "&.Mui-checked": { color: "#d32f2f" },
+            }}
           />
         }
         label="Devolver en la misma oficina"
-        sx={{ color: "black", fontWeight: "bold", width: "100%", justifyContent: "start" }}
+        sx={{
+          color: "black",
+          fontWeight: "bold",
+          width: "100%",
+          justifyContent: "start",
+          mt: 1,
+        }}
       />
+
       {!searchData.sameOffice && (
         <>
           {!isRentalPage && (
             <Typography
-              className="second-select"
               variant="h6"
-              sx={{ color: "black", fontWeight: "bold", marginBottom: "6px" }}
-              id="ubicacionDestinoSB"
+              sx={{ color: "black", fontWeight: "bold", mt: 2, mb: 1 }}
             >
               Ubicación de destino
             </Typography>
@@ -337,15 +336,11 @@ export default function SearchBar({ sx = {} }) {
                 }
                 variant="outlined"
                 sx={{
-                  marginTop: "10px",
-                  "& .MuiOutlinedInput-root": {
-                    paddingTop: "8px",
-                    paddingBottom: "6px",
-                  },
+                  "& .MuiOutlinedInput-root": { pt: "8px", pb: "6px" },
                   "& .MuiInputLabel-root": {
                     fontSize: isRentalPage ? "1.1rem" : "0.9rem",
                     backgroundColor: "#f5f5f5",
-                    paddingRight: "4px",
+                    pr: "4px",
                     color: "black",
                     top: isRentalPage ? -4 : -2,
                   },
@@ -361,12 +356,13 @@ export default function SearchBar({ sx = {} }) {
           />
         </>
       )}
+
       <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           gap: 2,
-          mt: 1,
+          mt: 2,
           mb: 2,
         }}
       >
@@ -389,11 +385,11 @@ export default function SearchBar({ sx = {} }) {
           />
         </Box>
       </Box>
+
       <Button
         variant="contained"
-        className="btn-buscar-sb"
         color="primary"
-        sx={{ backgroundColor: "#d60812", width: "100%", margin: "0 auto" }}
+        sx={{ backgroundColor: "#d60812", width: "100%" }}
         onClick={() => router.push("/rental")}
       >
         Buscar
@@ -408,7 +404,7 @@ export default function SearchBar({ sx = {} }) {
         flexDirection: "column",
         gap: isRentalPage ? 0.5 : 3,
         width: "100%",
-        padding: 3,
+        p: 3,
         backgroundColor: "#f5f5f5",
         borderRadius: 2,
         boxSizing: "border-box",
@@ -424,44 +420,28 @@ export default function SearchBar({ sx = {} }) {
             gap: 2,
           }}
         >
-          {/* Columna de auto */}
           {selectedCar && (
-            <Box sx={{ flex: 1, minWidth: "250px", display: "flex", justifyContent: "center", alignItems: "center", mb:-3 }} >
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: "250px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Box
+                component="img"
+                src={selectedCar.image}
+                alt={selectedCar.name}
                 sx={{
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: 2,
-                  backgroundColor: "transparent",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  mt: -4
+                  width: "100%",
+                  maxHeight: "218px",
+                  objectFit: "contain",
+                  mb: 2,
+                  borderRadius: 2,
                 }}
-              >
-                {selectedCar?.image && (
-                  <Box
-                    component="img"
-                    src={selectedCar.image}
-                    alt={selectedCar.name}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      maxHeight: "218px",
-                      objectFit: "contain",
-                      marginBottom: 2,
-                      borderRadius: "8px",
-                    }}
-                  />
-                )}
-                
-                  <Typography sx={{ color: "black", textAlign: "center", fontWeight: "bold", fontSize: "1.1rem" }}>
-                    {selectedCar.name}
-                  </Typography>
-                <Typography variant="body2" sx={{ color: "gray", textAlign: "center", fontStyle: "italic" }}>
-                  {selectedCar.category}
-                </Typography>
-              </Box>
+              />
             </Box>
           )}
           <Box sx={{ flex: 2 }}>{searchForm}</Box>
