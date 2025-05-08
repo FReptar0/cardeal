@@ -95,23 +95,6 @@ const Footer = () => {
                 <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
                   Ayuda e Información
                 </Typography>
-                {/* <Typography
-                  component="a"
-                  href="/nosotros"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Nosotros
-                </Typography> */}
                 <Typography
                   component="a"
                   href="/aviso-de-privacidad"
@@ -188,7 +171,7 @@ const Footer = () => {
         {/* Columna 3 */}
         <Grid item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
+          <Box
               sx={{
                 width: "70%",
                 height: "100%",
@@ -199,28 +182,56 @@ const Footer = () => {
                 paddingBottom: "40px",
               }}
             >
-              <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                Servicio al Cliente
-              </Typography>
-              <Box sx={{ mt: 1, textAlign: "left" }}>
-                <Typography sx={{ fontSize: "1.1rem" }}>Contacto:</Typography>
+              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
+                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                  Servicio al cliente
+                </Typography>
                 <Typography
                   sx={{
-                    fontSize: "1.7rem",
-                    margin: "14px 0",
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  Contacto:
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "2rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  800 333 2866
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  Correo:
+                </Typography>
+                <Typography
+                  component="a"
+                  href="/facturacion"
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "red",
+                    textDecoration: "none",
                     "&:hover": {
                       textDecoration: "underline",
                       cursor: "pointer",
                     },
                   }}
                 >
-                  800 333 2866
-                </Typography>
-                <Typography sx={{ fontSize: "1.1rem" }}>
-                  Correo:{" "}
-                  <span style={{ color: "#ff3f60" }}>
-                    soporte@qardeal.com.mx
-                  </span>
+                  soporte@qardeal.com.mx
                 </Typography>
               </Box>
             </Box>
