@@ -274,16 +274,28 @@ export default function BookingConfirmation() {
                   <b style={{ color: "#666" }}>Correo electrónico:</b>{" "}
                   {contact.email}
                 </Typography>
-                <Typography variant="body1">
-                  <b style={{ color: "#666" }}>Método de pago:</b>{" "}
-                  {booking.paid ? "Pagado" : "Pendiente"}
-                </Typography>
-
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography variant="body1">
+                    <b style={{ color: "#666" }}>Método de pago:</b>
+                  </Typography>
+                  {booking.paidOnline ? (
+                    <Chip
+                      label="Pago en línea"
+                      sx={{
+                        backgroundColor: "#10906a",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  ) : (
+                    <Chip label="Pago en mostrador" color="warning" />
+                  )}
+                </Box>
                 <Box display="flex" alignItems="center" gap={1}>
                   <Typography variant="body1" component="span">
                     <b style={{ color: "#666" }}>Estado de pago:</b>
+                    {booking.paid ? " Pagado" : " Pendiente"}
                   </Typography>
-                  <Chip label="Pago en mostrador" color="warning" />
                 </Box>
               </Box>
             </Box>
@@ -335,7 +347,7 @@ export default function BookingConfirmation() {
                 },
               }}
             >
-              <Box >
+              <Box>
                 <DialogTitle
                   sx={{
                     textAlign: "center",
@@ -358,8 +370,9 @@ export default function BookingConfirmation() {
                 >
                   Agradecemos tu preferencia, para realizar la factura de tu
                   renta solicítala en mostrador con tus datos fiscales.
-                  
-                  <Box sx={{ fontWeight: "bold", mt: 2 }}>¡Gracias por tu preferencia!</Box>
+                  <Box sx={{ fontWeight: "bold", mt: 2 }}>
+                    ¡Gracias por tu preferencia!
+                  </Box>
                 </Typography>
                 <Box sx={{ mt: 3 }}>
                   <Button

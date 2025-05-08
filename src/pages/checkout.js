@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import { useState } from "react";
 import { Container, Box } from "@mui/material";
 import RentalStepper from "@/components/Stepper";
 import { useBooking } from "@/contexts/BookingContext";
@@ -13,6 +14,8 @@ const formatCurrency = (amount) =>
   amount.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 
 export default function CheckoutPage() {
+  const [paidOnline, setPaidOnline] = useState(false);
+
   const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
   const { searchData } = useSearch();
 
@@ -118,10 +121,13 @@ export default function CheckoutPage() {
               price: totalWithIva, // Precio para pago en línea
               price2: totalWithIva2, // Precio para pago en mostrador
             }}
+            paidOnline={paidOnline}
           />
         </Box>
         <Box sx={{ width: { xs: "100%", md: "50%" } }}>
-          <UserForm />
+          <UserForm 
+          paidOnline={paidOnline}
+          setPaidOnline={setPaidOnline}/>
         </Box>
       </Box>
     </Container>

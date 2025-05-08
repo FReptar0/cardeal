@@ -8,7 +8,7 @@ import {
   Typography,
   Divider,
   TextField,
-  Button
+  Button,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { useBooking } from "../contexts/BookingContext";
@@ -35,6 +35,7 @@ export default function OrderSummary({
   subtotal2,
   totals,
   discount, // Agregar el descuento como parámetro
+  paidOnline,
 }) {
   const router = useRouter();
   const [appliedCoupon, setAppliedCoupon] = useState("");
@@ -109,20 +110,18 @@ export default function OrderSummary({
               sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
             >
               <Typography variant="body2" fontStyle="italic">
-                {formatCurrency(dailyCarCost)} /día (precio mostrador)
+                {paidOnline
+                  ? `${formatCurrency(dailyCarCost2)} /día (precio en línea)`
+                  : `${formatCurrency(dailyCarCost)} /día (precio mostrador)`}
               </Typography>
-              <Typography variant="body2" fontWeight="bold">
-                {formatCurrency(totalCarCost)}
-              </Typography>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
-            >
-              <Typography variant="body2" fontStyle="italic">
-                {formatCurrency(dailyCarCost2)} /día (precio en línea)
-              </Typography>
-              <Typography variant="body2" fontWeight="bold" sx={{ color: "#10906a" }}>
-                {formatCurrency(totalCarCost2)}
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={paidOnline ? { color: "#10906a" } : {}}
+              >
+                {paidOnline
+                  ? formatCurrency(totalCarCost2)
+                  : formatCurrency(totalCarCost)}
               </Typography>
             </Box>
           </>
@@ -193,15 +192,13 @@ export default function OrderSummary({
           <b>Otros Cargos:</b>
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales por pago en mostrador</Typography>
-          <Typography variant="body2" fontWeight="bold">
-            {formatCurrency(otherCharges)}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales por pago en línea</Typography>
-          <Typography variant="body2" fontWeight="bold" sx={{ color: "#10906a" }}>
-            {formatCurrency(otherCharges2)} 
+          <Typography variant="body2">Costos adicionales</Typography>
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+            sx={{ color: paidOnline ? "#10906a" : undefined }}
+          >
+            {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
           </Typography>
         </Box>
         <Typography
@@ -209,7 +206,16 @@ export default function OrderSummary({
           sx={{ display: "block", mt: 1 }}
           color="textSecondary"
         >
-          * Este cargo incluye costos administrativos y operativos adicionales. Consulta más detalles en los <a href="/terminos-y-condiciones" target="_blank" style={{ textDecoration: "underline" }}>Términos y Condiciones</a>.
+          * Este cargo incluye costos administrativos y operativos adicionales.
+          Consulta más detalles en los{" "}
+          <a
+            href="/terminos-y-condiciones"
+            target="_blank"
+            style={{ textDecoration: "underline" }}
+          >
+            Términos y Condiciones
+          </a>
+          .
         </Typography>
 
         <Divider sx={{ my: 2 }} />
@@ -217,20 +223,14 @@ export default function OrderSummary({
         {/* Subtotal */}
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="body2" fontWeight="bold">
-            Subtotal /mostrador
+            Subtotal
           </Typography>
-          <Typography variant="body2" fontWeight="bold">
-            {formatCurrency(subtotal)}
-          </Typography>
-        </Box>
-
-        {/* Subtotal */}
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2" fontWeight="bold">
-            Subtotal /en línea
-          </Typography>
-          <Typography variant="body2" fontWeight="bold" sx={{ color: "#10906a" }}>
-            {formatCurrency(subtotal2)}
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+            sx={paidOnline ? { color: "#10906a" } : {}}
+          >
+            {formatCurrency(paidOnline ? subtotal2 : subtotal)}
           </Typography>
         </Box>
 
@@ -239,47 +239,57 @@ export default function OrderSummary({
         {/* IVA y Total */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
           <Typography variant="body2" fontWeight="bold">
-            IVA (16%) por pago en mostrador
+            IVA (16%)
           </Typography>
-          <Typography variant="body2" fontWeight="bold">
-            {formatCurrency(ivaCost)}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2" fontWeight="bold">
-            IVA (16%) por pago en línea
-          </Typography>
-          <Typography variant="body2" fontWeight="bold" sx={{ color: "#10906a" }}>
-            {formatCurrency(ivaCost2)}
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+            sx={{ color: paidOnline ? "#10906a" : undefined }}
+          >
+            {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
           </Typography>
         </Box>
 
         {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
         {totals && totals.price && totals.price2 ? (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Box>
-              <Typography variant="body2" fontWeight="bold">
-                Total en mostrador:
-              </Typography>
-              <Typography variant="h6" fontWeight="bold">
-                {formatCurrency(totals.price)}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body2" fontWeight="bold">
-                Total en línea:
-              </Typography>
-              <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
-                {formatCurrency(totals.price2)}
-              </Typography>
-            </Box>
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body2" fontWeight="bold">
+              Total a pagar:
+            </Typography>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? totals.price2 : totals.price)}
+            </Typography>
           </Box>
         ) : totals ? (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Typography variant="body2" fontWeight="bold">
               Pago único:
             </Typography>
-            <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
+            <Typography
+              variant="h6"
+              sx={{ color: "#10906a" }}
+              fontWeight="bold"
+            >
               {formatCurrency(totals.price || totals.price2)}
             </Typography>
           </Box>
@@ -372,14 +382,21 @@ export default function OrderSummary({
         {/* Mostrar la sección de totales adaptada para la página de confirmación */}
         {isConfirmationPage && (
           <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            ></Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="h6" fontWeight="bold">
                 Total a pagar:
               </Typography>
-              <Typography variant="h6" sx={{ color: "#10906a" }} fontWeight="bold">
-                {formatCurrency(totalWithIva + (totalCarCost + totalExtrasCost) * 0.23)}
+              <Typography
+                variant="h6"
+                sx={{ color: "#10906a" }}
+                fontWeight="bold"
+              >
+                {formatCurrency(
+                  totalWithIva + (totalCarCost + totalExtrasCost) * 0.23
+                )}
               </Typography>
             </Box>
           </Box>
