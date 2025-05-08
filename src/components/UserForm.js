@@ -30,17 +30,24 @@ import useUserProfile from "@/hooks/useUserProfile";
 import { locations } from "@/utils/locations";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { sub } from "date-fns";
 
 export default function UserForm() {
   const router = useRouter();
   const { jwt, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
-  const { selectedCar, selectedInsurance, selectedExtras, discount, clearBooking } = useBooking();
+  const {
+    selectedCar,
+    selectedInsurance,
+    selectedExtras,
+    discount,
+    clearBooking,
+  } = useBooking();
   const { searchData, setSearchData, clearSearch } = useSearch();
   const [submitting, setSubmitting] = useState(false);
+  const [submittingOnline, setSubmittingOnline] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
 
   const isJwtExpired = (token) => {
     try {
@@ -55,26 +62,37 @@ export default function UserForm() {
 
   const tokenIsInvalid = !jwt || isJwtExpired(jwt);
 
-  
-
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+    privacy: yup
+      .boolean()
+      .oneOf([true], "Debes aceptar la política de privacidad"),
     ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
-      birthDate: yup.date()
+      email: yup
+        .string()
+        .email("Correo inválido")
+        .required("El correo es obligatorio"),
+      birthDate: yup
+        .date()
         .required("La fecha de nacimiento es obligatoria")
-        .test("is-adult", "Debes tener al menos 18 años", (value) => value && differenceInYears(new Date(), new Date(value)) >= 18),
+        .test(
+          "is-adult",
+          "Debes tener al menos 18 años",
+          (value) =>
+            value && differenceInYears(new Date(), new Date(value)) >= 18
+        ),
       location: yup.string().required("La ubicación es obligatoria"),
-      password: yup.string()
+      password: yup
+        .string()
         .required("La contraseña es obligatoria")
         .min(8, "Debe contener al menos 8 caracteres")
         .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
         .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
         .matches(/\d/, "Debe contener al menos un número"),
-      confirmPassword: yup.string()
+      confirmPassword: yup
+        .string()
         .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
         .required("Confirma la contraseña"),
     }),
@@ -118,7 +136,8 @@ export default function UserForm() {
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
   const onSubmit = (isOnline) => async (data) => {
-    setSubmitting(true);
+    if(isOnline) setSubmittingOnline(true);
+    if(!isOnline) setSubmitting(true);
     try {
       let token = jwt;
       let justRegistered = false;
@@ -187,6 +206,7 @@ export default function UserForm() {
       toast.error("Error de conexión");
     } finally {
       setSubmitting(false);
+      setSubmittingOnline(false);
     }
   };
 
@@ -202,7 +222,9 @@ export default function UserForm() {
     <Card sx={{ p: 3, width: "100%" }}>
       <ToastContainer position="top-center" autoClose={5000} />
       <Typography variant="h5" gutterBottom>
-        {!tokenIsInvalid ? "Finaliza tu reserva" : "Completa tus datos para registrarte"}
+        {!tokenIsInvalid
+          ? "Finaliza tu reserva"
+          : "Completa tus datos para registrarte"}
       </Typography>
       <Divider sx={{ my: 2 }} />
 
@@ -233,7 +255,9 @@ export default function UserForm() {
                       fontSize: "16px",
                       paddingLeft: "48px",
                       borderRadius: "4px",
-                      border: `1px solid ${errors.phone ? "#d32f2f" : "#c4c4c4"}`,
+                      border: `1px solid ${
+                        errors.phone ? "#d32f2f" : "#c4c4c4"
+                      }`,
                     }}
                     buttonStyle={{
                       border: "none",
@@ -291,8 +315,15 @@ export default function UserForm() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
-                      {showPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }} /> : <VisibilityOutlined sx={{ fontSize: 20 }} />}
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showPassword ? (
+                        <VisibilityOffOutlined sx={{ fontSize: 20 }} />
+                      ) : (
+                        <VisibilityOutlined sx={{ fontSize: 20 }} />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -310,8 +341,15 @@ export default function UserForm() {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
-                      {showConfirmPassword ? <VisibilityOffOutlined sx={{ fontSize: 20 }} /> : <VisibilityOutlined sx={{ fontSize: 20 }} />}
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? (
+                        <VisibilityOffOutlined sx={{ fontSize: 20 }} />
+                      ) : (
+                        <VisibilityOutlined sx={{ fontSize: 20 }} />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -389,6 +427,23 @@ export default function UserForm() {
             </Link>
           }
         />
+        <Box>
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...register("payOnlineToggle")}
+                sx={{ color: "#d60812", "&.Mui-checked": { color: "#d60812" } }}
+              />
+            }
+            label="Quiero pagar en línea"
+            sx={{
+              color: "#d60812",
+              "& .MuiFormControlLabel-label": {
+                color: "#d60812",
+              },
+            }}
+          />
+        </Box>
 
         <Box
           sx={{
@@ -402,9 +457,9 @@ export default function UserForm() {
             fullWidth
             variant="contained"
             sx={{
-              backgroundColor: "#d60812",
+              backgroundColor: "#8d8f91",
               height: 55,
-              ":hover": { backgroundColor: "#a00612" },
+              ":hover": { backgroundColor: "#6e7276" },
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -415,13 +470,14 @@ export default function UserForm() {
               submitting ||
               !watch("terms") ||
               !watch("privacy") ||
+              watch("payOnlineToggle") ||
               (!tokenIsInvalid && !isValid)
             }
           >
             {submitting ? (
               <>
                 Procesando...
-                <CircularProgress size={20} sx={{ color: "#a00612" }} />
+                <CircularProgress size={20} sx={{ color: "#6e7276" }} />
               </>
             ) : (
               "Pago en mostrador"
@@ -433,16 +489,30 @@ export default function UserForm() {
             fullWidth
             sx={{
               height: 55,
-              backgroundColor: "#ffc439",
-              color: "#000",
-              ":hover": { backgroundColor: "#ffb300" },
+              backgroundColor: "#10906a",
+              color: "white",
+              ":hover": { backgroundColor: "#077a58" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1.5,
             }}
             onClick={handleSubmit(onSubmit(true))} // Pago en línea
             disabled={
-              !watch("terms") || !watch("privacy") || (tokenIsInvalid && !isValid)
+              !watch("terms") ||
+              !watch("privacy") ||
+              !watch("payOnlineToggle") ||
+              (tokenIsInvalid && !isValid)
             }
           >
-            Pago en línea
+            {submittingOnline ? (
+              <>
+                Procesando...
+                <CircularProgress size={20} sx={{ color: "#ffffff" }} />
+              </>
+            ) : (
+              "Pago en línea"
+            )}
           </Button>
         </Box>
       </Box>
