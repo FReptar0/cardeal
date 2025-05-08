@@ -17,6 +17,7 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
+  Switch,
 } from "@mui/material";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
@@ -32,7 +33,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { sub } from "date-fns";
 
-export default function UserForm() {
+export default function UserForm({paidOnline, setPaidOnline}) {
   const router = useRouter();
   const { jwt, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
@@ -136,8 +137,8 @@ export default function UserForm() {
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
   const onSubmit = (isOnline) => async (data) => {
-    if(isOnline) setSubmittingOnline(true);
-    if(!isOnline) setSubmitting(true);
+    if (isOnline) setSubmittingOnline(true);
+    if (!isOnline) setSubmitting(true);
     try {
       let token = jwt;
       let justRegistered = false;
@@ -430,20 +431,37 @@ export default function UserForm() {
         <Box>
           <FormControlLabel
             control={
-              <Checkbox
-                {...register("payOnlineToggle")}
-                sx={{ color: "#10906a", "&.Mui-checked": { color: "#10906a" } }}
+              <Switch
+                checked={paidOnline}
+                onChange={(e) => setPaidOnline(e.target.checked)}
+                sx={{
+                  "& .MuiSwitch-switchBase.Mui-checked": {
+                    color: "#10906a",
+                  },
+                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                    backgroundColor: "#10906a",
+                  },
+                }}
               />
             }
             label="Quiero pagar en línea"
             sx={{
-              color: "#077a58",
+              color: "#191919",
               "& .MuiFormControlLabel-label": {
-                color: "#077a58",
+                color: "#191919",
               },
             }}
           />
         </Box>
+        {paidOnline ? (
+          <Typography variant="caption" sx={{ mt: 1, color: "#10906a" }}>
+            Estás eligiendo pagar ahora en línea.
+          </Typography>
+        ) : (
+          <Typography variant="caption" sx={{ mt: 1, color: "#6e7276" }}>
+            Puedes pagar al recoger el vehículo.
+          </Typography>
+        )}
 
         <Box
           sx={{
@@ -470,7 +488,7 @@ export default function UserForm() {
               submitting ||
               !watch("terms") ||
               !watch("privacy") ||
-              watch("payOnlineToggle") ||
+              paidOnline ||
               (!tokenIsInvalid && !isValid)
             }
           >
@@ -501,7 +519,7 @@ export default function UserForm() {
             disabled={
               !watch("terms") ||
               !watch("privacy") ||
-              !watch("payOnlineToggle") ||
+              !paidOnline ||
               (tokenIsInvalid && !isValid)
             }
           >

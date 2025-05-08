@@ -17,62 +17,33 @@ const Footer = () => {
         {/* Columna 1 */}
         <Grid item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
+          <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
-              <Typography
-                sx={{ fontSize: "2rem", color: "#10906a", textAlign: "left" }}
-              >
-                Síguenos
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1.1rem",
-                  marginTop: "10px",
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
-              >
-                Siguenos en nuestras proximas redes sociales
-              </Typography>
-              {/* <Box sx={{ mt: 1 }}>
-                <IconButton
-                  color="inherit"
-                  href="https://www.facebook.com"
-                  target="_blank"
+              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
+                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                  Síguenos
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
                 >
-                  <Facebook fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.instagram.com"
-                  target="_blank"
-                >
-                  <Instagram fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.twitter.com"
-                  target="_blank"
-                >
-                  <Twitter fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                >
-                  <LinkedIn fontSize="large" />
-                </IconButton>
-              </Box> */}
+                  Siguenos en nuestras proximas redes sociales
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Grid>
@@ -82,36 +53,20 @@ const Footer = () => {
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
                 <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
                   Ayuda e Información
                 </Typography>
-                {/* <Typography
-                  component="a"
-                  href="/nosotros"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Nosotros
-                </Typography> */}
                 <Typography
                   component="a"
                   href="/aviso-de-privacidad"
@@ -190,37 +145,64 @@ const Footer = () => {
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
-              <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                Servicio al Cliente
-              </Typography>
-              <Box sx={{ mt: 1, textAlign: "left" }}>
-                <Typography sx={{ fontSize: "1.1rem" }}>Contacto:</Typography>
+              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
+                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                  Servicio al cliente
+                </Typography>
                 <Typography
                   sx={{
-                    fontSize: "1.7rem",
-                    margin: "14px 0",
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  Contacto:
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.8rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  800 333 2866
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
+                >
+                  Correo:
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "#c43c45",
+                    textDecoration: "none",
                     "&:hover": {
                       textDecoration: "underline",
                       cursor: "pointer",
                     },
                   }}
                 >
-                  800 333 2866
-                </Typography>
-                <Typography sx={{ fontSize: "1.1rem" }}>
-                  Correo:{" "}
-                  <span style={{ color: "#ff3f60" }}>
-                    soporte@qardeal.com.mx
-                  </span>
+                  soporte@qardeal.com.mx
                 </Typography>
               </Box>
             </Box>
