@@ -17,62 +17,33 @@ const Footer = () => {
         {/* Columna 1 */}
         <Grid item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
+          <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
-              <Typography
-                sx={{ fontSize: "2rem", color: "#10906a", textAlign: "left" }}
-              >
-                Síguenos
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1.1rem",
-                  marginTop: "10px",
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
-              >
-                Siguenos en nuestras proximas redes sociales
-              </Typography>
-              {/* <Box sx={{ mt: 1 }}>
-                <IconButton
-                  color="inherit"
-                  href="https://www.facebook.com"
-                  target="_blank"
+              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
+                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                  Síguenos
+                </Typography>
+                <Typography
+                  sx={{
+                    display: "block",
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "inherit",
+                  }}
                 >
-                  <Facebook fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.instagram.com"
-                  target="_blank"
-                >
-                  <Instagram fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.twitter.com"
-                  target="_blank"
-                >
-                  <Twitter fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                >
-                  <LinkedIn fontSize="large" />
-                </IconButton>
-              </Box> */}
+                  Siguenos en nuestras proximas redes sociales
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Grid>
@@ -82,13 +53,14 @@ const Footer = () => {
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
@@ -171,15 +143,16 @@ const Footer = () => {
         {/* Columna 3 */}
         <Grid item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Box
+            <Box
               sx={{
-                width: "70%",
-                height: "100%",
+                width: "100%",
+                maxWidth: 300, // Ancho uniforme
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "flex-start",
                 paddingTop: "40px",
                 paddingBottom: "40px",
+                textAlign: "left",
               }}
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
@@ -199,7 +172,7 @@ const Footer = () => {
                 <Typography
                   sx={{
                     display: "block",
-                    fontSize: "2rem",
+                    fontSize: "1.8rem",
                     marginTop: "10px",
                     color: "inherit",
                   }}
@@ -217,13 +190,11 @@ const Footer = () => {
                   Correo:
                 </Typography>
                 <Typography
-                  component="a"
-                  href="/facturacion"
                   sx={{
                     display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
-                    color: "red",
+                    color: "#c43c45",
                     textDecoration: "none",
                     "&:hover": {
                       textDecoration: "underline",
