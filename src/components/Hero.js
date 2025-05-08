@@ -104,6 +104,7 @@ export default function Hero() {
               display: "flex",
               justifyContent: "center",
               marginTop: "140px",
+              marginLeft: "20px",
             }}
           >
             <SearchBar onSearch={handleSearch} />
