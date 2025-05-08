@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import carsData from "../data/cars.json";
-import dynamic from "next/dynamic"; 
-
+import dynamic from "next/dynamic";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -78,8 +77,14 @@ export default function Hero() {
                 marginBottom: "24px",
               }}
             >
-              <span style={{ color: "#ff3f60", fontWeight: 900 }}>
-                Renta un sueño, renta un auto
+              <span
+                style={{
+                  color: "#ff3f60",
+                  fontWeight: 900,
+                  marginBottom: "20px",
+                }}
+              >
+                Renta el auto que necesitas, sin letas chiquitas
               </span>{" "}
               <br />{" "}
               <span
@@ -89,10 +94,7 @@ export default function Hero() {
                   position: "relative",
                   top: "-10px",
                 }}
-              >
-                {" "}
-                Rápido y sencillo{" "}
-              </span>
+              ></span>
             </h2>
           </div>
           <div
@@ -101,7 +103,7 @@ export default function Hero() {
               width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "120px",
+              marginTop: "140px",
             }}
           >
             <SearchBar onSearch={handleSearch} />
