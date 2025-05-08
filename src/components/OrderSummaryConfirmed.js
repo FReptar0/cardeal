@@ -180,9 +180,13 @@ export default function OrderSummaryConfirmed({
         <Divider sx={{ my: 2 }} />
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
           <Typography variant="h6" fontWeight="bold">
-            Total a pagar:
+            {
+              paidOnline
+                ? "Total pagado en línea"
+                : "Total a pagar en mostrador"
+            }
           </Typography>
-          <Typography variant="h6" fontWeight="bold" sx={{ color: "#10906a" }}>
+          <Typography variant="h6" fontWeight="bold" sx={paidOnline ? { color: "#10906a" } : undefined}>
             {formatCurrency(totalWithIva)}
           </Typography>
         </Box>

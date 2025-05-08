@@ -10,6 +10,9 @@ import {
   Chip,
   Button,
   Skeleton,
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
@@ -33,6 +36,7 @@ export default function BookingConfirmation() {
 
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
 
   useEffect(() => {
     if (!id || !jwt) return;
@@ -274,7 +278,7 @@ export default function BookingConfirmation() {
                   <b style={{ color: "#666" }}>Método de pago:</b>{" "}
                   {booking.paid ? "Pagado" : "Pendiente"}
                 </Typography>
-                
+
                 <Box display="flex" alignItems="center" gap={1}>
                   <Typography variant="body1" component="span">
                     <b style={{ color: "#666" }}>Estado de pago:</b>
@@ -309,6 +313,7 @@ export default function BookingConfirmation() {
               type="button"
               fullWidth
               variant="contained"
+              onClick={() => setOpenInvoiceModal(true)}
               sx={{
                 backgroundColor: "#10906a",
                 height: 48,
@@ -317,6 +322,62 @@ export default function BookingConfirmation() {
             >
               Facturar
             </Button>
+
+            <Dialog
+              open={openInvoiceModal}
+              onClose={() => setOpenInvoiceModal(false)}
+              PaperProps={{
+                sx: {
+                  borderRadius: "4px",
+                  boxShadow: 8,
+                  maxWidth: "480px",
+                  width: "90%",
+                },
+              }}
+            >
+              <Box >
+                <DialogTitle
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                >
+                  INFORMACIÓN DE FACTURA
+                </DialogTitle>
+              </Box>
+
+              <DialogContent sx={{ textAlign: "center", px: 3, pb: 3 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontSize: "1rem", lineHeight: 1.6 }}
+                >
+                  Agradecemos tu preferencia, para realizar la factura de tu
+                  renta solicítala en mostrador con tus datos fiscales.
+                  
+                  <Box sx={{ fontWeight: "bold", mt: 2 }}>¡Gracias por tu preferencia!</Box>
+                </Typography>
+                <Box sx={{ mt: 3 }}>
+                  <Button
+                    onClick={() => setOpenInvoiceModal(false)}
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#10906a",
+                      color: "white",
+                      fontWeight: "bold",
+                      px: 4,
+                      padding: "12px 20px",
+                    }}
+                  >
+                    ENTENDIDO
+                  </Button>
+                </Box>
+              </DialogContent>
+            </Dialog>
           </Box>
         </Box>
       </Box>
