@@ -1,229 +1,164 @@
 import { Box, Grid, Typography, IconButton } from "@mui/material";
-import { Facebook, Instagram, Twitter, LinkedIn } from "@mui/icons-material";
+//import { Facebook, Instagram, Twitter, LinkedIn } from "@mui/icons-material";
 
 const Footer = () => {
   return (
     <Box
       component="footer"
       sx={{
-        textAlign: "center",
+        textAlign: "left", // todo alineado a la izquierda
         p: 2,
         bgcolor: "#141414",
         color: "white",
-        height: "auto",
       }}
     >
-      <Grid container spacing={2} sx={{ height: "100%" }}>
+      <Grid container spacing={2}>
         {/* Columna 1 */}
-        <Grid item xs={12} sm={12} md={4}>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
-              sx={{
-                width: "70%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                paddingTop: "40px",
-                paddingBottom: "40px",
-              }}
-            >
-              <Typography
-                sx={{ fontSize: "2rem", color: "#10906a", textAlign: "left" }}
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              width: "100%", // ocupa todo el espacio disponible
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start", // alinea todo a la izquierda
+              p: 4,
+            }}
+          >
+            <Typography variant="h4" sx={{ color: "#10906a" }}>
+              Síguenos
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              Síguenos en nuestras próximas redes sociales
+            </Typography>
+            {/* <Box sx={{ mt: 2 }}>
+              <IconButton
+                href="https://www.facebook.com"
+                target="_blank"
+                color="inherit"
               >
-                Síguenos
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1.1rem",
-                  marginTop: "10px",
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
+                <Facebook fontSize="large" />
+              </IconButton>
+              <IconButton
+                href="https://www.instagram.com"
+                target="_blank"
+                color="inherit"
               >
-                Siguenos en nuestras proximas redes sociales
-              </Typography>
-              {/* <Box sx={{ mt: 1 }}>
-                <IconButton
-                  color="inherit"
-                  href="https://www.facebook.com"
-                  target="_blank"
-                >
-                  <Facebook fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.instagram.com"
-                  target="_blank"
-                >
-                  <Instagram fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.twitter.com"
-                  target="_blank"
-                >
-                  <Twitter fontSize="large" />
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                >
-                  <LinkedIn fontSize="large" />
-                </IconButton>
-              </Box> */}
-            </Box>
+                <Instagram fontSize="large" />
+              </IconButton>
+              <IconButton
+                href="https://www.twitter.com"
+                target="_blank"
+                color="inherit"
+              >
+                <Twitter fontSize="large" />
+              </IconButton>
+              <IconButton
+                href="https://www.linkedin.com"
+                target="_blank"
+                color="inherit"
+              >
+                <LinkedIn fontSize="large" />
+              </IconButton>
+            </Box> */}
           </Box>
         </Grid>
 
         {/* Columna 2 */}
-        <Grid item xs={12} sm={12} md={4}>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              p: 4,
+            }}
+          >
+            <Typography variant="h4" sx={{ color: "#10906a" }}>
+              Ayuda e Información
+            </Typography>
+            <Typography
+              component="a"
+              href="/aviso-de-privacidad"
               sx={{
-                width: "70%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                paddingTop: "40px",
-                paddingBottom: "40px",
+                display: "block",
+                mt: 1,
+                textDecoration: "none",
+                color: "inherit",
+                "&:hover": { textDecoration: "underline" },
               }}
             >
-              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
-                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                  Ayuda e Información
-                </Typography>
-                {/* <Typography
-                  component="a"
-                  href="/nosotros"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Nosotros
-                </Typography> */}
-                <Typography
-                  component="a"
-                  href="/aviso-de-privacidad"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Aviso de Privacidad
-                </Typography>
-                <Typography
-                  component="a"
-                  href="/terminos-y-condiciones"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Términos y Condiciones
-                </Typography>
-                <Typography
-                  component="a"
-                  href="/FAQ"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Preguntas Frecuentes
-                </Typography>
-                <Typography
-                  component="a"
-                  href="/facturacion"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Facturación
-                </Typography>
-              </Box>
-            </Box>
+              Aviso de Privacidad
+            </Typography>
+            <Typography
+              component="a"
+              href="/terminos-y-condiciones"
+              sx={{
+                display: "block",
+                mt: 1,
+                textDecoration: "none",
+                color: "inherit",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Términos y Condiciones
+            </Typography>
+            <Typography
+              component="a"
+              href="/FAQ"
+              sx={{
+                display: "block",
+                mt: 1,
+                textDecoration: "none",
+                color: "inherit",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Preguntas Frecuentes
+            </Typography>
+            <Typography
+              component="a"
+              href="/facturacion"
+              sx={{
+                display: "block",
+                mt: 1,
+                textDecoration: "none",
+                color: "inherit",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Facturación
+            </Typography>
           </Box>
         </Grid>
 
         {/* Columna 3 */}
-        <Grid item xs={12} sm={12} md={4}>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
-              sx={{
-                width: "70%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                paddingTop: "40px",
-                paddingBottom: "40px",
-              }}
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              p: 4,
+            }}
+          >
+            <Typography variant="h4" sx={{ color: "#10906a" }}>
+              Servicio al Cliente
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              <strong>Contacto:</strong>
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{ mt: 1, textDecoration: "underline", cursor: "pointer" }}
             >
-              <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                Servicio al Cliente
-              </Typography>
-              <Box sx={{ mt: 1, textAlign: "left" }}>
-                <Typography sx={{ fontSize: "1.1rem" }}>Contacto:</Typography>
-                <Typography
-                  sx={{
-                    fontSize: "1.7rem",
-                    margin: "14px 0",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  800 333 2866
-                </Typography>
-                <Typography sx={{ fontSize: "1.1rem" }}>
-                  Correo:{" "}
-                  <span style={{ color: "#ff3f60" }}>
-                    soporte@qardeal.com.mx
-                  </span>
-                </Typography>
-              </Box>
-            </Box>
+              800 333 2866
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              Correo:{" "}
+              <span style={{ color: "#ff3f60" }}>soporte@qardeal.com.mx</span>
+            </Typography>
           </Box>
         </Grid>
       </Grid>
