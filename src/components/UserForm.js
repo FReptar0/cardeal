@@ -397,14 +397,14 @@ export default function UserForm() {
           control={
             <Checkbox
               {...register("terms")}
-              sx={{ color: "#d60812", "&.Mui-checked": { color: "#d60812" } }}
+              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
             />
           }
           label={
             <Link
               href="/terminos-y-condiciones"
               underline="hover"
-              sx={{ color: "#d60812", "&:hover": { color: "#a00612" } }}
+              sx={{ color: "#191919", "&:hover": { color: "black" } }}
             >
               Acepto los términos y condiciones
             </Link>
@@ -414,14 +414,14 @@ export default function UserForm() {
           control={
             <Checkbox
               {...register("privacy")}
-              sx={{ color: "#d60812", "&.Mui-checked": { color: "#d60812" } }}
+              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
             />
           }
           label={
             <Link
               href="/aviso-de-privacidad"
               underline="hover"
-              sx={{ color: "#d60812", "&:hover": { color: "#a00612" } }}
+              sx={{ color: "#191919", "&:hover": { color: "black" } }}
             >
               Acepto la política de privacidad
             </Link>
@@ -432,14 +432,14 @@ export default function UserForm() {
             control={
               <Checkbox
                 {...register("payOnlineToggle")}
-                sx={{ color: "#d60812", "&.Mui-checked": { color: "#d60812" } }}
+                sx={{ color: "#10906a", "&.Mui-checked": { color: "#10906a" } }}
               />
             }
             label="Quiero pagar en línea"
             sx={{
-              color: "#d60812",
+              color: "#077a58",
               "& .MuiFormControlLabel-label": {
-                color: "#d60812",
+                color: "#077a58",
               },
             }}
           />
