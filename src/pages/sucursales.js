@@ -231,7 +231,7 @@ export default function Sucursales() {
       {/* Sección CDMX */}
       <Box sx={{ mb: 8 }}>
         <Typography
-          variant="h5"
+          variant="h2"
           align="center"
           sx={{ fontWeight: "medium", mb: 1, color: "#10906a" }} // Título de sección en verde
         >
@@ -253,7 +253,7 @@ export default function Sucursales() {
       {/* Sección EDOMEX */}
       <Box sx={{ mb: 6 }}>
         <Typography
-          variant="h5"
+          variant="h2"
           align="center"
           sx={{ fontWeight: "medium", mb: 1, color: "#10906a" }}
         >
