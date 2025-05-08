@@ -92,11 +92,11 @@ const AtencionCliente = () => {
             alignItems: "center",
           }}
         >
-          <EmailIcon fontSize="large" />
+          <EmailIcon fontSize="large" sx={{ color: "#10906a" }} />
           <Typography variant="h6" fontWeight="bold">
             Correo electrónico de atención a clientes
           </Typography>
-          <Typography variant="body2" color="error" fontWeight="bold">
+          <Typography variant="body2">
             atencionaclientes@qardeal.com.mx
           </Typography>
         </Box>
@@ -109,13 +109,15 @@ const AtencionCliente = () => {
             alignItems: "center",
           }}
         >
-          <EmailIcon fontSize="large" />
+          <EmailIcon
+            fontSize="large"
+            color="#10906a"
+            sx={{ color: "#10906a" }}
+          />
           <Typography variant="h6" fontWeight="bold">
             Correo electrónico de soporte
           </Typography>
-          <Typography variant="body2" color="error" fontWeight="bold">
-            soporte@qardeal.com.mx
-          </Typography>
+          <Typography variant="body2">soporte@qardeal.com.mx</Typography>
         </Box>
       </Box>
     </Box>
