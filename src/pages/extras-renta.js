@@ -33,7 +33,7 @@ const extras = [
     descripcion:
       "Se pueden incluir conductores adicionales con un costo extra por día.",
     precio: 110,
-    imagen: "/extras/add-person.png",
+    imagen: "/extras/adicional.webp",
   },
   {
     id: "conductor_menor",
@@ -41,28 +41,28 @@ const extras = [
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
     precio: 110,
-    imagen: "/extras/user.png",
+    imagen: "/extras/menor.webp",
   },
   {
     id: "baby_seat",
     nombre: "Baby Seat (Grupo 0+)",
     descripcion: "Bebé (grupo 0+), niños de 1 a 13 kilos.",
     precio: 150,
-    imagen: "/extras/baby-car-seat.png",
+    imagen: "/extras/baby-seat.webp",
   },
   {
     id: "child_seat",
     nombre: "Child Seat (Grupo 0/1/2)",
     descripcion: "Niños de 1 a 25 kilos.",
     precio: 150,
-    imagen: "/extras/baby-car-seat.png",
+    imagen: "/extras/child-seat.webp",
   },
   {
     id: "booster",
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
     precio: 150,
-    imagen: "/extras/baby-car-seat.png",
+    imagen: "/extras/booster.webp",
   },
 ];
 
