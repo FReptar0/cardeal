@@ -54,7 +54,7 @@
     "airConditioning": true,
     "price": 350.00,
     "price2": 390.00,
-    "image": "/photos/compacto/Versa-frente.webp",
+    "image": "/photos/compacto/versa-frente.webp",
     "image360": "https://360.pymesdigital.com.mx/Qardeal%20COMPACTO/",
     "images": [
       "/photos/compacto/Versa-frente.webp",
@@ -90,11 +90,11 @@
     "airConditioning": true,
     "price": 450.00,
     "price2": 500.00,
-    "image": "/photos/full-size/Sentra-lateral-frente.webp",
+    "image": "/photos/full-size/sentra-frente.webp",
     "image360": "https://360.pymesdigital.com.mx/Qardeal%20FULL%20SIZE/",
     "images": [
       "/photos/full-size/Sentra-lateral-frente.webp",
-      "/photos/full-size/Sentra-frente.webp",
+      "/photos/full-size/sentra-frente.webp",
       "/photos/full-size/Sentra-asientos-quemacocos.webp",
       "/photos/full-size/Sentra-asientos.webp",
       "/photos/full-size/Sentra-calavera.webp",
@@ -126,7 +126,7 @@
     "airConditioning": true,
     "price": 600.00,
     "price2": 800.00,
-    "image": "/photos/suv-standard/Kicks-lateral-frontal-sombra.webp",
+    "image": "/photos/suv-standard/kicks-frente.webp",
     "image360": "https://360.pymesdigital.com.mx/Qardeal%20SUV%20STANDARD/",
     "images": [
       "/photos/suv-standard/Kicks-lateral-frontal-alpha.webp",
@@ -160,10 +160,9 @@
     "airConditioning": true,
     "price": 700.00,
     "price2": 720.00,
-    "image": "/photos/suv-5-lx/Xtrail-lateral-frente.webp",
+    "image": "/photos/suv-5-lx/xtrail-frente.webp",
     "image360": "https://360.pymesdigital.com.mx/QARDEAL%20SUV%205%20LX/",
     "images": [
-      "/photos/suv-5-lx/Xtrail-lateral-frente.webp",
       "/photos/suv-5-lx/Xtrail-frente.webp",
       "/photos/suv-5-lx/Xtrail-asientos.webp",
       "/photos/suv-5-lx/Xtrail-detalle-calavera.webp",
