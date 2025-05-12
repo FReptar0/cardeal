@@ -199,8 +199,8 @@ export default function SearchBar({ sx = {} }) {
         return res.json();
       })
       .then((data) => {
-        console.log("🚀 locations desde API:", data);
-        // Asegúrate de que data.locations sea un array de objetos
+        console.log("🚀 rawXml desde API:", data.rawXml);
+        console.log("🚀 locations desde API:", data.locations);
         setLocations(data.locations || []);
       })
       .catch((err) => console.error("Error al cargar sucursales:", err));
