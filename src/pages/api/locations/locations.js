@@ -51,8 +51,7 @@ export default async function handler(req, res) {
   }
   const text = await tsdRes.text();
   const data = await parseStringPromise(text, { explicitArray: false });
-  const rawLocs =
-    data.TRNXML?.MessageResponse?.RentalLocations?.RentalLocation || [];
+  const rawLocs = data.TRNXML?.Payload?.RentalLocation || [];
   const locations = Array.isArray(rawLocs) ? rawLocs : [rawLocs];
   return res.status(200).json({ locations });
 }
