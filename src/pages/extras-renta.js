@@ -62,7 +62,7 @@ const extras = [
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
     precio: 150,
-    imagen: "/extras/booster.webp",
+    imagen: "/extras/Booster.webp",
   },
 ];
 

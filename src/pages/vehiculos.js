@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router"; // AGREGAR: IMPORTAR useRouter PARA REDIRECCIÓN
+import { useBooking } from "@/contexts/BookingContext"; // AGREGAR: IMPORTAR useBooking PARA GUARDAR SELECCIÓN EN CONTEXTO
 import {
   Box,
   Card,
@@ -19,6 +21,7 @@ import Button from "@mui/material/Button";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 
 import Hero from "../components/Hero";
+import CTA from "@/components/CTA";
 
 // Galería
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,13 +30,15 @@ import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
 export default function Flota() {
+  const router = useRouter(); // AGREGAR: CREAR INSTANCIA router PARA NAVEGACIÓN
+  const { setmodalCar } = useBooking(); // AGREGAR: DESCTRUCTURAR setmodalCar PARA ACTUALIZAR CONTEXTO
   const [open, setOpen] = useState(false);
-  const [selectedCar, setSelectedCar] = useState(null);
+  const [modalCar, setModalCar] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
 
   // Función para abrir el modal con el auto seleccionado
   const handleOpenModal = (car) => {
-    setSelectedCar(car);
+    setModalCar(car); // GUARDAMOS EN modalCar
     setOpen(true);
   };
 
@@ -47,6 +52,7 @@ export default function Flota() {
         justifyContent: "center",
         p: 4,
         marginTop: "120px",
+        overflowX: "hidden",
       }}
     >
       <div
@@ -119,7 +125,12 @@ export default function Flota() {
                 onClick={() => handleOpenModal(car)}
                 image={car.image}
                 alt={car.name}
-                sx={{ width: "90%", height: "100%", objectFit: "contain", cursor: "pointer" }}
+                sx={{
+                  width: "90%",
+                  height: "100%",
+                  objectFit: "contain",
+                  cursor: "pointer",
+                }}
               />
             </Box>
             <CardContent sx={{ flexGrow: 1 }}>
@@ -236,11 +247,12 @@ export default function Flota() {
                     fontSize: "12px",
                     textTransform: "none",
                     color: "gray",
-                    "&:hover": { 
+                    "&:hover": {
                       backgroundColor: "gray",
                       color: "white",
-                      transition: "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
-                     },
+                      transition:
+                        "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
+                    },
                   }}
                 >
                   Ver más detalles
@@ -249,6 +261,18 @@ export default function Flota() {
             </CardContent>
           </Card>
         ))}
+      </Box>
+
+      <Box
+        sx={{
+          mt: 4,
+          // forzar full‐viewport width:
+          width: "100vw",
+
+          mb: 0,
+        }}
+      >
+        <CTA />
       </Box>
 
       {/* MODAL */}
@@ -279,7 +303,7 @@ export default function Flota() {
             <CloseIcon />
           </IconButton>
 
-          {selectedCar && (
+          {modalCar && (
             <>
               <Typography
                 variant="h4"
@@ -287,7 +311,7 @@ export default function Flota() {
                 textAlign="center"
                 mb={2}
               >
-                {selectedCar.name}
+                {modalCar.name}
               </Typography>
 
               <Tabs
@@ -319,7 +343,7 @@ export default function Flota() {
                     modules={[Navigation]}
                     style={{ width: "100%", height: "60vh" }}
                   >
-                    {(selectedCar.images || []).map((img, index) => (
+                    {(modalCar.images || []).map((img, index) => (
                       <SwiperSlide
                         key={index}
                         style={{ display: "flex", justifyContent: "center" }}
@@ -328,11 +352,13 @@ export default function Flota() {
                           src={img}
                           alt={`Imagen ${index + 1}`}
                           style={{
-                            maxWidth: "80%",
-                            maxHeight: "50vh",
+                            width: "100%",
+                            height: "auto",
+                            maxWidth: "100%",
+                            maxHeight: "80vh",
                             borderRadius: 5,
                             objectFit: "contain",
-                            margin: "0 20px",
+                            margin: "0 ",
                           }}
                         />
                       </SwiperSlide>
@@ -348,7 +374,7 @@ export default function Flota() {
                   </Swiper>
                 ) : (
                   <iframe
-                    src={selectedCar.image360}
+                    src={modalCar.image360}
                     style={{
                       width: "100%",
                       height: "60vh",
@@ -378,7 +404,7 @@ export default function Flota() {
                     style={{ filter: "brightness(0)" }}
                   />
                   <Typography variant="body2">
-                    {selectedCar.passengers} pasajeros
+                    {modalCar.passengers} pasajeros
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -390,13 +416,13 @@ export default function Flota() {
                     style={{ filter: "brightness(0)" }}
                   />
                   <Typography variant="body2">
-                    {selectedCar.doors} puertas
+                    {modalCar.doors} puertas
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <LuggageIcon fontSize="small" sx={{ color: "black" }} />
                   <Typography variant="body2">
-                    {selectedCar.luggage} maletas
+                    {modalCar.luggage} maletas
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -408,7 +434,7 @@ export default function Flota() {
                     style={{ filter: "brightness(0)" }}
                   />
                   <Typography variant="body2">
-                    {selectedCar.transmission}
+                    {modalCar.transmission}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

@@ -11,13 +11,14 @@ const Footer = () => {
         bgcolor: "#141414",
         color: "white",
         height: "auto",
+        mt: 0,
       }}
     >
       <Grid container spacing={2} sx={{ height: "100%" }}>
         {/* Columna 1 */}
         <Grid item xs={12} sm={12} md={4}>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Box
+            <Box
               sx={{
                 width: "100%",
                 maxWidth: 300, // Ancho uniforme
