@@ -50,7 +50,7 @@ export default function Flota() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        p: 4,
+        pt: 4,
         marginTop: "120px",
         overflowX: "hidden",
       }}
