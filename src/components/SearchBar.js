@@ -193,7 +193,7 @@ export default function SearchBar({ sx = {} }) {
   // ——— NUEVO: estado y fetch de sucursales desde API ———
   const [locations, setLocations] = useState([]);
   useEffect(() => {
-    fetch("/api/locations/locations")
+    fetch("/src/pages/api/locations/locations")
       .then((res) => {
         if (!res.ok) throw new Error(`Error ${res.status}`);
         return res.json();
