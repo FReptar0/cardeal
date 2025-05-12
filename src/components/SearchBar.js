@@ -193,7 +193,7 @@ export default function SearchBar({ sx = {} }) {
   // ——— NUEVO: estado y fetch de sucursales desde API ———
   const [locations, setLocations] = useState([]);
   useEffect(() => {
-    fetch("/src/pages/api/locations/locations")
+    fetch("/api/locations/locations")
       .then((res) => {
         if (!res.ok) throw new Error(`Error ${res.status}`);
         return res.json();
@@ -263,8 +263,9 @@ export default function SearchBar({ sx = {} }) {
       )}
       <Autocomplete
         options={locations}
-        getOptionLabel={(option) => `${option.city} - ${option.name}`}
-        groupBy={(option) => option.city}
+        getOptionLabel={(option) =>
+          `${option.City} – ${option.RentalLocationName}`.trim()
+        }
         renderInput={(params) => (
           <TextField
             {...params}
