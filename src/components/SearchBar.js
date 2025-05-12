@@ -267,10 +267,8 @@ export default function SearchBar({ sx = {} }) {
       )}
       <Autocomplete
         options={locations}
-        getOptionLabel={(option) =>
-          `${option.AddressCity} – ${option.RentalLocationName}`
-        }
-        groupBy={(option) => option.AddressCity}
+        getOptionLabel={(o) => `${o.AddressCity} – ${o.RentalLocationName}`}
+        groupBy={(o) => o.AddressCity}
         renderInput={(params) => (
           <TextField
             {...params}
