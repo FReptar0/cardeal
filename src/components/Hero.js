@@ -84,7 +84,7 @@ export default function Hero() {
                   marginBottom: "20px",
                 }}
               >
-                Renta el auto que necesitas, sin letas chiquitas
+                Renta el auto que necesitas, sin letras chiquitas
               </span>{" "}
               <br />{" "}
               <span
