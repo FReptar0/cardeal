@@ -195,10 +195,14 @@ export default function SearchBar({ sx = {} }) {
   useEffect(() => {
     fetch("/api/locations/locations")
       .then((res) => {
-        if (!res.ok) throw new Error(`Error ${res.status}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
         return res.json();
       })
-      .then((data) => setLocations(data.locations || []))
+      .then((data) => {
+        console.log("🚀 locations desde API:", data);
+        // Asegúrate de que data.locations sea un array de objetos
+        setLocations(data.locations || []);
+      })
       .catch((err) => console.error("Error al cargar sucursales:", err));
   }, []);
 
