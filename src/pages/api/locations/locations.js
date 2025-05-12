@@ -54,11 +54,7 @@ export default async function handler(req, res) {
   // const rawLocs = data.TRNXML?.Payload?.RentalLocation || [];
   // const locations = Array.isArray(rawLocs) ? rawLocs : [rawLocs];
   // return res.status(200).json({ locations });
-
   const rawLocs = data.TRNXML?.Payload?.RentalLocation || [];
   const locations = Array.isArray(rawLocs) ? rawLocs : [rawLocs];
-  console.log("[api/locations] locations extraídas:", locations);
-
-  // **IMPORTANTE**: devolvemos también el texto para depurar
-  return res.status(200).json({ rawXml: text, locations });
+  return res.status(200).json({ locations });
 }
