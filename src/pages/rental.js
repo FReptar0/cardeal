@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -24,7 +26,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 });
 
 export default function RentalPage() {
-  const [ratesLoaded, setRatesLoaded] = useState(false);
+  const [loadingPrices, setLoadingPrices] = useState(false);
 
   // Estados locales
   const [filteredCars, setFilteredCars] = useState(carsData);
@@ -108,10 +110,6 @@ export default function RentalPage() {
     }
   }, [selectedCar, filteredCars]);
 
-  const handleSearch = (filters) => {
-    setFilteredCars(carsData); // Aplica filtros si es necesario
-  };
-
   const handleCarSelect = (car, index) => {
     setPreviousCarIndex(selectedCarIndex);
     setSelectedCarIndex(index);
@@ -159,6 +157,45 @@ export default function RentalPage() {
     }
   };
 
+  const fetchPrices = async (searchData) => {
+    try {
+      const response = await fetch(
+        `/api/prices?pickupLocation=${searchData.pickupLocation}&returnLocation=${searchData.returnLocation}&pickupDate=${searchData.pickupDate}&pickupTime=${searchData.pickupTime}&returnDate=${searchData.returnDate}&returnTime=${searchData.returnTime}`
+      );
+      if (!response.ok) {
+        throw new Error("Error al obtener los precios");
+      }
+      const prices = await response.json();
+      return prices;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const handleSearch = async (filters) => {
+    setSearchData(filters); // Guarda los datos de búsqueda
+    setLoadingPrices(true); // Muestra un indicador de carga
+
+    const prices = await fetchPrices(filters); // Obtén los precios desde el endpoint
+
+    // Actualiza los datos de los vehículos con los precios obtenidos
+    const updatedCars = carsData.map((car) => {
+      const matchingPrice = prices.find(
+        (price) => price.classCode === car.abbreviation
+      );
+      return {
+        ...car,
+        price: matchingPrice
+          ? `$${matchingPrice.rateAmount.toFixed(2)}`
+          : "N/A", // Asigna el precio formateado o "N/A" si no hay coincidencia
+      };
+    });
+
+    setFilteredCars(updatedCars); // Actualiza los vehículos filtrados
+    setLoadingPrices(false); // Oculta el indicador de carga
+  };
+
   return (
     <Container sx={{ marginTop: "148px", paddingX: 2 }}>
       {/* Barra de búsqueda y Stepper */}
@@ -183,7 +220,7 @@ export default function RentalPage() {
             gap: 1,
           }}
         >
-          <SearchBar onValuesChange={setSearchData} />
+          <SearchBar onSearch={handleSearch} />
         </Box>
       </Box>
 
