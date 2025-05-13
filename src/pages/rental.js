@@ -14,16 +14,22 @@ import {
 } from "@mui/material";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
-import CompactHeader from "../components/CompactHeader";
+// import CompactHeader from "../components/CompactHeader";
 import carsData from "../data/cars.json";
 import dynamic from "next/dynamic";
 
 // Importa el contexto global
 import { useBooking } from "../contexts/BookingContext";
+import { useSearch } from "../contexts/SearchContext";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
+
+const CompactHeader = dynamic(
+  () => import("../components/CompactHeader"),
+  { ssr: false }
+);
 
 export default function RentalPage() {
   const [loadingPrices, setLoadingPrices] = useState(false);
@@ -46,21 +52,21 @@ export default function RentalPage() {
 
   // Extrae del contexto el auto seleccionado y su setter
   const { selectedCar, setSelectedCar } = useBooking();
+  const { searchData: searchContextData } = useSearch();
 
   const [ratesLoaded, setRatesLoaded] = useState(false);
 
-  function formatTSDDate(dateStr) {
-  const date = new Date(dateStr);
-  const pad = (n) => String(n).padStart(2, "0");
-  let h = date.getHours();
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  return (
-    `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ` +
-    `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
-  );
-}
-
+  function formatTSDDate(date) {
+    const pad = (n) => String(n).padStart(2, "0");
+    let h = date.getHours();
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return (
+      `${pad(date.getMonth() + 1)}${pad(
+        date.getDate()
+      )}${date.getFullYear()} ` + `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
+    );
+  }
 
   useEffect(() => {
     if (selectedCarIndex !== null && scrollRefs.current[selectedCarIndex]) {
@@ -71,7 +77,6 @@ export default function RentalPage() {
     }
   }, [selectedCarIndex]);
 
-
   // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
   const fetchRates = async (
     { location, pickupDateTime, returnDateTime },
@@ -79,6 +84,12 @@ export default function RentalPage() {
     setLoadedFn
   ) => {
     try {
+      console.log(
+        "🛞 Solicitando tarifas para:",
+        location,
+        pickupDateTime,
+        returnDateTime
+      );
       const res = await fetch("/api/rates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,17 +101,21 @@ export default function RentalPage() {
       console.log("🛞 Precios TSD por categoría:", rates);
 
       // Filtra y mapea solo los autos cuya categoría coincide con los rates
-      const filtered = carsData.filter(car =>
-        rates.some(rate => rate.category === car.abbreviation)
-      ).map(car => {
-        const matchingRate = rates.find(rate => rate.category === car.abbreviation);
-        return {
-          ...car,
-          price: matchingRate ? matchingRate.totalCharges : "N/A"
-        };
-      });
+      const filtered = carsData
+        .filter((car) =>
+          rates.some((rate) => rate.category === car.abbreviation)
+        )
+        .map((car) => {
+          const matchingRate = rates.find(
+            (rate) => rate.category === car.abbreviation
+          );
+          return {
+            ...car,
+            price: matchingRate ? matchingRate.totalCharges : "N/A",
+          };
+        });
 
-      setCarsFn(cars);
+      setCarsFn(filtered); // Actualiza solo los autos con categorías válidas
       setLoadedFn(true);
     } catch (err) {
       console.error("❌ Error al obtener tarifas:", err);
@@ -109,17 +124,87 @@ export default function RentalPage() {
     }
   };
 
-  useEffect(() => {
-    if (!ratesLoaded) {
-      const payload = {
-        location: "MXCSAT",
-        pickupDateTime: formatTSDDate("2025-05-15T10:00:00"),
-        returnDateTime: formatTSDDate("2025-05-16T10:00:00"),
-      };
+  // 1) Mejora tu formateador para que reciba directamente un Date:
+  function formatTSDDate(date) {
+    const pad = (n) => String(n).padStart(2, "0");
+    let h = date.getHours();
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return (
+      `${pad(date.getMonth() + 1)}${pad(
+        date.getDate()
+      )}${date.getFullYear()} ` + `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
+    );
+  }
 
-      fetchRates(payload, setFilteredCars, setRatesLoaded);
+  // 2) En tu useEffect, parsea la hora y monta bien los Date:
+  useEffect(() => {
+    const { pickupDate, pickupTime, returnDate, returnTime, pickupLocation } =
+      searchContextData || {};
+
+    // Solo dispara cuando tengas todo lo necesario:
+    const ready =
+      pickupDate instanceof Date &&
+      pickupTime &&
+      returnDate instanceof Date &&
+      returnTime &&
+      pickupLocation?.id;
+
+    if (!ratesLoaded && ready) {
+      // --- parsear pickup ---
+      const pickDt = new Date(pickupDate); // clona la fecha
+      {
+        // "08:00 AM" → [ "08:00", "AM" ]
+        const [time, ampm] = pickupTime.split(" ");
+        let [h, m] = time.split(":").map(Number);
+        if (ampm === "PM" && h < 12) h += 12;
+        if (ampm === "AM" && h === 12) h = 0;
+        pickDt.setHours(h, m, 0, 0);
+      }
+
+      // --- parsear return ---
+      const retDt = new Date(returnDate);
+      {
+        const [time, ampm] = returnTime.split(" ");
+        let [h, m] = time.split(":").map(Number);
+        if (ampm === "PM" && h < 12) h += 12;
+        if (ampm === "AM" && h === 12) h = 0;
+        retDt.setHours(h, m, 0, 0);
+      }
+
+      // Formatea a lo que TSD espera (p.e. "05142025 08:00 AM")
+      const pickupDateTime = formatTSDDate(pickDt);
+      const returnDateTime = formatTSDDate(retDt);
+
+      console.log(
+        "✈️ Solicitando tarifas para:",
+        pickupLocation.id,
+        pickupDateTime,
+        returnDateTime
+      );
+
+      fetchRates(
+        { location: pickupLocation.id, pickupDateTime, returnDateTime },
+        setFilteredCars,
+        setRatesLoaded
+      );
     }
-  }, [ratesLoaded]);
+  }, [ratesLoaded, searchContextData]);
+
+  // Asegura que searchData tenga un valor inicial para evitar problemas de hidratación
+  useEffect(() => {
+    if (!searchData && searchContextData) {
+      setSearchData(searchContextData);
+    }
+  }, [searchData, searchContextData]);
+
+  // Evita que CompactHeader reciba valores nulos durante la hidratación
+  const safeSearchData = searchData || {
+    pickupLocation: "",
+    returnLocation: "",
+    pickupDate: "",
+    returnDate: "",
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -258,7 +343,7 @@ export default function RentalPage() {
       </Box>
 
       <CompactHeader
-        searchData={searchData}
+        searchData={safeSearchData}
         headerIsTop={headerIsTop}
         showCompactHeader={showCompactHeader}
       />
@@ -277,6 +362,7 @@ export default function RentalPage() {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
+          height: "auto",
         }}
       >
         <Box
@@ -285,7 +371,7 @@ export default function RentalPage() {
             display: "flex",
             flexDirection: "column",
             gap: 3,
-            minHeight: "80vh",
+            height: "auto",
             alignItems: "center",
           }}
         >
