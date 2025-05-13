@@ -24,6 +24,7 @@
     "@mui/x-date-pickers": "^7.25.0",
     "bcryptjs": "^3.0.2",
     "crypto-js": "^4.2.0",
+    "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mongodb": "^6.15.0",
