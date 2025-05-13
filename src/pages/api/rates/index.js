@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   </TRNXML>
   `;
 
-  console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
+  // console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
 
   try {
     const response = await fetch(TSD_ENDPOINT, {
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
 
-    console.log("JSON completo:", JSON.stringify(json, null, 2));
+    // console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
     let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
