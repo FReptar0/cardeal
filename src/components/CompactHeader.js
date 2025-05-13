@@ -54,7 +54,7 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
                             flexBasis: { xs: "100%", sm: "auto" },
                         }}
                     >
-                        Origen: {searchData?.pickupLocation?.name || "No seleccionado"}
+                        Origen: {searchData.pickupLocation.nombre ? `${searchData.pickupLocation.nombre} - (${searchData.pickupLocation.pais})` : "No seleccionado"}
                     </Typography>
 
                     {/* Destino */}

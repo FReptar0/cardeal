@@ -22,11 +22,7 @@ export default async function handler(req, res) {
     TSD_PASSCODE,
   } = process.env;
 
-  // Parámetros que espero en el body de la petición
-  const location = "MXCSAT";
-  const pickupDateTime = "05152025 10:00 AM";
-  const returnDateTime = "05162025 10:00 AM";
-    // const { location, pickupDateTime, returnDateTime } = req.body;
+  const { location, pickupDateTime, returnDateTime } = req.body;
 
 
   // Las 5 categorías que vamos a pedir (pipe-delimited)
