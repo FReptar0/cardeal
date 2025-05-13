@@ -178,7 +178,7 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
   );
 }
 
-export default function SearchBar({ sx = {} }) {
+export default function SearchBar({ sx = {}, onSearch }) {
   const router = useRouter();
   const { searchData, setSearchData } = useSearch(); // Contexto global
   const { selectedCar } = useBooking();
@@ -273,7 +273,7 @@ export default function SearchBar({ sx = {} }) {
         renderOption={(props, option) => (
           <li {...props}>
             <Box>
-              <Typography >
+              <Typography>
                 {option.ciudad} – {option.nombre}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -425,7 +425,16 @@ export default function SearchBar({ sx = {} }) {
         variant="contained"
         color="primary"
         sx={{ backgroundColor: "#d60812", width: "100%" }}
-        onClick={() => router.push("/rental")}
+        onClick={() => {
+          onSearch({
+            pickupLocation: searchData.pickupLocation,
+            returnLocation: searchData.returnLocation,
+            pickupDate: searchData.pickupDate,
+            pickupTime: searchData.pickupTime,
+            returnDate: searchData.returnDate,
+            returnTime: searchData.returnTime,
+          });
+        }}
       >
         Buscar
       </Button>
