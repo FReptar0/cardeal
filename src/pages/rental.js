@@ -20,6 +20,7 @@ import dynamic from "next/dynamic";
 
 // Importa el contexto global
 import { useBooking } from "../contexts/BookingContext";
+import { useSearch } from "../contexts/SearchContext";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -46,6 +47,7 @@ export default function RentalPage() {
 
   // Extrae del contexto el auto seleccionado y su setter
   const { selectedCar, setSelectedCar } = useBooking();
+  const { searchData: searchContextData } = useSearch();
 
   const [ratesLoaded, setRatesLoaded] = useState(false);
 
@@ -100,7 +102,7 @@ export default function RentalPage() {
         };
       });
 
-      setCarsFn(cars);
+      setCarsFn(filtered); // Actualiza solo los autos con categorías válidas
       setLoadedFn(true);
     } catch (err) {
       console.error("❌ Error al obtener tarifas:", err);
@@ -110,16 +112,26 @@ export default function RentalPage() {
   };
 
   useEffect(() => {
-    if (!ratesLoaded) {
+    if (!ratesLoaded && searchContextData) {
       const payload = {
-        location: "MXCSAT",
-        pickupDateTime: formatTSDDate("2025-05-15T10:00:00"),
-        returnDateTime: formatTSDDate("2025-05-16T10:00:00"),
+        location: searchContextData.pickupLocation.id || "MXCSAT", // Usa el location del contexto si está disponible
+        pickupDateTime: formatTSDDate(`${searchContextData.pickupDate}T${searchContextData.pickupTime}`),
+        returnDateTime: formatTSDDate(`${searchContextData.returnDate}T${searchContextData.returnTime}`),
       };
 
       fetchRates(payload, setFilteredCars, setRatesLoaded);
     }
-  }, [ratesLoaded]);
+  }, [ratesLoaded, searchContextData]);
+
+  // Asegura que searchData tenga un valor inicial para evitar problemas de hidratación
+  useEffect(() => {
+    if (!searchData && searchContextData) {
+      setSearchData(searchContextData);
+    }
+  }, [searchData, searchContextData]);
+
+  // Evita que CompactHeader reciba valores nulos durante la hidratación
+  const safeSearchData = searchData || { pickupLocation: "", returnLocation: "", pickupDate: "", returnDate: "" };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -258,7 +270,7 @@ export default function RentalPage() {
       </Box>
 
       <CompactHeader
-        searchData={searchData}
+        searchData={safeSearchData}
         headerIsTop={headerIsTop}
         showCompactHeader={showCompactHeader}
       />
