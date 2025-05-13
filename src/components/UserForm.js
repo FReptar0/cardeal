@@ -37,6 +37,10 @@ import { sub } from "date-fns";
 // Importa el componente que construye y envía el formulario a Flap
 import CardPaymentForm from "@/components/CardPaymentForm";
 
+//para la reserva hardcodeada
+
+import { addReservationHardcoded } from "@/pages/api/reserva";
+
 export default function UserForm({ paidOnline, setPaidOnline }) {
   const router = useRouter();
   const { jwt, login } = useAuth();
@@ -73,11 +77,16 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+    privacy: yup
+      .boolean()
+      .oneOf([true], "Debes aceptar la política de privacidad"),
     ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+      email: yup
+        .string()
+        .email("Correo inválido")
+        .required("El correo es obligatorio"),
       birthDate: yup
         .date()
         .required("La fecha de nacimiento es obligatoria")
@@ -305,6 +314,33 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     );
   }
 
+  // dispara la reserva hard-codeada en TSDRez
+  const handleCounterReservation = async () => {
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/reserva", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: "MXCSAT",
+          pickupDateTime: "05152025 10:00 AM",
+          returnDateTime: "05182025 10:00 AM",
+          classCode: "SFAR",
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { confirmNum, totalPricing } = await res.json();
+      console.log("ConfirmNum:", confirmNum, "TotalPricing:", totalPricing);
+      // aquí podrías redirigir:
+      router.push(`/confirm/${confirmNum}`);
+    } catch (err) {
+      console.error("Error al crear reserva TSD:", err);
+      toast.error("No se pudo crear la reserva en mostrador");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Card sx={{ p: 3, width: "100%" }}>
@@ -348,7 +384,10 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                           errors.phone ? "#d32f2f" : "#c4c4c4"
                         }`,
                       }}
-                      buttonStyle={{ border: "none", backgroundColor: "transparent" }}
+                      buttonStyle={{
+                        border: "none",
+                        backgroundColor: "transparent",
+                      }}
                       containerStyle={{ width: "100%" }}
                     />
                     {errors.phone && (
@@ -424,7 +463,9 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowConfirmPassword((p) => !p)}>
+                      <IconButton
+                        onClick={() => setShowConfirmPassword((p) => !p)}
+                      >
                         {showConfirmPassword ? (
                           <VisibilityOffOutlined />
                         ) : (
@@ -432,7 +473,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                         )}
                       </IconButton>
                     </InputAdornment>
-                  ),  
+                  ),
                 }}
               />
             </>
@@ -443,9 +484,16 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
             groupBy={(opt) => opt.city}
             value={searchData.pickupLocation}
-            onChange={(_, v) => v && setSearchData({ ...searchData, pickupLocation: v })}
+            onChange={(_, v) =>
+              v && setSearchData({ ...searchData, pickupLocation: v })
+            }
             renderInput={(params) => (
-              <TextField {...params} label="Lugar de retiro" margin="normal" fullWidth />
+              <TextField
+                {...params}
+                label="Lugar de retiro"
+                margin="normal"
+                fullWidth
+              />
             )}
           />
           <Autocomplete
@@ -453,9 +501,16 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
             groupBy={(opt) => opt.city}
             value={searchData.returnLocation}
-            onChange={(_, v) => v && setSearchData({ ...searchData, returnLocation: v })}
+            onChange={(_, v) =>
+              v && setSearchData({ ...searchData, returnLocation: v })
+            }
             renderInput={(params) => (
-              <TextField {...params} label="Lugar de entrega" margin="normal" fullWidth />
+              <TextField
+                {...params}
+                label="Lugar de entrega"
+                margin="normal"
+                fullWidth
+              />
             )}
           />
 
@@ -524,7 +579,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             <Button
               fullWidth
               variant="contained"
-              onClick={handleSubmit(onSubmit(false))}
+              onClick={handleCounterReservation}
               disabled={
                 submitting ||
                 !watch("terms") ||
