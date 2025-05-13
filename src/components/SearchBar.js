@@ -513,18 +513,21 @@ export default function SearchBar({ sx = {}, onSearch }) {
           const nombre = option.nombre?.trim() || "";
           return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
         }}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Box>
-              <Typography>
-                {option.ciudad} – {option.nombre}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {option.direccion}
-              </Typography>
-            </Box>
-          </li>
-        )}
+        renderOption={(props, option) => {
+          const { key, ...rest } = props;
+          return (
+            <li key={key} {...rest}>
+              <Box>
+                <Typography>
+                  {option.ciudad} – {option.nombre}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {option.direccion}
+                </Typography>
+              </Box>
+            </li>
+          );
+        }}
         groupBy={(option) => option.ciudad}
         renderInput={(params) => (
           <TextField
@@ -593,18 +596,21 @@ export default function SearchBar({ sx = {}, onSearch }) {
               const nombre = option.nombre?.trim() || "";
               return `${ciudad} – ${nombre}`;
             }}
-            renderOption={(props, option) => (
-              <li {...props}>
-                <Box>
-                  <Typography>
-                    {option.ciudad} – {option.nombre}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {option.direccion}
-                  </Typography>
-                </Box>
-              </li>
-            )}
+            renderOption={(props, option) => {
+              const { key, ...rest } = props;
+              return (
+                <li key={key} {...rest}>
+                  <Box>
+                    <Typography>
+                      {option.ciudad} – {option.nombre}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {option.direccion}
+                    </Typography>
+                  </Box>
+                </li>
+              );
+            }}
             groupBy={(option) => option.ciudad}
             renderInput={(params) => (
               <TextField

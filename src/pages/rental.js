@@ -49,6 +49,18 @@ export default function RentalPage() {
 
   const [ratesLoaded, setRatesLoaded] = useState(false);
 
+  function formatTSDDate(dateStr) {
+  const date = new Date(dateStr);
+  const pad = (n) => String(n).padStart(2, "0");
+  let h = date.getHours();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return (
+    `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ` +
+    `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
+  );
+}
+
 
   useEffect(() => {
     if (selectedCarIndex !== null && scrollRefs.current[selectedCarIndex]) {
@@ -59,35 +71,53 @@ export default function RentalPage() {
     }
   }, [selectedCarIndex]);
 
-  // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
-  useEffect(() => {
-    async function fetchRates() {
-      // Aquí podrías sacar location, fechas, etc. desde tu searchData o contexto
-      const payload = {
-        location: "MXCSAT",
-        pickupDateTime: "05122025 10:00 AM",
-        returnDateTime: "05152025 10:00 AM",
-      };
 
-      const res = await fetch("/api/tsdRates", {
+  // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
+  const fetchRates = async (
+    { location, pickupDateTime, returnDateTime },
+    setCarsFn,
+    setLoadedFn
+  ) => {
+    try {
+      const res = await fetch("/api/rates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ location, pickupDateTime, returnDateTime }),
       });
+
+      console.log("🛞 Respuesta de TSD:", res);
       const rates = await res.json();
       console.log("🛞 Precios TSD por categoría:", rates);
 
-      // Mapeamos a la estructura que CarCard espera
-      const cars = rates.map((r) => ({
-        name: r.category,
-        price: r.totalCharges, // o r.baseRate, según prefieras
-      }));
-      setFilteredCars(cars);
-      setRatesLoaded(true);
-    }
+      // Filtra y mapea solo los autos cuya categoría coincide con los rates
+      const filtered = carsData.filter(car =>
+        rates.some(rate => rate.category === car.abbreviation)
+      ).map(car => {
+        const matchingRate = rates.find(rate => rate.category === car.abbreviation);
+        return {
+          ...car,
+          price: matchingRate ? matchingRate.totalCharges : "N/A"
+        };
+      });
 
+      setCarsFn(cars);
+      setLoadedFn(true);
+    } catch (err) {
+      console.error("❌ Error al obtener tarifas:", err);
+      setCarsFn([]);
+      setLoadedFn(false);
+    }
+  };
+
+  useEffect(() => {
     if (!ratesLoaded) {
-      fetchRates();
+      const payload = {
+        location: "MXCSAT",
+        pickupDateTime: formatTSDDate("2025-05-15T10:00:00"),
+        returnDateTime: formatTSDDate("2025-05-16T10:00:00"),
+      };
+
+      fetchRates(payload, setFilteredCars, setRatesLoaded);
     }
   }, [ratesLoaded]);
 
