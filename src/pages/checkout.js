@@ -8,8 +8,12 @@ import RentalStepper from "@/components/Stepper";
 import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import OrderSummary from "@/components/OrderSummary";
-import UserForm from "@/components/UserForm";
+import dynamic from "next/dynamic";
 
+const UserForm = dynamic(
+  () => import("@/components/UserForm"),
+  { ssr: false }
+);
 const formatCurrency = (amount) =>
   amount.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 

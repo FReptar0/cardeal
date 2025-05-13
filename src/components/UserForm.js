@@ -29,7 +29,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
-import { locations } from "@/utils/locations";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { sub } from "date-fns";
@@ -138,6 +137,18 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       });
     }
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
+
+  // --- Estado y fetch de sucursales desde API, igual que SearchBar ---
+  const [locations, setLocations] = useState([]);
+  useEffect(() => {
+    fetch("/api/locations")
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setLocations(data))
+      .catch(() => setLocations([]));
+  }, []);
 
   const onSubmit = (isOnline) => async (data) => {
     if (isOnline) setSubmittingOnline(true);
@@ -440,9 +451,19 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
           <Autocomplete
             options={locations}
-            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
-            groupBy={(opt) => opt.city}
-            value={searchData.pickupLocation}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            getOptionLabel={(opt) => {
+              if (!opt || typeof opt !== "object") return typeof opt === "string" ? opt : "";
+              const ciudad = opt.ciudad?.trim() || opt.city?.trim() || "";
+              const nombre = opt.nombre?.trim() || opt.name?.trim() || "";
+              return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
+            }}
+            value={
+              // Si es string plano, mostrarlo como opción seleccionada
+              typeof searchData.pickupLocation === "string"
+                ? { id: "custom", ciudad: "", nombre: searchData.pickupLocation }
+                : locations.find((loc) => loc.id === searchData.pickupLocation?.id) || null
+            }
             onChange={(_, v) => v && setSearchData({ ...searchData, pickupLocation: v })}
             renderInput={(params) => (
               <TextField {...params} label="Lugar de retiro" margin="normal" fullWidth />
@@ -450,10 +471,27 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           />
           <Autocomplete
             options={locations}
-            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
-            groupBy={(opt) => opt.city}
-            value={searchData.returnLocation}
-            onChange={(_, v) => v && setSearchData({ ...searchData, returnLocation: v })}
+            isOptionEqualToValue={(option, value) => {
+              if (!option || !value) return false;
+              if (typeof value === "string") {
+                const ciudad = option.ciudad?.trim() || option.city?.trim() || "";
+                const nombre = option.nombre?.trim() || option.name?.trim() || "";
+                return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}` === value;
+              }
+              return option.id === value.id;
+            }}
+            getOptionLabel={(opt) => {
+              if (!opt || typeof opt !== "object") return typeof opt === "string" ? opt : "";
+              const ciudad = opt.ciudad?.trim() || opt.city?.trim() || "";
+              const nombre = opt.nombre?.trim() || opt.name?.trim() || "";
+              return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
+            }}
+            value={
+              typeof searchData.returnLocation === "string"
+                ? searchData.returnLocation
+                : locations.find((loc) => loc.id === searchData.returnLocation?.id) || null
+            }
+            onChange={(_, v) => setSearchData({ ...searchData, returnLocation: v })}
             renderInput={(params) => (
               <TextField {...params} label="Lugar de entrega" margin="normal" fullWidth />
             )}

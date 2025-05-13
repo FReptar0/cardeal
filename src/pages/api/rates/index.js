@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     TSD_CUSTOMER_NUMBER,
     TSD_PASSCODE,
   } = process.env;
-
+  
   const { location, pickupDateTime, returnDateTime } = req.body;
 
 
@@ -61,6 +61,8 @@ export default async function handler(req, res) {
     });
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
+
+    console.log("XML recibido de TSD >>>", xml);
 
     console.log("JSON completo:", JSON.stringify(json, null, 2));
 
