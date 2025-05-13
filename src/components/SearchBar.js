@@ -219,7 +219,7 @@ function DateTimeSelector({
             </Typography>
           ) : (
             <Select
-              value={time || ""}
+              value={timeSlots.includes(time) ? time : ""}
               onChange={(e) => setTime(e.target.value)}
               fullWidth
               variant="standard"
@@ -296,15 +296,16 @@ export default function SearchBar({ sx = {} }) {
 
   useEffect(() => {
     if (searchData.pickupLocation?.id) {
+      // siempre cargo pickup
       fetchBusinessHours(searchData.pickupLocation.id, setPickupHours);
 
-      if (searchData.sameOffice) {
-        setReturnHours(null);
+      // y también carga return (ya sea misma oficina o distinta)
+      const returnId = searchData.sameOffice
+        ? searchData.pickupLocation.id
+        : searchData.returnLocation?.id;
+      if (returnId) {
+        fetchBusinessHours(returnId, setReturnHours);
       }
-    }
-
-    if (!searchData.sameOffice && searchData.returnLocation?.id) {
-      fetchBusinessHours(searchData.returnLocation.id, setReturnHours);
     }
   }, [isMounted]);
 
@@ -457,6 +458,36 @@ export default function SearchBar({ sx = {} }) {
     setSearchData({ ...searchData, pickupTime: newTime });
   const handleReturnTimeChange = (newTime) =>
     setSearchData({ ...searchData, returnTime: newTime });
+
+  useEffect(() => {
+    if (pickupHours) {
+      const horario = parseBusinessHours(pickupHours);
+      const validHours = horario
+        ? generateTimeSlots(horario.start, horario.end)
+        : [];
+
+      if (!validHours.includes(searchData.pickupTime)) {
+        setSearchData((prev) => ({
+          ...prev,
+          pickupTime: validHours[0] || "",
+        }));
+      }
+    }
+
+    if (returnHours) {
+      const horario = parseBusinessHours(returnHours);
+      const validHours = horario
+        ? generateTimeSlots(horario.start, horario.end)
+        : [];
+
+      if (!validHours.includes(searchData.returnTime)) {
+        setSearchData((prev) => ({
+          ...prev,
+          returnTime: validHours[0] || "",
+        }));
+      }
+    }
+  }, [pickupHours, returnHours]);
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
