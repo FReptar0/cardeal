@@ -21,16 +21,29 @@ import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 
-// Lista de horarios disponibles
-const availableTimes = [
-  "08:00 AM",
-  "10:00 AM",
-  "12:00 PM",
-  "02:00 PM",
-  "04:00 PM",
-  "06:00 PM",
-  "08:00 PM",
-];
+function generateTimeSlots(startTime, endTime) {
+  const [startHour, startMin] = startTime.split(":").map(Number);
+  const [endHour, endMin] = endTime.split(":").map(Number);
+
+  const slots = [];
+  let current = new Date();
+  current.setHours(startHour, startMin, 0, 0);
+
+  const end = new Date();
+  end.setHours(endHour, endMin, 0, 0);
+
+  while (current <= end) {
+    const h = current.getHours();
+    const m = current.getMinutes();
+    const formatted = `${(h % 12 || 12).toString().padStart(2, "0")}:${m
+      .toString()
+      .padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+    slots.push(formatted);
+    current.setMinutes(current.getMinutes() + 30);
+  }
+
+  return slots;
+}
 
 // Función para convertir formato 12h a minutos (para comparaciones)
 function convert12to24(time12h) {
@@ -40,6 +53,34 @@ function convert12to24(time12h) {
   if (modifier === "AM" && hours === 12) hours = 0;
   return hours * 60 + minutes;
 }
+
+const parseBusinessHours = (raw) => {
+  const daysMap = {
+    0: "OpenCloseSun",
+    1: "OpenCloseMon",
+    2: "OpenCloseTue",
+    3: "OpenCloseWed",
+    4: "OpenCloseThu",
+    5: "OpenCloseFri",
+    6: "OpenCloseSat",
+  };
+
+  const dayKey = daysMap[new Date().getDay()];
+  const horario = raw?.[dayKey];
+
+  const rango = Array.isArray(horario) ? horario[0] : horario;
+
+  if (rango && /^[0-9]{4}-[0-9]{4}$/.test(rango)) {
+    const [start, end] = rango.split("-");
+    const formatHour = (h) => `${h.slice(0, 2)}:${h.slice(2)}`;
+    return {
+      start: formatHour(start),
+      end: formatHour(end),
+    };
+  }
+
+  return null; // Cerrado o inválido
+};
 
 // Funciones para formatear fechas
 const formatDay = (date) =>
@@ -61,13 +102,25 @@ const getTodayDate = () => {
   return format(mexicoDate, "yyyy-MM-dd");
 };
 
-function DateTimeSelector({ label, date, setDate, time, setTime }) {
+function DateTimeSelector({
+  label,
+  date,
+  setDate,
+  time,
+  setTime,
+  businessHours,
+}) {
   const dateInputRef = useRef(null);
   const router = useRouter();
   const isRentalPage =
     router.pathname === "/rental" ||
     router.pathname === "/proteccion" ||
     router.pathname === "/extras-renta";
+
+  const horario = parseBusinessHours(businessHours);
+  const timeSlots = horario
+    ? generateTimeSlots(horario.start, horario.end)
+    : [];
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -155,23 +208,40 @@ function DateTimeSelector({ label, date, setDate, time, setTime }) {
             width: "50%",
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
             marginLeft: 3,
+            px: 2,
           }}
         >
-          <Select
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            fullWidth
-            variant="standard"
-            disableUnderline
-            sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
-          >
-            {availableTimes.map((t, i) => (
-              <MenuItem key={i} value={t}>
-                {t}
+          {timeSlots.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No hay horarios para mostrar
+            </Typography>
+          ) : (
+            <Select
+              value={time || ""}
+              onChange={(e) => setTime(e.target.value)}
+              fullWidth
+              variant="standard"
+              disableUnderline
+              displayEmpty
+              sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
+              MenuProps={{
+                PaperProps: {
+                  sx: { maxHeight: 300 },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Selecciona una hora
               </MenuItem>
-            ))}
-          </Select>
+              {timeSlots.map((slot) => (
+                <MenuItem key={slot} value={slot}>
+                  {slot}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
         </Box>
       </Box>
     </Box>
@@ -190,6 +260,24 @@ export default function SearchBar({ sx = {}, onSearch }) {
     router.pathname === "/extras-renta" || router.pathname === "/proteccion";
   const [isMounted, setIsMounted] = useState(false);
 
+  const [pickupHours, setPickupHours] = useState(null);
+  const [returnHours, setReturnHours] = useState(null);
+
+  const fetchBusinessHours = async (locationId, setHoursFn) => {
+    try {
+      const res = await fetch("/api/locations/hours", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locationId }),
+      });
+      const data = await res.json();
+      setHoursFn(data);
+    } catch (err) {
+      console.error("Error al obtener horarios:", err);
+      setHoursFn(null);
+    }
+  };
+
   // ——— NUEVO: estado y fetch de sucursales desde API ———
   const [locations, setLocations] = useState([]);
   useEffect(() => {
@@ -206,13 +294,63 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (searchData.pickupLocation?.id) {
+      fetchBusinessHours(searchData.pickupLocation.id, setPickupHours);
+
+      if (searchData.sameOffice) {
+        setReturnHours(null);
+      }
+    }
+
+    if (!searchData.sameOffice && searchData.returnLocation?.id) {
+      fetchBusinessHours(searchData.returnLocation.id, setReturnHours);
+    }
+  }, [isMounted]);
+
   // Handlers sin tocar
-  const handlePickupLocationChange = (e, newValue) =>
+  const handlePickupLocationChange = (e, newValue) => {
     setSearchData({ ...searchData, pickupLocation: newValue });
-  const handleReturnLocationChange = (e, newValue) =>
+
+    if (newValue?.id) {
+      fetchBusinessHours(newValue.id, setPickupHours);
+
+      if (searchData.sameOffice) {
+        fetchBusinessHours(newValue.id, setReturnHours);
+      }
+    }
+  };
+  const handleReturnLocationChange = (e, newValue) => {
     setSearchData({ ...searchData, returnLocation: newValue });
-  const handleSameOfficeChange = () =>
-    setSearchData({ ...searchData, sameOffice: !searchData.sameOffice });
+
+    if (newValue?.id && !searchData.sameOffice) {
+      fetchBusinessHours(newValue.id, setReturnHours);
+    }
+  };
+  const handleSameOfficeChange = () => {
+    const same = !searchData.sameOffice;
+  
+    const newSearchData = {
+      ...searchData,
+      sameOffice: same,
+    };
+  
+    // Si se activa el checkbox: copiar pickupLocation → returnLocation
+    if (same) {
+      newSearchData.returnLocation = searchData.pickupLocation;
+      if (searchData.pickupLocation?.id) {
+        fetchBusinessHours(searchData.pickupLocation.id, setReturnHours);
+      }
+    } else {
+      // Si se desactiva: limpiar returnLocation
+      newSearchData.returnLocation = null;
+      setReturnHours(null);
+    }
+  
+    setSearchData(newSearchData);
+  };
+  
+
   const handlePickupDateChange = (newDate) => {
     const np = new Date(newDate);
     np.setHours(0, 0, 0, 0);
@@ -408,6 +546,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setDate={handlePickupDateChange}
             time={searchData.pickupTime}
             setTime={handlePickupTimeChange}
+            businessHours={pickupHours}
           />
         </Box>
         <Box sx={{ flex: 1 }}>
@@ -417,6 +556,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setDate={handleReturnDateChange}
             time={searchData.returnTime}
             setTime={handleReturnTimeChange}
+            businessHours={returnHours}
           />
         </Box>
       </Box>

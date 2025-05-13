@@ -12,8 +12,7 @@ function formatDateTime(date) {
 }
 
 export default async function handler(req, res) {
-  const locationId = req.body?.locationId || "asdfasd"; // ← AQUI
-
+  const locationId = req.body?.locationId;
   const {
     TSD_ENDPOINT,
     TSD_SENDER_ID,
@@ -39,7 +38,7 @@ export default async function handler(req, res) {
     </Message>
     <Payload>
       <RentalLocationID>${locationId}</RentalLocationID>
-      <BusinessHours>Y</BusinessHours>
+      <BusinessHours>1</BusinessHours>
     </Payload>
   </TRNXML>
   `;
@@ -59,7 +58,7 @@ export default async function handler(req, res) {
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     const hours = json?.PRE?.TRNXML?.Payload?.RentalLocation?.BusinessHours;
-    console.log("Horarios obtenidos:", json);
+    console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     res.status(200).json(hours || {});
   } catch (error) {
