@@ -23,7 +23,11 @@ export default async function handler(req, res) {
   } = process.env;
 
   // Parámetros que espero en el body de la petición
-  const { location, pickupDateTime, returnDateTime } = req.body;
+  const location = "MXCSAT";
+  const pickupDateTime = "05152025 10:00 AM";
+  const returnDateTime = "05162025 10:00 AM";
+    // const { location, pickupDateTime, returnDateTime } = req.body;
+
 
   // Las 5 categorías que vamos a pedir (pipe-delimited)
   const classCodes = ["ECAR", "FCAR", "FFAR", "SCAR", "SFAR"].join("|");
@@ -47,8 +51,6 @@ export default async function handler(req, res) {
       <ReturnLocationID>${location}</ReturnLocationID>
       <PickupDateTime>${pickupDateTime}</PickupDateTime>
       <ReturnDateTime>${returnDateTime}</ReturnDateTime>
-      <ClassCode>${classCodes}</ClassCode>
-      <TotalPricing>1</TotalPricing>
     </PayLoad>
   </TRNXML>
   `;
@@ -63,6 +65,8 @@ export default async function handler(req, res) {
     });
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
+
+    console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
     let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
