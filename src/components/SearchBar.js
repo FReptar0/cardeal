@@ -195,7 +195,7 @@ export default function SearchBar({ sx = {} }) {
   useEffect(() => {
     fetch("/api/locations")
       .then((res) => {
-        if (!res.ok) throw new Error(`Error ${res.status}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
         return res.json();
       })
       .then((data) => setLocations(data))
