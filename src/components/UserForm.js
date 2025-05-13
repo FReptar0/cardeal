@@ -314,33 +314,21 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     );
   }
 
-  // dispara la reserva hard-codeada en TSDRez
+  // 1) Justo antes del return, define este handler:
   const handleCounterReservation = async () => {
     setSubmitting(true);
     try {
-      const res = await fetch("/api/reserva", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location: "MXCSAT",
-          pickupDateTime: "05152025 10:00 AM",
-          returnDateTime: "05182025 10:00 AM",
-          classCode: "SFAR",
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const { confirmNum, totalPricing } = await res.json();
-      console.log("ConfirmNum:", confirmNum, "TotalPricing:", totalPricing);
-      // aquí podrías redirigir:
-      router.push(`/confirm/${confirmNum}`);
+      const xmlResponse = await addReservationHardcoded();
+      console.log("TSDRez response:", xmlResponse);
+      toast.success("Reserva enviada correctamente");
+      // si quieres, redirige o actualiza estado aquí
     } catch (err) {
-      console.error("Error al crear reserva TSD:", err);
-      toast.error("No se pudo crear la reserva en mostrador");
+      console.error("Error al enviar reserva TSD:", err);
+      toast.error("No se pudo enviar la reserva");
     } finally {
       setSubmitting(false);
     }
   };
-
   return (
     <>
       <Card sx={{ p: 3, width: "100%" }}>
@@ -579,7 +567,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             <Button
               fullWidth
               variant="contained"
-              onClick={handleCounterReservation}
+              onClick={handleSubmit(onSubmit(false))}
               disabled={
                 submitting ||
                 !watch("terms") ||

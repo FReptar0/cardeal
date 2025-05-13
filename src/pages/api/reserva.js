@@ -33,8 +33,10 @@ export default async function handler(req, res) {
     classCode, // opcional: si no hay rateId, se usa <ClassCode>
   } = req.body;
 
-  const pickupDateTime = "05152025 10:00 AM"; // Fecha de recogida hardcodeada
-  const returnDateTime = "05182025 10:00 AM"; // Fecha de devolución hardcodeada
+  console.log("Datos recibidos en la solicitud:", req.body);
+
+  const pickupDateTime = "05262025 10:00 AM"; // Fecha de recogida hardcodeada
+  const returnDateTime = "05282025 10:00 AM"; // Fecha de devolución hardcodeada
 
   // Construcción del XML según ADDREZ (mensajes y tags obligatorios) :contentReference[oaicite:0]{index=0}
   const xmlBody = `
@@ -65,6 +67,8 @@ export default async function handler(req, res) {
   </PayLoad>
 </TRNXML>`.trim();
 
+  console.log("XML enviado al servidor externo:", xmlBody);
+
   try {
     const resp = await fetch(TSD_ENDPOINT, {
       method: "POST",
@@ -76,6 +80,7 @@ export default async function handler(req, res) {
     }
 
     const xml = await resp.text();
+    console.log("Respuesta completa del servidor externo:", xml);
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     // Extraemos confirmación y, si existe, TotalPricing :contentReference[oaicite:1]{index=1}:contentReference[oaicite:2]{index=2}
