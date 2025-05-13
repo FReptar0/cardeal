@@ -42,7 +42,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
 
 --prueba de consumo locations dani
 
-
---pruba consumo rates 1.6
+--pruba consumo rates 3.2
 
 --test dani
