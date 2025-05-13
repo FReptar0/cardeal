@@ -47,6 +47,9 @@ export default function RentalPage() {
   // Extrae del contexto el auto seleccionado y su setter
   const { selectedCar, setSelectedCar } = useBooking();
 
+  const [ratesLoaded, setRatesLoaded] = useState(false);
+
+
   useEffect(() => {
     if (selectedCarIndex !== null && scrollRefs.current[selectedCarIndex]) {
       scrollRefs.current[selectedCarIndex].scrollIntoView({

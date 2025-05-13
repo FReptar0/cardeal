@@ -679,7 +679,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
             returnDate: searchData.returnDate,
             returnTime: searchData.returnTime,
           });
-          onSearch(filtros);
+          onSearch(searchData);
           router.push("/rental");
         }}
       >
