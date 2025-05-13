@@ -80,6 +80,12 @@ export default async function handler(req, res) {
     }
 
     const xml = await resp.text();
+    console.log("Detalles completos de la respuesta del servidor externo:", {
+      status: resp.status,
+      statusText: resp.statusText,
+      headers: Object.fromEntries(resp.headers.entries()),
+      body: xml,
+    });
     console.log("Respuesta completa del servidor externo:", xml);
     const json = await parseStringPromise(xml, { explicitArray: false });
 
