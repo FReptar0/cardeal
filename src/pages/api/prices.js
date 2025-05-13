@@ -1,5 +1,4 @@
 // pages/api/prices.js
-import fetch from "node-fetch";
 import { parseStringPromise } from "xml2js";
 
 function formatMxDate(date) {
