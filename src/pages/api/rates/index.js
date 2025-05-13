@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     TSD_CUSTOMER_NUMBER,
     TSD_PASSCODE,
   } = process.env;
-
+  
   const { location, pickupDateTime, returnDateTime } = req.body;
 
 
