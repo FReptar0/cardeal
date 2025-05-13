@@ -233,7 +233,7 @@ function DateTimeSelector({
               }}
             >
               <MenuItem value="" disabled>
-                Selecciona una hora
+                Selecciona
               </MenuItem>
               {timeSlots.map((slot) => (
                 <MenuItem key={slot} value={slot}>
@@ -313,43 +313,117 @@ export default function SearchBar({ sx = {} }) {
     setSearchData({ ...searchData, pickupLocation: newValue });
 
     if (newValue?.id) {
-      fetchBusinessHours(newValue.id, setPickupHours);
+      fetchBusinessHours(newValue.id, (data) => {
+        setPickupHours(data);
+
+        const horario = parseBusinessHours(data);
+        if (horario) {
+          const validHours = generateTimeSlots(horario.start, horario.end);
+          if (!validHours.includes(searchData.pickupTime)) {
+            setSearchData((prev) => ({
+              ...prev,
+              pickupTime: validHours[0], // Primer horario válido
+            }));
+          }
+        }
+      });
 
       if (searchData.sameOffice) {
-        fetchBusinessHours(newValue.id, setReturnHours);
+        fetchBusinessHours(newValue.id, (data) => {
+          setReturnHours(data);
+
+          const horario = parseBusinessHours(data);
+          if (horario) {
+            const validHours = generateTimeSlots(horario.start, horario.end);
+            if (!validHours.includes(searchData.returnTime)) {
+              setSearchData((prev) => ({
+                ...prev,
+                returnTime: validHours[0],
+              }));
+            }
+          }
+        });
       }
     }
   };
   const handleReturnLocationChange = (e, newValue) => {
+    // Si el usuario seleccionó la misma ubicación de origen, volvemos a activar el check
+    if (
+      newValue?.id &&
+      searchData.pickupLocation?.id &&
+      newValue.id === searchData.pickupLocation.id
+    ) {
+      setSearchData({
+        ...searchData,
+        sameOffice: true,
+        returnLocation: searchData.pickupLocation,
+        returnTime: searchData.pickupTime,
+      });
+
+      fetchBusinessHours(searchData.pickupLocation.id, (data) => {
+        setReturnHours(data);
+
+        const horario = parseBusinessHours(data);
+        if (horario) {
+          const validHours = generateTimeSlots(horario.start, horario.end);
+          if (!validHours.includes(searchData.returnTime)) {
+            setSearchData((prev) => ({
+              ...prev,
+              returnTime: validHours[0],
+            }));
+          }
+        }
+      });
+
+      return; // salimos porque ya hicimos todo
+    }
+
+    // Si es diferente, actualizamos normalmente
     setSearchData({ ...searchData, returnLocation: newValue });
 
     if (newValue?.id && !searchData.sameOffice) {
-      fetchBusinessHours(newValue.id, setReturnHours);
+      fetchBusinessHours(newValue.id, (data) => {
+        setReturnHours(data);
+
+        const horario = parseBusinessHours(data);
+        if (horario) {
+          const validHours = generateTimeSlots(horario.start, horario.end);
+          if (!validHours.includes(searchData.returnTime)) {
+            setSearchData((prev) => ({
+              ...prev,
+              returnTime: validHours[0],
+            }));
+          }
+        }
+      });
     }
   };
+
   const handleSameOfficeChange = () => {
     const same = !searchData.sameOffice;
-  
+
     const newSearchData = {
       ...searchData,
       sameOffice: same,
     };
-  
-    // Si se activa el checkbox: copiar pickupLocation → returnLocation
+
     if (same) {
+      // Al activar el check: copiar ubicación y horario
       newSearchData.returnLocation = searchData.pickupLocation;
+      newSearchData.returnTime = searchData.pickupTime;
+
       if (searchData.pickupLocation?.id) {
         fetchBusinessHours(searchData.pickupLocation.id, setReturnHours);
       }
     } else {
-      // Si se desactiva: limpiar returnLocation
+      // Al desactivar: limpiar returnLocation (dejar que usuario la seleccione)
       newSearchData.returnLocation = null;
+      newSearchData.returnTime = "";
       setReturnHours(null);
     }
-  
+
     setSearchData(newSearchData);
   };
-  
 
   const handlePickupDateChange = (newDate) => {
     const np = new Date(newDate);
