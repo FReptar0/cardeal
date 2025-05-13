@@ -35,7 +35,7 @@ export default function RentalPage() {
   const [loadingPrices, setLoadingPrices] = useState(false);
 
   // Estados locales
-  const [filteredCars, setFilteredCars] = useState(carsData);
+  const [filteredCars, setFilteredCars] = useState([]); // <-- inicia vacío
   const [selectedCarIndex, setSelectedCarIndex] = useState(null);
   const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
@@ -77,6 +77,13 @@ export default function RentalPage() {
     }
   }, [selectedCarIndex]);
 
+  // Loader visual
+  const Loader = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh', width: '100%' }}>
+      <Typography variant="h6" sx={{ color: '#d60812', fontWeight: 'bold' }}>Cargando autos disponibles...</Typography>
+    </Box>
+  );
+
   // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
   const fetchRates = async (
     { location, pickupDateTime, returnDateTime },
@@ -84,6 +91,7 @@ export default function RentalPage() {
     setLoadedFn
   ) => {
     try {
+      setLoadingPrices(true); // Mostrar loader
       console.log(
         "🛞 Solicitando tarifas para:",
         location,
@@ -101,26 +109,41 @@ export default function RentalPage() {
       console.log("🛞 Precios TSD por categoría:", rates);
 
       // Filtra y mapea solo los autos cuya categoría coincide con los rates
-      const filtered = carsData
-        .filter((car) =>
-          rates.some((rate) => rate.category === car.abbreviation)
-        )
-        .map((car) => {
-          const matchingRate = rates.find(
-            (rate) => rate.category === car.abbreviation
-          );
+      const filtered = rates
+        .filter(rate => {
+          const car = carsData.find(car => car.abbreviation === rate.category);
+          const price = rate.totalCharges || rate.baseRate;
+          return car && price && price !== "N/A";
+        })
+        .map(rate => {
+          // Hardcodea los valores del coche mostrado y los precios
           return {
-            ...car,
-            price: matchingRate ? matchingRate.totalCharges : "N/A",
+            ...rate,
+            image: "/photos/economico/March-frente.webp",
+            name: "NISSAN MARCH ADVANCE o Similar",
+            luggage: 2,
+            luggageSize: "chicas",
+            luggageDimensions: {
+              width: "40cm",
+              height: "50cm",
+              depth: "20cm"
+            },
+            passengers: 5,
+            doors: 4,
+            transmission: "Automática",
+            airConditioning: true,
+            price2: 520, // Pago en mostrador (debe ser price2 para CarCard)
+            price: 468 // Pago en línea (10% off)
           };
         });
-
-      setCarsFn(filtered); // Actualiza solo los autos con categorías válidas
+      setCarsFn(filtered);
       setLoadedFn(true);
+      setLoadingPrices(false); // Oculta loader
     } catch (err) {
       console.error("❌ Error al obtener tarifas:", err);
       setCarsFn([]);
       setLoadedFn(false);
+      setLoadingPrices(false);
     }
   };
 
@@ -355,7 +378,7 @@ export default function RentalPage() {
 
       {isSticky && <Box sx={{ height: "120px" }} />}
 
-      {/* Lista de autos */}
+      {/* Lista de autos o loader */}
       <Box
         sx={{
           display: "flex",
@@ -375,24 +398,32 @@ export default function RentalPage() {
             alignItems: "center",
           }}
         >
-          {filteredCars.map((car, index) => (
-            <Box
-              key={index}
-              ref={(el) => (scrollRefs.current[index] = el)}
-              onClick={() => handleCarSelect(car, index)}
-              sx={{
-                width: "100%",
-                maxWidth: "1200px",
-                cursor: "pointer",
-              }}
-            >
-              <CarCard
-                car={car}
-                price={car.price}
-                isSelected={selectedCarIndex === index}
-              />
-            </Box>
-          ))}
+          {loadingPrices ? (
+            <Loader />
+          ) : (
+            filteredCars.length === 0 ? (
+              <Typography variant="h6" sx={{ color: '#d60812', fontWeight: 'bold', mt: 4 }}>No hay autos disponibles para tu búsqueda.</Typography>
+            ) : (
+              filteredCars.map((car, index) => (
+                <Box
+                  key={index}
+                  ref={(el) => (scrollRefs.current[index] = el)}
+                  onClick={() => handleCarSelect(car, index)}
+                  sx={{
+                    width: "100%",
+                    maxWidth: "1200px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <CarCard
+                    car={car}
+                    price={car.price}
+                    isSelected={selectedCarIndex === index}
+                  />
+                </Box>
+              ))
+            )
+          )}
         </Box>
       </Box>
 

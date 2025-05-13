@@ -16,8 +16,8 @@ import mastercardIcon from "../../public/icons/cards/mastercard.svg";
 import visaIcon from "../../public/icons/cards/visa.svg";
 import amexIcon from "../../public/icons/cards/AXP_BlueBoxLogo_Alternate_SMALLscale_RGB_DIGITAL_80x80.png";
 import CryptoJS from "crypto-js";
-import dotenv from "dotenv";
-dotenv.config();
+//import dotenv from "dotenv";
+//dotenv.config();
 
 /** Valida tarjeta con algoritmo Luhn */
 function luhnCheck(ccNum) {
