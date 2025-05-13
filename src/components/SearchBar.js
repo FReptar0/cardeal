@@ -329,12 +329,12 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
   const handleSameOfficeChange = () => {
     const same = !searchData.sameOffice;
-  
+
     const newSearchData = {
       ...searchData,
       sameOffice: same,
     };
-  
+
     // Si se activa el checkbox: copiar pickupLocation → returnLocation
     if (same) {
       newSearchData.returnLocation = searchData.pickupLocation;
@@ -346,10 +346,9 @@ export default function SearchBar({ sx = {}, onSearch }) {
       newSearchData.returnLocation = null;
       setReturnHours(null);
     }
-  
+
     setSearchData(newSearchData);
   };
-  
 
   const handlePickupDateChange = (newDate) => {
     const np = new Date(newDate);
@@ -574,6 +573,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
             returnDate: searchData.returnDate,
             returnTime: searchData.returnTime,
           });
+          onSearch(filtros);
+          router.push("/rental");
         }}
       >
         Buscar
