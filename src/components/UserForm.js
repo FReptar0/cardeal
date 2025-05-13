@@ -150,6 +150,15 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       .catch(() => setLocations([]));
   }, []);
 
+  useEffect(() => {
+    if (searchData.sameOffice) {
+      setSearchData((prev) => ({
+        ...prev,
+        returnLocation: prev.pickupLocation,
+      }));
+    }
+  }, [searchData.sameOffice, searchData.pickupLocation, setSearchData]);
+
   const onSubmit = (isOnline) => async (data) => {
     if (isOnline) setSubmittingOnline(true);
     else setSubmitting(true);
