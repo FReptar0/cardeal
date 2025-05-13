@@ -193,16 +193,12 @@ export default function SearchBar({ sx = {} }) {
   // ——— NUEVO: estado y fetch de sucursales desde API ———
   const [locations, setLocations] = useState([]);
   useEffect(() => {
-    fetch("/api/locations/locations")
+    fetch("/api/locations")
       .then((res) => {
         if (!res.ok) throw new Error(`Status ${res.status}`);
         return res.json();
       })
-      .then((data) => {
-        console.log("🚀 rawXml desde API:", data.rawXml);
-        console.log("🚀 locations desde API:", data.locations);
-        setLocations(data.locations || []);
-      })
+      .then((data) => setLocations(data))
       .catch((err) => console.error("Error al cargar sucursales:", err));
   }, []);
 
@@ -267,8 +263,26 @@ export default function SearchBar({ sx = {} }) {
       )}
       <Autocomplete
         options={locations}
-        getOptionLabel={(o) => `${o.AddressCity} – ${o.RentalLocationName}`}
-        groupBy={(o) => o.AddressCity}
+        isOptionEqualToValue={(option, value) => option?.id === value?.id}
+        getOptionLabel={(option) => {
+          if (!option || typeof option !== "object") return "";
+          const ciudad = option.ciudad?.trim() || "";
+          const nombre = option.nombre?.trim() || "";
+          return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
+        }}
+        renderOption={(props, option) => (
+          <li {...props}>
+            <Box>
+              <Typography >
+                {option.ciudad} – {option.nombre}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {option.direccion}
+              </Typography>
+            </Box>
+          </li>
+        )}
+        groupBy={(option) => option.ciudad}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -291,7 +305,7 @@ export default function SearchBar({ sx = {} }) {
             }}
           />
         )}
-        value={searchData.pickupLocation}
+        value={searchData.pickupLocation || null}
         onChange={handlePickupLocationChange}
         sx={{ width: "100%" }}
       />
@@ -329,8 +343,26 @@ export default function SearchBar({ sx = {} }) {
           )}
           <Autocomplete
             options={locations}
-            getOptionLabel={(option) => `${option.city} - ${option.name}`}
-            groupBy={(option) => option.city}
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            getOptionLabel={(option) => {
+              if (!option || typeof option !== "object") return "";
+              const ciudad = option.ciudad?.trim() || "";
+              const nombre = option.nombre?.trim() || "";
+              return `${ciudad} – ${nombre}`;
+            }}
+            renderOption={(props, option) => (
+              <li {...props}>
+                <Box>
+                  <Typography>
+                    {option.ciudad} – {option.nombre}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {option.direccion}
+                  </Typography>
+                </Box>
+              </li>
+            )}
+            groupBy={(option) => option.ciudad}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -353,7 +385,7 @@ export default function SearchBar({ sx = {} }) {
                 }}
               />
             )}
-            value={searchData.returnLocation}
+            value={searchData.returnLocation || null}
             onChange={handleReturnLocationChange}
             sx={{ width: "100%" }}
           />
