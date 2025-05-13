@@ -24,6 +24,8 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 });
 
 export default function RentalPage() {
+  const [ratesLoaded, setRatesLoaded] = useState(false);
+
   // Estados locales
   const [filteredCars, setFilteredCars] = useState(carsData);
   const [selectedCarIndex, setSelectedCarIndex] = useState(null);
@@ -51,6 +53,38 @@ export default function RentalPage() {
       });
     }
   }, [selectedCarIndex]);
+
+  // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
+  useEffect(() => {
+    async function fetchRates() {
+      // Aquí podrías sacar location, fechas, etc. desde tu searchData o contexto
+      const payload = {
+        location: "MXCSAT",
+        pickupDateTime: "05122025 10:00 AM",
+        returnDateTime: "05152025 10:00 AM",
+      };
+
+      const res = await fetch("/api/tsdRates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const rates = await res.json();
+      console.log("🛞 Precios TSD por categoría:", rates);
+
+      // Mapeamos a la estructura que CarCard espera
+      const cars = rates.map((r) => ({
+        name: r.category,
+        price: r.totalCharges, // o r.baseRate, según prefieras
+      }));
+      setFilteredCars(cars);
+      setRatesLoaded(true);
+    }
+
+    if (!ratesLoaded) {
+      fetchRates();
+    }
+  }, [ratesLoaded]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -196,7 +230,11 @@ export default function RentalPage() {
                 cursor: "pointer",
               }}
             >
-              <CarCard car={car} isSelected={selectedCarIndex === index} />
+              <CarCard
+                car={car}
+                price={car.price}
+                isSelected={selectedCarIndex === index}
+              />
             </Box>
           ))}
         </Box>
