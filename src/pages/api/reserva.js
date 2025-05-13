@@ -29,11 +29,12 @@ export default async function handler(req, res) {
 
   const {
     location,
-    pickupDateTime,
-    returnDateTime,
     rateId, // opcional: si se provee, se usa <RateID>
     classCode, // opcional: si no hay rateId, se usa <ClassCode>
   } = req.body;
+
+  const pickupDateTime = "05152025 10:00 AM"; // Fecha de recogida hardcodeada
+  const returnDateTime = "05182025 10:00 AM"; // Fecha de devolución hardcodeada
 
   // Construcción del XML según ADDREZ (mensajes y tags obligatorios) :contentReference[oaicite:0]{index=0}
   const xmlBody = `
@@ -81,6 +82,8 @@ export default async function handler(req, res) {
     const trn = json?.TRNXML || {};
     const confirmNum = trn.ConfirmNum || null;
     const totalPricing = trn.TotalPricing || null;
+
+    console.log("Reserva exitosa:", { confirmNum, totalPricing });
 
     return res.status(200).json({ confirmNum, totalPricing });
   } catch (err) {
