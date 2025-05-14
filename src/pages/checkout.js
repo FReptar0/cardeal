@@ -1,7 +1,7 @@
 // /pages/checkout.js
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Container, Box } from "@mui/material";
 import RentalStepper from "@/components/Stepper";
@@ -10,10 +10,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import OrderSummary from "@/components/OrderSummary";
 import dynamic from "next/dynamic";
 
-const UserForm = dynamic(
-  () => import("@/components/UserForm"),
-  { ssr: false }
-);
+const UserForm = dynamic(() => import("@/components/UserForm"), { ssr: false });
 const formatCurrency = (amount) =>
   amount.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 
@@ -36,7 +33,7 @@ export default function CheckoutPage() {
             (1000 * 60 * 60 * 24)
         )
       : 1;
-  
+
   const dailyCarCost = selectedCar?.price2 || 0;
   const dailyCarCost2 = selectedCar?.price || 0;
   const totalCarCost = dailyCarCost * rentalDays;
@@ -77,15 +74,23 @@ export default function CheckoutPage() {
     }
   }
 
-  const otherCharges = (totalCarCost + totalExtrasCost) * .23;
-  const otherCharges2 = (totalCarCost2 + totalExtrasCost) * .23;
+  const otherCharges = (totalCarCost + totalExtrasCost) * 0.23;
+  const otherCharges2 = (totalCarCost2 + totalExtrasCost) * 0.23;
 
-  const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
-  const subTotal2 = totalCarCost2 + totalInsuranceCost + totalExtrasCost + otherCharges2;
+  const subTotal =
+    totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
+  const subTotal2 =
+    totalCarCost2 + totalInsuranceCost + totalExtrasCost + otherCharges2;
   const ivaCost = subTotal * 0.16;
   const ivaCost2 = subTotal2 * 0.16;
   const totalWithIva = subTotal + ivaCost;
   const totalWithIva2 = subTotal2 + ivaCost2;
+
+  // Add a console log to print protection and extras data
+  useEffect(() => {
+    console.log("Selected Insurance:", selectedInsurance);
+    console.log("Selected Extras:", selectedExtras);
+  }, [selectedInsurance, selectedExtras]);
 
   return (
     <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>
@@ -129,9 +134,7 @@ export default function CheckoutPage() {
           />
         </Box>
         <Box sx={{ width: { xs: "100%", md: "50%" } }}>
-          <UserForm 
-          paidOnline={paidOnline}
-          setPaidOnline={setPaidOnline}/>
+          <UserForm paidOnline={paidOnline} setPaidOnline={setPaidOnline} />
         </Box>
       </Box>
     </Container>

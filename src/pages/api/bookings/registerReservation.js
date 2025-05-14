@@ -31,11 +31,45 @@ export default async function handler(req, res) {
     customer: TSD_CUSTOMER_NUMBER,
   });
 
+  // Datos que envia el cliente
+  const {
+    pickupLocationId,
+    returnLocationId,
+    pickupDateTime, // ya formateado como "MMDDYYYY hh:mm AM/PM"
+    returnDateTime, // idem
+    classCode,
+    unitNumber,
+    renterFirst,
+    renterLast,
+    customerNumber, // debería coincidir con TSD_CUSTOMER_NUMBER
+    passcode, // idem
+    extrasCodes = [], // array de strings con códigos TSD de extras
+    insuranceCode = "", // string con código TSD de seguro o vacío
+  } = req.body;
+
+  // Add a console log to print protection code and extras
+  console.log("🔒 Insurance Code:", insuranceCode);
+  console.log("🛠️ Extras Codes:", extrasCodes);
+
+  // Construye el bloque de <ExtraCode>
+  let extrasXML = extrasCodes
+    .map((code) => `    <ExtraCode>${code}</ExtraCode>`)
+    .join("\n");
+  if (insuranceCode) {
+    extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML;
+  }
+
+  console.log("🚀 registerReservation Payload:", req.body);
+
+  // Por si se va alv
+  //<Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
+
   // Payload completamente hardcodeado según tu reserva de ejemplo
   const xmlBody = `
 <?xml version="1.0" encoding="UTF-8"?>
 <TRNXML Version="1.0.0">
-  <Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
+  
+  <Dategmtime TimeZone="UTC">${formatDateTime(new Date())}</Dategmtime>
   <Sender><SenderID>GRAN1</SenderID></Sender>
   <Recipient><RecipientID>TRN</RecipientID></Recipient>
   <TradingPartner><TradingPartnerCode>WEB01</TradingPartnerCode></TradingPartner>
@@ -75,7 +109,9 @@ export default async function handler(req, res) {
       body: xmlBody,
     });
 
-    console.log(`✅ Petición completada. Status: ${response.status} ${response.statusText}`);
+    console.log(
+      `✅ Petición completada. Status: ${response.status} ${response.statusText}`
+    );
     const xml = await response.text();
     console.log("📨 XML recibido:\n", xml);
 
