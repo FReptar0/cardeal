@@ -234,6 +234,7 @@ export default function Flota() {
                   alignItems: "center",
                   justifyContent: "center",
                   mt: 1,
+                  gap: 2, // Espaciado entre los botones
                 }}
               >
                 <Button
@@ -256,6 +257,21 @@ export default function Flota() {
                   }}
                 >
                   Ver más detalles
+                </Button>
+                <Button
+                  onClick={() => router.push("/")}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#10906a",
+                    color: "white",
+                    fontSize: "12px",
+                    textTransform: "none",
+                    "&:hover": {
+                      backgroundColor: "#0e7a5a",
+                    },
+                  }}
+                >
+                  Rentar
                 </Button>
               </Box>
             </CardContent>

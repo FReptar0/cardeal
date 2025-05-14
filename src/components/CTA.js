@@ -15,7 +15,7 @@ export default function CTA() {
   }, []);
 
   const handleClick = () => {
-    router.push("/rental");
+    router.push("/");
   };
 
   return (
