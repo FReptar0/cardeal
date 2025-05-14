@@ -72,11 +72,16 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+    privacy: yup
+      .boolean()
+      .oneOf([true], "Debes aceptar la política de privacidad"),
     ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+      email: yup
+        .string()
+        .email("Correo inválido")
+        .required("El correo es obligatorio"),
       birthDate: yup
         .date()
         .required("La fecha de nacimiento es obligatoria")
@@ -224,6 +229,17 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         return;
       }
 
+      const tsdRes = await fetch("/api/bookings/registerReservation", {
+        method: "POST",
+      });
+      if (!tsdRes.ok) {
+        const { error } = await tsdRes.json();
+        toast.error("Error al registrar en TSD: " + (error || "desconocido"));
+        return;
+      }
+      const { confirmNum } = await tsdRes.json();
+      console.log("✅ Confirmación TSD:", confirmNum);
+
       if (isOnline) {
         // Prepara datos para el formulario Flap
         setPaymentData({
@@ -279,6 +295,17 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         toast.error(bookingJson.message || "Error al crear la reserva");
         return;
       }
+
+      const tsdRes = await fetch("/api/bookings/registerReservation", {
+        method: "POST",
+      });
+      if (!tsdRes.ok) {
+        const { error } = await tsdRes.json();
+        toast.error("Error al registrar en TSD: " + (error || "desconocido"));
+        return;
+      }
+      const { confirmNum } = await tsdRes.json();
+      console.log("✅ Confirmación TSD:", confirmNum);
 
       clearBooking();
       clearSearch();
@@ -359,7 +386,10 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                           errors.phone ? "#d32f2f" : "#c4c4c4"
                         }`,
                       }}
-                      buttonStyle={{ border: "none", backgroundColor: "transparent" }}
+                      buttonStyle={{
+                        border: "none",
+                        backgroundColor: "transparent",
+                      }}
                       containerStyle={{ width: "100%" }}
                     />
                     {errors.phone && (
@@ -435,7 +465,9 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowConfirmPassword((p) => !p)}>
+                      <IconButton
+                        onClick={() => setShowConfirmPassword((p) => !p)}
+                      >
                         {showConfirmPassword ? (
                           <VisibilityOffOutlined />
                         ) : (
@@ -443,7 +475,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                         )}
                       </IconButton>
                     </InputAdornment>
-                  ),  
+                  ),
                 }}
               />
             </>
@@ -453,7 +485,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             options={locations}
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
             getOptionLabel={(opt) => {
-              if (!opt || typeof opt !== "object") return typeof opt === "string" ? opt : "";
+              if (!opt || typeof opt !== "object")
+                return typeof opt === "string" ? opt : "";
               const ciudad = opt.ciudad?.trim() || opt.city?.trim() || "";
               const nombre = opt.nombre?.trim() || opt.name?.trim() || "";
               return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
@@ -461,12 +494,25 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             value={
               // Si es string plano, mostrarlo como opción seleccionada
               typeof searchData.pickupLocation === "string"
-                ? { id: "custom", ciudad: "", nombre: searchData.pickupLocation }
-                : locations.find((loc) => loc.id === searchData.pickupLocation?.id) || null
+                ? {
+                    id: "custom",
+                    ciudad: "",
+                    nombre: searchData.pickupLocation,
+                  }
+                : locations.find(
+                    (loc) => loc.id === searchData.pickupLocation?.id
+                  ) || null
             }
-            onChange={(_, v) => v && setSearchData({ ...searchData, pickupLocation: v })}
+            onChange={(_, v) =>
+              v && setSearchData({ ...searchData, pickupLocation: v })
+            }
             renderInput={(params) => (
-              <TextField {...params} label="Lugar de retiro" margin="normal" fullWidth />
+              <TextField
+                {...params}
+                label="Lugar de retiro"
+                margin="normal"
+                fullWidth
+              />
             )}
           />
           <Autocomplete
@@ -474,14 +520,19 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             isOptionEqualToValue={(option, value) => {
               if (!option || !value) return false;
               if (typeof value === "string") {
-                const ciudad = option.ciudad?.trim() || option.city?.trim() || "";
-                const nombre = option.nombre?.trim() || option.name?.trim() || "";
-                return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}` === value;
+                const ciudad =
+                  option.ciudad?.trim() || option.city?.trim() || "";
+                const nombre =
+                  option.nombre?.trim() || option.name?.trim() || "";
+                return (
+                  `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}` === value
+                );
               }
               return option.id === value.id;
             }}
             getOptionLabel={(opt) => {
-              if (!opt || typeof opt !== "object") return typeof opt === "string" ? opt : "";
+              if (!opt || typeof opt !== "object")
+                return typeof opt === "string" ? opt : "";
               const ciudad = opt.ciudad?.trim() || opt.city?.trim() || "";
               const nombre = opt.nombre?.trim() || opt.name?.trim() || "";
               return `${ciudad}${ciudad && nombre ? " – " : ""}${nombre}`;
@@ -489,11 +540,20 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             value={
               typeof searchData.returnLocation === "string"
                 ? searchData.returnLocation
-                : locations.find((loc) => loc.id === searchData.returnLocation?.id) || null
+                : locations.find(
+                    (loc) => loc.id === searchData.returnLocation?.id
+                  ) || null
             }
-            onChange={(_, v) => setSearchData({ ...searchData, returnLocation: v })}
+            onChange={(_, v) =>
+              setSearchData({ ...searchData, returnLocation: v })
+            }
             renderInput={(params) => (
-              <TextField {...params} label="Lugar de entrega" margin="normal" fullWidth />
+              <TextField
+                {...params}
+                label="Lugar de entrega"
+                margin="normal"
+                fullWidth
+              />
             )}
           />
 
