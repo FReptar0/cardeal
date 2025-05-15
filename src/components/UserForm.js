@@ -37,6 +37,10 @@ import { sub } from "date-fns";
 // Importa el componente que construye y envía el formulario a Flap
 import CardPaymentForm from "@/components/CardPaymentForm";
 
+//para la reserva hardcodeada
+
+import { addReservationHardcoded } from "@/pages/api/reserva";
+
 export default function UserForm({ paidOnline, setPaidOnline }) {
   const router = useRouter();
   const { jwt, login } = useAuth();
@@ -340,6 +344,21 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     );
   }
 
+  // 1) Justo antes del return, define este handler:
+  const handleCounterReservation = async () => {
+    setSubmitting(true);
+    try {
+      const xmlResponse = await addReservationHardcoded();
+      console.log("TSDRez response:", xmlResponse);
+      toast.success("Reserva enviada correctamente");
+      // si quieres, redirige o actualiza estado aquí
+    } catch (err) {
+      console.error("Error al enviar reserva TSD:", err);
+      toast.error("No se pudo enviar la reserva");
+    } finally {
+      setSubmitting(false);
+    }
+  };
   return (
     <>
       <Card sx={{ p: 3, width: "100%" }}>

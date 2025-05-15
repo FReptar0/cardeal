@@ -97,12 +97,12 @@ const Header = () => {
 
   const formatPathName = (path) => {
     if (path === "/") return "Inicio";
-    if (path === "/atencion-cliente") return "Atención a Clientes";
-    if (path === "/vehiculos") return "Vehiculos";
+    if (path === "/atencion-cliente") return "Atención a clientes";
+    if (path === "/vehiculos") return "Vehículos";
     if (path === "/sucursales") return "Sucursales";
-    if (path === "/soluciones-empresariales") return "Convenios Corporativos";
+    if (path === "/soluciones-empresariales") return "Convenios corporativos";
     if (path === "/FAQ") return "Preguntas frecuentes";
-    return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2);
+    return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2).toLowerCase();
   };
 
   return (
@@ -172,6 +172,7 @@ const Header = () => {
                     borderBottom:
                       activePath === path ? "2px solid #141414" : "none",
                     cursor: "pointer",
+                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
                   }}
                   onClick={() => handleNavigation(path)}
                 >
@@ -208,7 +209,7 @@ const Header = () => {
                     fontWeight: 500,
                     fontSize: "0.75rem", // Tamaño más pequeño
                     letterSpacing: "0.02857em",
-                    textTransform: "uppercase",
+                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
                     cursor: "pointer",
                     transition: "background 0.3s",
                     borderRadius: "5px",
@@ -296,7 +297,7 @@ const Header = () => {
                     fontSize: "0.875rem",
                     lineHeight: 1.75,
                     letterSpacing: "0.02857em",
-                    textTransform: "uppercase",
+                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
                     borderBottom:
                       activePath === path ? "2px solid #141414" : "none",
                     cursor: "pointer",
