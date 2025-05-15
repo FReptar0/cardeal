@@ -677,16 +677,23 @@ export default function SearchBar({ sx = {}, onSearch }) {
         color="primary"
         sx={{ backgroundColor: "#d60812", width: "100%" }}
         onClick={() => {
-          onSearch({
+          const filters = {
             pickupLocation: searchData.pickupLocation,
             returnLocation: searchData.returnLocation,
             pickupDate: searchData.pickupDate,
             pickupTime: searchData.pickupTime,
             returnDate: searchData.returnDate,
             returnTime: searchData.returnTime,
-          });
-          onSearch(searchData);
-          router.push("/rental");
+            sameOffice: searchData.sameOffice,
+          };
+
+          setSearchData(filters); 
+
+          onSearch?.(filters); 
+
+          if (router.pathname !== "/rental") {
+            router.push("/rental"); 
+          }
         }}
       >
         Buscar
