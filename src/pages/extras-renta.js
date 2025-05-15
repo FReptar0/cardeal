@@ -28,7 +28,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 // Arreglo de extras
 const extras = [
   {
-    id: "conductor_adicional",
+    id: "ADD",
     nombre: "Conductor Adicional",
     descripcion:
       "Se pueden incluir conductores adicionales con un costo extra por día.",
@@ -37,7 +37,7 @@ const extras = [
     imagen: "/extras/adicional.webp",
   },
   {
-    id: "conductor_menor",
+    id: "UAGE",
     nombre: "Conductor Menor de 25 Años",
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
@@ -46,7 +46,7 @@ const extras = [
     imagen: "/extras/menor.webp",
   },
   {
-    id: "baby_seat",
+    id: "BABY",
     nombre: "Baby Seat (Grupo 0+)",
     descripcion: "Bebé (grupo 0+), niños de 1 a 13 kilos.",
     precio: 150,
@@ -54,7 +54,7 @@ const extras = [
     imagen: "/extras/baby-seat.webp",
   },
   {
-    id: "child_seat",
+    id: "CHILD",
     nombre: "Child Seat (Grupo 0/1/2)",
     descripcion: "Niños de 1 a 25 kilos.",
     precio: 150,
@@ -62,7 +62,7 @@ const extras = [
     imagen: "/extras/child-seat.webp",
   },
   {
-    id: "booster",
+    id: "BOOST",
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
     precio: 150,
