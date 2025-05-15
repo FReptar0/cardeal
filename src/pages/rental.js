@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
@@ -26,10 +27,9 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
-const CompactHeader = dynamic(
-  () => import("../components/CompactHeader"),
-  { ssr: false }
-);
+const CompactHeader = dynamic(() => import("../components/CompactHeader"), {
+  ssr: false,
+});
 
 export default function RentalPage() {
   const [loadingPrices, setLoadingPrices] = useState(false);
@@ -78,11 +78,38 @@ export default function RentalPage() {
   }, [selectedCarIndex]);
 
   // Loader visual
-  const Loader = () => (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh', width: '100%' }}>
-      <Typography variant="h6" sx={{ color: '#d60812', fontWeight: 'bold' }}>Cargando autos disponibles...</Typography>
-    </Box>
-  );
+  const Loader = () => {
+    const [dots, setDots] = useState("");
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setDots((prev) => (prev.length < 3 ? prev + "." : ""));
+      }, 200); // Cambia cada medio segundo
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "20vh",
+          width: "100%",
+          gap: 2,
+        }}
+      >
+        <CircularProgress sx={{ color: "#d60812" }} size={48} />
+        <Typography
+          variant="h6"
+          sx={{ color: "#d60812", fontWeight: "bold", textAlign: "center" }}
+        >
+          Cargando autos disponibles{dots}
+        </Typography>
+      </Box>
+    );
+  };
 
   // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
   const fetchRates = async (
@@ -92,50 +119,37 @@ export default function RentalPage() {
   ) => {
     try {
       setLoadingPrices(true); // Mostrar loader
-      console.log(
-        "🛞 Solicitando tarifas para:",
-        location,
-        pickupDateTime,
-        returnDateTime
-      );
       const res = await fetch("/api/rates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ location, pickupDateTime, returnDateTime }),
       });
 
-      console.log("🛞 Respuesta de TSD:", res);
+      // console.log("🛞 Respuesta de TSD:", res);
       const rates = await res.json();
-      console.log("🛞 Precios TSD por categoría:", rates);
+      // console.log("🛞 Precios TSD por categoría:", rates);
 
-      // Filtra y mapea solo los autos cuya categoría coincide con los rates
       const filtered = rates
-        .filter(rate => {
-          const car = carsData.find(car => car.abbreviation === rate.category);
-          const price = rate.totalCharges || rate.baseRate;
-          return car && price && price !== "N/A";
-        })
-        .map(rate => {
-          // Hardcodea los valores del coche mostrado y los precios
+        .map((rate) => {
+          const carInfo = carsData.find(
+            (car) => car.abbreviation === rate.category
+          );
+
+          if (!carInfo || !rate.baseRate || rate.baseRate === "N/A")
+            return null;
+
+          const base = parseFloat(rate.baseRate);
+          const discount = parseFloat((base * 0.9).toFixed(2)); // 10% off
+
           return {
+            ...carInfo,
             ...rate,
-            image: "/photos/economico/March-frente.webp",
-            name: "NISSAN MARCH ADVANCE o Similar",
-            luggage: 2,
-            luggageSize: "chicas",
-            luggageDimensions: {
-              width: "40cm",
-              height: "50cm",
-              depth: "20cm"
-            },
-            passengers: 5,
-            doors: 4,
-            transmission: "Automática",
-            airConditioning: true,
-            price2: 520, // Pago en mostrador (debe ser price2 para CarCard)
-            price: 468 // Pago en línea (10% off)
+            price2: base,
+            price: discount,
           };
-        });
+        })
+        .filter(Boolean); // elimina los nulos
+
       setCarsFn(filtered);
       setLoadedFn(true);
       setLoadingPrices(false); // Oculta loader
@@ -147,72 +161,12 @@ export default function RentalPage() {
     }
   };
 
-  // 1) Mejora tu formateador para que reciba directamente un Date:
-  function formatTSDDate(date) {
-    const pad = (n) => String(n).padStart(2, "0");
-    let h = date.getHours();
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return (
-      `${pad(date.getMonth() + 1)}${pad(
-        date.getDate()
-      )}${date.getFullYear()} ` + `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
-    );
-  }
-
   // 2) En tu useEffect, parsea la hora y monta bien los Date:
   useEffect(() => {
-    const { pickupDate, pickupTime, returnDate, returnTime, pickupLocation } =
-      searchContextData || {};
-
-    // Solo dispara cuando tengas todo lo necesario:
-    const ready =
-      pickupDate instanceof Date &&
-      pickupTime &&
-      returnDate instanceof Date &&
-      returnTime &&
-      pickupLocation?.id;
-
-    if (!ratesLoaded && ready) {
-      // --- parsear pickup ---
-      const pickDt = new Date(pickupDate); // clona la fecha
-      {
-        // "08:00 AM" → [ "08:00", "AM" ]
-        const [time, ampm] = pickupTime.split(" ");
-        let [h, m] = time.split(":").map(Number);
-        if (ampm === "PM" && h < 12) h += 12;
-        if (ampm === "AM" && h === 12) h = 0;
-        pickDt.setHours(h, m, 0, 0);
-      }
-
-      // --- parsear return ---
-      const retDt = new Date(returnDate);
-      {
-        const [time, ampm] = returnTime.split(" ");
-        let [h, m] = time.split(":").map(Number);
-        if (ampm === "PM" && h < 12) h += 12;
-        if (ampm === "AM" && h === 12) h = 0;
-        retDt.setHours(h, m, 0, 0);
-      }
-
-      // Formatea a lo que TSD espera (p.e. "05142025 08:00 AM")
-      const pickupDateTime = formatTSDDate(pickDt);
-      const returnDateTime = formatTSDDate(retDt);
-
-      console.log(
-        "✈️ Solicitando tarifas para:",
-        pickupLocation.id,
-        pickupDateTime,
-        returnDateTime
-      );
-
-      fetchRates(
-        { location: pickupLocation.id, pickupDateTime, returnDateTime },
-        setFilteredCars,
-        setRatesLoaded
-      );
+    if (searchContextData?.pickupDate) {
+      handleSearch(searchContextData);
     }
-  }, [ratesLoaded, searchContextData]);
+  }, []);
 
   // Asegura que searchData tenga un valor inicial para evitar problemas de hidratación
   useEffect(() => {
@@ -255,7 +209,7 @@ export default function RentalPage() {
     setPreviousCarIndex(selectedCarIndex);
     setSelectedCarIndex(index);
     setSelectedCar(car); // Guarda el auto seleccionado en el contexto
-    console.log("Seleccionaste el índice:", index);
+    // console.log("Seleccionaste el índice:", index);
 
     if (index < filteredCars.length - 1) {
       const nextCar = filteredCars[index + 1];
@@ -266,14 +220,8 @@ export default function RentalPage() {
     }
   };
 
-  const handleCloseRecommendation = () => {
-    console.log("Modal cerrado sin elegir. Revirtiendo a:", previousCarIndex);
-    setSelectedCarIndex(previousCarIndex);
-    setOpenRecommendation(false);
-  };
-
   const handleKeepCurrent = () => {
-    console.log(`Mantener selección: ${selectedCarIndex}`);
+    // console.log(`Mantener selección: ${selectedCarIndex}`);
     setOpenRecommendation(false);
   };
 
@@ -282,7 +230,7 @@ export default function RentalPage() {
       selectedCarIndex !== null &&
       selectedCarIndex < filteredCars.length - 1
     ) {
-      console.log("Seleccionar siguiente:", selectedCarIndex + 1);
+      // console.log("Seleccionar siguiente:", selectedCarIndex + 1);
       const newIndex = selectedCarIndex + 1;
       setSelectedCarIndex(newIndex);
       setSelectedCar(filteredCars[newIndex]); // Actualizamos la selección global con el auto siguiente
@@ -298,43 +246,33 @@ export default function RentalPage() {
     }
   };
 
-  const fetchPrices = async (searchData) => {
-    try {
-      const response = await fetch(
-        `/api/prices?pickupLocation=${searchData.pickupLocation}&returnLocation=${searchData.returnLocation}&pickupDate=${searchData.pickupDate}&pickupTime=${searchData.pickupTime}&returnDate=${searchData.returnDate}&returnTime=${searchData.returnTime}`
-      );
-      if (!response.ok) {
-        throw new Error("Error al obtener los precios");
-      }
-      const prices = await response.json();
-      return prices;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  };
+  const handleSearch = (filters) => {
+    const pickDt = new Date(filters.pickupDate);
+    const [pickTime, pickAmpm] = filters.pickupTime.split(" ");
+    let [ph, pm] = pickTime.split(":").map(Number);
+    if (pickAmpm === "PM" && ph < 12) ph += 12;
+    if (pickAmpm === "AM" && ph === 12) ph = 0;
+    pickDt.setHours(ph, pm, 0, 0);
 
-  const handleSearch = async (filters) => {
-    setSearchData(filters); // Guarda los datos de búsqueda
-    setLoadingPrices(true); // Muestra un indicador de carga
+    const retDt = new Date(filters.returnDate);
+    const [retTime, retAmpm] = filters.returnTime.split(" ");
+    let [rh, rm] = retTime.split(":").map(Number);
+    if (retAmpm === "PM" && rh < 12) rh += 12;
+    if (retAmpm === "AM" && rh === 12) rh = 0;
+    retDt.setHours(rh, rm, 0, 0);
 
-    const prices = await fetchPrices(filters); // Obtén los precios desde el endpoint
+    const pickupDateTime = formatTSDDate(pickDt);
+    const returnDateTime = formatTSDDate(retDt);
 
-    // Actualiza los datos de los vehículos con los precios obtenidos
-    const updatedCars = carsData.map((car) => {
-      const matchingPrice = prices.find(
-        (price) => price.classCode === car.abbreviation
-      );
-      return {
-        ...car,
-        price: matchingPrice
-          ? `$${matchingPrice.rateAmount.toFixed(2)}`
-          : "N/A", // Asigna el precio formateado o "N/A" si no hay coincidencia
-      };
-    });
-
-    setFilteredCars(updatedCars); // Actualiza los vehículos filtrados
-    setLoadingPrices(false); // Oculta el indicador de carga
+    fetchRates(
+      {
+        location: filters.pickupLocation?.id,
+        pickupDateTime,
+        returnDateTime,
+      },
+      setFilteredCars,
+      setRatesLoaded
+    );
   };
 
   return (
@@ -400,29 +338,34 @@ export default function RentalPage() {
         >
           {loadingPrices ? (
             <Loader />
+          ) : filteredCars.length === 0 ? (
+            <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="h5"
+                sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
+              >
+                No hay autos disponibles para tu búsqueda.
+              </Typography>
+            </Box>
           ) : (
-            filteredCars.length === 0 ? (
-              <Typography variant="h6" sx={{ color: '#d60812', fontWeight: 'bold', mt: 4 }}>No hay autos disponibles para tu búsqueda.</Typography>
-            ) : (
-              filteredCars.map((car, index) => (
-                <Box
-                  key={index}
-                  ref={(el) => (scrollRefs.current[index] = el)}
-                  onClick={() => handleCarSelect(car, index)}
-                  sx={{
-                    width: "100%",
-                    maxWidth: "1200px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <CarCard
-                    car={car}
-                    price={car.price}
-                    isSelected={selectedCarIndex === index}
-                  />
-                </Box>
-              ))
-            )
+            filteredCars.map((car, index) => (
+              <Box
+                key={index}
+                ref={(el) => (scrollRefs.current[index] = el)}
+                onClick={() => handleCarSelect(car, index)}
+                sx={{
+                  width: "100%",
+                  maxWidth: "1200px",
+                  cursor: "pointer",
+                }}
+              >
+                <CarCard
+                  car={car}
+                  price={car.price}
+                  isSelected={selectedCarIndex === index}
+                />
+              </Box>
+            ))
           )}
         </Box>
       </Box>

@@ -7,9 +7,11 @@ const timeZone = "America/Mexico_City";
 
 // Función para obtener la fecha actual considerando la zona horaria de CDMX
 function getCurrentMexicoDate() {
-  // Convierte la fecha actual al string en la zona de México y la vuelve a transformar en Date
-  return new Date(new Date().toLocaleString("en-US", { timeZone }));
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone }));
+  now.setHours(0, 0, 0, 0); // <-- Forzamos a medianoche de CDMX
+  return now;
 }
+
 
 const initialSearchData = {
   pickupLocation: {
@@ -66,18 +68,29 @@ export const SearchProvider = ({ children }) => {
   useEffect(() => {
     const today = getCurrentMexicoDate();
 
-    if (searchData.pickupDate < today || searchData.returnDate < today) {
-      const updatedPickupDate = today;
-      const updatedReturnDate = new Date(today);
-      updatedReturnDate.setDate(today.getDate() + 1);
+    setSearchData((prev) => {
+      const pickup = new Date(prev.pickupDate);
+      const returnD = new Date(prev.returnDate);
 
-      setSearchData((prev) => ({
-        ...prev,
-        pickupDate: updatedPickupDate,
-        returnDate: updatedReturnDate,
-      }));
-    }
-  }, [searchData]);
+      pickup.setHours(0, 0, 0, 0);
+      returnD.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      if (pickup < today || returnD < today) {
+        const updatedPickupDate = new Date(today);
+        const updatedReturnDate = new Date(today);
+        updatedReturnDate.setDate(today.getDate() + 1);
+
+        return {
+          ...prev,
+          pickupDate: updatedPickupDate,
+          returnDate: updatedReturnDate,
+        };
+      }
+
+      return prev; // No hay cambio necesario
+    });
+  }, []); // 👈 Solo se ejecuta una vez al montar
 
   const clearSearch = () => {
     setSearchData(initialSearchData);
@@ -85,7 +98,7 @@ export const SearchProvider = ({ children }) => {
   };
 
   return (
-    <SearchContext.Provider value={{ searchData, setSearchData, clearSearch  }}>
+    <SearchContext.Provider value={{ searchData, setSearchData, clearSearch }}>
       {children}
     </SearchContext.Provider>
   );
