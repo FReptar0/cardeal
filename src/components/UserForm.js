@@ -205,7 +205,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           returnLocationId: searchData.returnLocation?.id,
           pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
           returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-          classCode: selectedCar?.classCode,
+          classCode: selectedCar?.abbreviation, // Pass abbreviation as classCode
           unitNumber: selectedCar?.unitNumber,
           renterFirst: contactName.split(" ")[0],
           renterLast: contactName.split(" ").slice(1).join(" "),
@@ -246,6 +246,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           discount,
         }),
       });
+
       const bookingJson = await bookingRes.json();
       if (!bookingRes.ok) {
         toast.error(bookingJson.message || "Error al crear la reserva");
