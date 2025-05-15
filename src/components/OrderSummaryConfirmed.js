@@ -2,6 +2,7 @@
 import React from "react";
 import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
 import PropTypes from "prop-types";
+import extrasData from "../data/extras.json";
 
 export default function OrderSummaryConfirmed({
   selectedCar,
@@ -21,6 +22,25 @@ export default function OrderSummaryConfirmed({
   discount,
   paidOnline,
 }) {
+  console.log("extrasInfo", extrasInfo);
+
+  // Si extrasInfo es un objeto tipo {BABY: 1}, mapearlo usando el JSON
+  let extrasArray = [];
+  if (extrasInfo && !Array.isArray(extrasInfo) && typeof extrasInfo === "object") {
+    extrasArray = Object.entries(extrasInfo).map(([id, cantidad]) => {
+      const def = extrasData.find((e) => e.id === id);
+      if (!def || !cantidad) return null;
+      return {
+        ...def,
+        cantidad,
+        lineCost: def.precio * cantidad * rentalDays,
+      };
+    }).filter(Boolean);
+  } else if (Array.isArray(extrasInfo)) {
+    // Si ya es un array, úsalo directo (para compatibilidad)
+    extrasArray = extrasInfo;
+  }
+
   return (
     <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
       <CardContent>
@@ -117,8 +137,8 @@ export default function OrderSummaryConfirmed({
         <Typography variant="subtitle1">
           <b>Extras Seleccionados:</b>
         </Typography>
-        {extrasInfo.length > 0 ? (
-          extrasInfo.map((ex) => (
+        {extrasArray.length > 0 ? (
+          extrasArray.map((ex) => (
             <Box
               key={ex.id}
               sx={{ display: "flex", justifyContent: "space-between" }}
@@ -220,7 +240,7 @@ OrderSummaryConfirmed.propTypes = {
   totalCarCost: PropTypes.number,
   selectedInsurance: PropTypes.object,
   totalInsuranceCost: PropTypes.number,
-  extrasInfo: PropTypes.array,
+  extrasInfo: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   ivaCost: PropTypes.number,
   otherCharges: PropTypes.number,
   totalWithIva: PropTypes.number,

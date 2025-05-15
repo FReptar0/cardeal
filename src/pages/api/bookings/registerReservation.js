@@ -1,25 +1,45 @@
 // pages/api/registerReservation.js
 import { parseStringPromise } from "xml2js";
+function formatDateTimeForTSD(dateInput) {
+  // Asegúrate de trabajar siempre con un Date
+  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
 
-function formatDateTimeForTSD(date) {
+  // Si quieres la hora en UTC (coincidiendo con TimeZone="UTC"), usa los getters UTC:
   const pad = (n) => String(n).padStart(2, "0");
-  let h = date.getHours();
+  const month = pad(date.getUTCMonth() + 1);
+  const day = pad(date.getUTCDate());
+  const year = date.getUTCFullYear();
+  let h = date.getUTCHours();
   const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12; // Convert to 12-hour format
-  return `${pad(date.getMonth() + 1)}${pad(
-    date.getDate()
-  )}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
+  h = h % 12 || 12; // convierte a 12-hour
+  const hours = pad(h);
+  const minutes = pad(date.getUTCMinutes());
+
+  return `${month}${day}${year} ${hours}:${minutes} ${ampm}`;
 }
 
-// Función para analizar y convertir fechas al formato deseado
-function parseAndFormatDate(dateString) {
-  // Intentar analizar la fecha con el constructor Date
-  const date = new Date(dateString);
-  if (isNaN(date)) {
-    console.error("❌ Error: Fecha inválida recibida:", dateString);
-    return null;
-  }
-  return formatDateTimeForTSD(date);
+function formatCustomDateTime(inputString) {
+  // 1. Quita los paréntesis y su contenido
+  const noParens = inputString.replace(/\s*\([^)]*\)/g, "").trim();
+
+  // 2. Extrae la hora al final ("05:30 PM")
+  const timeMatch = noParens.match(/(\d{1,2}:\d{2}\s[AP]M)$/);
+  const timePart = timeMatch ? timeMatch[1] : "";
+
+  // 3. Quita el GMT offset y la hora del final, dejando solo la parte de fecha
+  let dateStr = noParens
+    .replace(/\s*GMT[+-]\d{4}/, "") // elimina "GMT-0600"
+    .replace(/\s*\d{1,2}:\d{2}\s[AP]M$/, "") // elimina la hora extraída
+    .trim();
+
+  // 4. Parsea la fecha limpia
+  const date = new Date(dateStr);
+  const pad = (n) => String(n).padStart(2, "0");
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const year = date.getFullYear();
+
+  return `${month}${day}${year} ${timePart}`;
 }
 
 export default async function handler(req, res) {
@@ -62,15 +82,15 @@ export default async function handler(req, res) {
     insuranceCode = "", // string con código TSD de seguro o vacío
   } = req.body;
 
-  console.log("Fecha", pickupDateTime);
-  console.log("Fecha", returnDateTime);
+  console.log("Fecha", formatCustomDateTime(pickupDateTime));
+  console.log("Fecha", formatCustomDateTime(returnDateTime));
 
   // Log the received XML payload
-  console.log("📥 XML recibido en el backend:", req.body);
+  // console.log("📥 XML recibido en el backend:", req.body);
 
   // Add a console log to print protection code and extras
-  console.log("🔒 Insurance Code:", insuranceCode);
-  console.log("🛠️ Extras Codes:", extrasCodes);
+  // console.log("🔒 Insurance Code:", insuranceCode);
+  // console.log("🛠️ Extras Codes:", extrasCodes);
 
   // Construye el bloque de <ExtraCode> con códigos de extras y protección
   let extrasXML = extrasCodes
@@ -86,12 +106,12 @@ export default async function handler(req, res) {
   //<Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
 
   // Convertir las fechas recibidas
-  const formattedPickupDateTime = parseAndFormatDate(pickupDateTime);
-  const formattedReturnDateTime = parseAndFormatDate(returnDateTime);
+  const formattedPickupDateTime = formatCustomDateTime(pickupDateTime);
+  const formattedReturnDateTime = formatCustomDateTime(returnDateTime);
 
-  if (!formattedPickupDateTime || !formattedReturnDateTime) {
-    return res.status(400).json({ error: "Fechas inválidas en el payload" });
-  }
+  // if (!formattedPickupDateTime || !formattedReturnDateTime) {
+  //   return res.status(400).json({ error: "Fechas inválidas en el payload" });
+  // }
 
   // Genera el XML con los datos recibidos
   const xmlBody = `
@@ -115,7 +135,7 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickupDateTime}</PickupDateTime>
     <ReturnDateTime>${formattedReturnDateTime}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <UnitNumber>${unitNumber}</UnitNumber>
+    <UnitNumber>KIC001</UnitNumber>
     <RenterFirst>${renterFirst}</RenterFirst>
     <RenterLast>${renterLast}</RenterLast>
     ${extrasXML}
@@ -126,7 +146,7 @@ export default async function handler(req, res) {
   console.log("XML final para tsd:", xmlBody);
 
   // Commented out the POST request to TSD to prevent sending it
-  /*
+
   try {
     console.log("⏳ Enviando petición a TSD...");
     const response = await fetch(endpoint, {
@@ -155,5 +175,4 @@ export default async function handler(req, res) {
     console.error("❌ Error al registrar reserva:", error);
     return res.status(500).json({ error: "No se pudo registrar la reserva" });
   }
-  */
 }
