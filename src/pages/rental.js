@@ -264,8 +264,6 @@ export default function RentalPage() {
     const pickupDateTime = formatTSDDate(pickDt);
     const returnDateTime = formatTSDDate(retDt);
 
-
-
     fetchRates(
       {
         location: filters.pickupLocation?.id,
@@ -341,12 +339,14 @@ export default function RentalPage() {
           {loadingPrices ? (
             <Loader />
           ) : filteredCars.length === 0 ? (
-            <Typography
-              variant="h6"
-              sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
-            >
-              No hay autos disponibles para tu búsqueda.
-            </Typography>
+            <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="h5"
+                sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
+              >
+                No hay autos disponibles para tu búsqueda.
+              </Typography>
+            </Box>
           ) : (
             filteredCars.map((car, index) => (
               <Box
