@@ -5,7 +5,7 @@ function formatDateTime(date) {
   const pad = (n) => String(n).padStart(2, "0");
   let h = date.getHours();
   const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
+  h = h % 12 || 12; // Convert to 12-hour format
   return (
     `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ` +
     `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
@@ -13,6 +13,7 @@ function formatDateTime(date) {
 }
 
 export default async function handler(req, res) {
+  console.log("🔍 Handler reached: Processing request...");
   const endpoint = process.env.TSD_ENDPOINT;
   const {
     TSD_SENDER_ID,
@@ -47,16 +48,19 @@ export default async function handler(req, res) {
     insuranceCode = "", // string con código TSD de seguro o vacío
   } = req.body;
 
+  // Log the received XML payload
+  console.log("📥 XML recibido en el backend:", req.body);
+
   // Add a console log to print protection code and extras
   console.log("🔒 Insurance Code:", insuranceCode);
   console.log("🛠️ Extras Codes:", extrasCodes);
 
-  // Construye el bloque de <ExtraCode>
+  // Construye el bloque de <ExtraCode> con códigos de extras y protección
   let extrasXML = extrasCodes
-    .map((code) => `    <ExtraCode>${code}</ExtraCode>`)
+    .map((code) => `    <ExtraCode>${code}</ExtraCode>`) // Agrega cada código de extra
     .join("\n");
   if (insuranceCode) {
-    extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML;
+    extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML; // Agrega el código de protección al inicio
   }
 
   console.log("🚀 registerReservation Payload:", req.body);
@@ -64,43 +68,40 @@ export default async function handler(req, res) {
   // Por si se va alv
   //<Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
 
-  // Payload completamente hardcodeado según tu reserva de ejemplo
+  // Genera el XML con los datos recibidos
   const xmlBody = `
 <?xml version="1.0" encoding="UTF-8"?>
 <TRNXML Version="1.0.0">
-  
   <Dategmtime TimeZone="UTC">${formatDateTime(new Date())}</Dategmtime>
   <Sender><SenderID>GRAN1</SenderID></Sender>
   <Recipient><RecipientID>TRN</RecipientID></Recipient>
   <TradingPartner><TradingPartnerCode>WEB01</TradingPartnerCode></TradingPartner>
   <Customer>
-    <CustomerNumber>43057</CustomerNumber>
-    <Passcode>43057</Passcode>
+    <CustomerNumber>${customerNumber}</CustomerNumber>
+    <Passcode>${passcode}</Passcode>
   </Customer>
   <Message>
     <MessageID>ADDREZ</MessageID>
     <MessageDesc>Make Reservation</MessageDesc>
   </Message>
   <Payload>
-    <RentalLocationID>MXCSAT</RentalLocationID>
-    <ReturnLocationID>MXCSAT</ReturnLocationID>
-    <PickupDateTime>05152025 01:00 PM</PickupDateTime>
-    <ReturnDateTime>05182025 02:00 PM</ReturnDateTime>
-    <ClassCode>SFAR</ClassCode>
-
-    <!-- Datos del conductor/clientes -->
-    <RenterLast>Daniel</RenterLast>   <!-- tu nombre, campo obligatorio -->
-    <RenterFirst>Carrillo</RenterFirst>   <!-- tu apellido, campo opcional -->
-
-    <UnitNumber>KIC001</UnitNumber>
-
-
-    <!-- si necesitaras otros datos (email, teléfono, etc.), hay tags disponibles -->
+    <RentalLocationID>${pickupLocationId}</RentalLocationID>
+    <ReturnLocationID>${returnLocationId}</ReturnLocationID>
+    <PickupDateTime>${pickupDateTime}</PickupDateTime>
+    <ReturnDateTime>${returnDateTime}</ReturnDateTime>
+    <ClassCode>${classCode}</ClassCode>
+    <UnitNumber>${unitNumber}</UnitNumber>
+    <RenterFirst>${renterFirst}</RenterFirst>
+    <RenterLast>${renterLast}</RenterLast>
+    ${extrasXML}
   </Payload>
 </TRNXML>`.trim();
 
-  console.log("📄 XML a enviar:\n", xmlBody);
+  // Imprime el XML generado en la consola
+  console.log("XML final para tsd:", xmlBody);
 
+  // Commented out the POST request to TSD to prevent sending it
+  /*
   try {
     console.log("⏳ Enviando petición a TSD...");
     const response = await fetch(endpoint, {
@@ -129,4 +130,5 @@ export default async function handler(req, res) {
     console.error("❌ Error al registrar reserva:", error);
     return res.status(500).json({ error: "No se pudo registrar la reserva" });
   }
+  */
 }
