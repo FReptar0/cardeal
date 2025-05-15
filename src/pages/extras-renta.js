@@ -33,6 +33,7 @@ const extras = [
     descripcion:
       "Se pueden incluir conductores adicionales con un costo extra por día.",
     precio: 110,
+    codeExtras: "ADD",
     imagen: "/extras/adicional.webp",
   },
   {
@@ -41,6 +42,7 @@ const extras = [
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
     precio: 110,
+    codeExtras: "UAGE",
     imagen: "/extras/menor.webp",
   },
   {
@@ -48,6 +50,7 @@ const extras = [
     nombre: "Baby Seat (Grupo 0+)",
     descripcion: "Bebé (grupo 0+), niños de 1 a 13 kilos.",
     precio: 150,
+    codeExtras: "BABY",
     imagen: "/extras/baby-seat.webp",
   },
   {
@@ -55,6 +58,7 @@ const extras = [
     nombre: "Child Seat (Grupo 0/1/2)",
     descripcion: "Niños de 1 a 25 kilos.",
     precio: 150,
+    codeExtras: "CHILD",
     imagen: "/extras/child-seat.webp",
   },
   {
@@ -62,6 +66,7 @@ const extras = [
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
     precio: 150,
+    codeExtras: "BOOST",
     imagen: "/extras/Booster.webp",
   },
 ];
@@ -105,24 +110,31 @@ const ExtrasRenta = () => {
     }
   }, []);
 
+  // Add a console log to print selected extras
+  useEffect(() => {
+    console.log("Selected extras:", selectedExtras);
+  }, [selectedExtras]);
+
   // Función para modificar la cantidad de un extra
   const modificarCantidad = (id, operacion) => {
+    const extra = extras.find((item) => item.id === id);
+    if (!extra) {
+      console.warn(`No existe extra con id '${id}'`);
+      return;
+    }
+
+    const code = extra.codeExtras;
     setSelectedExtras((prev) => {
-      const currentQty = prev[id] || 0;
+      const currentQty = prev[code] || 0;
       let nuevaCantidad = currentQty;
 
       if (operacion === "sumar") {
-        // Para "baby_seat", "child_seat" y "booster", validamos que la suma combinada no exceda 2
         if (
           (id === "baby_seat" || id === "child_seat" || id === "booster") &&
-          (prev["baby_seat"] || 0) +
-            (prev["child_seat"] || 0) +
-            (prev["booster"] || 0) >=
-            2
+          (prev["BABY"] || 0) + (prev["CHILD"] || 0) + (prev["BOOST"] || 0) >= 2
         ) {
           return prev;
         }
-        // Límites para otros extras
         if (id === "conductor_menor" && currentQty >= 1) return prev;
         if (id === "conductor_adicional" && currentQty >= 2) return prev;
         nuevaCantidad += 1;
@@ -130,13 +142,14 @@ const ExtrasRenta = () => {
         nuevaCantidad = currentQty - 1;
         if (nuevaCantidad < 0) nuevaCantidad = 0;
       }
-      return { ...prev, [id]: nuevaCantidad };
+
+      return { ...prev, [code]: nuevaCantidad };
     });
   };
 
   // Calcula el total de extras según los extras seleccionados y el número de días de renta
   const total = extras.reduce((acc, extra) => {
-    const cantidad = selectedExtras[extra.id] || 0;
+    const cantidad = selectedExtras[extra.codeExtras] || 0;
     const costo = cantidad * extra.precio * rentalDays;
     return acc + costo;
   }, 0);
@@ -272,7 +285,7 @@ const ExtrasRenta = () => {
                 >
                   <IconButton
                     onClick={() => modificarCantidad(extra.id, "restar")}
-                    disabled={(selectedExtras[extra.id] || 0) === 0}
+                    disabled={(selectedExtras[extra.codeExtras] || 0) === 0}
                     sx={{
                       "& .MuiSvgIcon-root": {
                         // Íconos más pequeños en móviles
@@ -284,7 +297,7 @@ const ExtrasRenta = () => {
                   </IconButton>
 
                   <Typography variant="h6">
-                    {selectedExtras[extra.id] || 0}
+                    {selectedExtras[extra.codeExtras] || 0}
                   </Typography>
 
                   <IconButton

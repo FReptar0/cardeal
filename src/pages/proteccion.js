@@ -39,6 +39,7 @@ const basePlanesSeguros = [
     total: "$0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
+    code: "",
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
       "Responsabilidad Civil: RASGO 300 MIL",
@@ -54,6 +55,7 @@ const basePlanesSeguros = [
     total: "$570",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#d60812",
+    code: "CDW2",
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -69,6 +71,7 @@ const basePlanesSeguros = [
     total: "$710",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#d60812",
+    code: "CDW",
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -84,6 +87,7 @@ const basePlanesSeguros = [
     total: "$890",
     imagen: "/images-seguros/Seguro-completo.png",
     color: "#d60812",
+    code: "PDW",
     recomendado: true,
     coberturas: [
       "Colisión y daños: RESPONSABLE 5%",
@@ -157,7 +161,11 @@ const SeguroVehiculo = () => {
 
   // Seleccionar un plan
   const handleSelect = (plan) => {
-    setSelectedInsurance(plan);
+    setSelectedInsurance({
+      ...plan,
+      code: plan.code,
+    });
+    console.log("Plan seleccionado:", plan);
     const planIndex = effectivePlanesSeguros.findIndex((p) => p.id === plan.id);
     const nextPlan =
       planIndex < effectivePlanesSeguros.length - 1
@@ -465,7 +473,8 @@ const SeguroVehiculo = () => {
               }}
             >
               Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
-              ofrecemos el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
+              ofrecemos el{" "}
+              <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
             </Typography>
 
             <Typography
@@ -476,8 +485,11 @@ const SeguroVehiculo = () => {
                 mb: 3,
               }}
             >
-              Te recomendamos considerar el <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong> por
-              solo <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al día. Este paquete incluye coberturas adicionales que te darán
+              Te recomendamos considerar el{" "}
+              <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>{" "}
+              por solo{" "}
+              <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al
+              día. Este paquete incluye coberturas adicionales que te darán
               mayor tranquilidad, seguridad y respaldo durante tu viaje.
             </Typography>
           </Box>
@@ -499,7 +511,8 @@ const SeguroVehiculo = () => {
             }}
             onClick={handleSelectNextPlan}
           >
-            SELECCIONAR {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
+            SELECCIONAR{" "}
+            {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
           </Button>
 
           <Typography
