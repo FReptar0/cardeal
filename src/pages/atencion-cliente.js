@@ -18,7 +18,7 @@ const AtencionCliente = () => {
         }}
       >
         <Typography variant="h4" fontWeight="bold">
-          ATENCIÓN AL CLIENTE
+          Atención a clientes
         </Typography>
         <Typography variant="body1" mt={2}>
           ¿Necesitas ayuda para reservar o con tus reservaciones? Permítenos

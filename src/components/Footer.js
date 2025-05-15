@@ -30,20 +30,63 @@ const Footer = () => {
                 textAlign: "left",
               }}
             >
-              <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
+              <Box sx={{ mt: 1, textAlign: "center", marginLeft: "" }}>
                 <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
                   Síguenos
                 </Typography>
-                <Typography
+                <Box
                   sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center", // Centrar también los textos
                     marginTop: "10px",
-                    color: "inherit",
                   }}
                 >
-                  Siguenos en nuestras proximas redes sociales
-                </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "1.2rem",
+                      color: "inherit",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    ¡Síguenos en nuestras redes sociales!
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 2 }}>
+                    <IconButton
+                      component="a"
+                      href="https://www.facebook.com/Qardeal"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: "inherit",
+                        transition: "transform 0.3s, color 0.3s",
+                        '&:hover': {
+                          color: "#3b5998", // Color azul de Facebook
+                          transform: "scale(1.2)",
+                        },
+                      }}
+                    >
+                      <Facebook />
+                    </IconButton>
+                    <IconButton
+                      component="a"
+                      href="https://www.instagram.com/Qardeal"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: "inherit",
+                        transition: "transform 0.3s, color 0.3s",
+                        '&:hover': {
+                          color: "#E1306C", // Color rosa de Instagram
+                          transform: "scale(1.2)",
+                        },
+                      }}
+                    >
+                      <Instagram />
+                    </IconButton>
+                  </Box>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -66,7 +109,7 @@ const Footer = () => {
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
                 <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
-                  Ayuda e Información
+                  Ayuda e información
                 </Typography>
                 <Typography
                   component="a"
@@ -83,7 +126,7 @@ const Footer = () => {
                     },
                   }}
                 >
-                  Aviso de Privacidad
+                  Aviso de privacidad
                 </Typography>
                 <Typography
                   component="a"
@@ -100,7 +143,7 @@ const Footer = () => {
                     },
                   }}
                 >
-                  Términos y Condiciones
+                  Términos y condiciones
                 </Typography>
                 <Typography
                   component="a"
@@ -117,7 +160,7 @@ const Footer = () => {
                     },
                   }}
                 >
-                  Preguntas Frecuentes
+                  Preguntas frecuentes
                 </Typography>
                 <Typography
                   component="a"
