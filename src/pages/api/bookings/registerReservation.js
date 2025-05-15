@@ -30,7 +30,11 @@ export default async function handler(req, res) {
     recipient: TSD_RECIPIENT_ID,
     partner: TSD_TRADING_PARTNER_CODE,
     customer: TSD_CUSTOMER_NUMBER,
+    passcode: TSD_PASSCODE,
   });
+
+  console.log("🔑 CustomerNumber:", process.env.TSD_CUSTOMER_NUMBER);
+  console.log("🔑 Passcode:", process.env.TSD_PASSCODE);
 
   // Datos que envia el cliente
   const {
@@ -77,8 +81,8 @@ export default async function handler(req, res) {
   <Recipient><RecipientID>TRN</RecipientID></Recipient>
   <TradingPartner><TradingPartnerCode>WEB01</TradingPartnerCode></TradingPartner>
   <Customer>
-    <CustomerNumber>${customerNumber}</CustomerNumber>
-    <Passcode>${passcode}</Passcode>
+    <CustomerNumber>${TSD_CUSTOMER_NUMBER}</CustomerNumber>
+    <Passcode>${TSD_PASSCODE}</Passcode>
   </Customer>
   <Message>
     <MessageID>ADDREZ</MessageID>
