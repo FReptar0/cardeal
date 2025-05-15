@@ -117,18 +117,12 @@ export default function BookingConfirmation() {
     ? parseFloat(insurance.total.replace(/[^\d.]/g, "")) * days
     : 0;
 
-  const extrasInfo = Object.entries(extras).reduce((arr, [key, qty]) => {
-    const def = extrasDefinitions[key];
-    if (!def || qty <= 0) return arr;
-
-    const lineCost = def.precio * qty * days;
-    arr.push({ ...def, cantidad: qty, lineCost });
-    return arr;
-  }, []);
 
   const extrasCost = Object.entries(extras).reduce((sum, [key, qty]) => {
     return sum + (extrasDefinitions[key]?.precio || 0) * qty * days;
   }, 0);
+
+  console.log("Extras cost:", extrasCost);
 
   const otherCharges = (carPrice + extrasCost) * 0.23;
 
@@ -208,7 +202,7 @@ export default function BookingConfirmation() {
                 totalCarCost={carPrice * days}
                 selectedInsurance={insurance}
                 totalInsuranceCost={insuranceCost}
-                extrasInfo={extrasInfo}
+                extrasInfo={extras}
                 ivaCost={iva}
                 otherCharges={otherCharges}
                 totalWithIva={totalWithDiscount}
