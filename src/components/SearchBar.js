@@ -427,33 +427,80 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
 
   const handlePickupDateChange = (newDate) => {
-    const np = new Date(newDate);
-    np.setHours(0, 0, 0, 0);
-    let nr = new Date(searchData.returnDate);
-    nr.setHours(0, 0, 0, 0);
-    if (nr < np) {
-      nr = new Date(np);
-      nr.setDate(nr.getDate() + 1);
+    const newPickup = new Date(newDate);
+    newPickup.setHours(0, 0, 0, 0);
+
+    let newReturn = new Date(searchData.returnDate);
+    newReturn.setHours(0, 0, 0, 0);
+
+    if (newReturn <= newPickup) {
+      newReturn = new Date(newPickup);
+      newReturn.setDate(newReturn.getDate() + 1);
     }
+
     setSearchData({
       ...searchData,
-      pickupDate: np,
-      returnDate: nr,
-      pickupTime: "08:00 AM",
-      returnTime: "08:00 AM",
+      pickupDate: newPickup,
+      returnDate: newReturn,
     });
   };
+
   const handleReturnDateChange = (newDate) => {
-    const nr = new Date(newDate);
-    nr.setHours(0, 0, 0, 0);
-    let np = new Date(searchData.pickupDate);
-    np.setHours(0, 0, 0, 0);
-    if (nr < np) {
-      np = new Date(nr);
-      np.setDate(np.getDate() - 1);
+  const newReturnDate = new Date(newDate);
+  newReturnDate.setHours(0, 0, 0, 0);
+
+  const currentPickupDate = new Date(searchData.pickupDate);
+  currentPickupDate.setHours(0, 0, 0, 0);
+
+  const today = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/Mexico_City",
+    })
+  );
+  today.setHours(0, 0, 0, 0);
+
+  // 🟥 Caso 1: misma fecha ➜ mover returnDate un día después
+  if (newReturnDate.getTime() === currentPickupDate.getTime()) {
+    const adjustedReturn = new Date(newReturnDate);
+    adjustedReturn.setDate(adjustedReturn.getDate() + 1);
+
+    setSearchData({
+      ...searchData,
+      returnDate: adjustedReturn,
+    });
+    return;
+  }
+
+  // 🟥 Caso 2: devolución antes que recogida
+  if (newReturnDate.getTime() < currentPickupDate.getTime()) {
+    const adjustedPickup = new Date(newReturnDate);
+    adjustedPickup.setDate(adjustedPickup.getDate() - 1);
+
+    // Si el nuevo pickup caería antes de hoy, no lo permitimos. Mejor mover return
+    if (adjustedPickup < today) {
+      const adjustedReturn = new Date(currentPickupDate);
+      adjustedReturn.setDate(adjustedReturn.getDate() + 1);
+
+      setSearchData({
+        ...searchData,
+        returnDate: adjustedReturn,
+      });
+    } else {
+      setSearchData({
+        ...searchData,
+        pickupDate: adjustedPickup,
+        returnDate: newReturnDate,
+      });
     }
-    setSearchData({ ...searchData, returnDate: nr, pickupDate: np });
-  };
+
+    return;
+  }
+
+  // ✅ Caso normal: devolución válida
+  setSearchData({ ...searchData, returnDate: newReturnDate });
+};
+
+
   const handlePickupTimeChange = (newTime) =>
     setSearchData({ ...searchData, pickupTime: newTime });
   const handleReturnTimeChange = (newTime) =>
@@ -677,16 +724,23 @@ export default function SearchBar({ sx = {}, onSearch }) {
         color="primary"
         sx={{ backgroundColor: "#d60812", width: "100%" }}
         onClick={() => {
-          onSearch({
+          const filters = {
             pickupLocation: searchData.pickupLocation,
             returnLocation: searchData.returnLocation,
             pickupDate: searchData.pickupDate,
             pickupTime: searchData.pickupTime,
             returnDate: searchData.returnDate,
             returnTime: searchData.returnTime,
-          });
-          onSearch(searchData);
-          router.push("/rental");
+            sameOffice: searchData.sameOffice,
+          };
+
+          setSearchData(filters);
+
+          onSearch?.(filters);
+
+          if (router.pathname !== "/rental") {
+            router.push("/rental");
+          }
         }}
       >
         Buscar
