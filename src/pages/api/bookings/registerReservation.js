@@ -6,11 +6,14 @@ function formatDateTimeForTSD(date) {
   let h = date.getHours();
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12; // Convert to 12-hour format
-  return `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
+  return `${pad(date.getMonth() + 1)}${pad(
+    date.getDate()
+  )}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
 }
 
 // Función para analizar y convertir fechas al formato deseado
 function parseAndFormatDate(dateString) {
+  // Intentar analizar la fecha con el constructor Date
   const date = new Date(dateString);
   if (isNaN(date)) {
     console.error("❌ Error: Fecha inválida recibida:", dateString);
@@ -43,6 +46,8 @@ export default async function handler(req, res) {
   console.log("🔑 CustomerNumber:", process.env.TSD_CUSTOMER_NUMBER);
   console.log("🔑 Passcode:", process.env.TSD_PASSCODE);
 
+  //
+
   // Datos que envia el cliente
   const {
     pickupLocationId,
@@ -53,11 +58,12 @@ export default async function handler(req, res) {
     unitNumber,
     renterFirst,
     renterLast,
-    customerNumber, // debería coincidir con TSD_CUSTOMER_NUMBER
-    passcode, // idem
     extrasCodes = [], // array de strings con códigos TSD de extras
     insuranceCode = "", // string con código TSD de seguro o vacío
   } = req.body;
+
+  console.log("Fecha", pickupDateTime);
+  console.log("Fecha", returnDateTime);
 
   // Log the received XML payload
   console.log("📥 XML recibido en el backend:", req.body);
