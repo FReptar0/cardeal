@@ -92,6 +92,26 @@ export default function CheckoutPage() {
     console.log("Selected Extras:", selectedExtras);
   }, [selectedInsurance, selectedExtras]);
 
+  useEffect(() => {
+    console.log("Selected Car:", selectedCar);
+  }, [selectedCar]);
+
+  useEffect(() => {
+    console.log("Selected Car Abbreviation:", selectedCar?.abbreviation);
+  }, [selectedCar]);
+
+  const handleSubmit = () => {
+    const payload = {
+      ...otherData,
+      abbreviation: selectedCar?.abbreviation, // Include abbreviation
+    };
+    fetch("/api/bookings/registerReservation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  };
+
   return (
     <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>
       <RentalStepper />

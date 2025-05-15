@@ -1,15 +1,25 @@
 // pages/api/registerReservation.js
 import { parseStringPromise } from "xml2js";
 
-function formatDateTime(date) {
+function formatDateTimeForTSD(date) {
   const pad = (n) => String(n).padStart(2, "0");
   let h = date.getHours();
   const ampm = h >= 12 ? "PM" : "AM";
   h = h % 12 || 12; // Convert to 12-hour format
-  return (
-    `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ` +
-    `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
-  );
+  return `${pad(date.getMonth() + 1)}${pad(
+    date.getDate()
+  )}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
+}
+
+// Función para analizar y convertir fechas al formato deseado
+function parseAndFormatDate(dateString) {
+  // Intentar analizar la fecha con el constructor Date
+  const date = new Date(dateString);
+  if (isNaN(date)) {
+    console.error("❌ Error: Fecha inválida recibida:", dateString);
+    return null;
+  }
+  return formatDateTimeForTSD(date);
 }
 
 export default async function handler(req, res) {
@@ -30,7 +40,13 @@ export default async function handler(req, res) {
     recipient: TSD_RECIPIENT_ID,
     partner: TSD_TRADING_PARTNER_CODE,
     customer: TSD_CUSTOMER_NUMBER,
+    passcode: TSD_PASSCODE,
   });
+
+  console.log("🔑 CustomerNumber:", process.env.TSD_CUSTOMER_NUMBER);
+  console.log("🔑 Passcode:", process.env.TSD_PASSCODE);
+
+  //
 
   // Datos que envia el cliente
   const {
@@ -38,15 +54,16 @@ export default async function handler(req, res) {
     returnLocationId,
     pickupDateTime, // ya formateado como "MMDDYYYY hh:mm AM/PM"
     returnDateTime, // idem
-    classCode,
+    classCode, // abbreviation passed as classCode
     unitNumber,
     renterFirst,
     renterLast,
-    customerNumber, // debería coincidir con TSD_CUSTOMER_NUMBER
-    passcode, // idem
     extrasCodes = [], // array de strings con códigos TSD de extras
     insuranceCode = "", // string con código TSD de seguro o vacío
   } = req.body;
+
+  console.log("Fecha", pickupDateTime);
+  console.log("Fecha", returnDateTime);
 
   // Log the received XML payload
   console.log("📥 XML recibido en el backend:", req.body);
@@ -68,17 +85,25 @@ export default async function handler(req, res) {
   // Por si se va alv
   //<Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
 
+  // Convertir las fechas recibidas
+  const formattedPickupDateTime = parseAndFormatDate(pickupDateTime);
+  const formattedReturnDateTime = parseAndFormatDate(returnDateTime);
+
+  if (!formattedPickupDateTime || !formattedReturnDateTime) {
+    return res.status(400).json({ error: "Fechas inválidas en el payload" });
+  }
+
   // Genera el XML con los datos recibidos
   const xmlBody = `
 <?xml version="1.0" encoding="UTF-8"?>
 <TRNXML Version="1.0.0">
-  <Dategmtime TimeZone="UTC">${formatDateTime(new Date())}</Dategmtime>
+  <Dategmtime TimeZone="UTC">${formatDateTimeForTSD(new Date())}</Dategmtime>
   <Sender><SenderID>GRAN1</SenderID></Sender>
   <Recipient><RecipientID>TRN</RecipientID></Recipient>
   <TradingPartner><TradingPartnerCode>WEB01</TradingPartnerCode></TradingPartner>
   <Customer>
-    <CustomerNumber>${customerNumber}</CustomerNumber>
-    <Passcode>${passcode}</Passcode>
+    <CustomerNumber>${TSD_CUSTOMER_NUMBER}</CustomerNumber>
+    <Passcode>${TSD_PASSCODE}</Passcode>
   </Customer>
   <Message>
     <MessageID>ADDREZ</MessageID>
@@ -87,8 +112,8 @@ export default async function handler(req, res) {
   <Payload>
     <RentalLocationID>${pickupLocationId}</RentalLocationID>
     <ReturnLocationID>${returnLocationId}</ReturnLocationID>
-    <PickupDateTime>${pickupDateTime}</PickupDateTime>
-    <ReturnDateTime>${returnDateTime}</ReturnDateTime>
+    <PickupDateTime>${formattedPickupDateTime}</PickupDateTime>
+    <ReturnDateTime>${formattedReturnDateTime}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
     <UnitNumber>${unitNumber}</UnitNumber>
     <RenterFirst>${renterFirst}</RenterFirst>
