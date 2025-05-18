@@ -28,6 +28,10 @@ const extrasDefinitions = {
   booster: { precio: 150, nombre: "Booster" },
 };
 
+// para el pdf
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import BookingPdfDocument from "@/components/ConfirmPDF";
+
 export default function BookingConfirmation() {
   const router = useRouter();
   const { jwt } = useAuth();
@@ -116,7 +120,6 @@ export default function BookingConfirmation() {
   const insuranceCost = insurance
     ? parseFloat(insurance.total.replace(/[^\d.]/g, "")) * days
     : 0;
-
 
   const extrasCost = Object.entries(extras).reduce((sum, [key, qty]) => {
     return sum + (extrasDefinitions[key]?.precio || 0) * qty * days;
@@ -303,18 +306,24 @@ export default function BookingConfirmation() {
             alignItems="center"
             sx={{ width: "100%" }}
           >
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{
+            <PDFDownloadLink
+              document={<BookingPdfDocument booking={booking} />}
+              fileName={`reserva_${booking.orderNumber}.pdf`}
+              style={{
+                textDecoration: "none",
+                padding: "12px 20px",
                 backgroundColor: "#10906a",
-                height: 48,
-                ":hover": { backgroundColor: "#0b704e" },
+                color: "white",
+                borderRadius: 4,
+                width: "100%",
+                textAlign: "center",
+                fontWeight: "bold",
               }}
             >
-              Descargar detalles de la reserva
-            </Button>
+              {({ loading }) =>
+                loading ? "Generando PDF…" : "Descargar PDF de Reserva"
+              }
+            </PDFDownloadLink>
             <Button
               type="button"
               fullWidth
