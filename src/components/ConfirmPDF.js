@@ -224,7 +224,7 @@ export default function ConfirmPDF({ booking }) {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[styles.sectionLabel, { fontSize: 12 }]}>
-              RECOGIDA
+              Recepción
             </Text>
             <Text style={styles.sectionValue}>
               {new Date(search.pickupDate).toLocaleString("es-MX", {
@@ -233,11 +233,11 @@ export default function ConfirmPDF({ booking }) {
               })}
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
-              Dirección de recogida
+              Dirección de Recepción
             </Text>
             <Text style={styles.sectionValue}>
               {search.pickupLocation?.direccion ??
-                "[Dirección de recogida no disponible]"}
+                "[Dirección de Recepción no disponible]"}
             </Text>
 
             <Text style={[styles.sectionLabel, { fontSize: 12, marginTop: 8 }]}>
@@ -270,7 +270,7 @@ export default function ConfirmPDF({ booking }) {
         <View style={styles.twoColumn}>
           <View style={styles.column}>
             <Text style={styles.sectionLabel}>
-              Instrucciones para la recogida
+              Instrucciones para la Recepción
             </Text>
             <Text style={styles.sectionValue}>
               Instrucciones: Qardeal pondrá a disposición del cliente una
@@ -280,11 +280,11 @@ export default function ConfirmPDF({ booking }) {
               reserva.
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
-              Dirección de recogida
+              Dirección de Recepción
             </Text>
             <Text style={styles.sectionValue}>
               {search.pickupLocation?.direccion ??
-                "[Dirección de recogida no disponible]"}
+                "[Dirección de Recepción no disponible]"}
             </Text>
           </View>
           <View style={styles.columnLast}>
