@@ -14,7 +14,7 @@ export const BookingProvider = ({ children }) => {
   // Al montar, intenta leer los datos del localStorage
   useEffect(() => {
     if (sessionStorage.getItem("bookingCleared") === "true") {
-      sessionStorage.removeItem("bookingCleared"); 
+      sessionStorage.removeItem("bookingCleared");
       return;
     }
     const carFromStorage = localStorage.getItem("selectedCar");

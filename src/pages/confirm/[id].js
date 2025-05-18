@@ -30,7 +30,7 @@ const extrasDefinitions = {
 
 // para el pdf
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import BookingPdfDocument from "@/components/ConfirmPDF";
+import ConfirmPDF from "@/components/ConfirmPDF";
 
 export default function BookingConfirmation() {
   const router = useRouter();
@@ -307,7 +307,8 @@ export default function BookingConfirmation() {
             sx={{ width: "100%" }}
           >
             <PDFDownloadLink
-              document={<BookingPdfDocument booking={booking} />}
+              key={booking.orderNumber} // ← fuerza re-render al cambiar booking
+              document={<ConfirmPDF booking={booking} />}
               fileName={`reserva_${booking.orderNumber}.pdf`}
               style={{
                 textDecoration: "none",
@@ -318,12 +319,14 @@ export default function BookingConfirmation() {
                 width: "100%",
                 textAlign: "center",
                 fontWeight: "bold",
+                cursor: "pointer",
               }}
             >
               {({ loading }) =>
                 loading ? "Generando PDF…" : "Descargar PDF de Reserva"
               }
             </PDFDownloadLink>
+
             <Button
               type="button"
               fullWidth
