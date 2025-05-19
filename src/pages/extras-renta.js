@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // next/navigation para componentes client
+import { useRouter } from "next/navigation";
 import {
   Container,
   Grid,
@@ -25,14 +25,12 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
-// Arreglo de extras
-const extras = [
+const extrasCatalogo = [
   {
     id: "ADD",
     nombre: "Conductor Adicional",
     descripcion:
       "Se pueden incluir conductores adicionales con un costo extra por día.",
-    precio: 110,
     codeExtras: "ADD",
     imagen: "/extras/adicional.webp",
   },
@@ -41,7 +39,6 @@ const extras = [
     nombre: "Conductor Menor de 25 Años",
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
-    precio: 110,
     codeExtras: "UAGE",
     imagen: "/extras/menor.webp",
   },
@@ -49,7 +46,6 @@ const extras = [
     id: "BABY",
     nombre: "Baby Seat (Grupo 0+)",
     descripcion: "Bebé (grupo 0+), niños de 1 a 13 kilos.",
-    precio: 150,
     codeExtras: "BABY",
     imagen: "/extras/baby-seat.webp",
   },
@@ -57,7 +53,6 @@ const extras = [
     id: "CHILD",
     nombre: "Child Seat (Grupo 0/1/2)",
     descripcion: "Niños de 1 a 25 kilos.",
-    precio: 150,
     codeExtras: "CHILD",
     imagen: "/extras/child-seat.webp",
   },
@@ -65,7 +60,6 @@ const extras = [
     id: "BOOST",
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
-    precio: 150,
     codeExtras: "BOOST",
     imagen: "/extras/Booster.webp",
   },
@@ -73,34 +67,83 @@ const extras = [
 
 const ExtrasRenta = () => {
   const router = useRouter();
+  const booking = useBooking();
+  const search = useSearch();
 
-  // Usa el estado global de extras desde el BookingContext
-  const { selectedExtras, setSelectedExtras } = useBooking();
-  // Obtiene las fechas de la renta desde el SearchContext
-  const { searchData } = useSearch();
+  const { selectedExtras, setSelectedExtras, selectedCar, isCarLoaded } =
+    booking;
 
-  // Calcula los días de renta usando las fechas de searchData
-  const rentalDays =
-    searchData && searchData.pickupDate && searchData.returnDate
-      ? Math.ceil(
-          (new Date(searchData.returnDate) - new Date(searchData.pickupDate)) /
-            (1000 * 60 * 60 * 24)
-        )
-      : 1;
+  const { searchData } = search;
 
-  // Estados para header y SearchBar
-  const [isSticky, setIsSticky] = useState(false);
+  const [extrasDisponibles, setExtrasDisponibles] = useState([]);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
   const [searchDataLocal, setSearchDataLocal] = useState(null);
+  const [isClient, setIsClient] = useState(false);
 
-  // Lógica que accede a localStorage se ejecuta solo en el cliente
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isCarLoaded) return;
+
+    if (
+      !searchData ||
+      !selectedCar ||
+      !selectedCar.category ||
+      !searchData.pickupLocation?.id ||
+      !searchData.returnLocation?.id
+    ) {
+      console.log(
+        "⏳ Aún no están listos los datos para lanzar la petición..."
+      );
+      return;
+    }
+
+    console.log("🚀 Ejecutando fetch con:", {
+      category: selectedCar.category,
+      pickup: searchData.pickupLocation.id,
+      return: searchData.returnLocation.id,
+    });
+
+    const obtenerExtras = async () => {
+      const response = await fetch("/api/extras", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pickupLocationId: searchData.pickupLocation.id,
+          returnLocationId: searchData.sameOffice
+            ? searchData.pickupLocation.id
+            : searchData.returnLocation.id,
+          pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
+          returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
+          classCode: selectedCar.category,
+          allExtras: extrasCatalogo,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("📥 Extras recibidos:", data);
+      const precioPorDia = (total, dias) => (dias > 0 ? total / dias : total);
+
+      const dataConPrecioBase = data.map((extra) => ({
+        ...extra,
+        precio: precioPorDia(extra.precio, rentalDays),
+      }));
+
+      setExtrasDisponibles(dataConPrecioBase);
+    };
+
+    obtenerExtras();
+  }, [isCarLoaded, searchData, selectedCar]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const interval = setInterval(() => {
         const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
-        if (headerTop === null) return; // Evitamos ejecutar si no existe la clave
+        if (headerTop === null) return;
         setHeaderIsTop(headerTop);
         setShowCompactHeader(!headerTop);
         setHideSearchSection(!headerTop);
@@ -110,57 +153,72 @@ const ExtrasRenta = () => {
     }
   }, []);
 
-  // Add a console log to print selected extras
   useEffect(() => {
     console.log("Selected extras:", selectedExtras);
   }, [selectedExtras]);
 
-  // Función para modificar la cantidad de un extra
+  const rentalDays =
+    searchData && searchData.pickupDate && searchData.returnDate
+      ? Math.ceil(
+          (new Date(searchData.returnDate) - new Date(searchData.pickupDate)) /
+            (1000 * 60 * 60 * 24)
+        )
+      : 1;
+
   const modificarCantidad = (id, operacion) => {
-    const extra = extras.find((item) => item.id === id);
-    if (!extra) {
-      console.warn(`No existe extra con id '${id}'`);
-      return;
+    const extra = extrasDisponibles.find((e) => e.id === id);
+    if (!extra) return;
+
+    const limites = {
+      ADD: 1,
+      UAGE: 1,
+      BABY: 2,
+      CHILD: 2,
+      BOOST: 2,
+    };
+
+    const prev = selectedExtras[id] || {
+      id: extra.id,
+      nombre: extra.nombre,
+      precio: extra.precio,
+      cantidad: 0,
+    };
+
+    const maximo = limites[extra.id] || Infinity;
+    let nuevaCantidad = prev.cantidad;
+
+    if (operacion === "sumar") {
+      if (nuevaCantidad >= maximo) return; // no permitir más
+      nuevaCantidad += 1;
+    } else {
+      nuevaCantidad = Math.max(0, nuevaCantidad - 1);
     }
 
-    const code = extra.codeExtras;
-    setSelectedExtras((prev) => {
-      const currentQty = prev[code] || 0;
-      let nuevaCantidad = currentQty;
-
-      if (operacion === "sumar") {
-        if (
-          (id === "baby_seat" || id === "child_seat" || id === "booster") &&
-          (prev["BABY"] || 0) + (prev["CHILD"] || 0) + (prev["BOOST"] || 0) >= 2
-        ) {
-          return prev;
-        }
-        if (id === "conductor_menor" && currentQty >= 1) return prev;
-        if (id === "conductor_adicional" && currentQty >= 2) return prev;
-        nuevaCantidad += 1;
-      } else {
-        nuevaCantidad = currentQty - 1;
-        if (nuevaCantidad < 0) nuevaCantidad = 0;
-      }
-
-      return { ...prev, [code]: nuevaCantidad };
-    });
+    const updated = { ...selectedExtras };
+    if (nuevaCantidad > 0) {
+      updated[id] = { ...prev, cantidad: nuevaCantidad };
+    } else {
+      delete updated[id];
+    }
+    setSelectedExtras(updated);
   };
 
-  // Calcula el total de extras según los extras seleccionados y el número de días de renta
-  const total = extras.reduce((acc, extra) => {
-    const cantidad = selectedExtras[extra.codeExtras] || 0;
-    const costo = cantidad * extra.precio * rentalDays;
-    return acc + costo;
-  }, 0);
+  const total = Object.values(selectedExtras).reduce(
+    (acc, extra) => acc + extra.precio * extra.cantidad * rentalDays,
+    0
+  );
 
   const irAcheckout = () => {
     router.push("/checkout");
   };
 
+  if (!isCarLoaded) {
+    console.log("⏳ Esperando que se cargue el coche desde localStorage...");
+    return null;
+  }
+
   return (
     <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
-      {/* Sección de búsqueda */}
       <Box
         sx={{
           overflow: "hidden",
@@ -186,21 +244,17 @@ const ExtrasRenta = () => {
         </Box>
       </Box>
 
-      <CompactHeader
-        searchData={searchDataLocal}
-        headerIsTop={headerIsTop}
-        showCompactHeader={showCompactHeader}
-      />
-
-      {showCompactHeader && (
-        <Box sx={{ height: "50px", transition: "height 0.3s ease" }} />
+      {isClient && (
+        <CompactHeader
+          searchData={searchDataLocal}
+          headerIsTop={headerIsTop}
+          showCompactHeader={showCompactHeader}
+        />
       )}
 
       <Box sx={{ width: "100%" }}>
         <RentalStepper />
       </Box>
-
-      {isSticky && <Box sx={{ height: "120px" }} />}
 
       <Typography variant="h4" fontWeight="bold" sx={{ mt: 3 }}>
         Extras para tu renta
@@ -210,114 +264,110 @@ const ExtrasRenta = () => {
       </Typography>
 
       <Grid container spacing={3} justifyContent="center">
-        {extras.map((extra) => (
-          <Grid item xs={12} sm={6} md={12} key={extra.id}>
-            <Card
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                alignItems: "stretch",
-                height: "100%",
-                overflow: "hidden",
-              }}
-            >
-              {/* Imagen del extra, ajustada para que luzca mejor en móvil */}
-              <CardMedia
-                component="img"
-                sx={{
-                  m: "8px",
-                  width: { xs: 90, sm: 110, md: 125 }, // Ajuste responsivo
-                  height: "auto",
-                  objectFit: "contain",
-                  marginX: "auto", // Centrar en móviles
-                }}
-                image={extra.imagen}
-                alt={extra.nombre}
-              />
+        {extrasDisponibles.map((extra) => {
+          const cantidad = selectedExtras[extra.id]?.cantidad || 0;
 
-              <CardContent
-                sx={{
-                  flex: 1,
-                  textAlign: "left",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  p: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  {extra.nombre}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {extra.descripcion}
-                </Typography>
-              </CardContent>
-
-              {/* Sección del precio (arriba) y el contador (abajo) */}
-              <Box
+          return (
+            <Grid item xs={12} sm={6} md={12} key={extra.id}>
+              <Card
                 sx={{
                   display: "flex",
-                  flexDirection: "column", // Precio arriba, contador abajo
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
-                  pr: 2,
-                  pb: { xs: 2, md: 0 },
+                  flexDirection: { xs: "column", md: "row" },
+                  alignItems: "stretch",
+                  height: "100%",
+                  overflow: "hidden",
                 }}
               >
-                {/* Precio */}
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  sx={{ color: "#d60812" }}
+                <CardMedia
+                  component="img"
+                  sx={{
+                    m: "8px",
+                    width: { xs: 90, sm: 110, md: 125 },
+                    height: "auto",
+                    objectFit: "contain",
+                    marginX: "auto",
+                  }}
+                  image={extra.imagen}
+                  alt={extra.nombre}
+                />
+
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    textAlign: "left",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    p: 2,
+                  }}
                 >
-                  {extra.precio.toFixed(2)} MXN/DÍA
-                </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {extra.nombre}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {extra.descripcion}
+                  </Typography>
+                </CardContent>
 
-                {/* Contador: – / + alineado en fila */}
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "row",
+                    flexDirection: "column",
                     alignItems: "center",
+                    justifyContent: "center",
                     gap: 1,
+                    pr: 2,
+                    pb: { xs: 2, md: 0 },
                   }}
                 >
-                  <IconButton
-                    onClick={() => modificarCantidad(extra.id, "restar")}
-                    disabled={(selectedExtras[extra.codeExtras] || 0) === 0}
-                    sx={{
-                      "& .MuiSvgIcon-root": {
-                        // Íconos más pequeños en móviles
-                        fontSize: { xs: "1.3rem", md: "1.8rem" },
-                      },
-                    }}
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    sx={{ color: "#d60812" }}
                   >
-                    <RemoveIcon />
-                  </IconButton>
-
-                  <Typography variant="h6">
-                    {selectedExtras[extra.codeExtras] || 0}
+                    {extra.precio.toFixed(2)} MXN/DÍA
                   </Typography>
 
-                  <IconButton
-                    onClick={() => modificarCantidad(extra.id, "sumar")}
+                  <Box
                     sx={{
-                      "& .MuiSvgIcon-root": {
-                        fontSize: { xs: "1.3rem", md: "1.8rem" },
-                      },
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 1,
                     }}
                   >
-                    <AddIcon />
-                  </IconButton>
+                    <IconButton
+                      onClick={() => modificarCantidad(extra.id, "restar")}
+                      disabled={cantidad === 0}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: { xs: "1.3rem", md: "1.8rem" },
+                        },
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+
+                    <Typography variant="h6">{cantidad}</Typography>
+
+                    <IconButton
+                      onClick={() => modificarCantidad(extra.id, "sumar")}
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fontSize: { xs: "1.3rem", md: "1.8rem" },
+                        },
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
 
-      {/* Total de extras */}
       <Box
         sx={{
           display: "flex",
@@ -337,7 +387,6 @@ const ExtrasRenta = () => {
         </Typography>
       </Box>
 
-      {/* Botón Continuar */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
         <Button
           variant="contained"

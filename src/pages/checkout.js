@@ -48,29 +48,15 @@ export default function CheckoutPage() {
     : 0;
   const totalInsuranceCost = dailyInsuranceCost * rentalDays;
 
-  // extras calculation...
-  const baseExtras = [
-    { id: "conductor_adicional", nombre: "Conductor Adicional", precio: 110 },
-    {
-      id: "conductor_menor",
-      nombre: "Conductor Menor de 25 Años",
-      precio: 110,
-    },
-    { id: "baby_seat", nombre: "Baby Seat (Grupo 0+)", precio: 150 },
-    { id: "child_seat", nombre: "Child Seat (Grupo 0/1/2)", precio: 150 },
-    { id: "booster", nombre: "Booster", precio: 150 },
-  ];
   let extrasInfo = [];
   let totalExtrasCost = 0;
-  for (const exId in selectedExtras) {
-    const qty = selectedExtras[exId];
-    if (qty > 0) {
-      const def = baseExtras.find((e) => e.id === exId);
-      if (def) {
-        const line = def.precio * qty * rentalDays;
-        totalExtrasCost += line;
-        extrasInfo.push({ ...def, cantidad: qty, lineCost: line });
-      }
+
+  for (const key in selectedExtras) {
+    const extra = selectedExtras[key];
+    if (extra.cantidad > 0) {
+      const lineCost = extra.precio * extra.cantidad * rentalDays;
+      totalExtrasCost += lineCost;
+      extrasInfo.push({ ...extra, lineCost }); 
     }
   }
 
