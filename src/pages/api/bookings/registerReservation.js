@@ -125,13 +125,13 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickupDateTime}</PickupDateTime>
     <ReturnDateTime>${formattedReturnDateTime}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <RatePlanType>SEASONAL PLAN</RatePlanType>
+    <RatePlanType>RETAIL RATE</RatePlanType>
     <RenterFirst>${renterFirst}</RenterFirst>
     <RenterLast>${renterLast}</RenterLast>
     ${extrasXML}
   </Payload>
 </TRNXML>`.trim();
-
+    // <RatePlanType>SEASONAL PLAN</RatePlanType>
     // <RateCode>BASIC</RateCode>
     // <RatePlan>DAILY</RatePlan>
 
