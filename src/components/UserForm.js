@@ -211,9 +211,9 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           renterLast: contactName.split(" ").slice(1).join(" "),
           customerNumber: process.env.TSD_CUSTOMER_NUMBER,
           passcode: process.env.TSD_PASSCODE,
-          extrasCodes: Object.keys(selectedExtras).filter(
-            (key) => selectedExtras[key] > 0
-          ),
+          extrasCodes: Object.values(selectedExtras)
+            .filter((extra) => extra.cantidad > 0)
+            .map((extra) => ({ id: extra.id, cantidad: extra.cantidad })),
           insuranceCode: selectedInsurance?.code || "",
         }),
       });
@@ -346,20 +346,20 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   }
 
   // 1) Justo antes del return, define este handler:
-  const handleCounterReservation = async () => {
-    setSubmitting(true);
-    try {
-      const xmlResponse = await addReservationHardcoded();
-      console.log("TSDRez response:", xmlResponse);
-      toast.success("Reserva enviada correctamente");
-      // si quieres, redirige o actualiza estado aquí
-    } catch (err) {
-      console.error("Error al enviar reserva TSD:", err);
-      toast.error("No se pudo enviar la reserva");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // const handleCounterReservation = async () => {
+  //   setSubmitting(true);
+  //   try {
+  //     const xmlResponse = await addReservationHardcoded();
+  //     console.log("TSDRez response:", xmlResponse);
+  //     toast.success("Reserva enviada correctamente");
+  //     // si quieres, redirige o actualiza estado aquí
+  //   } catch (err) {
+  //     console.error("Error al enviar reserva TSD:", err);
+  //     toast.error("No se pudo enviar la reserva");
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
   return (
     <>
       <Card sx={{ p: 3, width: "100%" }}>
@@ -499,36 +499,54 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           )}
 
           <Autocomplete
-            options={locations}
-            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
-            groupBy={(opt) => opt.city}
+            options={[searchData.pickupLocation]}
+            getOptionLabel={(opt) => `${opt.ciudad} - ${opt.estado}`}
             value={searchData.pickupLocation}
-            onChange={(_, v) =>
-              v && setSearchData({ ...searchData, pickupLocation: v })
-            }
+            readOnly
+            disableClearable
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Lugar de retiro"
                 margin="normal"
                 fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  readOnly: true, // ← bloquea edición
+                  style: { color: "#272727" },
+                }}
               />
             )}
           />
           <Autocomplete
-            options={locations}
-            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
-            groupBy={(opt) => opt.city}
-            value={searchData.returnLocation}
-            onChange={(_, v) =>
-              v && setSearchData({ ...searchData, returnLocation: v })
+            options={
+              searchData.sameOffice
+                ? [searchData.pickupLocation]
+                : [searchData.returnLocation]
             }
+            getOptionLabel={(opt) => `${opt.ciudad} - ${opt.estado}`}
+            value={
+              searchData.sameOffice
+                ? searchData.pickupLocation
+                : searchData.returnLocation
+            }
+            readOnly
+            disableClearable
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Lugar de entrega"
                 margin="normal"
                 fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  readOnly: true,
+                  style: { color: "black" },
+                }}
+                InputLabelProps={{
+                  ...params.InputLabelProps,
+                  style: { color: "black" },
+                }}
               />
             )}
           />

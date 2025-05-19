@@ -85,35 +85,25 @@ export default async function handler(req, res) {
   console.log("Fecha", formatCustomDateTime(pickupDateTime));
   console.log("Fecha", formatCustomDateTime(returnDateTime));
 
-  // Log the received XML payload
-  // console.log("📥 XML recibido en el backend:", req.body);
-
-  // Add a console log to print protection code and extras
-  // console.log("🔒 Insurance Code:", insuranceCode);
-  // console.log("🛠️ Extras Codes:", extrasCodes);
-
-  // Construye el bloque de <ExtraCode> con códigos de extras y protección
   let extrasXML = extrasCodes
-    .map((code) => `    <ExtraCode>${code}</ExtraCode>`) // Agrega cada código de extra
+    .flatMap((code) => {
+      // Si ya estás pasando objetos { id, cantidad }, adapta aquí
+      if (typeof code === "object" && code.id && code.cantidad) {
+        return Array(code.cantidad).fill(`<ExtraCode>${code.id}</ExtraCode>`);
+      }
+      return `<ExtraCode>${code}</ExtraCode>`; // compatibilidad con versiones anteriores
+    })
     .join("\n");
+
   if (insuranceCode) {
-    extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML; // Agrega el código de protección al inicio
+    extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML;
   }
 
   console.log("🚀 registerReservation Payload:", req.body);
 
-  // Por si se va alv
-  //<Dategmtime TimeZone="UTC">05132025 05:30 PM</Dategmtime>
-
-  // Convertir las fechas recibidas
   const formattedPickupDateTime = formatCustomDateTime(pickupDateTime);
   const formattedReturnDateTime = formatCustomDateTime(returnDateTime);
 
-  // if (!formattedPickupDateTime || !formattedReturnDateTime) {
-  //   return res.status(400).json({ error: "Fechas inválidas en el payload" });
-  // }
-
-  // Genera el XML con los datos recibidos
   const xmlBody = `
 <?xml version="1.0" encoding="UTF-8"?>
 <TRNXML Version="1.0.0">
@@ -135,12 +125,15 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickupDateTime}</PickupDateTime>
     <ReturnDateTime>${formattedReturnDateTime}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <UnitNumber>KIC001</UnitNumber>
+    <RatePlanType>RETAIL RATE</RatePlanType>
     <RenterFirst>${renterFirst}</RenterFirst>
     <RenterLast>${renterLast}</RenterLast>
     ${extrasXML}
   </Payload>
 </TRNXML>`.trim();
+    // <RatePlanType>SEASONAL PLAN</RatePlanType>
+    // <RateCode>BASIC</RateCode>
+    // <RatePlan>DAILY</RatePlan>
 
   // Imprime el XML generado en la consola
   console.log("XML final para tsd:", xmlBody);
