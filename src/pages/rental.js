@@ -127,7 +127,7 @@ export default function RentalPage() {
 
       // console.log("🛞 Respuesta de TSD:", res);
       const rates = await res.json();
-      // console.log("🛞 Precios TSD por categoría:", rates);
+      console.log("🛞 Precios TSD por categoría:", rates);
 
       const filtered = rates
         .map((rate) => {

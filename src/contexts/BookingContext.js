@@ -4,19 +4,22 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
-  // Define estados globales para vehículo, seguro, extras y datos del usuario
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedInsurance, setSelectedInsurance] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState({});
   const [userData, setUserData] = useState({});
-  const [discount, setDiscount] = useState(null); // Nuevo estado para el descuento
+  const [discount, setDiscount] = useState(null);
 
-  // Al montar, intenta leer los datos del localStorage
+  // 🔄 Nuevo estado: indica si selectedCar ya se cargó desde localStorage
+  const [isCarLoaded, setIsCarLoaded] = useState(false);
+
+  // Cargar desde localStorage al iniciar
   useEffect(() => {
     if (sessionStorage.getItem("bookingCleared") === "true") {
-      sessionStorage.removeItem("bookingCleared"); 
+      sessionStorage.removeItem("bookingCleared");
       return;
     }
+
     const carFromStorage = localStorage.getItem("selectedCar");
     const insuranceFromStorage = localStorage.getItem("selectedInsurance");
     const extrasFromStorage = localStorage.getItem("selectedExtras");
@@ -29,9 +32,12 @@ export const BookingProvider = ({ children }) => {
     if (extrasFromStorage) setSelectedExtras(JSON.parse(extrasFromStorage));
     if (userFromStorage) setUserData(JSON.parse(userFromStorage));
     if (discountFromStorage) setDiscount(JSON.parse(discountFromStorage));
+
+    // ✅ Marca que ya se intentó cargar el coche
+    setIsCarLoaded(true);
   }, []);
 
-  // Sincroniza cada estado con localStorage cuando cambia
+  // Guardar cada valor en localStorage
   useEffect(() => {
     if (selectedCar) {
       localStorage.setItem("selectedCar", JSON.stringify(selectedCar));
@@ -42,10 +48,7 @@ export const BookingProvider = ({ children }) => {
 
   useEffect(() => {
     if (selectedInsurance) {
-      localStorage.setItem(
-        "selectedInsurance",
-        JSON.stringify(selectedInsurance)
-      );
+      localStorage.setItem("selectedInsurance", JSON.stringify(selectedInsurance));
     } else {
       localStorage.removeItem("selectedInsurance");
     }
@@ -67,19 +70,21 @@ export const BookingProvider = ({ children }) => {
     }
   }, [discount]);
 
-  // Función para limpiar toda la data (por ejemplo, al finalizar la reserva)
+  // Función para limpiar todo
   const clearBooking = () => {
     setSelectedCar(null);
     setSelectedInsurance(null);
     setSelectedExtras({});
     setUserData({});
     setDiscount(null);
+
     localStorage.removeItem("selectedCar");
     localStorage.removeItem("selectedInsurance");
     localStorage.removeItem("selectedExtras");
     localStorage.removeItem("userData");
-    sessionStorage.setItem("bookingCleared", "true");
     localStorage.removeItem("discount");
+
+    sessionStorage.setItem("bookingCleared", "true");
   };
 
   return (
@@ -94,7 +99,8 @@ export const BookingProvider = ({ children }) => {
         userData,
         setUserData,
         discount,
-        setDiscount, // Nuevo campo
+        setDiscount,
+        isCarLoaded, // ✅ lo exportamos
         clearBooking,
       }}
     >
