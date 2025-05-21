@@ -323,7 +323,7 @@ const ExtrasRenta = () => {
                   <Typography
                     variant="h6"
                     fontWeight="bold"
-                    sx={{ color: "#d60812" }}
+                    sx={{ color: "#000" }}
                   >
                     {extra.precio.toFixed(2)} MXN/DÍA
                   </Typography>
@@ -382,7 +382,7 @@ const ExtrasRenta = () => {
         <Typography variant="h5" fontWeight="bold">
           TOTAL de extras:
         </Typography>
-        <Typography variant="h5" fontWeight="bold" sx={{ color: "#d60812" }}>
+        <Typography variant="h5" fontWeight="bold" sx={{ color: "#000" }}>
           {total.toFixed(2)} MXN
         </Typography>
       </Box>
