@@ -170,7 +170,7 @@ const ExtrasRenta = () => {
     if (!extra) return;
 
     const limites = {
-      ADD: 1,
+      ADD: 4, // máximo 4 conductores adicionales
       UAGE: 1,
       BABY: 2,
       CHILD: 2,
