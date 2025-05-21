@@ -38,7 +38,6 @@ import { sub } from "date-fns";
 import CardPaymentForm from "@/components/CardPaymentForm";
 
 //para la reserva hardcodeada
-
 import { addReservationHardcoded } from "@/pages/api/reserva";
 
 export default function UserForm({ paidOnline, setPaidOnline }) {
@@ -196,36 +195,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       const contactEmail = justRegistered ? data.email : userData.email;
       const contactPhone = justRegistered ? data.phone : userData.phone;
 
-      // Enviar datos al endpoint para generar el XML
-      const tsdRes = await fetch("/api/bookings/registerReservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pickupLocationId: searchData.pickupLocation?.id,
-          returnLocationId: searchData.returnLocation?.id,
-          pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
-          returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-          classCode: selectedCar?.abbreviation, // Pass abbreviation as classCode
-          unitNumber: selectedCar?.unitNumber,
-          renterFirst: contactName.split(" ")[0],
-          renterLast: contactName.split(" ").slice(1).join(" "),
-          customerNumber: process.env.TSD_CUSTOMER_NUMBER,
-          passcode: process.env.TSD_PASSCODE,
-          extrasCodes: Object.values(selectedExtras)
-            .filter((extra) => extra.cantidad > 0)
-            .map((extra) => ({ id: extra.id, cantidad: extra.cantidad })),
-          insuranceCode: selectedInsurance?.code || "",
-        }),
-      });
-
-      const tsdJson = await tsdRes.json();
-      console.log("Respuesta del backend:", tsdJson);
-
-      if (!tsdRes.ok) {
-        toast.error(tsdJson.message || "Error al registrar la reserva");
-        return;
-      }
-
       // Creación de la reserva en backend
       const bookingRes = await fetch("/api/bookings/create", {
         method: "POST",
@@ -246,7 +215,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           discount,
         }),
       });
-
       const bookingJson = await bookingRes.json();
       if (!bookingRes.ok) {
         toast.error(bookingJson.message || "Error al crear la reserva");
@@ -345,21 +313,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     );
   }
 
-  // 1) Justo antes del return, define este handler:
-  // const handleCounterReservation = async () => {
-  //   setSubmitting(true);
-  //   try {
-  //     const xmlResponse = await addReservationHardcoded();
-  //     console.log("TSDRez response:", xmlResponse);
-  //     toast.success("Reserva enviada correctamente");
-  //     // si quieres, redirige o actualiza estado aquí
-  //   } catch (err) {
-  //     console.error("Error al enviar reserva TSD:", err);
-  //     toast.error("No se pudo enviar la reserva");
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
   return (
     <>
       <Card sx={{ p: 3, width: "100%" }}>
@@ -499,54 +452,36 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           )}
 
           <Autocomplete
-            options={[searchData.pickupLocation]}
-            getOptionLabel={(opt) => `${opt.ciudad} - ${opt.estado}`}
+            options={locations}
+            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
+            groupBy={(opt) => opt.city}
             value={searchData.pickupLocation}
-            readOnly
-            disableClearable
+            onChange={(_, v) =>
+              v && setSearchData({ ...searchData, pickupLocation: v })
+            }
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Lugar de retiro"
                 margin="normal"
                 fullWidth
-                InputProps={{
-                  ...params.InputProps,
-                  readOnly: true, // ← bloquea edición
-                  style: { color: "#272727" },
-                }}
               />
             )}
           />
           <Autocomplete
-            options={
-              searchData.sameOffice
-                ? [searchData.pickupLocation]
-                : [searchData.returnLocation]
+            options={locations}
+            getOptionLabel={(opt) => `${opt.city} - ${opt.name}`}
+            groupBy={(opt) => opt.city}
+            value={searchData.returnLocation}
+            onChange={(_, v) =>
+              v && setSearchData({ ...searchData, returnLocation: v })
             }
-            getOptionLabel={(opt) => `${opt.ciudad} - ${opt.estado}`}
-            value={
-              searchData.sameOffice
-                ? searchData.pickupLocation
-                : searchData.returnLocation
-            }
-            readOnly
-            disableClearable
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Lugar de entrega"
                 margin="normal"
                 fullWidth
-                InputProps={{
-                  ...params.InputProps,
-                  readOnly: true,
-                  style: { color: "black" },
-                }}
-                InputLabelProps={{
-                  ...params.InputLabelProps,
-                  style: { color: "black" },
-                }}
               />
             )}
           />
