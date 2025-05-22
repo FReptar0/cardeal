@@ -187,22 +187,17 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Otros cargos e IVA (unificados) */}
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Otros cargos e IVA:</b>
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">
-            Costos adicionales e impuestos
+        {/* Otros cargos */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+          <Typography variant="subtitle1" fontWeight="bold">
+            Otros Cargos:
           </Typography>
           <Typography
             variant="body2"
             fontWeight="bold"
             sx={{ color: paidOnline ? "#10906a" : undefined }}
           >
-            {formatCurrency(
-              paidOnline ? otherCharges2 + ivaCost2 : otherCharges + ivaCost
-            )}
+            {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
           </Typography>
         </Box>
         <Typography
@@ -210,8 +205,8 @@ export default function OrderSummary({
           sx={{ display: "block", mt: 1 }}
           color="textSecondary"
         >
-          * Este cargo incluye costos administrativos, operativos e impuestos.
-          Consulta más detalles en los{" "}
+          * Este cargo incluye costos administrativos y operativos adicionales.
+          Consulta más detalles en los {" "}
           <a
             href="/terminos-y-condiciones"
             target="_blank"
@@ -240,50 +235,31 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
-        {totals && totals.price && totals.price2 ? (
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+        {/* IVA y Total */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="body2" fontWeight="bold">
+            IVA (16%)
+          </Typography>
+          <Typography
+            variant="body2"
+            fontWeight="bold"
+            sx={{ color: paidOnline ? "#10906a" : undefined }}
           >
-            <Typography variant="body2" fontWeight="bold">
-              Total a pagar:
-            </Typography>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              sx={{ color: paidOnline ? "#10906a" : undefined }}
-            >
-              {formatCurrency(paidOnline ? totals.price2 : totals.price)}
-            </Typography>
-          </Box>
-        ) : totals ? (
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+            {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+          <Typography variant="body2" fontWeight="bold">
+            Total a pagar:
+          </Typography>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            sx={{ color: paidOnline ? "#10906a" : undefined }}
           >
-            <Typography variant="body2" fontWeight="bold">
-              Pago único:
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ color: "#10906a" }}
-              fontWeight="bold"
-            >
-              {formatCurrency(totals.price || totals.price2)}
-            </Typography>
-          </Box>
-        ) : null}
+            {formatCurrency(paidOnline ? totals.price2 : totals.price)}
+          </Typography>
+        </Box>
 
         {/* Mensaje de ahorro para pago en línea */}
         {paidOnline &&

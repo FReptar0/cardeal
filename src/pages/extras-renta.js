@@ -391,7 +391,7 @@ const ExtrasRenta = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#d60812",
+            backgroundColor: "#10906a",
             color: "white",
             fontWeight: "bold",
             padding: "12px 30px",

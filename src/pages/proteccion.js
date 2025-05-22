@@ -376,7 +376,7 @@ const SeguroVehiculo = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#d60812",
+            backgroundColor: "#10906a",
             color: "white",
             fontWeight: "bold",
             p: "12px 30px",
