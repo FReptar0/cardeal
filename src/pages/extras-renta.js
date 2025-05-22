@@ -170,7 +170,7 @@ const ExtrasRenta = () => {
     if (!extra) return;
 
     const limites = {
-      ADD: 1,
+      ADD: 4, // máximo 4 conductores adicionales
       UAGE: 1,
       BABY: 2,
       CHILD: 2,
@@ -323,7 +323,7 @@ const ExtrasRenta = () => {
                   <Typography
                     variant="h6"
                     fontWeight="bold"
-                    sx={{ color: "#d60812" }}
+                    sx={{ color: "#000" }}
                   >
                     {extra.precio.toFixed(2)} MXN/DÍA
                   </Typography>
@@ -382,7 +382,7 @@ const ExtrasRenta = () => {
         <Typography variant="h5" fontWeight="bold">
           TOTAL de extras:
         </Typography>
-        <Typography variant="h5" fontWeight="bold" sx={{ color: "#d60812" }}>
+        <Typography variant="h5" fontWeight="bold" sx={{ color: "#000" }}>
           {total.toFixed(2)} MXN
         </Typography>
       </Box>
@@ -391,7 +391,7 @@ const ExtrasRenta = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#d60812",
+            backgroundColor: "#10906a",
             color: "white",
             fontWeight: "bold",
             padding: "12px 30px",

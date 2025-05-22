@@ -159,6 +159,20 @@ const SeguroVehiculo = () => {
   // Planes ajustados según la categoría del auto
   const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
 
+  // Seleccionar "premium" por defecto si no hay uno seleccionado
+  useEffect(() => {
+    if (!selectedInsurance) {
+      const premiumPlan = effectivePlanesSeguros.find(
+        (plan) => plan.id === "completo"
+      );
+      if (premiumPlan) {
+        setSelectedInsurance({ ...premiumPlan, code: premiumPlan.code });
+      }
+    }
+    // Solo debe correr cuando effectivePlanesSeguros cambia o selectedInsurance es null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectivePlanesSeguros]);
+
   // Seleccionar un plan
   const handleSelect = (plan) => {
     setSelectedInsurance({
@@ -362,7 +376,7 @@ const SeguroVehiculo = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#d60812",
+            backgroundColor: "#10906a",
             color: "white",
             fontWeight: "bold",
             p: "12px 30px",
