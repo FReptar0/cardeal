@@ -80,6 +80,7 @@ export default async function handler(req, res) {
     renterLast,
     extrasCodes = [], // array de strings con códigos TSD de extras
     insuranceCode = "", // string con código TSD de seguro o vacío
+    rateId = "", // string con ID de tarifa o vacío
   } = req.body;
 
   console.log("Fecha", formatCustomDateTime(pickupDateTime));
@@ -125,32 +126,20 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickupDateTime}</PickupDateTime>
     <ReturnDateTime>${formattedReturnDateTime}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <RatePlanType>RETAIL RATE</RatePlanType>
+    <RateID>${rateId}</RateID>
     <RenterFirst>${renterFirst}</RenterFirst>
     <RenterLast>${renterLast}</RenterLast>
     ${extrasXML}
   </Payload>
 </TRNXML>`.trim();
-    // <RatePlanType>SEASONAL PLAN</RatePlanType>
-    // <RateCode>BASIC</RateCode>
-    // <RatePlan>DAILY</RatePlan>
-
-  // Imprime el XML generado en la consola
-  console.log("XML final para tsd:", xmlBody);
-
-  // Commented out the POST request to TSD to prevent sending it
 
   try {
-    console.log("⏳ Enviando petición a TSD...");
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/xml" },
       body: xmlBody,
     });
 
-    console.log(
-      `✅ Petición completada. Status: ${response.status} ${response.statusText}`
-    );
     const xml = await response.text();
     console.log("📨 XML recibido:\n", xml);
 

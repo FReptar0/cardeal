@@ -21,9 +21,11 @@ export default async function handler(req, res) {
     TSD_CUSTOMER_NUMBER,
     TSD_PASSCODE,
   } = process.env;
-  
-  const { location, pickupDateTime, returnDateTime } = req.body;
 
+  console.log("📦 Datos recibidos:", req.body);
+
+  const { pickupLocationId, returnLocationId, pickupDateTime, returnDateTime } =
+    req.body;
 
   // Las 5 categorías que vamos a pedir (pipe-delimited)
   const classCodes = ["ECAR", "FCAR", "FFAR", "SCAR", "SFAR"].join("|");
@@ -43,15 +45,16 @@ export default async function handler(req, res) {
       <MessageDesc>Request Rates</MessageDesc>
     </Message>
     <PayLoad>
-      <RentalLocationID>${location}</RentalLocationID>
-      <ReturnLocationID>${location}</ReturnLocationID>
+      <RentalLocationID>${pickupLocationId}</RentalLocationID>
+      <ReturnLocationID>${returnLocationId}</ReturnLocationID>
       <PickupDateTime>${pickupDateTime}</PickupDateTime>
       <ReturnDateTime>${returnDateTime}</ReturnDateTime>
+      <ClassCode>${classCodes}</ClassCode>
     </PayLoad>
   </TRNXML>
   `;
 
-  // console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
+  console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
 
   try {
     const response = await fetch(TSD_ENDPOINT, {
@@ -62,18 +65,22 @@ export default async function handler(req, res) {
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
 
-    // console.log("JSON completo:", JSON.stringify(json, null, 2));
+    console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
     let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
     products = Array.isArray(products) ? products : [products];
 
+    // console.log("RateProducts:", products);
     // Simplificamos a [{ category, baseRate, totalCharges }, …]
     const rates = products.map((rp) => ({
       category: rp.ClassCode,
+      rateId: rp.RateID,
       baseRate: rp.RateAmount,
       totalCharges: rp.TotalPricing?.TotalCharges,
     }));
+
+    console.log("Rates:", rates);
 
     res.status(200).json(rates);
   } catch (error) {

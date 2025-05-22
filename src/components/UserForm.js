@@ -215,6 +215,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             .filter((extra) => extra.cantidad > 0)
             .map((extra) => ({ id: extra.id, cantidad: extra.cantidad })),
           insuranceCode: selectedInsurance?.code || "",
+          rateId: selectedCar?.rateId,
         }),
       });
 

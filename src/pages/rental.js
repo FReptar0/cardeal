@@ -113,7 +113,7 @@ export default function RentalPage() {
 
   // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
   const fetchRates = async (
-    { location, pickupDateTime, returnDateTime },
+    { pickupLocationId, returnLocationId, pickupDateTime, returnDateTime },
     setCarsFn,
     setLoadedFn
   ) => {
@@ -122,12 +122,12 @@ export default function RentalPage() {
       const res = await fetch("/api/rates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, pickupDateTime, returnDateTime }),
+        body: JSON.stringify({ pickupLocationId, returnLocationId, pickupDateTime, returnDateTime }),
       });
 
       // console.log("🛞 Respuesta de TSD:", res);
       const rates = await res.json();
-      console.log("🛞 Precios TSD por categoría:", rates);
+      //console.log("🛞 Precios TSD por categoría:", rates);
 
       const filtered = rates
         .map((rate) => {
@@ -146,6 +146,7 @@ export default function RentalPage() {
             ...rate,
             price2: base,
             price: discount,
+            rateId: rate.rateId,
           };
         })
         .filter(Boolean); // elimina los nulos
@@ -247,6 +248,7 @@ export default function RentalPage() {
   };
 
   const handleSearch = (filters) => {
+    //console.log("Filtros de búsqueda:", filters);
     const pickDt = new Date(filters.pickupDate);
     const [pickTime, pickAmpm] = filters.pickupTime.split(" ");
     let [ph, pm] = pickTime.split(":").map(Number);
@@ -264,9 +266,17 @@ export default function RentalPage() {
     const pickupDateTime = formatTSDDate(pickDt);
     const returnDateTime = formatTSDDate(retDt);
 
+    //console.log("filters", filters);
+    //console.log("pickupLocationId", filters.pickupLocation?.id);
+    //console.log("returnLocationId", filters.returnLocation?.id);
+    //console.log("sameOffice", filters.sameOffice);
+
     fetchRates(
       {
-        location: filters.pickupLocation?.id,
+        pickupLocationId: filters.pickupLocation?.id,
+        returnLocationId: filters.sameOffice
+          ? filters.pickupLocation?.id
+          : filters.returnLocation?.id,
         pickupDateTime,
         returnDateTime,
       },

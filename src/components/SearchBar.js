@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   Button,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import { es } from "date-fns/locale";
 import format from "date-fns/format";
@@ -20,10 +21,14 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
+import { useDebounce } from "use-debounce";
 
-function generateTimeSlots(startTime, endTime) {
+function generateTimeSlots(startTime, endTime, forToday = false) {
   const [startHour, startMin] = startTime.split(":").map(Number);
   const [endHour, endMin] = endTime.split(":").map(Number);
+
+  const now = new Date();
+  const limit = new Date(now.getTime() + 3 * 60 * 60 * 1000 + 20 * 60 * 1000); // +3h20min
 
   const slots = [];
   let current = new Date();
@@ -33,25 +38,18 @@ function generateTimeSlots(startTime, endTime) {
   end.setHours(endHour, endMin, 0, 0);
 
   while (current <= end) {
-    const h = current.getHours();
-    const m = current.getMinutes();
-    const formatted = `${(h % 12 || 12).toString().padStart(2, "0")}:${m
-      .toString()
-      .padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
-    slots.push(formatted);
+    if (!forToday || current > limit) {
+      const h = current.getHours();
+      const m = current.getMinutes();
+      const formatted = `${(h % 12 || 12).toString().padStart(2, "0")}:${m
+        .toString()
+        .padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+      slots.push(formatted);
+    }
     current.setMinutes(current.getMinutes() + 30);
   }
 
   return slots;
-}
-
-// Función para convertir formato 12h a minutos (para comparaciones)
-function convert12to24(time12h) {
-  const [time, modifier] = time12h.split(" ");
-  let [hours, minutes] = time.split(":").map(Number);
-  if (modifier === "PM" && hours < 12) hours += 12;
-  if (modifier === "AM" && hours === 12) hours = 0;
-  return hours * 60 + minutes;
 }
 
 const parseBusinessHours = (raw) => {
@@ -109,6 +107,7 @@ function DateTimeSelector({
   time,
   setTime,
   businessHours,
+  loading,
 }) {
   const dateInputRef = useRef(null);
   const router = useRouter();
@@ -118,8 +117,9 @@ function DateTimeSelector({
     router.pathname === "/extras-renta";
 
   const horario = parseBusinessHours(businessHours);
+  const isToday = format(date, "yyyy-MM-dd") === getTodayDate();
   const timeSlots = horario
-    ? generateTimeSlots(horario.start, horario.end)
+    ? generateTimeSlots(horario.start, horario.end, isToday)
     : [];
 
   return (
@@ -198,7 +198,13 @@ function DateTimeSelector({
               opacity: 0,
               cursor: "pointer",
             }}
-            inputProps={{ min: getTodayDate() }}
+            inputProps={{
+              min: getTodayDate(),
+              max: format(
+                new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+                "yyyy-MM-dd"
+              ),
+            }}
           />
         </Box>
         <Divider orientation="vertical" flexItem />
@@ -213,9 +219,11 @@ function DateTimeSelector({
             px: 2,
           }}
         >
-          {timeSlots.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No hay horarios para mostrar
+          {loading ? (
+            <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
+          ) : timeSlots.length === 0 ? (
+            <Typography variant="body2" color="error">
+              No hay horarios disponibles
             </Typography>
           ) : (
             <Select
@@ -251,6 +259,7 @@ function DateTimeSelector({
 export default function SearchBar({ sx = {}, onSearch }) {
   const router = useRouter();
   const { searchData, setSearchData } = useSearch(); // Contexto global
+  const [debouncedSearchData] = useDebounce(searchData, 500);
   const { selectedCar } = useBooking();
   const isRentalPage =
     router.pathname === "/rental" ||
@@ -263,8 +272,12 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const [pickupHours, setPickupHours] = useState(null);
   const [returnHours, setReturnHours] = useState(null);
 
-  const fetchBusinessHours = async (locationId, setHoursFn) => {
+  const [loadingPickupHours, setLoadingPickupHours] = useState(false);
+  const [loadingReturnHours, setLoadingReturnHours] = useState(false);
+
+  const fetchBusinessHours = async (locationId, setHoursFn, setLoadingFn) => {
     try {
+      setLoadingFn?.(true);
       const res = await fetch("/api/locations/hours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -275,8 +288,51 @@ export default function SearchBar({ sx = {}, onSearch }) {
     } catch (err) {
       console.error("Error al obtener horarios:", err);
       setHoursFn(null);
+    } finally {
+      setLoadingFn?.(false);
     }
   };
+
+  useEffect(() => {
+    const {
+      pickupLocation,
+      returnLocation,
+      pickupDate,
+      pickupTime,
+      returnDate,
+      returnTime,
+    } = debouncedSearchData;
+
+    const valid =
+      pickupLocation?.id &&
+      returnLocation?.id &&
+      pickupDate &&
+      pickupTime &&
+      returnDate &&
+      returnTime;
+
+    if (valid) {
+      const filters = {
+        pickupLocation,
+        returnLocation,
+        pickupDate,
+        pickupTime,
+        returnDate,
+        returnTime,
+        sameOffice: debouncedSearchData.sameOffice,
+      };
+
+      onSearch?.(filters);
+    }
+  }, [
+    debouncedSearchData.pickupLocation,
+    debouncedSearchData.returnLocation,
+    debouncedSearchData.pickupDate,
+    debouncedSearchData.pickupTime,
+    debouncedSearchData.returnDate,
+    debouncedSearchData.returnTime,
+    debouncedSearchData.sameOffice,
+  ]);
 
   // ——— NUEVO: estado y fetch de sucursales desde API ———
   const [locations, setLocations] = useState([]);
@@ -297,14 +353,18 @@ export default function SearchBar({ sx = {}, onSearch }) {
   useEffect(() => {
     if (searchData.pickupLocation?.id) {
       // siempre cargo pickup
-      fetchBusinessHours(searchData.pickupLocation.id, setPickupHours);
+      fetchBusinessHours(
+        searchData.pickupLocation.id,
+        setPickupHours,
+        setLoadingPickupHours
+      );
 
       // y también carga return (ya sea misma oficina o distinta)
       const returnId = searchData.sameOffice
         ? searchData.pickupLocation.id
         : searchData.returnLocation?.id;
       if (returnId) {
-        fetchBusinessHours(returnId, setReturnHours);
+        fetchBusinessHours(returnId, setReturnHours, setLoadingReturnHours);
       }
     }
   }, [isMounted]);
@@ -314,36 +374,44 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setSearchData({ ...searchData, pickupLocation: newValue });
 
     if (newValue?.id) {
-      fetchBusinessHours(newValue.id, (data) => {
-        setPickupHours(data);
-
-        const horario = parseBusinessHours(data);
-        if (horario) {
-          const validHours = generateTimeSlots(horario.start, horario.end);
-          if (!validHours.includes(searchData.pickupTime)) {
-            setSearchData((prev) => ({
-              ...prev,
-              pickupTime: validHours[0], // Primer horario válido
-            }));
-          }
-        }
-      });
-
-      if (searchData.sameOffice) {
-        fetchBusinessHours(newValue.id, (data) => {
-          setReturnHours(data);
+      fetchBusinessHours(
+        newValue.id,
+        (data) => {
+          setPickupHours(data);
 
           const horario = parseBusinessHours(data);
           if (horario) {
             const validHours = generateTimeSlots(horario.start, horario.end);
-            if (!validHours.includes(searchData.returnTime)) {
+            if (!validHours.includes(searchData.pickupTime)) {
               setSearchData((prev) => ({
                 ...prev,
-                returnTime: validHours[0],
+                pickupTime: validHours[0], // Primer horario válido
               }));
             }
           }
-        });
+        },
+        setLoadingPickupHours
+      );
+
+      if (searchData.sameOffice) {
+        fetchBusinessHours(
+          newValue.id,
+          (data) => {
+            setReturnHours(data);
+
+            const horario = parseBusinessHours(data);
+            if (horario) {
+              const validHours = generateTimeSlots(horario.start, horario.end);
+              if (!validHours.includes(searchData.returnTime)) {
+                setSearchData((prev) => ({
+                  ...prev,
+                  returnTime: validHours[0],
+                }));
+              }
+            }
+          },
+          setLoadingReturnHours
+        );
       }
     }
   };
@@ -383,20 +451,24 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setSearchData({ ...searchData, returnLocation: newValue });
 
     if (newValue?.id && !searchData.sameOffice) {
-      fetchBusinessHours(newValue.id, (data) => {
-        setReturnHours(data);
+      fetchBusinessHours(
+        newValue.id,
+        (data) => {
+          setReturnHours(data);
 
-        const horario = parseBusinessHours(data);
-        if (horario) {
-          const validHours = generateTimeSlots(horario.start, horario.end);
-          if (!validHours.includes(searchData.returnTime)) {
-            setSearchData((prev) => ({
-              ...prev,
-              returnTime: validHours[0],
-            }));
+          const horario = parseBusinessHours(data);
+          if (horario) {
+            const validHours = generateTimeSlots(horario.start, horario.end);
+            if (!validHours.includes(searchData.returnTime)) {
+              setSearchData((prev) => ({
+                ...prev,
+                returnTime: validHours[0],
+              }));
+            }
           }
-        }
-      });
+        },
+        setLoadingReturnHours
+      );
     }
   };
 
@@ -414,7 +486,11 @@ export default function SearchBar({ sx = {}, onSearch }) {
       newSearchData.returnTime = searchData.pickupTime;
 
       if (searchData.pickupLocation?.id) {
-        fetchBusinessHours(searchData.pickupLocation.id, setReturnHours);
+        fetchBusinessHours(
+          searchData.pickupLocation.id,
+          setReturnHours,
+          setLoadingReturnHours
+        );
       }
     } else {
       // Al desactivar: limpiar returnLocation (dejar que usuario la seleccione)
@@ -446,60 +522,59 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
 
   const handleReturnDateChange = (newDate) => {
-  const newReturnDate = new Date(newDate);
-  newReturnDate.setHours(0, 0, 0, 0);
+    const newReturnDate = new Date(newDate);
+    newReturnDate.setHours(0, 0, 0, 0);
 
-  const currentPickupDate = new Date(searchData.pickupDate);
-  currentPickupDate.setHours(0, 0, 0, 0);
+    const currentPickupDate = new Date(searchData.pickupDate);
+    currentPickupDate.setHours(0, 0, 0, 0);
 
-  const today = new Date(
-    new Date().toLocaleString("en-US", {
-      timeZone: "America/Mexico_City",
-    })
-  );
-  today.setHours(0, 0, 0, 0);
+    const today = new Date(
+      new Date().toLocaleString("en-US", {
+        timeZone: "America/Mexico_City",
+      })
+    );
+    today.setHours(0, 0, 0, 0);
 
-  // 🟥 Caso 1: misma fecha ➜ mover returnDate un día después
-  if (newReturnDate.getTime() === currentPickupDate.getTime()) {
-    const adjustedReturn = new Date(newReturnDate);
-    adjustedReturn.setDate(adjustedReturn.getDate() + 1);
-
-    setSearchData({
-      ...searchData,
-      returnDate: adjustedReturn,
-    });
-    return;
-  }
-
-  // 🟥 Caso 2: devolución antes que recogida
-  if (newReturnDate.getTime() < currentPickupDate.getTime()) {
-    const adjustedPickup = new Date(newReturnDate);
-    adjustedPickup.setDate(adjustedPickup.getDate() - 1);
-
-    // Si el nuevo pickup caería antes de hoy, no lo permitimos. Mejor mover return
-    if (adjustedPickup < today) {
-      const adjustedReturn = new Date(currentPickupDate);
+    // 🟥 Caso 1: misma fecha ➜ mover returnDate un día después
+    if (newReturnDate.getTime() === currentPickupDate.getTime()) {
+      const adjustedReturn = new Date(newReturnDate);
       adjustedReturn.setDate(adjustedReturn.getDate() + 1);
 
       setSearchData({
         ...searchData,
         returnDate: adjustedReturn,
       });
-    } else {
-      setSearchData({
-        ...searchData,
-        pickupDate: adjustedPickup,
-        returnDate: newReturnDate,
-      });
+      return;
     }
 
-    return;
-  }
+    // 🟥 Caso 2: devolución antes que recogida
+    if (newReturnDate.getTime() < currentPickupDate.getTime()) {
+      const adjustedPickup = new Date(newReturnDate);
+      adjustedPickup.setDate(adjustedPickup.getDate() - 1);
 
-  // ✅ Caso normal: devolución válida
-  setSearchData({ ...searchData, returnDate: newReturnDate });
-};
+      // Si el nuevo pickup caería antes de hoy, no lo permitimos. Mejor mover return
+      if (adjustedPickup < today) {
+        const adjustedReturn = new Date(currentPickupDate);
+        adjustedReturn.setDate(adjustedReturn.getDate() + 1);
 
+        setSearchData({
+          ...searchData,
+          returnDate: adjustedReturn,
+        });
+      } else {
+        setSearchData({
+          ...searchData,
+          pickupDate: adjustedPickup,
+          returnDate: newReturnDate,
+        });
+      }
+
+      return;
+    }
+
+    // ✅ Caso normal: devolución válida
+    setSearchData({ ...searchData, returnDate: newReturnDate });
+  };
 
   const handlePickupTimeChange = (newTime) =>
     setSearchData({ ...searchData, pickupTime: newTime });
@@ -705,6 +780,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
             time={searchData.pickupTime}
             setTime={handlePickupTimeChange}
             businessHours={pickupHours}
+            loading={loadingPickupHours}
           />
         </Box>
         <Box sx={{ flex: 1 }}>
@@ -715,6 +791,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
             time={searchData.returnTime}
             setTime={handleReturnTimeChange}
             businessHours={returnHours}
+            loading={loadingReturnHours}
           />
         </Box>
       </Box>
