@@ -273,30 +273,47 @@ export default function CheckoutPage() {
         <Box
           sx={{
             position: "fixed",
-            top: { xs: 120, md: 120 }, // debajo de la navbar
+            top: { xs: 120, md: 120 },
             right: 24,
             zIndex: 1301,
-            background: "#fff",
-            border: "2px solid #d60812",
-            borderRadius: "32px",
-            boxShadow: 4,
-            px: 3,
-            py: 1,
+            background: "transparent",
+            border: "none",
+            boxShadow: "none",
+            p: 0,
+            m: 0,
             display: "flex",
             alignItems: "center",
-            gap: 1,
-            fontWeight: "bold",
-            fontSize: 18,
-            color: "#d60812",
-            flexDirection: "column",
-            minWidth: 100,
+            justifyContent: "center",
+            minWidth: 0,
+            minHeight: 0,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <span role="img" aria-label="clock">
-              ⏰
-            </span>{" "}
-            {formatTime(timeLeft)}
+          <Box sx={{ position: 'relative', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width={80} height={80} style={{ position: 'absolute', top: 0, left: 0 }}>
+              <circle
+                cx={40}
+                cy={40}
+                r={36}
+                stroke="#e0e0e0"
+                strokeWidth={6}
+                fill="none"
+              />
+              <circle
+                cx={40}
+                cy={40}
+                r={36}
+                stroke="#d60812"
+                strokeWidth={6}
+                fill="none"
+                strokeDasharray={2 * Math.PI * 36}
+                strokeDashoffset={(2 * Math.PI * 36) * (1 - timeLeft / 600)}
+                strokeLinecap="round"
+                style={{ transition: 'stroke-dashoffset 1s linear' }}
+              />
+            </svg>
+            <Box sx={{ position: 'relative', zIndex: 1, fontWeight: 700, fontSize: 18, color: '#d60812', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', letterSpacing: 1 }}>
+              {formatTime(timeLeft)}
+            </Box>
           </Box>
         </Box>
       )}
