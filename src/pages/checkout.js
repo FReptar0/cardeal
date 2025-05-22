@@ -29,7 +29,7 @@ export default function CheckoutPage() {
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos en segundos
   const [showFloatingTimer, setShowFloatingTimer] = useState(false);
 
-  const { selectedCar, selectedInsurance, selectedExtras } = useBooking();
+  const { selectedCar, selectedInsurance, selectedExtras, clearBooking } = useBooking();
   const { searchData } = useSearch();
 
   const pickupDateString = searchData.pickupDate
@@ -131,6 +131,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (timeLeft <= 0) {
       setOpenTimerDialog(false);
+      clearBooking(); // Limpiar booking context al regresar al home
       router.push("/");
       return;
     }
@@ -138,7 +139,7 @@ export default function CheckoutPage() {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [timeLeft, router]);
+  }, [timeLeft, router, clearBooking]);
 
   return (
     <>
@@ -183,6 +184,22 @@ export default function CheckoutPage() {
           >
             <CloseIcon />
           </IconButton>
+          {/* Regresa la imagen del escudo en el dialog */}
+          <Box
+            sx={{
+              flex: 1,
+              display: { xs: "none", md: "block" },
+              maxHeight: "300px",
+              maxWidth: "300px",
+            }}
+          >
+            <Box
+              component="img"
+              src="/bot/Bot-IA-Alpha-Escudo.webp"
+              alt="Tarifa Icono"
+              sx={{ height: "100%", width: "100%", objectFit: "contain" }}
+            />
+          </Box>
           <Box sx={{ flex: 2, textAlign: "justify" }}>
             <Typography
               variant="h6"
