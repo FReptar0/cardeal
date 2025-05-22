@@ -295,6 +295,49 @@ export default function OrderSummary({
           </Box>
         ) : null}
 
+        {/* Mensaje de ahorro para pago en línea */}
+        {paidOnline &&
+          totals &&
+          totals.price &&
+          totals.price2 &&
+          totals.price > totals.price2 && (
+            <Box
+              sx={{
+                mt: 3,
+                mb: 2,
+                p: 2,
+                background: "#e8f5f0",
+                border: "2px solid #10906a",
+                borderRadius: 2,
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  color: "#10906a",
+                  fontWeight: "bold",
+                  fontSize: { xs: 22, md: 28 },
+                  mb: 1,
+                  textShadow: "0 2px 8px #b2dfdb",
+                }}
+              >
+                ¡USTED ESTÁ AHORRANDO{" "}
+                {formatCurrency(totals.price - totals.price2)}!
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: "#10906a", fontWeight: 500 }}
+              >
+                Al pagar en línea obtiene un mejor precio que en mostrador.
+              </Typography>
+            </Box>
+          )}
+
         {/* Descuento */}
         {discountApplied && (
           <>

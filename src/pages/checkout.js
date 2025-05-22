@@ -221,6 +221,21 @@ export default function CheckoutPage() {
                 {formatTime(timeLeft)}
               </b>
             </Typography>
+            {/* Mostrar ahorro si aplica */}
+            {totalWithIva > totalWithIva2 && (
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "#10906a",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  mb: 2,
+                }}
+              >
+                ¡Estás ahorrando {formatCurrency(totalWithIva - totalWithIva2)}{" "}
+                pagando en línea!
+              </Typography>
+            )}
             <Typography variant="body2" sx={{ color: "#666" }}>
               Si el tiempo se agota, serás redirigido automáticamente a la
               página de inicio.
@@ -270,12 +285,30 @@ export default function CheckoutPage() {
             fontWeight: "bold",
             fontSize: 18,
             color: "#d60812",
+            flexDirection: "column",
+            minWidth: 170,
           }}
         >
-          <span role="img" aria-label="clock">
-            ⏰
-          </span>{" "}
-          {formatTime(timeLeft)}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <span role="img" aria-label="clock">
+              ⏰
+            </span>{" "}
+            {formatTime(timeLeft)}
+          </Box>
+          {/* Mostrar ahorro si aplica */}
+          {totalWithIva > totalWithIva2 && (
+            <Box
+              sx={{
+                color: "#10906a",
+                fontWeight: "bold",
+                fontSize: 15,
+                mt: 0.5,
+                textAlign: "center",
+              }}
+            >
+              ¡Ahorra {formatCurrency(totalWithIva - totalWithIva2)} en línea!
+            </Box>
+          )}
         </Box>
       )}
       <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>
