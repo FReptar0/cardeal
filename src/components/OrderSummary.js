@@ -187,18 +187,18 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Otros cargos */}
+        {/* Otros cargos e IVA (unificados) */}
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Otros Cargos:</b>
+          <b>Otros cargos e IVA:</b>
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales</Typography>
+          <Typography variant="body2">Costos adicionales e impuestos</Typography>
           <Typography
             variant="body2"
             fontWeight="bold"
             sx={{ color: paidOnline ? "#10906a" : undefined }}
           >
-            {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
+            {formatCurrency(paidOnline ? otherCharges2 + ivaCost2 : otherCharges + ivaCost)}
           </Typography>
         </Box>
         <Typography
@@ -206,8 +206,7 @@ export default function OrderSummary({
           sx={{ display: "block", mt: 1 }}
           color="textSecondary"
         >
-          * Este cargo incluye costos administrativos y operativos adicionales.
-          Consulta más detalles en los{" "}
+          * Este cargo incluye costos administrativos, operativos e impuestos. Consulta más detalles en los {" "}
           <a
             href="/terminos-y-condiciones"
             target="_blank"
@@ -235,20 +234,6 @@ export default function OrderSummary({
         </Box>
 
         <Divider sx={{ my: 2 }} />
-
-        {/* IVA y Total */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2" fontWeight="bold">
-            IVA (16%)
-          </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
-          >
-            {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
-          </Typography>
-        </Box>
 
         {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
         {totals && totals.price && totals.price2 ? (
