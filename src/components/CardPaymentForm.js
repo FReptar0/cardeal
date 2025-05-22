@@ -15,14 +15,11 @@ import CreditCardPreview from "./CreditCardPreview";
 import mastercardIcon from "../../public/icons/cards/mastercard.svg";
 import visaIcon from "../../public/icons/cards/visa.svg";
 import amexIcon from "../../public/icons/cards/AXP_BlueBoxLogo_Alternate_SMALLscale_RGB_DIGITAL_80x80.png";
-import CryptoJS from "crypto-js";
-//import dotenv from "dotenv";
-//dotenv.config();
 
 /** Valida tarjeta con algoritmo Luhn */
 function luhnCheck(ccNum) {
-    let sum = 0;
-    let alt = false;
+    let sum = 0,
+        alt = false;
     for (let i = ccNum.length - 1; i >= 0; i--) {
         let n = parseInt(ccNum[i], 10);
         if (alt) {
@@ -44,10 +41,10 @@ function luhnCheck(ccNum) {
  * - data: {
  *     mp_order: string,
  *     mp_reference: string,
- *     mp_amount: string,    // e.g. "100.00"
- *     mp_concept: string,   // e.g. "3"
- *     mp_node: string,      // e.g. "20"
- *     mp_currency: string,  // "1" or "2"
+ *     mp_amount: string,
+ *     mp_concept: string,
+ *     mp_node: string,
+ *     mp_currency: string
  *   }
  */
 export default function CardPaymentForm({ open, onClose, data }) {
@@ -58,85 +55,101 @@ export default function CardPaymentForm({ open, onClose, data }) {
     const [name, setName] = useState("");
     const [focused, setFocused] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const rawNumber = cardNumber.replace(/\s+/g, "");
-        // Validaciones básicas
+        const raw = cardNumber.replace(/\s+/g, "");
+        // validaciones
         if (
-            !/^\d{16}$/.test(rawNumber) ||
+            !/^\d{16}$/.test(raw) ||
             !/^\d{2}$/.test(expMonth) ||
             !/^\d{2}$/.test(expYear) ||
             !/^\d{3,4}$/.test(cvc) ||
-            name.trim() === ""
+            !name.trim() ||
+            !luhnCheck(raw)
         ) {
             setError("Por favor verifica los datos de la tarjeta.");
             return;
         }
-        // Luhn
-        if (!luhnCheck(rawNumber)) {
-            setError("Número de tarjeta inválido.");
-            return;
-        }
         setError("");
+        setLoading(true);
 
-        // Generar firma HMAC-SHA256
-        const secret = process.env.NEXT_PUBLIC_HMAC_SECRET;
-        const signatureBase = `${data.mp_order}${data.mp_reference}${data.mp_amount}`;
-        const mp_signature = CryptoJS.HmacSHA256(signatureBase, secret).toString(
-            CryptoJS.enc.Hex
-        );
+        try {
+            // 1) Obtener la firma desde nuestro endpoint seguro
+            const sigRes = await fetch("/api/flap/signature", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    mp_order: data.mp_order,
+                    mp_reference: data.mp_reference,
+                    mp_amount: data.mp_amount,
+                }),
+            });
+            const { signature } = await sigRes.json();
 
-        // Construir y enviar formulario oculto a Flap
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action =
-            "https://prepro.adquiracloud.mx/clb/endpoint/automovilisticaAndrade";
-        form.style.display = "none";
-        const origin = window.location.origin;
-        const fields = {
-            mp_account: "8559",
-            mp_node: data.mp_node,
-            mp_order: data.mp_order,
-            mp_reference: data.mp_reference,
-            mp_product: "1",
-            mp_concept: data.mp_concept,
-            mp_amount: data.mp_amount,
-            mp_currency: data.mp_currency,
-            mp_urlsuccess: `${origin}/api/flap/responsePayment`,
-            mp_urlfailure: `${origin}/api/flap/responsePayment`,
-            mp_signature,
-            mp_paymentmethod: "TDX|CIE|AMEX|CLABE",
-            // datos de tarjeta
-            card_number: rawNumber,
-            exp_month: expMonth,
-            exp_year: expYear,
-            cvc,
-            card_holder: name.trim(),
-        };
-        Object.entries(fields).forEach(([k, v]) => {
-            const inp = document.createElement("input");
-            inp.name = k;
-            inp.value = v;
-            form.appendChild(inp);
-        });
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+            // 2) Construir y enviar formulario oculto a Flap
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action =
+                "https://prepro.adquiracloud.mx/clb/endpoint/automovilisticaAndrade";
+            form.style.display = "none";
 
-        // Desechar datos sensibles
-        setCardNumber("");
-        setExpMonth("");
-        setExpYear("");
-        setCvc("");
-        setName("");
-        onClose();
+            const origin = window.location.origin;
+            const fields = {
+                mp_account: "8559",
+                mp_node: data.mp_node,
+                mp_order: data.mp_order,
+                mp_reference: data.mp_reference,
+                mp_product: "1",
+                mp_concept: data.mp_concept,
+                mp_amount: data.mp_amount,
+                mp_currency: data.mp_currency,
+                mp_urlsuccess: `${origin}/api/flap/responsePayment`,
+                mp_urlfailure: `${origin}/api/flap/responsePayment`,
+                mp_signature: signature,
+                mp_paymentmethod: "TDX|CIE|AMEX|CLABE",
+                // campos de tarjeta para pruebas en prepro
+                card_number: raw,
+                exp_month: expMonth,
+                exp_year: expYear,
+                cvc,
+                card_holder: name.trim(),
+            };
+
+            Object.entries(fields).forEach(([k, v]) => {
+                const inp = document.createElement("input");
+                inp.name = k;
+                inp.value = v;
+                form.appendChild(inp);
+            });
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        } catch (err) {
+            console.error(err);
+            setError("Error al generar la firma. Intenta de nuevo.");
+        } finally {
+            setLoading(false);
+            // limpiar sensibles
+            setCardNumber("");
+            setExpMonth("");
+            setExpYear("");
+            setCvc("");
+            setName("");
+            onClose();
+        }
     };
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle
-                sx={{ textAlign: "center", fontWeight: "bold", fontSize: "1.5rem", color: "#333" }}
+                sx={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    fontSize: "1.5rem",
+                    color: "#333",
+                }}
             >
                 Ingresa datos de tu tarjeta
             </DialogTitle>
@@ -146,10 +159,22 @@ export default function CardPaymentForm({ open, onClose, data }) {
                     <Typography variant="body2" sx={{ fontSize: "0.9rem" }}>
                         Métodos de pago aceptados:
                     </Typography>
-                    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 1 }}>
-                        <Image src={mastercardIcon} alt="MasterCard" width={50} height={30} />
+                    <Box
+                        sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 1 }}
+                    >
+                        <Image
+                            src={mastercardIcon}
+                            alt="MasterCard"
+                            width={50}
+                            height={30}
+                        />
                         <Image src={visaIcon} alt="Visa" width={50} height={30} />
-                        <Image src={amexIcon} alt="American Express" width={50} height={30} />
+                        <Image
+                            src={amexIcon}
+                            alt="American Express"
+                            width={50}
+                            height={30}
+                        />
                     </Box>
                 </Box>
 
@@ -165,7 +190,11 @@ export default function CardPaymentForm({ open, onClose, data }) {
                 </Box>
 
                 {/* Formulario */}
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                >
                     <TextField
                         label="Nombre en la tarjeta"
                         placeholder="NOMBRE APELLIDO"
@@ -187,7 +216,11 @@ export default function CardPaymentForm({ open, onClose, data }) {
                         }}
                         onFocus={() => setFocused("number")}
                         onBlur={() => setFocused("")}
-                        inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 19 }}
+                        inputProps={{
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                            maxLength: 19,
+                        }}
                         fullWidth
                         sx={{ bgcolor: "#f9f9f9", borderRadius: "4px" }}
                     />
@@ -196,30 +229,48 @@ export default function CardPaymentForm({ open, onClose, data }) {
                             label="Mes (MM)"
                             placeholder="MM"
                             value={expMonth}
-                            onChange={(e) => setExpMonth(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                            onChange={(e) =>
+                                setExpMonth(e.target.value.replace(/\D/g, "").slice(0, 2))
+                            }
                             onFocus={() => setFocused("expiry")}
                             onBlur={() => setFocused("")}
-                            inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 2 }}
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                                maxLength: 2,
+                            }}
                             sx={{ flex: 1, bgcolor: "#f9f9f9", borderRadius: "4px" }}
                         />
                         <TextField
                             label="Año (AA)"
                             placeholder="AA"
                             value={expYear}
-                            onChange={(e) => setExpYear(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                            onChange={(e) =>
+                                setExpYear(e.target.value.replace(/\D/g, "").slice(0, 2))
+                            }
                             onFocus={() => setFocused("expiry")}
                             onBlur={() => setFocused("")}
-                            inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 2 }}
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                                maxLength: 2,
+                            }}
                             sx={{ flex: 1, bgcolor: "#f9f9f9", borderRadius: "4px" }}
                         />
                         <TextField
                             label="CVC"
                             placeholder="123"
                             value={cvc}
-                            onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                            onChange={(e) =>
+                                setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))
+                            }
                             onFocus={() => setFocused("cvc")}
                             onBlur={() => setFocused("")}
-                            inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 4 }}
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                                maxLength: 4,
+                            }}
                             sx={{ flex: 1, bgcolor: "#f9f9f9", borderRadius: "4px" }}
                         />
                     </Box>
@@ -234,6 +285,7 @@ export default function CardPaymentForm({ open, onClose, data }) {
                 <Button
                     onClick={onClose}
                     variant="outlined"
+                    disabled={loading}
                     sx={{
                         borderRadius: "20px",
                         px: 3,
@@ -248,6 +300,7 @@ export default function CardPaymentForm({ open, onClose, data }) {
                     variant="contained"
                     onClick={handleSubmit}
                     disabled={
+                        loading ||
                         !cardNumber ||
                         !expMonth ||
                         !expYear ||
@@ -263,7 +316,7 @@ export default function CardPaymentForm({ open, onClose, data }) {
                         "&:hover": { bgcolor: "#0e805c" },
                     }}
                 >
-                    Pagar
+                    {loading ? "Enviando..." : "Pagar"}
                 </Button>
             </DialogActions>
         </Dialog>
