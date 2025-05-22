@@ -29,7 +29,8 @@ export default function CheckoutPage() {
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos en segundos
   const [showFloatingTimer, setShowFloatingTimer] = useState(false);
 
-  const { selectedCar, selectedInsurance, selectedExtras, clearBooking } = useBooking();
+  const { selectedCar, selectedInsurance, selectedExtras, clearBooking } =
+    useBooking();
   const { searchData } = useSearch();
 
   const pickupDateString = searchData.pickupDate
