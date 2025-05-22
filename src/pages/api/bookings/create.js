@@ -1,4 +1,4 @@
-// /pages/api/bookings/index.js
+// /pages/api/bookings/create.js
 import { connectToDatabase } from "@/utils/mongodb";
 import { generateUuid } from "@/utils/uuid";
 import jwt from "jsonwebtoken";
@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Método no permitido" });
   }
 
+  // 1) Verificar token Bearer
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No autorizado" });
@@ -24,6 +25,7 @@ export default async function handler(req, res) {
   }
   const userId = decoded.userId;
 
+  // 2) Leer payload
   const {
     selectedCar,
     selectedInsurance,
@@ -32,11 +34,12 @@ export default async function handler(req, res) {
     contactName,
     contactEmail,
     contactPhone,
-    paid, // ahora lo recibimos del cliente
-    paidOnline,
-    discount, // Agregar el descuento como parte de la reserva
+    paid,        // boolean
+    paidOnline,  // boolean
+    discount,    // number (o null)
   } = req.body;
 
+  // 3) Validación básica
   if (
     !selectedCar ||
     !searchData ||
@@ -54,29 +57,38 @@ export default async function handler(req, res) {
   try {
     const { db } = await connectToDatabase();
 
-    const generateOrderNumber = () => {
-      return Math.floor(100000 + Math.random() * 900000).toString(); // Generar un número de 6 dígitos
-    };
-
+    // 4) Generar orderNumber único
+    const generateOrderNumber = () =>
+      Math.floor(100000 + Math.random() * 900000).toString();
     let orderNumber;
     let isUnique = false;
-
-    // Intentar generar un número único
     while (!isUnique) {
       orderNumber = generateOrderNumber();
-      const existingOrder = await db
+      const exists = await db
         .collection("bookings")
         .findOne({ orderNumber });
-      if (!existingOrder) {
-        isUnique = true;
-      }
+      if (!exists) isUnique = true;
     }
 
-    // Modificar la lógica para enviar solo el campo `price` si el pago es al entregar
+    // 5) Calcular totalAmount
+    let total = 0;
+    // a) Precio del auto
+    if (selectedCar.price) total += Number(selectedCar.price);
+    // b) Precio del seguro
+    if (selectedInsurance?.price) total += Number(selectedInsurance.price);
+    // c) Extras: asumimos {id, nombre, cantidad, precio}
+    Object.values(selectedExtras).forEach(({ cantidad, precio }) => {
+      total += Number(precio) * Number(cantidad);
+    });
+    // d) Aplicar descuento (se resta si es valor absoluto)
+    if (discount) total -= Number(discount);
+    const totalAmount = Number(total.toFixed(2));
+
+    // 6) Armar objeto de reserva
     const newBooking = {
       _id: generateUuid(),
       userId,
-      orderNumber, // Agregar el número de orden único
+      orderNumber,
       contact: {
         fullName: contactName,
         email: contactEmail,
@@ -94,24 +106,26 @@ export default async function handler(req, res) {
         pickupTime: searchData.pickupTime,
         returnTime: searchData.returnTime,
       },
-      paid, // guardamos el flag que venga del cliente
-      paidOnline, // guardamos el flag que venga del cliente
-      price: paid ? totals.price : undefined, // Solo enviar `price` si el pago es al entregar
-      discount: discount || 0, // Guardar el descuento recibido o 0 si no se proporciona
+      paid,             // guardamos el flag enviado
+      paidOnline,       // guardamos el flag enviado
+      totalAmount,      // importe calculado
+      status: paidOnline ? "PENDING" : "OFFLINE", // PENDING para online, OFFLINE para mostrador
+      discount: discount || 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
+    // 7) Insertar en BD
     await db.collection("bookings").insertOne(newBooking);
 
-    return res
-      .status(201)
-      .json({
-        message: "Reserva creada exitosamente",
-        bookingId: newBooking._id,
-      });
+    // 8) Devolver bookingId y totalAmount
+    return res.status(201).json({
+      message: "Pre-reserva creada exitosamente",
+      bookingId: newBooking._id,
+      totalAmount, // para usar como mp_amount en el frontend
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error creando reserva:", error);
     return res.status(500).json({ message: "Error al crear la reserva" });
   }
 }
