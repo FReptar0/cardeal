@@ -192,13 +192,17 @@ export default function OrderSummary({
           <b>Otros cargos e IVA:</b>
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales e impuestos</Typography>
+          <Typography variant="body2">
+            Costos adicionales e impuestos
+          </Typography>
           <Typography
             variant="body2"
             fontWeight="bold"
             sx={{ color: paidOnline ? "#10906a" : undefined }}
           >
-            {formatCurrency(paidOnline ? otherCharges2 + ivaCost2 : otherCharges + ivaCost)}
+            {formatCurrency(
+              paidOnline ? otherCharges2 + ivaCost2 : otherCharges + ivaCost
+            )}
           </Typography>
         </Box>
         <Typography
@@ -206,7 +210,8 @@ export default function OrderSummary({
           sx={{ display: "block", mt: 1 }}
           color="textSecondary"
         >
-          * Este cargo incluye costos administrativos, operativos e impuestos. Consulta más detalles en los {" "}
+          * Este cargo incluye costos administrativos, operativos e impuestos.
+          Consulta más detalles en los{" "}
           <a
             href="/terminos-y-condiciones"
             target="_blank"
@@ -385,7 +390,7 @@ export default function OrderSummary({
                 sx={{
                   flex: 0.15, // Relación 15% del ancho
                   height: "40px", // Asegurar que el grosor sea consistente
-                  backgroundColor: "#d60812",
+                  backgroundColor: "#10906a",
                   fontWeight: "bold",
                   textTransform: "none",
                   borderRadius: 1,
