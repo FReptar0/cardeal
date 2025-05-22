@@ -183,21 +183,6 @@ export default function CheckoutPage() {
           >
             <CloseIcon />
           </IconButton>
-          <Box
-            sx={{
-              flex: 1,
-              display: { xs: "none", md: "block" },
-              maxHeight: "300px",
-              maxWidth: "300px",
-            }}
-          >
-            <Box
-              component="img"
-              src="/bot/Bot-IA-Alpha-Escudo.webp"
-              alt="Tarifa Icono"
-              sx={{ height: "100%", width: "100%", objectFit: "contain" }}
-            />
-          </Box>
           <Box sx={{ flex: 2, textAlign: "justify" }}>
             <Typography
               variant="h6"
@@ -286,7 +271,7 @@ export default function CheckoutPage() {
             fontSize: 18,
             color: "#d60812",
             flexDirection: "column",
-            minWidth: 170,
+            minWidth: 100,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -295,20 +280,6 @@ export default function CheckoutPage() {
             </span>{" "}
             {formatTime(timeLeft)}
           </Box>
-          {/* Mostrar ahorro si aplica */}
-          {totalWithIva > totalWithIva2 && (
-            <Box
-              sx={{
-                color: "#10906a",
-                fontWeight: "bold",
-                fontSize: 15,
-                mt: 0.5,
-                textAlign: "center",
-              }}
-            >
-              ¡Ahorra {formatCurrency(totalWithIva - totalWithIva2)} en línea!
-            </Box>
-          )}
         </Box>
       )}
       <Container sx={{ mt: 4, mb: 3, maxWidth: "100vw", px: 2 }}>

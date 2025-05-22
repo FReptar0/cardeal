@@ -188,17 +188,48 @@ export default function OrderSummary({
         <Divider sx={{ my: 2 }} />
 
         {/* Otros cargos */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+          }}
+        >
           <Typography variant="subtitle1" fontWeight="bold">
             Otros Cargos:
           </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
-          >
-            {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
-          </Typography>
+          {paidOnline && otherCharges !== otherCharges2 ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  mr: 1,
+                  fontSize: 16,
+                }}
+              >
+                {formatCurrency(otherCharges)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a" }}
+              >
+                {formatCurrency(otherCharges2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
+            </Typography>
+          )}
         </Box>
         <Typography
           variant="caption"
@@ -224,13 +255,37 @@ export default function OrderSummary({
           <Typography variant="body2" fontWeight="bold">
             Subtotal
           </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={paidOnline ? { color: "#10906a" } : {}}
-          >
-            {formatCurrency(paidOnline ? subtotal2 : subtotal)}
-          </Typography>
+          {paidOnline && subtotal !== subtotal2 ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  mr: 1,
+                  fontSize: 16,
+                }}
+              >
+                {formatCurrency(subtotal)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a" }}
+              >
+                {formatCurrency(subtotal2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={paidOnline ? { color: "#10906a" } : {}}
+            >
+              {formatCurrency(paidOnline ? subtotal2 : subtotal)}
+            </Typography>
+          )}
         </Box>
 
         <Divider sx={{ my: 2 }} />
@@ -240,28 +295,92 @@ export default function OrderSummary({
           <Typography variant="body2" fontWeight="bold">
             IVA (16%)
           </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
-          >
-            {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
-          </Typography>
+          {paidOnline && ivaCost !== ivaCost2 ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  mr: 1,
+                  fontSize: 16,
+                }}
+              >
+                {formatCurrency(ivaCost)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a" }}
+              >
+                {formatCurrency(ivaCost2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
+            </Typography>
+          )}
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2" fontWeight="bold">
-            Total a pagar:
-          </Typography>
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
+        {/* Elimina la línea superior de Total a pagar cuando está activo el pago en línea y hay dos precios */}
+        {!(totals && totals.price && totals.price2 && paidOnline) && (
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+            <Typography variant="body2" fontWeight="bold">
+              Total a pagar:
+            </Typography>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? totals.price2 : totals.price)}
+            </Typography>
+          </Box>
+        )}
+        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
+        {totals && totals.price && totals.price2 && paidOnline ? (
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            {formatCurrency(paidOnline ? totals.price2 : totals.price)}
-          </Typography>
-        </Box>
+            <Typography variant="body2" fontWeight="bold">
+              Total a pagar:
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  mr: 1,
+                  fontSize: 18,
+                }}
+              >
+                {formatCurrency(totals.price)}
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{ color: "#10906a", fontSize: 22 }}
+              >
+                {formatCurrency(totals.price2)}
+              </Typography>
+            </Box>
+          </Box>
+        ) : null}
 
-        {/* Mensaje de ahorro para pago en línea */}
+        {/* Mensaje de ahorro para pago en línea en una sola línea */}
         {paidOnline &&
           totals &&
           totals.price &&
@@ -269,37 +388,24 @@ export default function OrderSummary({
           totals.price > totals.price2 && (
             <Box
               sx={{
-                mt: 3,
+                mt: 2,
                 mb: 2,
-                p: 2,
-                background: "#e8f5f0",
-                border: "2px solid #10906a",
-                borderRadius: 2,
-                textAlign: "center",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                width: "100%",
               }}
             >
               <Typography
-                variant="h5"
+                variant="h6"
                 sx={{
                   color: "#10906a",
                   fontWeight: "bold",
-                  fontSize: { xs: 22, md: 28 },
-                  mb: 1,
-                  textShadow: "0 2px 8px #b2dfdb",
+                  fontSize: { xs: 18, md: 22 },
+                  textAlign: "center",
                 }}
               >
-                ¡USTED ESTÁ AHORRANDO{" "}
-                {formatCurrency(totals.price - totals.price2)}!
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: "#10906a", fontWeight: 500 }}
-              >
-                Al pagar en línea obtiene un mejor precio que en mostrador.
+                ¡USTED ESTÁ AHORRANDO {formatCurrency(totals.price - totals.price2)}!
               </Typography>
             </Box>
           )}
