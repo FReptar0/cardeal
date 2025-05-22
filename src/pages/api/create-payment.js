@@ -7,25 +7,23 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Método no permitido' });
     }
 
-    const {
-        order,
-        reference,
-        amount,
-        node,
-        concept
-    } = req.body;
+    console.log('📦 create-payment body:', req.body);
+    console.log('🔧 env:', {
+        MP_ACCOUNT: process.env.MP_ACCOUNT,
+        MP_PRODUCT: process.env.MP_PRODUCT,
+        MP_ENDPOINT: process.env.MP_ENDPOINT,
+        HMAC_SECRET: !!process.env.HMAC_SECRET,
+        MP_URL_SUCCESS: process.env.MP_URL_SUCCESS,
+        MP_URL_FAILURE: process.env.MP_URL_FAILURE,
+    });
 
-    if (
-        !order ||
-        !reference ||
-        !amount ||
-        !node ||
-        !concept
-    ) {
-        return res.status(400).json({ message: 'Faltan parámetros para crear el pago' });
+    const { order, reference, amount, node, concept } = req.body;
+    if (!order || !reference || !amount || !node || !concept) {
+        return res
+            .status(400)
+            .json({ message: 'Faltan parámetros: order, reference, amount, node o concept' });
     }
 
-    // Parámetros de configuración desde .env
     const account = process.env.MP_ACCOUNT;
     const product = process.env.MP_PRODUCT;
     const secret = process.env.HMAC_SECRET;
@@ -33,11 +31,9 @@ export default async function handler(req, res) {
     const urlSuccess = process.env.MP_URL_SUCCESS;
     const urlFailure = process.env.MP_URL_FAILURE;
 
-    // 1) Generar la firma HMAC SHA256 sobre mp_order + mp_reference + mp_amount
     const payload = `${order}${reference}${amount}`;
     const signature = CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex);
 
-    // 2) Construir la respuesta con action y fields
     return res.status(200).json({
         action: endpoint,
         fields: {
@@ -51,7 +47,7 @@ export default async function handler(req, res) {
             mp_concept: concept,
             mp_signature: signature,
             mp_urlsuccess: urlSuccess,
-            mp_urlfailure: urlFailure
+            mp_urlfailure: urlFailure,
         }
     });
 }
