@@ -92,7 +92,7 @@ const AtencionCliente = () => {
             alignItems: "center",
           }}
         >
-          <EmailIcon fontSize="large" sx={{ color: "#10906a" }} />
+          <EmailIcon fontSize="large" sx={{ color: theme => theme.palette.primary.text }} />
           <Typography variant="h6" fontWeight="bold">
             Correo electrónico de atención a clientes
           </Typography>
@@ -111,8 +111,7 @@ const AtencionCliente = () => {
         >
           <EmailIcon
             fontSize="large"
-            color="#10906a"
-            sx={{ color: "#10906a" }}
+            sx={{ color: theme => theme.palette.primary.text }}
           />
           <Typography variant="h6" fontWeight="bold">
             Correo electrónico de soporte

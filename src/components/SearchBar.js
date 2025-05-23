@@ -224,7 +224,7 @@ function DateTimeSelector({
           {loading ? (
             <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
           ) : timeSlots.length === 0 ? (
-            <Typography variant="body2" color="error">
+            <Typography variant="body2" color="secondary.text">
               Fecha y ubicación sin horarios
             </Typography>
           ) : (
@@ -843,8 +843,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
       {router.pathname === "/" && (
         <Button
           variant="contained"
-          color="primary"
-          sx={{ backgroundColor: "#d60812", width: "100%" }}
+          sx={{ width: "100%" }}
+          color="secondary"
           onClick={() => {
             const filters = {
               pickupLocation: searchData.pickupLocation,

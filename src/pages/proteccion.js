@@ -376,7 +376,7 @@ const SeguroVehiculo = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#10906a",
+            backgroundColor:theme => theme.palette.primary.buttons,
             color: "white",
             fontWeight: "bold",
             p: "12px 30px",
@@ -414,7 +414,7 @@ const SeguroVehiculo = () => {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: "#d60812",
+              backgroundColor: theme => theme.palette.secondary.main,
               color: "white",
               fontWeight: "bold",
               p: "12px 20px",
@@ -515,7 +515,7 @@ const SeguroVehiculo = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: "#d60812",
+              backgroundColor: theme => theme.palette.secondary.main,
               color: "white",
               fontWeight: "bold",
               padding: "10px 16px",

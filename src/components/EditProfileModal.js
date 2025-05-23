@@ -151,7 +151,7 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
     };
 
     const updateButtonStyle = {
-        backgroundColor: "#d60812",
+        backgroundColor: theme => theme.palette.secondary.main,
         ":hover": { backgroundColor: "#b0060f" },
     };
 

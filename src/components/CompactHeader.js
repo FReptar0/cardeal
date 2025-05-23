@@ -16,7 +16,7 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
         top: headerIsTop ? "100px" : "60px",
         left: 0,
         width: "100%",
-        backgroundColor: "#10906a",
+        backgroundColor: theme => theme.palette.primary.buttons,
         zIndex: 1200,
         opacity: showCompactHeader ? 1 : 0,
         pointerEvents: showCompactHeader ? "auto" : "none",
@@ -119,7 +119,7 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
             }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <ArrowUpwardIcon sx={{ color: "#10906a", fontSize: 20 }} />
+            <ArrowUpwardIcon sx={{ color: theme => theme.palette.primary.buttons, fontSize: 20 }} />
           </Box>
         </Tooltip>
       </Box>

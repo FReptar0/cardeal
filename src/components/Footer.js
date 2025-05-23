@@ -31,7 +31,7 @@ const Footer = () => {
               }}
             >
               <Box sx={{ mt: 1, textAlign: "center", marginLeft: "" }}>
-                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                <Typography sx={{ fontSize: "2rem" }} color="primary">
                   Síguenos
                 </Typography>
                 <Box
@@ -108,7 +108,7 @@ const Footer = () => {
               }}
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
-                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                <Typography sx={{ fontSize: "2rem" }} color="primary">
                   Ayuda e información
                 </Typography>
                 <Typography
@@ -200,7 +200,7 @@ const Footer = () => {
               }}
             >
               <Box sx={{ mt: 1, textAlign: "left", marginLeft: "" }}>
-                <Typography sx={{ fontSize: "2rem", color: "#10906a" }}>
+                <Typography sx={{ fontSize: "2rem" }} color="primary">
                   Servicio al cliente
                 </Typography>
                 <Typography
@@ -238,13 +238,13 @@ const Footer = () => {
                     display: "block",
                     fontSize: "1.1rem",
                     marginTop: "10px",
-                    color: "#c43c45",
                     textDecoration: "none",
                     "&:hover": {
                       textDecoration: "underline",
                       cursor: "pointer",
                     },
                   }}
+                  color="secondary.text"
                 >
                   soporte@qardeal.com.mx
                 </Typography>

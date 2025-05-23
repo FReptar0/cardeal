@@ -100,10 +100,10 @@ export default function RentalPage() {
           gap: 2,
         }}
       >
-        <CircularProgress sx={{ color: "#d60812" }} size={48} />
+        <CircularProgress sx={{ color: theme => theme.palette.secondary.text }} size={48} />
         <Typography
           variant="h6"
-          sx={{ color: "#d60812", fontWeight: "bold", textAlign: "center" }}
+          sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", textAlign: "center" }}
         >
           Cargando autos disponibles{dots}
         </Typography>
@@ -361,7 +361,7 @@ export default function RentalPage() {
             <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
               <Typography
                 variant="h5"
-                sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
+                sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", mt: 4 }}
               >
                 No hay autos disponibles para tu búsqueda.
               </Typography>
@@ -394,11 +394,14 @@ export default function RentalPage() {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#d60812",
             color: "white",
             fontWeight: "bold",
             padding: "12px 30px",
             fontSize: "16px",
+            backgroundColor: theme => theme.palette.primary.buttons,
+            "&:hover": {
+              backgroundColor: theme => theme.palette.primary.buttonsHover,
+            },
           }}
           onClick={handleContinue}
         >
@@ -432,7 +435,7 @@ export default function RentalPage() {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: "#d60812",
+              backgroundColor: theme => theme.palette.secondary.buttons,
               color: "white",
               fontWeight: "bold",
               padding: "12px 20px",
@@ -503,7 +506,7 @@ export default function RentalPage() {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: "#d60812",
+                backgroundColor: theme => theme.palette.secondary.buttons,
                 color: "white",
                 fontWeight: "bold",
                 padding: "10px 16px",
