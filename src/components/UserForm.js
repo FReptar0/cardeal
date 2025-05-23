@@ -146,18 +146,28 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     const dailyCar = online
       ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
       : Number(selectedCar.price);
-    let total = dailyCar * days;
+    let total = dailyCar * days - ( dailyCar * .1);
+    let totalOtherCharges = total;
+
 
     // Seguro
-    if (selectedInsurance?.price) {
-      total += Number(selectedInsurance.price) * days;
+    if (selectedInsurance?.total) {
+      const clean = selectedInsurance.total.replace(/[^0-9.]/g, "");
+      total += Number(clean) * days;
     }
+
 
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
-      console.log("extras", { precio, cantidad });
       total += Number(precio) * Number(cantidad) * days;
+      totalOtherCharges += Number(precio) * Number(cantidad) * days;
     });
+
+
+    const totalOtherChargesSum = totalOtherCharges * .23
+
+
+    total += totalOtherChargesSum;
 
     // Descuento
     total -= Number(discount) || 0;
@@ -167,6 +177,13 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     return total.toFixed(2);
   };
+
+  useEffect(() => {
+    if (paidOnline) {
+      const amount = calculateTotal(true);
+      console.log("💵 Monto estimado para pago en línea:", amount);
+    }
+  }, [paidOnline]);
 
   const onSubmit = (isOnline) => async (data) => {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
