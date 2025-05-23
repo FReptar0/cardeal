@@ -13,7 +13,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
@@ -133,6 +133,8 @@ export default function BookingConfirmation() {
     booking.discount > 0 ? total - booking.discount : total; // Aplicar el descuento si es mayor a 0
 
   //const totalLabel = booking.paid ? "Total" : "Total a pagar"; // Cambiar el texto si el pago está completado
+
+  console.log("tsdBooking", booking.tsdConfirmNumber);
 
   return (
     <Container sx={{ mt: 10, maxWidth: "100vw", px: 2 }}>
@@ -255,7 +257,7 @@ export default function BookingConfirmation() {
               <Box display="grid" gap={1}>
                 <Typography variant="subtitle1">
                   <b style={{ color: "#666" }}>Número de confirmación:</b> #
-                  {booking.orderNumber}
+                  {booking.tsdConfirmNum}
                 </Typography>
                 <Typography variant="body1">
                   <b style={{ color: "#666" }}>Nombre completo:</b>{" "}
