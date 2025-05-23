@@ -450,23 +450,26 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           </Link>}
         />
 
-        <FormControlLabel
-          control={<Switch checked={paidOnline}
-            onChange={e=>setPaidOnline(e.target.checked)}
-            sx={{
-              "& .Mui-checked":{color:"#10906a"},
-              "& .Mui-checked+ .MuiSwitch-track":{backgroundColor:"#10906a"}
-            }}
-          />}
-          label="Quiero pagar en línea"
-        />
-        <Typography variant="caption"
-          sx={{ mt:1, color: paidOnline?"#10906a":"#6e7276" }}
-        >
-          {paidOnline
-            ? "Estás eligiendo pagar ahora en línea."
-            : "Puedes pagar al recoger el vehículo."}
-        </Typography>
+        {/* Switch de pago en línea debajo de los checkboxes */}
+        <Box sx={{ mt: 2 }}>
+          <FormControlLabel
+            control={<Switch checked={paidOnline}
+              onChange={e=>setPaidOnline(e.target.checked)}
+              sx={{
+                "& .Mui-checked":{color:"#10906a"},
+                "& .Mui-checked+ .MuiSwitch-track":{backgroundColor:"#10906a"}
+              }}
+            />}
+            label="Quiero pagar en línea"
+          />
+          <Typography variant="caption"
+            sx={{ mt:1, color: paidOnline?"#10906a":"#6e7276" }}
+          >
+            {paidOnline
+              ? "Estás eligiendo pagar ahora en línea."
+              : "Puedes pagar al recoger el vehículo."}
+          </Typography>
+        </Box>
 
         <Box sx={{
             display:"flex",
