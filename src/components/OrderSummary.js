@@ -116,7 +116,13 @@ export default function OrderSummary({
               </Typography>
               {/* Car price with strikethrough-above design when paying online and prices differ */}
               {paidOnline && totalCarCost !== totalCarCost2 ? (
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                  }}
+                >
                   <Typography
                     variant="body2"
                     sx={{
@@ -223,7 +229,13 @@ export default function OrderSummary({
             Otros Cargos:
           </Typography>
           {paidOnline && otherCharges !== otherCharges2 ? (
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
               <Typography
                 variant="body2"
                 sx={{
@@ -260,7 +272,7 @@ export default function OrderSummary({
           color="textSecondary"
         >
           * Este cargo incluye costos administrativos y operativos adicionales.
-          Consulta más detalles en los {" "}
+          Consulta más detalles en los{" "}
           <a
             href="/terminos-y-condiciones"
             target="_blank"
@@ -279,7 +291,13 @@ export default function OrderSummary({
             Subtotal
           </Typography>
           {paidOnline && subtotal !== subtotal2 ? (
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
               <Typography
                 variant="body2"
                 sx={{
@@ -319,7 +337,13 @@ export default function OrderSummary({
             IVA (16%)
           </Typography>
           {paidOnline && ivaCost !== ivaCost2 ? (
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
               <Typography
                 variant="body2"
                 sx={{
@@ -379,7 +403,13 @@ export default function OrderSummary({
             <Typography variant="body2" fontWeight="bold">
               Total a pagar:
             </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
               <Typography
                 variant="body2"
                 sx={{

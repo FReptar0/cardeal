@@ -306,7 +306,7 @@ export default function CarCard({ car, isSelected }) {
               width: "100%",
             }}
           >
-            {/* Pago en línea con mayor tamaño y efecto hover */}
+            {/* Pago en línea */}
             <Box
               sx={{
                 textAlign: "center",
@@ -342,7 +342,7 @@ export default function CarCard({ car, isSelected }) {
 
             <Divider orientation="vertical" flexItem />
 
-            {/* Pago en Mostrador sin modificaciones */}
+            {/* Pago en Mostrador */}
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography
                 variant="body2"
@@ -366,6 +366,11 @@ export default function CarCard({ car, isSelected }) {
                 </Typography>
               </Typography>
             </Box>
+          </Box>
+          <Box sx={{ width: "100%", textAlign: "center", mt: 1 }}>
+            <Typography variant="caption" sx={{ color: "#666" }}>
+              Tarifa: tiempo y kilometraje
+            </Typography>
           </Box>
         </Box>
       </Card>
