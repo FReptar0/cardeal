@@ -266,7 +266,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         const form = document.createElement("form");
         form.method = "POST";
         form.action = action;
-        form.target = "_blank";
+        form.target = "_top";
         Object.entries(fields).forEach(([k,v]) => {
           const inp = document.createElement("input");
           inp.type = "hidden";

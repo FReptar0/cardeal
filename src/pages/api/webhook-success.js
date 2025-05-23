@@ -46,7 +46,7 @@ export default async function handler(req, res) {
             }
         );
 
-        return res.status(200).send("OK");
+        return res.redirect(302, `/confirm/${mp_order}`);
     } catch (err) {
         console.error("Error actualizando reserva (success):", err);
         return res.status(500).send("Error interno");
