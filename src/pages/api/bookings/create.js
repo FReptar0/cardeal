@@ -1,29 +1,30 @@
-// /pages/api/bookings/index.js
+// /pages/api/bookings/create.js
 import { connectToDatabase } from "@/utils/mongodb";
 import { generateUuid } from "@/utils/uuid";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const IVA_RATE = 0.16;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Método no permitido" });
   }
 
+  // 1) Autenticación
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No autorizado" });
   }
-  const token = authHeader.split(" ")[1];
-
   let decoded;
   try {
-    decoded = jwt.verify(token, JWT_SECRET);
-  } catch (err) {
+    decoded = jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
+  } catch {
     return res.status(401).json({ message: "Token inválido o expirado" });
   }
   const userId = decoded.userId;
 
+  // 2) Leer payload (ahora incluye cargos extra)
   const {
     selectedCar,
     selectedInsurance,
@@ -32,51 +33,81 @@ export default async function handler(req, res) {
     contactName,
     contactEmail,
     contactPhone,
-    paid, // ahora lo recibimos del cliente
-    paidOnline,
-    discount, // Agregar el descuento como parte de la reserva
+    paid,         // boolean
+    paidOnline,   // boolean
+    discount = 0, // número
+    otherCharges = 0,     // cargo mostrador
+    otherChargesOnline = 0 // cargo en línea
   } = req.body;
 
+  // 3) Validación básica
   if (
     !selectedCar ||
-    !searchData ||
+    !searchData?.pickupDate ||
+    !searchData?.returnDate ||
     !contactName ||
     !contactEmail ||
     !contactPhone ||
     typeof paid !== "boolean" ||
     typeof paidOnline !== "boolean"
   ) {
-    return res
-      .status(400)
-      .json({ message: "Faltan datos requeridos para crear la reserva" });
+    return res.status(400).json({ message: "Faltan datos requeridos" });
   }
 
   try {
     const { db } = await connectToDatabase();
 
-    const generateOrderNumber = () => {
-      return Math.floor(100000 + Math.random() * 900000).toString(); // Generar un número de 6 dígitos
-    };
-
-    let orderNumber;
-    let isUnique = false;
-
-    // Intentar generar un número único
+    // 4) Generar orderNumber único
+    const genOrder = () => Math.floor(100000 + Math.random() * 900000).toString();
+    let orderNumber, isUnique = false;
     while (!isUnique) {
-      orderNumber = generateOrderNumber();
-      const existingOrder = await db
-        .collection("bookings")
-        .findOne({ orderNumber });
-      if (!existingOrder) {
+      orderNumber = genOrder();
+      if (!await db.collection("bookings").findOne({ orderNumber })) {
         isUnique = true;
       }
     }
 
-    // Modificar la lógica para enviar solo el campo `price` si el pago es al entregar
+    // 5) Cálculo de días de renta
+    const pickup = new Date(searchData.pickupDate);
+    const dropoff = new Date(searchData.returnDate);
+    const msInDay = 1000 * 60 * 60 * 24;
+    const rentalDays = Math.ceil((dropoff - pickup) / msInDay);
+
+    // 6) Costos por segmento
+    const dailyCarCost = paidOnline
+      ? Number(selectedCar.priceOnline ?? selectedCar.price)
+      : Number(selectedCar.price);
+    const totalCarCost = dailyCarCost * rentalDays;
+
+    const dailyInsCost = selectedInsurance?.price
+      ? Number(selectedInsurance.price)
+      : 0;
+    const totalInsCost = dailyInsCost * rentalDays;
+
+    let totalExtrasCost = 0;
+    Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
+      totalExtrasCost += Number(precio) * Number(cantidad) * rentalDays;
+    });
+
+    // 7) Cargos adicionales y descuento
+    const additionalCharge = paidOnline
+      ? Number(otherChargesOnline)
+      : Number(otherCharges);
+
+    const subtotal = totalCarCost
+      + totalInsCost
+      + totalExtrasCost
+      + additionalCharge
+      - Number(discount);
+
+    // 8) Aplicar IVA
+    const totalAmount = Number((subtotal * (1 + IVA_RATE)).toFixed(2));
+
+    // 9) Armar y guardar la reserva
     const newBooking = {
       _id: generateUuid(),
       userId,
-      orderNumber, // Agregar el número de orden único
+      orderNumber,
       contact: {
         fullName: contactName,
         email: contactEmail,
@@ -89,29 +120,41 @@ export default async function handler(req, res) {
         pickupLocation: searchData.pickupLocation,
         returnLocation: searchData.returnLocation,
         sameOffice: searchData.sameOffice,
-        pickupDate: new Date(searchData.pickupDate),
-        returnDate: new Date(searchData.returnDate),
+        pickupDate: pickup,
+        returnDate: dropoff,
         pickupTime: searchData.pickupTime,
         returnTime: searchData.returnTime,
       },
-      paid, // guardamos el flag que venga del cliente
-      paidOnline, // guardamos el flag que venga del cliente
-      price: paid ? totals.price : undefined, // Solo enviar `price` si el pago es al entregar
-      discount: discount || 0, // Guardar el descuento recibido o 0 si no se proporciona
+      paid,
+      paidOnline,
+      rentalDays,
+      lineItems: {
+        totalCarCost,
+        totalInsuranceCost: totalInsCost,
+        totalExtrasCost,
+        additionalCharge,
+        discount: Number(discount),
+        iva: Number((subtotal * IVA_RATE).toFixed(2)),
+      },
+      totalAmount,                     // importe neto con IVA
+      status: paidOnline ? "PENDING" : "OFFLINE",
+      discount: Number(discount),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     await db.collection("bookings").insertOne(newBooking);
 
-    return res
-      .status(201)
-      .json({
-        message: "Reserva creada exitosamente",
-        bookingId: newBooking._id,
-      });
+    // 10) Devolver al frontend todos los totales para mostrar
+    return res.status(201).json({
+      message: "Pre-reserva creada correctamente",
+      bookingId: newBooking._id,
+      totalAmount,
+      breakdown: newBooking.lineItems,
+      rentalDays,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error creando reserva:", error);
     return res.status(500).json({ message: "Error al crear la reserva" });
   }
 }

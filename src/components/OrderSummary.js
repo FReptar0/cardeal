@@ -114,15 +114,38 @@ export default function OrderSummary({
                   ? `${formatCurrency(dailyCarCost2)} /día (precio en línea)`
                   : `${formatCurrency(dailyCarCost)} /día (precio mostrador)`}
               </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={paidOnline ? { color: "#10906a" } : {}}
-              >
-                {paidOnline
-                  ? formatCurrency(totalCarCost2)
-                  : formatCurrency(totalCarCost)}
-              </Typography>
+              {/* Car price with strikethrough-above design when paying online and prices differ */}
+              {paidOnline && totalCarCost !== totalCarCost2 ? (
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textDecoration: "line-through",
+                      color: "#bdbdbd",
+                      fontWeight: 500,
+                      fontSize: 16,
+                      mb: 0.5,
+                    }}
+                  >
+                    {formatCurrency(totalCarCost)}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    fontWeight="bold"
+                    sx={{ color: "#10906a", fontSize: 18 }}
+                  >
+                    {formatCurrency(totalCarCost2)}
+                  </Typography>
+                </Box>
+              ) : (
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={paidOnline ? { color: "#10906a" } : {}}
+                >
+                  {formatCurrency(paidOnline ? totalCarCost2 : totalCarCost)}
+                </Typography>
+              )}
             </Box>
           </>
         ) : (
@@ -188,18 +211,48 @@ export default function OrderSummary({
         <Divider sx={{ my: 2 }} />
 
         {/* Otros cargos */}
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Otros Cargos:</b>
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2">Costos adicionales</Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
-          >
-            {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+          }}
+        >
+          <Typography variant="subtitle1" fontWeight="bold">
+            Otros Cargos:
           </Typography>
+          {paidOnline && otherCharges !== otherCharges2 ? (
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  fontSize: 16,
+                  mb: 0.5,
+                }}
+              >
+                {formatCurrency(otherCharges)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a", fontSize: 18 }}
+              >
+                {formatCurrency(otherCharges2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
+            </Typography>
+          )}
         </Box>
         <Typography
           variant="caption"
@@ -207,7 +260,7 @@ export default function OrderSummary({
           color="textSecondary"
         >
           * Este cargo incluye costos administrativos y operativos adicionales.
-          Consulta más detalles en los{" "}
+          Consulta más detalles en los {" "}
           <a
             href="/terminos-y-condiciones"
             target="_blank"
@@ -225,13 +278,37 @@ export default function OrderSummary({
           <Typography variant="body2" fontWeight="bold">
             Subtotal
           </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={paidOnline ? { color: "#10906a" } : {}}
-          >
-            {formatCurrency(paidOnline ? subtotal2 : subtotal)}
-          </Typography>
+          {paidOnline && subtotal !== subtotal2 ? (
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  fontSize: 16,
+                  mb: 0.5,
+                }}
+              >
+                {formatCurrency(subtotal)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a", fontSize: 18 }}
+              >
+                {formatCurrency(subtotal2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={paidOnline ? { color: "#10906a" } : {}}
+            >
+              {formatCurrency(paidOnline ? subtotal2 : subtotal)}
+            </Typography>
+          )}
         </Box>
 
         <Divider sx={{ my: 2 }} />
@@ -241,26 +318,41 @@ export default function OrderSummary({
           <Typography variant="body2" fontWeight="bold">
             IVA (16%)
           </Typography>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            sx={{ color: paidOnline ? "#10906a" : undefined }}
-          >
-            {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
-          </Typography>
+          {paidOnline && ivaCost !== ivaCost2 ? (
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  fontSize: 16,
+                  mb: 0.5,
+                }}
+              >
+                {formatCurrency(ivaCost)}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={{ color: "#10906a", fontSize: 18 }}
+              >
+                {formatCurrency(ivaCost2)}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              sx={{ color: paidOnline ? "#10906a" : undefined }}
+            >
+              {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
+            </Typography>
+          )}
         </Box>
-
-        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
-        {totals && totals.price && totals.price2 ? (
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+        {/* Elimina la línea superior de Total a pagar cuando está activo el pago en línea y hay dos precios */}
+        {!(totals && totals.price && totals.price2 && paidOnline) && (
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
             <Typography variant="body2" fontWeight="bold">
               Total a pagar:
             </Typography>
@@ -272,28 +364,75 @@ export default function OrderSummary({
               {formatCurrency(paidOnline ? totals.price2 : totals.price)}
             </Typography>
           </Box>
-        ) : totals ? (
+        )}
+        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
+        {totals && totals.price && totals.price2 && paidOnline ? (
           <Box
             sx={{
               mt: 2,
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "flex-end",
             }}
           >
             <Typography variant="body2" fontWeight="bold">
-              Pago único:
+              Total a pagar:
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{ color: "#10906a" }}
-              fontWeight="bold"
-            >
-              {formatCurrency(totals.price || totals.price2)}
-            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  textDecoration: "line-through",
+                  color: "#bdbdbd",
+                  fontWeight: 500,
+                  fontSize: 18,
+                  mb: 0.5,
+                }}
+              >
+                {formatCurrency(totals.price)}
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{ color: "#10906a", fontSize: 22 }}
+              >
+                {formatCurrency(totals.price2)}
+              </Typography>
+            </Box>
           </Box>
         ) : null}
+
+        {/* Mensaje de ahorro para pago en línea en una sola línea */}
+        {paidOnline &&
+          totals &&
+          totals.price &&
+          totals.price2 &&
+          totals.price > totals.price2 && (
+            <Box
+              sx={{
+                mt: 2,
+                mb: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#10906a",
+                  fontWeight: "bold",
+                  fontSize: { xs: 18, md: 22 },
+                  textAlign: "center",
+                }}
+              >
+                ¡USTED ESTÁ AHORRANDO{" "}
+                {formatCurrency(totals.price - totals.price2)}!
+              </Typography>
+            </Box>
+          )}
 
         {/* Descuento */}
         {discountApplied && (
@@ -357,7 +496,7 @@ export default function OrderSummary({
                 sx={{
                   flex: 0.15, // Relación 15% del ancho
                   height: "40px", // Asegurar que el grosor sea consistente
-                  backgroundColor: "#d60812",
+                  backgroundColor: "#10906a",
                   fontWeight: "bold",
                   textTransform: "none",
                   borderRadius: 1,
