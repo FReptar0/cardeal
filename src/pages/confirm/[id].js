@@ -13,20 +13,13 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  CircularProgress
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
 import RentalStepper from "@/components/Stepper";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
-
-const extrasDefinitions = {
-  conductor_adicional: { precio: 110, nombre: "Conductor Adicional" },
-  conductor_menor: { precio: 110, nombre: "Conductor Menor" },
-  baby_seat: { precio: 150, nombre: "Baby Seat" },
-  child_seat: { precio: 150, nombre: "Child Seat" },
-  booster: { precio: 150, nombre: "Booster" },
-};
 
 // para el pdf
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -37,14 +30,16 @@ export default function BookingConfirmation() {
   const { jwt } = useAuth();
   const { id } = router.query;
   const { totals, discount } = useBooking(); // Obtener el descuento del contexto
-
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
+  const [showPdfLink, setShowPdfLink] = useState(false); // NUEVO
 
   useEffect(() => {
     if (!id || !jwt) return;
     setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
+    console.log("JWT enviado al backend:", jwt);
+
     fetch(`/api/bookings/${id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
     })
@@ -56,8 +51,6 @@ export default function BookingConfirmation() {
       .catch(() => router.replace("/login"))
       .finally(() => setTimeout(() => setLoading(false), 2000));
   }, [id, jwt, router]);
-
-  console.log("Booking data:", booking);
 
   if (loading) {
     // Skeleton placeholders
@@ -121,13 +114,16 @@ export default function BookingConfirmation() {
     ? parseFloat(insurance.total.replace(/[^\d.]/g, "")) * days
     : 0;
 
-  const extrasCost = Object.entries(extras).reduce((sum, [key, qty]) => {
-    return sum + (extrasDefinitions[key]?.precio || 0) * qty * days;
-  }, 0);
+  const extrasCost = Array.isArray(extras)
+    ? extras.reduce((sum, item) => {
+        const precio = Number(item.precio?.$numberInt ?? item.precio);
+        return sum + precio * Number(item.cantidad) * days;
+      }, 0)
+    : 0;
 
-  console.log("Extras cost:", extrasCost);
+  console.log("carPrice", subtotal, "extras", extrasCost);
 
-  const otherCharges = (carPrice + extrasCost) * 0.23;
+  const otherCharges = (subtotal + extrasCost) * 0.23;
 
   const subTotal = subtotal + extrasCost + insuranceCost + otherCharges;
   const iva = subTotal * 0.16;
@@ -306,26 +302,51 @@ export default function BookingConfirmation() {
             alignItems="center"
             sx={{ width: "100%" }}
           >
-            <PDFDownloadLink
-              key={booking.orderNumber} // ← fuerza re-render al cambiar booking
-              document={<ConfirmPDF booking={booking} />}
-              fileName={`reserva_${booking.orderNumber}.pdf`}
-              style={{
-                textDecoration: "none",
-                padding: "12px 20px",
-                backgroundColor: "#10906a",
-                color: "white",
-                borderRadius: 4,
-                width: "100%",
-                textAlign: "center",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-            >
-              {({ loading }) =>
-                loading ? "Generando PDF…" : "Descargar PDF de Reserva"
-              }
-            </PDFDownloadLink>
+            {showPdfLink ? (
+              <PDFDownloadLink
+                key={booking.orderNumber}
+                document={<ConfirmPDF booking={booking} />}
+                fileName={`reserva_${booking.orderNumber}.pdf`}
+                style={{
+                  textDecoration: "none",
+                  padding: "12px 20px",
+                  backgroundColor: "#10906a",
+                  color: "white",
+                  borderRadius: 4,
+                  width: "100%",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                {({ loading }) =>
+                  loading ? (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      GENERANDO PDF…
+                      <CircularProgress size={18} sx={{ color: "white" }} />
+                    </Box>
+                  ) : (
+                    "DESCARGAR PDF DE RESERVA"
+                  )
+                }
+              </PDFDownloadLink>
+            ) : (
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => setShowPdfLink(true)}
+                sx={{
+                  backgroundColor: "#10906a",
+                  height: 48,
+                  ":hover": { backgroundColor: "#0b704e" },
+                }}
+              >
+                Generar PDF de Reserva
+              </Button>
+            )}
 
             <Button
               type="button"

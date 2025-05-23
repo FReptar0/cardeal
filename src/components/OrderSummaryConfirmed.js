@@ -4,6 +4,14 @@ import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
 import PropTypes from "prop-types";
 import extrasData from "../data/extras.json";
 
+const parsePrecio = (precio) => {
+  if (typeof precio === "number") return precio;
+  if (typeof precio === "string") {
+    return parseFloat(precio.replace(/[^\d.]/g, ""));
+  }
+  return 0;
+};
+
 export default function OrderSummaryConfirmed({
   selectedCar,
   pickupDateString,
@@ -25,21 +33,25 @@ export default function OrderSummaryConfirmed({
   console.log("extrasInfo", extrasInfo);
 
   // Si extrasInfo es un objeto tipo {BABY: 1}, mapearlo usando el JSON
-  let extrasArray = [];
-  if (extrasInfo && !Array.isArray(extrasInfo) && typeof extrasInfo === "object") {
-    extrasArray = Object.entries(extrasInfo).map(([id, cantidad]) => {
-      const def = extrasData.find((e) => e.id === id);
-      if (!def || !cantidad) return null;
-      return {
-        ...def,
-        cantidad,
-        lineCost: def.precio * cantidad * rentalDays,
-      };
-    }).filter(Boolean);
-  } else if (Array.isArray(extrasInfo)) {
-    // Si ya es un array, úsalo directo (para compatibilidad)
-    extrasArray = extrasInfo;
+  const extrasArray = React.useMemo(() => {
+  if (Array.isArray(extrasInfo)) {
+    return extrasInfo.map((ex) => ({
+      ...ex,
+      lineCost: Number(ex.precio?.$numberInt ?? ex.precio) * Number(ex.cantidad) * rentalDays,
+    }));
   }
+
+  // Caso antiguo: objeto tipo { BOOSTER: 1 }
+  return Object.entries(extrasInfo || {}).map(([id, cantidad]) => {
+    const def = extrasData.find((e) => e.id === id);
+    if (!def || !cantidad) return null;
+    return {
+      ...def,
+      cantidad,
+      lineCost: def.precio * cantidad * rentalDays,
+    };
+  }).filter(Boolean);
+}, [extrasInfo, rentalDays]);
 
   return (
     <Card sx={{ backgroundColor: "#f5f5f5", p: 2, width: "100%" }}>
@@ -147,7 +159,7 @@ export default function OrderSummaryConfirmed({
                 {ex.nombre} x {ex.cantidad}
               </Typography>
               <Typography variant="body2" fontWeight="bold">
-                {formatCurrency(ex.lineCost)}
+                {formatCurrency(ex.precio * ex.cantidad * rentalDays)}
               </Typography>
             </Box>
           ))
@@ -200,13 +212,15 @@ export default function OrderSummaryConfirmed({
         <Divider sx={{ my: 2 }} />
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
           <Typography variant="h6" fontWeight="bold">
-            {
-              paidOnline
-                ? "Total pagado en línea"
-                : "Total a pagar en mostrador"
-            }
+            {paidOnline
+              ? "Total pagado en línea"
+              : "Total a pagar en mostrador"}
           </Typography>
-          <Typography variant="h6" fontWeight="bold" sx={paidOnline ? { color: "#10906a" } : undefined}>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            sx={paidOnline ? { color: "#10906a" } : undefined}
+          >
             {formatCurrency(totalWithIva)}
           </Typography>
         </Box>
