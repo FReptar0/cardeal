@@ -1,5 +1,5 @@
 // components/UserForm.jsx
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -12,7 +12,6 @@ import {
   TextField,
   Button,
   Typography,
-  Autocomplete,
   FormControlLabel,
   Checkbox,
   Link,
@@ -56,9 +55,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   const isJwtExpired = (token) => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.exp
-        ? payload.exp < Math.floor(Date.now() / 1000)
-        : false;
+      return payload.exp ? payload.exp < Math.floor(Date.now() / 1000) : false;
     } catch {
       return true;
     }
@@ -68,11 +65,16 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   // Schema de validación
   const schema = yup.object().shape({
     terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+    privacy: yup
+      .boolean()
+      .oneOf([true], "Debes aceptar la política de privacidad"),
     ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+      email: yup
+        .string()
+        .email("Correo inválido")
+        .required("El correo es obligatorio"),
       birthDate: yup
         .date()
         .required("La fecha de nacimiento es obligatoria")
@@ -123,13 +125,13 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   useEffect(() => {
     if (!tokenIsInvalid && !loadingProfile && userData) {
       reset({
-        fullName:  userData.fullName,
-        phone:     userData.phone,
-        email:     userData.email,
+        fullName: userData.fullName,
+        phone: userData.phone,
+        email: userData.email,
         birthDate: userData.birthDate?.slice(0, 10) ?? "",
-        location:  userData.location,
-        terms:     false,
-        privacy:   false,
+        location: userData.location,
+        terms: false,
+        privacy: false,
       });
     }
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
@@ -138,24 +140,34 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   const calculateTotal = (online) => {
     const start = new Date(searchData.pickupDate);
     const end = new Date(searchData.returnDate);
-    const days = Math.ceil((end - start) / (1000*60*60*24)) || 1;
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
 
     // Precio coche según método
     const dailyCar = online
       ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
       : Number(selectedCar.price);
-    let total = dailyCar * days;
+    let total = dailyCar * days - ( dailyCar * .1);
+    let totalOtherCharges = total;
+
 
     // Seguro
-    if (selectedInsurance?.price) {
-      total += Number(selectedInsurance.price) * days;
+    if (selectedInsurance?.total) {
+      const clean = selectedInsurance.total.replace(/[^0-9.]/g, "");
+      total += Number(clean) * days;
     }
+
 
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
-      console.log("extras", { precio, cantidad });
       total += Number(precio) * Number(cantidad) * days;
+      totalOtherCharges += Number(precio) * Number(cantidad) * days;
     });
+
+
+    const totalOtherChargesSum = totalOtherCharges * .23
+
+
+    total += totalOtherChargesSum;
 
     // Descuento
     total -= Number(discount) || 0;
@@ -165,6 +177,13 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     return total.toFixed(2);
   };
+
+  useEffect(() => {
+    if (paidOnline) {
+      const amount = calculateTotal(true);
+      console.log("💵 Monto estimado para pago en línea:", amount);
+    }
+  }, [paidOnline]);
 
   const onSubmit = (isOnline) => async (data) => {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
@@ -176,36 +195,42 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       if (tokenIsInvalid) {
         const r1 = await fetch("/api/auth/register", {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
         const j1 = await r1.json();
-        if (!r1.ok) { toast.error(j1.message); return; }
+        if (!r1.ok) {
+          toast.error(j1.message);
+          return;
+        }
         toast.success("Usuario registrado");
 
         const r2 = await fetch("/api/auth/login", {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.email, password: data.password }),
         });
         const j2 = await r2.json();
-        if (!r2.ok) { toast.error("Error al iniciar sesión"); return; }
+        if (!r2.ok) {
+          toast.error("Error al iniciar sesión");
+          return;
+        }
         token = j2.token;
         await login(token);
         justRegistered = true;
       }
 
       // 2) Datos de contacto
-      const contactName  = justRegistered ? data.fullName : userData.fullName;
-      const contactEmail = justRegistered ? data.email    : userData.email;
-      const contactPhone = justRegistered ? data.phone    : userData.phone;
+      const contactName = justRegistered ? data.fullName : userData.fullName;
+      const contactEmail = justRegistered ? data.email : userData.email;
+      const contactPhone = justRegistered ? data.phone : userData.phone;
 
       // 3) Pre-reserva PENDING
       const resB = await fetch("/api/bookings/create", {
         method: "POST",
         headers: {
-          "Content-Type":"application/json",
-          Authorization:`Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           selectedCar,
@@ -228,20 +253,20 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
       // 4) Pago en línea → Flap
       if (isOnline) {
-        const order     = String(jB.bookingId);
+        const order = String(jB.bookingId);
         const reference = `${order}-${Date.now()}`;
-        const amount    = calculateTotal(true);
+        const amount = calculateTotal(true);
 
         console.log("amount", amount);
 
         const resP = await fetch("/api/create-payment", {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             order,
             reference,
             amount,
-            node:    process.env.NEXT_PUBLIC_MP_NODE,
+            node: process.env.NEXT_PUBLIC_MP_NODE,
             concept: process.env.NEXT_PUBLIC_MP_CONCEPT,
           }),
         });
@@ -252,8 +277,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           await fetch(`/api/bookings/${jB.bookingId}`, {
             method: "DELETE",
             headers: {
-              "Content-Type":"application/json",
-              Authorization:`Bearer ${token}`,
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           });
           toast.error(`Error iniciando pago: ${err.message}`);
@@ -267,7 +292,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         form.method = "POST";
         form.action = action;
         form.target = "_top";
-        Object.entries(fields).forEach(([k,v]) => {
+        Object.entries(fields).forEach(([k, v]) => {
           const inp = document.createElement("input");
           inp.type = "hidden";
           inp.name = k;
@@ -294,14 +319,24 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
   if (!tokenIsInvalid && loadingProfile) {
     return (
-      <Box sx={{ display:"flex", justifyContent:"center", p:4 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
         <CircularProgress />
       </Box>
     );
   }
 
+  const pickupDisplay = searchData.pickupLocation
+    ? `${searchData.pickupLocation.ciudad} - ${searchData.pickupLocation.estado}`
+    : "";
+
+  const returnDisplay = searchData.sameOffice
+    ? pickupDisplay
+    : searchData.returnLocation
+    ? `${searchData.returnLocation.ciudad} - ${searchData.returnLocation.estado}`
+    : "";
+
   return (
-    <Card sx={{ p:3, width:"100%" }}>
+    <Card sx={{ p: 3, width: "100%" }}>
       <ToastContainer position="top-center" autoClose={5000} />
 
       <Typography variant="h5" gutterBottom>
@@ -309,32 +344,39 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           ? "Finaliza tu reserva"
           : "Completa tus datos para registrarte"}
       </Typography>
-      <Divider sx={{ my:2 }} />
+      <Divider sx={{ my: 2 }} />
 
       <Box component="form">
         {tokenIsInvalid && (
           <>
             <TextField
               label="Nombre completo"
-              fullWidth margin="normal"
+              fullWidth
+              margin="normal"
               {...register("fullName")}
               error={!!errors.fullName}
               helperText={errors.fullName?.message}
             />
             <Controller
-              name="phone" control={control}
+              name="phone"
+              control={control}
               render={({ field }) => (
-                <Box sx={{ width:"100%", mt:1 }}>
+                <Box sx={{ width: "100%", mt: 1 }}>
                   <PhoneInput
                     {...field}
                     country="mx"
                     enableSearch
                     inputStyle={{
-                      width:"100%", height:"56px", fontSize:"16px",
-                      paddingLeft:"48px", borderRadius:"4px",
-                      border:`1px solid ${errors.phone?"#d32f2f":"#c4c4c4"}`,
+                      width: "100%",
+                      height: "56px",
+                      fontSize: "16px",
+                      paddingLeft: "48px",
+                      borderRadius: "4px",
+                      border: `1px solid ${
+                        errors.phone ? "#d32f2f" : "#c4c4c4"
+                      }`,
                     }}
-                    buttonStyle={{ border:"none", background:"transparent" }}
+                    buttonStyle={{ border: "none", background: "transparent" }}
                   />
                   {errors.phone && (
                     <Typography variant="caption" color="error">
@@ -345,125 +387,173 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               )}
             />
             <TextField
-              label="Correo electrónico" type="email"
-              fullWidth margin="normal"
+              label="Correo electrónico"
+              type="email"
+              fullWidth
+              margin="normal"
               {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
             />
             <TextField
-              label="Fecha de nacimiento" type="date"
-              fullWidth margin="normal"
-              InputLabelProps={{ shrink:true }}
+              label="Fecha de nacimiento"
+              type="date"
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
               {...register("birthDate")}
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
             <TextField
               label="Ubicación"
-              fullWidth margin="normal"
+              fullWidth
+              margin="normal"
               {...register("location")}
               error={!!errors.location}
               helperText={errors.location?.message}
             />
             <TextField
               label="Contraseña"
-              type={showPassword?"text":"password"}
-              fullWidth margin="normal"
+              type={showPassword ? "text" : "password"}
+              fullWidth
+              margin="normal"
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={()=>setShowPassword(p=>!p)}>
-                      {showPassword
-                        ? <VisibilityOffOutlined/>
-                        : <VisibilityOutlined/>}
+                    <IconButton onClick={() => setShowPassword((p) => !p)}>
+                      {showPassword ? (
+                        <VisibilityOffOutlined />
+                      ) : (
+                        <VisibilityOutlined />
+                      )}
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
               }}
             />
             <TextField
               label="Confirmar contraseña"
-              type={showConfirmPassword?"text":"password"}
-              fullWidth margin="normal"
+              type={showConfirmPassword ? "text" : "password"}
+              fullWidth
+              margin="normal"
               {...register("confirmPassword")}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={()=>setShowConfirmPassword(p=>!p)}>
-                      {showConfirmPassword
-                        ? <VisibilityOffOutlined/>
-                        : <VisibilityOutlined/>}
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((p) => !p)}
+                    >
+                      {showConfirmPassword ? (
+                        <VisibilityOffOutlined />
+                      ) : (
+                        <VisibilityOutlined />
+                      )}
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </>
         )}
 
         {/* Pickup & return */}
-        <Autocomplete
-          options={locations}
-          getOptionLabel={opt=>`${opt.city} – ${opt.name}`}
-          groupBy={opt=>opt.city}
-          value={searchData.pickupLocation}
-          onChange={(_,v)=>v&&setSearchData({...searchData,pickupLocation:v})}
-          renderInput={params=>(
-            <TextField {...params}
-              label="Lugar de retiro" margin="normal" fullWidth
-            />
-          )}
+        <TextField
+          label="Lugar de retiro"
+          value={pickupDisplay}
+          fullWidth
+          margin="normal"
+          disabled
+          InputProps={{
+            sx: {
+              color: "#212121",
+              "& input.Mui-disabled": {
+                WebkitTextFillColor: "#212121",
+                color: "#212121",
+              },
+            },
+          }}
+          InputLabelProps={{
+            style: {
+              color: "#212121", // color del label
+            },
+          }}
         />
-        <Autocomplete
-          options={locations}
-          getOptionLabel={opt=>`${opt.city} – ${opt.name}`}
-          groupBy={opt=>opt.city}
-          value={searchData.returnLocation}
-          onChange={(_,v)=>v&&setSearchData({...searchData,returnLocation:v})}
-          renderInput={params=>(
-            <TextField {...params}
-              label="Lugar de entrega" margin="normal" fullWidth
-            />
-          )}
+
+        <TextField
+          label="Lugar de entrega"
+          fullWidth
+          margin="normal"
+          value={returnDisplay}
+          disabled
+          InputProps={{
+            sx: {
+              color: "#212121",
+              "& input.Mui-disabled": {
+                WebkitTextFillColor: "#212121",
+                color: "#212121",
+              },
+            },
+          }}
+          InputLabelProps={{
+            style: {
+              color: "#212121", // color del label
+            },
+          }}
         />
 
         <FormControlLabel
-          control={<Checkbox {...register("terms")}
-            sx={{ color:"#191919","&.Mui-checked":{color:"#191919"} }}
-          />}
-          label={<Link href="/terminos-y-condiciones" underline="hover">
-            Acepto los términos y condiciones
-          </Link>}
+          control={
+            <Checkbox
+              {...register("terms")}
+              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
+            />
+          }
+          label={
+            <Link href="/terminos-y-condiciones" underline="hover">
+              Acepto los términos y condiciones
+            </Link>
+          }
         />
         <FormControlLabel
-          control={<Checkbox {...register("privacy")}
-            sx={{ color:"#191919","&.Mui-checked":{color:"#191919"} }}
-          />}
-          label={<Link href="/aviso-de-privacidad" underline="hover">
-            Acepto la política de privacidad
-          </Link>}
+          control={
+            <Checkbox
+              {...register("privacy")}
+              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
+            />
+          }
+          label={
+            <Link href="/aviso-de-privacidad" underline="hover">
+              Acepto la política de privacidad
+            </Link>
+          }
         />
 
         {/* Switch de pago en línea debajo de los checkboxes */}
         <Box sx={{ mt: 2 }}>
           <FormControlLabel
-            control={<Switch checked={paidOnline}
-              onChange={e=>setPaidOnline(e.target.checked)}
-              sx={{
-                "& .Mui-checked":{color:"#10906a"},
-                "& .Mui-checked+ .MuiSwitch-track":{backgroundColor:"#10906a"}
-              }}
-            />}
+            control={
+              <Switch
+                checked={paidOnline}
+                onChange={(e) => setPaidOnline(e.target.checked)}
+                sx={{
+                  "& .Mui-checked": { color: "#10906a" },
+                  "& .Mui-checked+ .MuiSwitch-track": {
+                    backgroundColor: "#10906a",
+                  },
+                }}
+              />
+            }
             label="Quiero pagar en línea"
           />
-          <Typography variant="caption"
-            sx={{ mt:1, color: paidOnline?"#10906a":"#6e7276" }}
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, color: paidOnline ? "#10906a" : "#6e7276" }}
           >
             {paidOnline
               ? "Estás eligiendo pagar ahora en línea."
@@ -471,14 +561,17 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           </Typography>
         </Box>
 
-        <Box sx={{
-            display:"flex",
-            flexDirection:{ xs:"column",md:"row" },
-            gap:2, mt:3
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 2,
+            mt: 3,
           }}
         >
           <Button
-            fullWidth variant="contained"
+            fullWidth
+            variant="contained"
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
@@ -488,11 +581,13 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               (!tokenIsInvalid && !isValid)
             }
           >
-            {submitting?"Procesando...":"Pago en mostrador"}
+            {submitting ? "Procesando..." : "Pago en mostrador"}
           </Button>
 
           <Button
-            fullWidth variant="contained" color="success"
+            fullWidth
+            variant="contained"
+            color="success"
             onClick={handleSubmit(onSubmit(true))}
             disabled={
               submittingOnline ||
@@ -502,7 +597,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               (tokenIsInvalid && !isValid)
             }
           >
-            {submittingOnline?"Redirigiendo…":"Pago en línea"}
+            {submittingOnline ? "Redirigiendo…" : "Pago en línea"}
           </Button>
         </Box>
       </Box>
