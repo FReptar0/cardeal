@@ -124,7 +124,7 @@ export default function BookingConfirmation() {
 
   console.log("carPrice", subtotal, "extras", extrasCost);
 
-  const otherCharges = (subtotal + extrasCost) * 0.23;
+  const otherCharges = (subtotal + extrasCost + insuranceCost) * 0.23;
 
   const subTotal = subtotal + extrasCost + insuranceCost + otherCharges;
   const iva = subTotal * 0.16;
