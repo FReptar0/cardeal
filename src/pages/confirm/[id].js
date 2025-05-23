@@ -278,7 +278,7 @@ export default function BookingConfirmation() {
                     <Chip
                       label="Pago en línea"
                       sx={{
-                        backgroundColor: "#10906a",
+                        backgroundColor: theme => theme.palette.primary.text,
                         color: "white",
                         fontWeight: "bold",
                       }}
@@ -313,7 +313,7 @@ export default function BookingConfirmation() {
                 style={{
                   textDecoration: "none",
                   padding: "12px 20px",
-                  backgroundColor: "#10906a",
+                  backgroundColor: theme => theme.palette.primary.text,
                   color: "white",
                   borderRadius: 4,
                   width: "100%",
@@ -342,7 +342,7 @@ export default function BookingConfirmation() {
                 fullWidth
                 onClick={() => setShowPdfLink(true)}
                 sx={{
-                  backgroundColor: "#10906a",
+                  backgroundColor: theme => theme.palette.primary.text,
                   height: 48,
                   ":hover": { backgroundColor: "#0b704e" },
                 }}
@@ -357,7 +357,7 @@ export default function BookingConfirmation() {
               variant="contained"
               onClick={() => setOpenInvoiceModal(true)}
               sx={{
-                backgroundColor: "#10906a",
+                backgroundColor: theme => theme.palette.primary.text,
                 height: 48,
                 ":hover": { backgroundColor: "#0b704e" },
               }}
@@ -409,7 +409,7 @@ export default function BookingConfirmation() {
                     onClick={() => setOpenInvoiceModal(false)}
                     variant="contained"
                     sx={{
-                      backgroundColor: "#10906a",
+                      backgroundColor: theme => theme.palette.primary.buttons,
                       color: "white",
                       fontWeight: "bold",
                       px: 4,

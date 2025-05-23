@@ -82,7 +82,7 @@ export default function CTA() {
         variant="contained"
         sx={{
           backgroundColor: "#fff",
-          color: "#10906A",
+          color: theme => theme.palette.primary.buttons,
           px: { xs: 4, md: 6 },
           py: { xs: 1.5, md: 2 },
           fontSize: { xs: "0.9rem", md: "1.1rem" },

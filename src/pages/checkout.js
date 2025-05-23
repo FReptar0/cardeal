@@ -229,7 +229,7 @@ export default function CheckoutPage() {
               <Typography
                 variant="body1"
                 sx={{
-                  color: "#10906a",
+                  color: theme => theme.palette.primary.text,
                   fontWeight: "bold",
                   fontSize: 18,
                   mb: 2,

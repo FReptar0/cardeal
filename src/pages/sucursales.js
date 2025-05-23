@@ -233,7 +233,7 @@ export default function Sucursales() {
         <Typography
           variant="h2"
           align="center"
-          sx={{ fontWeight: "medium", mb: 1, color: "#10906a" }} // Título de sección en verde
+          sx={{ fontWeight: "medium", mb: 1, color: theme => theme.palette.primary.text }} // Título de sección en verde
         >
           CDMX
         </Typography>
@@ -243,7 +243,7 @@ export default function Sucursales() {
             width: "50%",
             mx: "auto",
             // Divider verde para mantener la paleta
-            borderColor: "#10906a",
+            borderColor: theme => theme.palette.primary.text,
           }}
         />
         {/* Con etiqueta */}
@@ -255,12 +255,12 @@ export default function Sucursales() {
         <Typography
           variant="h2"
           align="center"
-          sx={{ fontWeight: "medium", mb: 1, color: "#10906a" }}
-        >
+          sx={{ fontWeight: "medium", mb: 1, color: theme => theme.palette.primary.text }}
+        > 
           EDOMEX
         </Typography>
         <Divider
-          sx={{ mb: 4, width: "50%", mx: "auto", borderColor: "#10906a" }}
+          sx={{ mb: 4, width: "50%", mx: "auto", borderColor: theme => theme.palette.primary.text }}
         />
         {renderLocations(edoMexLocations)}
       </Box>

@@ -219,7 +219,7 @@ export default function OrderSummaryConfirmed({
           <Typography
             variant="h6"
             fontWeight="bold"
-            sx={paidOnline ? { color: "#10906a" } : undefined}
+            sx={paidOnline ? { color: theme => theme.palette.primary.text } : undefined}
           >
             {formatCurrency(totalWithIva)}
           </Typography>

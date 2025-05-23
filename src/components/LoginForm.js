@@ -152,7 +152,7 @@ const LoginForm = ({ onToggle }) => {
                         mt: 2,
                         py: 1.5,
                         borderRadius: "8px",
-                        backgroundColor: "#c43c44",
+                        backgroundColor: theme => theme.palette.secondary.buttons,
                         fontWeight: "bold",
                         fontSize: "16px",
                         ":hover": { backgroundColor: "#a91c24" },

@@ -138,7 +138,10 @@ export default function OrderSummary({
                   <Typography
                     variant="body2"
                     fontWeight="bold"
-                    sx={{ color: "#10906a", fontSize: 18 }}
+                    sx={{
+                      color: theme => theme.palette.primary.text,
+                      fontSize: 18
+                    }}
                   >
                     {formatCurrency(totalCarCost2)}
                   </Typography>
@@ -147,7 +150,7 @@ export default function OrderSummary({
                 <Typography
                   variant="body2"
                   fontWeight="bold"
-                  sx={paidOnline ? { color: "#10906a" } : {}}
+                  sx={paidOnline ? { color: theme => theme.palette.primary.text } : {}}
                 >
                   {formatCurrency(paidOnline ? totalCarCost2 : totalCarCost)}
                 </Typography>
@@ -251,7 +254,7 @@ export default function OrderSummary({
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: "#10906a", fontSize: 18 }}
+                sx={{ color: theme => theme.palette.primary.text, fontSize: 18 }}
               >
                 {formatCurrency(otherCharges2)}
               </Typography>
@@ -260,7 +263,7 @@ export default function OrderSummary({
             <Typography
               variant="body2"
               fontWeight="bold"
-              sx={{ color: paidOnline ? "#10906a" : undefined }}
+              sx={{ color: paidOnline ? theme => theme.palette.primary.text : undefined }}
             >
               {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
             </Typography>
@@ -313,7 +316,7 @@ export default function OrderSummary({
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: "#10906a", fontSize: 18 }}
+                sx={{ color: theme => theme.palette.primary.text, fontSize: 18 }}
               >
                 {formatCurrency(subtotal2)}
               </Typography>
@@ -322,7 +325,7 @@ export default function OrderSummary({
             <Typography
               variant="body2"
               fontWeight="bold"
-              sx={paidOnline ? { color: "#10906a" } : {}}
+              sx={paidOnline ? { color: theme => theme.palette.primary.text } : {}}
             >
               {formatCurrency(paidOnline ? subtotal2 : subtotal)}
             </Typography>
@@ -359,7 +362,7 @@ export default function OrderSummary({
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: "#10906a", fontSize: 18 }}
+                sx={{ color: theme => theme.palette.primary.text, fontSize: 18 }}
               >
                 {formatCurrency(ivaCost2)}
               </Typography>
@@ -368,7 +371,7 @@ export default function OrderSummary({
             <Typography
               variant="body2"
               fontWeight="bold"
-              sx={{ color: paidOnline ? "#10906a" : undefined }}
+              sx={{ color: paidOnline ? theme => theme.palette.primary.text : undefined }}
             >
               {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
             </Typography>
@@ -383,7 +386,7 @@ export default function OrderSummary({
             <Typography
               variant="h6"
               fontWeight="bold"
-              sx={{ color: paidOnline ? "#10906a" : undefined }}
+              sx={{ color: paidOnline ? theme => theme.palette.primary.text : undefined }}
             >
               {formatCurrency(paidOnline ? totals.price2 : totals.price)}
             </Typography>
@@ -425,7 +428,7 @@ export default function OrderSummary({
               <Typography
                 variant="h6"
                 fontWeight="bold"
-                sx={{ color: "#10906a", fontSize: 22 }}
+                sx={{ color: theme => theme.palette.primary.text, fontSize: 22 }}
               >
                 {formatCurrency(totals.price2)}
               </Typography>
@@ -452,7 +455,7 @@ export default function OrderSummary({
               <Typography
                 variant="h6"
                 sx={{
-                  color: "#10906a",
+                  color: theme => theme.palette.primary.text,
                   fontWeight: "bold",
                   fontSize: { xs: 18, md: 22 },
                   textAlign: "center",
@@ -526,7 +529,7 @@ export default function OrderSummary({
                 sx={{
                   flex: 0.15, // Relación 15% del ancho
                   height: "40px", // Asegurar que el grosor sea consistente
-                  backgroundColor: "#10906a",
+                  backgroundColor: theme => theme.palette.primary.buttons,
                   fontWeight: "bold",
                   textTransform: "none",
                   borderRadius: 1,
@@ -560,7 +563,7 @@ export default function OrderSummary({
               </Typography>
               <Typography
                 variant="h6"
-                sx={{ color: "#10906a" }}
+                sx={{ color: theme => theme.palette.primary.text }}
                 fontWeight="bold"
               >
                 {formatCurrency(

@@ -262,7 +262,7 @@ export default function Flota() {
                   onClick={() => router.push("/")}
                   variant="contained"
                   sx={{
-                    backgroundColor: "#10906a",
+                    backgroundColor: theme => theme.palette.primary.buttons,
                     color: "white",
                     fontSize: "12px",
                     textTransform: "none",

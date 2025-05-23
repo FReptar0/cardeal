@@ -287,7 +287,7 @@ const ExtrasRenta = () => {
         >
           <Typography
             variant="h5"
-            sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
+            sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", mt: 4 }}
           >
             No se encontraron extras disponibles para tu selección.
           </Typography>
@@ -422,7 +422,7 @@ const ExtrasRenta = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: "#10906a",
+            backgroundColor:theme => theme.palette.primary.buttons,
             color: "white",
             fontWeight: "bold",
             padding: "12px 30px",

@@ -120,15 +120,15 @@ export default function CarCard({ car, isSelected }) {
               padding: "4px 8px",
               "&:hover": {
                 backgroundColor: "#d9d9d9",
-                color: "#10906a",
+                color: theme => theme.palette.primary.buttons
               },
               "&:active": {
                 backgroundColor: "#d9d9d9",
-                color: "#10906a",
+                color: theme => theme.palette.primary.buttons
               },
               "&:focus": {
                 backgroundColor: "#d9d9d9",
-                color: "#10906a",
+                color: theme => theme.palette.primary.buttons
               },
             }}
             onClick={(event) => {
@@ -347,7 +347,7 @@ export default function CarCard({ car, isSelected }) {
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: "#d60812" }}
+                sx={{ color: theme => theme.palette.secondary.text }}
               >
                 Pago en Mostrador
               </Typography>
@@ -573,7 +573,7 @@ export default function CarCard({ car, isSelected }) {
                       width: "100%",
                       backgroundColor: "#d9d9d9", // Gris para la parte vacía
                       "& .MuiLinearProgress-bar": {
-                        backgroundColor: "#d60812", // Rojo para la parte llena
+                        backgroundColor: theme => theme.palette.secondary.main, 
                       },
                     }}
                   />
