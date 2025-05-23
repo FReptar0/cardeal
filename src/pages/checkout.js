@@ -73,8 +73,8 @@ export default function CheckoutPage() {
     }
   }
 
-  const otherCharges = (totalCarCost + totalExtrasCost) * 0.23;
-  const otherCharges2 = (totalCarCost2 + totalExtrasCost) * 0.23;
+  const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
+  const otherCharges2 = (totalCarCost2 + totalExtrasCost + totalInsuranceCost) * 0.23;
 
   const subTotal =
     totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;

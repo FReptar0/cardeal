@@ -38,7 +38,6 @@ export default function BookingConfirmation() {
   useEffect(() => {
     if (!id || !jwt) return;
     setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
-    console.log("JWT enviado al backend:", jwt);
 
     fetch(`/api/bookings/${id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
@@ -94,6 +93,8 @@ export default function BookingConfirmation() {
   if (!booking) return null;
 
   const { car, insurance, extras, search, contact } = booking;
+
+  console.log("Booking data:", booking);
 
   const days =
     Math.ceil(
