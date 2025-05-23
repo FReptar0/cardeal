@@ -134,6 +134,7 @@ export default async function handler(req, res) {
 </TRNXML>`.trim();
 
   try {
+    console.log("📨 XML enviado:\n", xmlBody);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/xml" },

@@ -20,6 +20,7 @@ import RentalStepper from "../components/Stepper";
 import CompactHeader from "../components/CompactHeader";
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
+import ExtrasLoader from "../components/ExtrasLoader";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -81,6 +82,7 @@ const ExtrasRenta = () => {
   const [hideSearchSection, setHideSearchSection] = useState(false);
   const [searchDataLocal, setSearchDataLocal] = useState(null);
   const [isClient, setIsClient] = useState(false);
+  const [loadingExtras, setLoadingExtras] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
@@ -104,6 +106,7 @@ const ExtrasRenta = () => {
       });
 
       const obtenerExtras = async () => {
+        setLoadingExtras(true); // ← inicia loader
         const response = await fetch("/api/extras", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -129,6 +132,7 @@ const ExtrasRenta = () => {
         }));
 
         setExtrasDisponibles(dataConPrecioBase);
+        setLoadingExtras(false); // ← detiene loader
       };
 
       obtenerExtras();
@@ -269,110 +273,131 @@ const ExtrasRenta = () => {
         Añade servicios adicionales para mejorar tu experiencia
       </Typography>
 
-      <Grid container spacing={3} justifyContent="center">
-        {extrasDisponibles.map((extra) => {
-          const cantidad = selectedExtras?.[extra.id]?.cantidad || 0;
+      {loadingExtras ? (
+        <ExtrasLoader />
+      ) : extrasDisponibles.length === 0 ? (
+        <Box
+          sx={{
+            height: "20vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ color: "#d60812", fontWeight: "bold", mt: 4 }}
+          >
+            No se encontraron extras disponibles para tu selección.
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={3} justifyContent="center">
+          {extrasDisponibles.map((extra) => {
+            const cantidad = selectedExtras?.[extra.id]?.cantidad || 0;
 
-          return (
-            <Grid item xs={12} sm={6} md={12} key={extra.id}>
-              <Card
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  alignItems: "stretch",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  sx={{
-                    m: "8px",
-                    width: { xs: 90, sm: 110, md: 125 },
-                    height: "auto",
-                    objectFit: "contain",
-                    marginX: "auto",
-                  }}
-                  image={extra.imagen}
-                  alt={extra.nombre}
-                />
-
-                <CardContent
-                  sx={{
-                    flex: 1,
-                    textAlign: "left",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    p: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight="bold">
-                    {extra.nombre}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {extra.descripcion}
-                  </Typography>
-                </CardContent>
-
-                <Box
+            return (
+              <Grid item xs={12} sm={6} md={12} key={extra.id}>
+                <Card
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 1,
-                    pr: 2,
-                    pb: { xs: 2, md: 0 },
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: "stretch",
+                    height: "100%",
+                    overflow: "hidden",
                   }}
                 >
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    sx={{ color: "#000" }}
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      m: "8px",
+                      width: { xs: 90, sm: 110, md: 125 },
+                      height: "auto",
+                      objectFit: "contain",
+                      marginX: "auto",
+                    }}
+                    image={extra.imagen}
+                    alt={extra.nombre}
+                  />
+
+                  <CardContent
+                    sx={{
+                      flex: 1,
+                      textAlign: "left",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      p: 2,
+                    }}
                   >
-                    {extra.precio.toFixed(2)} MXN/DÍA
-                  </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {extra.nombre}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {extra.descripcion}
+                    </Typography>
+                  </CardContent>
 
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "row",
+                      flexDirection: "column",
                       alignItems: "center",
+                      justifyContent: "center",
                       gap: 1,
+                      pr: 2,
+                      pb: { xs: 2, md: 0 },
                     }}
                   >
-                    <IconButton
-                      onClick={() => modificarCantidad(extra.id, "restar")}
-                      disabled={cantidad === 0}
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      sx={{ color: "#000" }}
+                    >
+                      {extra.precio.toFixed(2)} MXN/DÍA
+                    </Typography>
+
+                    <Box
                       sx={{
-                        "& .MuiSvgIcon-root": {
-                          fontSize: { xs: "1.3rem", md: "1.8rem" },
-                        },
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1,
                       }}
                     >
-                      <RemoveIcon />
-                    </IconButton>
+                      <IconButton
+                        onClick={() => modificarCantidad(extra.id, "restar")}
+                        disabled={cantidad === 0}
+                        sx={{
+                          "& .MuiSvgIcon-root": {
+                            fontSize: { xs: "1.3rem", md: "1.8rem" },
+                          },
+                        }}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
 
-                    <Typography variant="h6">{cantidad}</Typography>
+                      <Typography variant="h6">{cantidad}</Typography>
 
-                    <IconButton
-                      onClick={() => modificarCantidad(extra.id, "sumar")}
-                      sx={{
-                        "& .MuiSvgIcon-root": {
-                          fontSize: { xs: "1.3rem", md: "1.8rem" },
-                        },
-                      }}
-                    >
-                      <AddIcon />
-                    </IconButton>
+                      <IconButton
+                        onClick={() => modificarCantidad(extra.id, "sumar")}
+                        sx={{
+                          "& .MuiSvgIcon-root": {
+                            fontSize: { xs: "1.3rem", md: "1.8rem" },
+                          },
+                        }}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
-                </Box>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
 
       <Box
         sx={{

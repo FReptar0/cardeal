@@ -33,6 +33,55 @@ import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
 import { locations } from "@/utils/locations";
+import { RateReview } from "@mui/icons-material";
+
+const registrarReservaEnTSD = async ({
+  bookingId,
+  contactName,
+  selectedCar,
+  selectedInsurance,
+  selectedExtras,
+  searchData,
+}) => {
+  try {
+    const res = await fetch("/api/bookings/registerReservation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pickupLocationId: searchData.pickupLocation?.id,
+        returnLocationId: searchData.sameOffice
+          ? searchData.pickupLocation?.id
+          : searchData.returnLocation?.id,
+        pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
+        returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
+        classCode: selectedCar?.abbreviation,
+        unitNumber: selectedCar?.unitNumber,
+        renterFirst: contactName.split(" ")[0],
+        renterLast: contactName.split(" ").slice(1).join(" "),
+        extrasCodes: Object.values(selectedExtras)
+          .filter((extra) => extra.cantidad > 0)
+          .map((extra) => ({
+            id: extra.id,
+            cantidad: extra.cantidad,
+          })),
+        insuranceCode: selectedInsurance?.code || "",
+        rateId: selectedCar?.rateId,
+      }),
+    });
+
+    const tsdJson = await res.json();
+    console.log("✅ Respuesta de TSD:", tsdJson);
+
+    if (!res.ok) {
+      throw new Error(tsdJson.message || "Error en la reserva con TSD");
+    }
+
+    return true;
+  } catch (err) {
+    console.error("❌ Error registrando en TSD:", err.message);
+    return false;
+  }
+};
 
 export default function UserForm({ paidOnline, setPaidOnline }) {
   const router = useRouter();
@@ -146,9 +195,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     const dailyCar = online
       ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
       : Number(selectedCar.price);
-    let total = dailyCar * days - ( dailyCar * .1);
+    let total = dailyCar * days - dailyCar * 0.1;
     let totalOtherCharges = total;
-
 
     // Seguro
     if (selectedInsurance?.total) {
@@ -156,16 +204,13 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       total += Number(clean) * days;
     }
 
-
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
       total += Number(precio) * Number(cantidad) * days;
       totalOtherCharges += Number(precio) * Number(cantidad) * days;
     });
 
-
-    const totalOtherChargesSum = totalOtherCharges * .23
-
+    const totalOtherChargesSum = totalOtherCharges * 0.23;
 
     total += totalOtherChargesSum;
 
@@ -304,6 +349,24 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         return;
       }
 
+      // Registro en TSD si es pago en mostrador
+      if (!isOnline) {
+        const success = await registrarReservaEnTSD({
+          bookingId: jB.bookingId,
+          contactName,
+          selectedCar,
+          selectedInsurance,
+          selectedExtras,
+          searchData,
+        });
+
+        if (!success) {
+          toast.error(
+            "La reserva fue registrada localmente, pero falló en TSD."
+          );
+          return;
+        }
+      }
       // 5) Pago en mostrador → Confirmación
       clearBooking();
       clearSearch();
