@@ -153,6 +153,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
+      console.log("extras", { precio, cantidad });
       total += Number(precio) * Number(cantidad) * days;
     });
 
@@ -199,39 +200,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       const contactEmail = justRegistered ? data.email    : userData.email;
       const contactPhone = justRegistered ? data.phone    : userData.phone;
 
-      // Enviar datos al endpoint para generar el XML
-      const tsdRes = await fetch("/api/bookings/registerReservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pickupLocationId: searchData.pickupLocation?.id,
-          returnLocationId: searchData.returnLocation?.id,
-          pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
-          returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-          classCode: selectedCar?.abbreviation, // Pass abbreviation as classCode
-          unitNumber: selectedCar?.unitNumber,
-          renterFirst: contactName.split(" ")[0],
-          renterLast: contactName.split(" ").slice(1).join(" "),
-          customerNumber: process.env.TSD_CUSTOMER_NUMBER,
-          passcode: process.env.TSD_PASSCODE,
-          extrasCodes: Object.values(selectedExtras)
-            .filter((extra) => extra.cantidad > 0)
-            .map((extra) => ({ id: extra.id, cantidad: extra.cantidad })),
-          insuranceCode: selectedInsurance?.code || "",
-          rateId: selectedCar?.rateId,
-        }),
-      });
-
-      const tsdJson = await tsdRes.json();
-      //console.log("Respuesta del backend:", tsdJson);
-
-      if (!tsdRes.ok) {
-        toast.error(tsdJson.message || "Error al registrar la reserva");
-        return;
-      }
-
-      // Creación de la reserva en backend
-      const bookingRes = await fetch("/api/bookings/create", {
+      // 3) Pre-reserva PENDING
+      const resB = await fetch("/api/bookings/create", {
         method: "POST",
         headers: {
           "Content-Type":"application/json",
@@ -261,6 +231,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         const order     = String(jB.bookingId);
         const reference = `${order}-${Date.now()}`;
         const amount    = calculateTotal(true);
+
+        console.log("amount", amount);
 
         const resP = await fetch("/api/create-payment", {
           method: "POST",
