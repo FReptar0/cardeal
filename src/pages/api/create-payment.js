@@ -7,16 +7,6 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Método no permitido' });
     }
 
-    console.log('📦 create-payment body:', req.body);
-    console.log('🔧 env:', {
-        MP_ACCOUNT: process.env.MP_ACCOUNT,
-        MP_PRODUCT: process.env.MP_PRODUCT,
-        MP_ENDPOINT: process.env.MP_ENDPOINT,
-        HMAC_SECRET: !!process.env.HMAC_SECRET,
-        MP_URL_SUCCESS: process.env.MP_URL_SUCCESS,
-        MP_URL_FAILURE: process.env.MP_URL_FAILURE,
-    });
-
     const { order, reference, amount, node, concept } = req.body;
     if (!order || !reference || !amount || !node || !concept) {
         return res
