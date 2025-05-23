@@ -215,7 +215,7 @@ export default function ConfirmPDF({ booking }) {
             {booking.tsdConfirmNum && (
               <>
                 <Text style={[styles.sectionLabel, { marginTop: 6 }]}>
-                  Número de confirmación TSD:
+                  Número de confirmación:
                 </Text>
                 <Text style={styles.sectionValue}>{booking.tsdConfirmNum}</Text>
               </>
