@@ -153,6 +153,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
+      console.log("extras", { precio, cantidad });
       total += Number(precio) * Number(cantidad) * days;
     });
 
@@ -230,6 +231,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         const order     = String(jB.bookingId);
         const reference = `${order}-${Date.now()}`;
         const amount    = calculateTotal(true);
+
+        console.log("amount", amount);
 
         const resP = await fetch("/api/create-payment", {
           method: "POST",
