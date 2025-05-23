@@ -65,14 +65,10 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
   };
   const tokenIsInvalid = !jwt || isJwtExpired(jwt);
 
-  // Validation schema
+  // Schema de validación
   const schema = yup.object().shape({
-    terms: yup
-      .boolean()
-      .oneOf([true], "Debes aceptar los términos"),
-    privacy: yup
-      .boolean()
-      .oneOf([true], "Debes aceptar la política de privacidad"),
+    terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
+    privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
     ...(tokenIsInvalid && {
       fullName: yup.string().required("El nombre completo es obligatorio"),
       phone: yup.string().required("El teléfono es obligatorio"),
@@ -123,34 +119,34 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     },
   });
 
+  // Precarga perfil si ya hay token
   useEffect(() => {
     if (!tokenIsInvalid && !loadingProfile && userData) {
       reset({
-        fullName: userData.fullName,
-        phone: userData.phone,
-        email: userData.email,
+        fullName:  userData.fullName,
+        phone:     userData.phone,
+        email:     userData.email,
         birthDate: userData.birthDate?.slice(0, 10) ?? "",
-        location: userData.location,
-        terms: false,
-        privacy: false,
+        location:  userData.location,
+        terms:     false,
+        privacy:   false,
       });
     }
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
-  // Calculate a total including days, insurance, extras, IVA and discount
+  // Calcula el total exacto que se enviará a Flap
   const calculateTotal = (online) => {
-    const pickup = new Date(searchData.pickupDate);
-    const dropoff = new Date(searchData.returnDate);
-    const msInDay = 1000 * 60 * 60 * 24;
-    const days = Math.ceil((dropoff - pickup) / msInDay);
+    const start = new Date(searchData.pickupDate);
+    const end = new Date(searchData.returnDate);
+    const days = Math.ceil((end - start) / (1000*60*60*24)) || 1;
 
-    // Choose car price: priceOnline if paying online (fall back to price), otherwise price
-    const dailyCarRate = online
-      ? Number(selectedCar.priceOnline ?? selectedCar.price)
+    // Precio coche según método
+    const dailyCar = online
+      ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
       : Number(selectedCar.price);
-    let total = dailyCarRate * days;
+    let total = dailyCar * days;
 
-    // Insurance
+    // Seguro
     if (selectedInsurance?.price) {
       total += Number(selectedInsurance.price) * days;
     }
@@ -160,10 +156,10 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       total += Number(precio) * Number(cantidad) * days;
     });
 
-    // Subtract discount
+    // Descuento
     total -= Number(discount) || 0;
 
-    // Apply IVA 16%
+    // IVA 16%
     total = total * 1.16;
 
     return total.toFixed(2);
@@ -173,51 +169,42 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
 
     try {
-      // 1) Register/login if needed
+      // 1) Registro / login si falta
       let token = jwt;
       let justRegistered = false;
       if (tokenIsInvalid) {
-        const reg = await fetch("/api/auth/register", {
+        const r1 = await fetch("/api/auth/register", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {"Content-Type":"application/json"},
           body: JSON.stringify(data),
         });
-        const regJson = await reg.json();
-        if (!reg.ok) {
-          toast.error(regJson.message);
-          return;
-        }
+        const j1 = await r1.json();
+        if (!r1.ok) { toast.error(j1.message); return; }
         toast.success("Usuario registrado");
 
-        const log = await fetch("/api/auth/login", {
+        const r2 = await fetch("/api/auth/login", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: data.email,
-            password: data.password,
-          }),
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ email: data.email, password: data.password }),
         });
-        const logJson = await log.json();
-        if (!log.ok) {
-          toast.error("Error al iniciar sesión");
-          return;
-        }
-        token = logJson.token;
+        const j2 = await r2.json();
+        if (!r2.ok) { toast.error("Error al iniciar sesión"); return; }
+        token = j2.token;
         await login(token);
         justRegistered = true;
       }
 
-      // 2) Contact details
-      const contactName = justRegistered ? data.fullName : userData.fullName;
-      const contactEmail = justRegistered ? data.email : userData.email;
-      const contactPhone = justRegistered ? data.phone : userData.phone;
+      // 2) Datos de contacto
+      const contactName  = justRegistered ? data.fullName : userData.fullName;
+      const contactEmail = justRegistered ? data.email    : userData.email;
+      const contactPhone = justRegistered ? data.phone    : userData.phone;
 
-      // 3) Create pending booking
-      const bookingRes = await fetch("/api/bookings/create", {
+      // 3) Pre-reserva PENDING
+      const resB = await fetch("/api/bookings/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type":"application/json",
+          Authorization:`Bearer ${token}`,
         },
         body: JSON.stringify({
           selectedCar,
@@ -232,38 +219,38 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           discount,
         }),
       });
-      const bookingJson = await bookingRes.json();
-      if (!bookingRes.ok) {
-        toast.error(bookingJson.message || "Error al crear la pre-reserva");
+      const jB = await resB.json();
+      if (!resB.ok) {
+        toast.error(jB.message || "Error al crear la pre-reserva");
         return;
       }
 
-      // 4) Online payment → Flap checkout
+      // 4) Pago en línea → Flap
       if (isOnline) {
-        const order = String(bookingJson.bookingId);
+        const order     = String(jB.bookingId);
         const reference = `${order}-${Date.now()}`;
-        const amount = calculateTotal(true);
+        const amount    = calculateTotal(true);
 
-        const paymentRes = await fetch("/api/create-payment", {
+        const resP = await fetch("/api/create-payment", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {"Content-Type":"application/json"},
           body: JSON.stringify({
             order,
             reference,
             amount,
-            node: process.env.NEXT_PUBLIC_MP_NODE,
+            node:    process.env.NEXT_PUBLIC_MP_NODE,
             concept: process.env.NEXT_PUBLIC_MP_CONCEPT,
           }),
         });
 
-        if (!paymentRes.ok) {
-          const err = await paymentRes.json();
-          // delete pending if checkout fails
-          await fetch(`/api/bookings/${bookingJson.bookingId}`, {
+        if (!resP.ok) {
+          const err = await resP.json();
+          // borrar pre-reserva si falla
+          await fetch(`/api/bookings/${jB.bookingId}`, {
             method: "DELETE",
             headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              "Content-Type":"application/json",
+              Authorization:`Bearer ${token}`,
             },
           });
           toast.error(`Error iniciando pago: ${err.message}`);
@@ -271,18 +258,17 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           return;
         }
 
-        const { action, fields } = await paymentRes.json();
-
-        // auto‐submit form in new tab
+        const { action, fields } = await resP.json();
+        // Generar form y auto-submit en nueva pestaña
         const form = document.createElement("form");
         form.method = "POST";
         form.action = action;
         form.target = "_blank";
-        Object.entries(fields).forEach(([name, value]) => {
+        Object.entries(fields).forEach(([k,v]) => {
           const inp = document.createElement("input");
           inp.type = "hidden";
-          inp.name = name;
-          inp.value = value;
+          inp.name = k;
+          inp.value = v;
           form.appendChild(inp);
         });
         document.body.appendChild(form);
@@ -290,10 +276,10 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         return;
       }
 
-      // 5) Offline payment → confirmation
+      // 5) Pago en mostrador → Confirmación
       clearBooking();
       clearSearch();
-      router.push(`/confirm/${bookingJson.bookingId}`);
+      router.push(`/confirm/${jB.bookingId}`);
     } catch (err) {
       console.error(err);
       toast.error("Error de conexión");
@@ -305,14 +291,14 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
   if (!tokenIsInvalid && loadingProfile) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+      <Box sx={{ display:"flex", justifyContent:"center", p:4 }}>
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Card sx={{ p: 3, width: "100%" }}>
+    <Card sx={{ p:3, width:"100%" }}>
       <ToastContainer position="top-center" autoClose={5000} />
 
       <Typography variant="h5" gutterBottom>
@@ -320,42 +306,32 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           ? "Finaliza tu reserva"
           : "Completa tus datos para registrarte"}
       </Typography>
-      <Divider sx={{ my: 2 }} />
+      <Divider sx={{ my:2 }} />
 
       <Box component="form">
-        {/* Registration fields */}
         {tokenIsInvalid && (
           <>
             <TextField
               label="Nombre completo"
-              fullWidth
-              margin="normal"
+              fullWidth margin="normal"
               {...register("fullName")}
               error={!!errors.fullName}
               helperText={errors.fullName?.message}
             />
             <Controller
-              name="phone"
-              control={control}
+              name="phone" control={control}
               render={({ field }) => (
-                <Box sx={{ width: "100%", mt: 1 }}>
+                <Box sx={{ width:"100%", mt:1 }}>
                   <PhoneInput
                     {...field}
                     country="mx"
                     enableSearch
                     inputStyle={{
-                      width: "100%",
-                      height: "56px",
-                      fontSize: "16px",
-                      paddingLeft: "48px",
-                      borderRadius: "4px",
-                      border: `1px solid ${errors.phone ? "#d32f2f" : "#c4c4c4"
-                        }`,
+                      width:"100%", height:"56px", fontSize:"16px",
+                      paddingLeft:"48px", borderRadius:"4px",
+                      border:`1px solid ${errors.phone?"#d32f2f":"#c4c4c4"}`,
                     }}
-                    buttonStyle={{
-                      border: "none",
-                      background: "transparent",
-                    }}
+                    buttonStyle={{ border:"none", background:"transparent" }}
                   />
                   {errors.phone && (
                     <Typography variant="caption" color="error">
@@ -366,192 +342,137 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               )}
             />
             <TextField
-              label="Correo electrónico"
-              type="email"
-              fullWidth
-              margin="normal"
+              label="Correo electrónico" type="email"
+              fullWidth margin="normal"
               {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
             />
             <TextField
-              label="Fecha de nacimiento"
-              type="date"
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
+              label="Fecha de nacimiento" type="date"
+              fullWidth margin="normal"
+              InputLabelProps={{ shrink:true }}
               {...register("birthDate")}
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
             <TextField
               label="Ubicación"
-              fullWidth
-              margin="normal"
+              fullWidth margin="normal"
               {...register("location")}
               error={!!errors.location}
               helperText={errors.location?.message}
             />
             <TextField
               label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
+              type={showPassword?"text":"password"}
+              fullWidth margin="normal"
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((p) => !p)}
-                    >
-                      {showPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
+                    <IconButton onClick={()=>setShowPassword(p=>!p)}>
+                      {showPassword
+                        ? <VisibilityOffOutlined/>
+                        : <VisibilityOutlined/>}
                     </IconButton>
                   </InputAdornment>
-                ),
+                )
               }}
             />
             <TextField
               label="Confirmar contraseña"
-              type={showConfirmPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
+              type={showConfirmPassword?"text":"password"}
+              fullWidth margin="normal"
               {...register("confirmPassword")}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton
-                      onClick={() =>
-                        setShowConfirmPassword((p) => !p)
-                      }
-                    >
-                      {showConfirmPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
+                    <IconButton onClick={()=>setShowConfirmPassword(p=>!p)}>
+                      {showConfirmPassword
+                        ? <VisibilityOffOutlined/>
+                        : <VisibilityOutlined/>}
                     </IconButton>
                   </InputAdornment>
-                ),
+                )
               }}
             />
           </>
         )}
 
-        {/* Booking fields */}
+        {/* Pickup & return */}
         <Autocomplete
           options={locations}
-          getOptionLabel={(opt) => `${opt.city} – ${opt.name}`}
-          groupBy={(opt) => opt.city}
+          getOptionLabel={opt=>`${opt.city} – ${opt.name}`}
+          groupBy={opt=>opt.city}
           value={searchData.pickupLocation}
-          onChange={(_, v) =>
-            v && setSearchData({ ...searchData, pickupLocation: v })
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Lugar de retiro"
-              margin="normal"
-              fullWidth
+          onChange={(_,v)=>v&&setSearchData({...searchData,pickupLocation:v})}
+          renderInput={params=>(
+            <TextField {...params}
+              label="Lugar de retiro" margin="normal" fullWidth
             />
           )}
         />
         <Autocomplete
           options={locations}
-          getOptionLabel={(opt) => `${opt.city} – ${opt.name}`}
-          groupBy={(opt) => opt.city}
+          getOptionLabel={opt=>`${opt.city} – ${opt.name}`}
+          groupBy={opt=>opt.city}
           value={searchData.returnLocation}
-          onChange={(_, v) =>
-            v && setSearchData({ ...searchData, returnLocation: v })
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Lugar de entrega"
-              margin="normal"
-              fullWidth
+          onChange={(_,v)=>v&&setSearchData({...searchData,returnLocation:v})}
+          renderInput={params=>(
+            <TextField {...params}
+              label="Lugar de entrega" margin="normal" fullWidth
             />
           )}
         />
 
         <FormControlLabel
-          control={
-            <Checkbox
-              {...register("terms")}
-              sx={{
-                color: "#191919",
-                "&.Mui-checked": { color: "#191919" },
-              }}
-            />
-          }
-          label={
-            <Link href="/terminos-y-condiciones" underline="hover">
-              Acepto los términos y condiciones
-            </Link>
-          }
+          control={<Checkbox {...register("terms")}
+            sx={{ color:"#191919","&.Mui-checked":{color:"#191919"} }}
+          />}
+          label={<Link href="/terminos-y-condiciones" underline="hover">
+            Acepto los términos y condiciones
+          </Link>}
         />
         <FormControlLabel
-          control={
-            <Checkbox
-              {...register("privacy")}
-              sx={{
-                color: "#191919",
-                "&.Mui-checked": { color: "#191919" },
-              }}
-            />
-          }
-          label={
-            <Link href="/aviso-de-privacidad" underline="hover">
-              Acepto la política de privacidad
-            </Link>
-          }
+          control={<Checkbox {...register("privacy")}
+            sx={{ color:"#191919","&.Mui-checked":{color:"#191919"} }}
+          />}
+          label={<Link href="/aviso-de-privacidad" underline="hover">
+            Acepto la política de privacidad
+          </Link>}
         />
 
         <FormControlLabel
-          control={
-            <Switch
-              checked={paidOnline}
-              onChange={(e) => setPaidOnline(e.target.checked)}
-              sx={{
-                "& .Mui-checked": { color: "#10906a" },
-                "& .Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: "#10906a",
-                },
-              }}
-            />
-          }
+          control={<Switch checked={paidOnline}
+            onChange={e=>setPaidOnline(e.target.checked)}
+            sx={{
+              "& .Mui-checked":{color:"#10906a"},
+              "& .Mui-checked+ .MuiSwitch-track":{backgroundColor:"#10906a"}
+            }}
+          />}
           label="Quiero pagar en línea"
         />
-        <Typography
-          variant="caption"
-          sx={{
-            mt: 1,
-            color: paidOnline ? "#10906a" : "#6e7276",
-          }}
+        <Typography variant="caption"
+          sx={{ mt:1, color: paidOnline?"#10906a":"#6e7276" }}
         >
           {paidOnline
             ? "Estás eligiendo pagar ahora en línea."
             : "Puedes pagar al recoger el vehículo."}
         </Typography>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: 2,
-            mt: 3,
+        <Box sx={{
+            display:"flex",
+            flexDirection:{ xs:"column",md:"row" },
+            gap:2, mt:3
           }}
         >
           <Button
-            fullWidth
-            variant="contained"
+            fullWidth variant="contained"
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
@@ -561,13 +482,11 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               (!tokenIsInvalid && !isValid)
             }
           >
-            {submitting ? "Procesando..." : "Pago en mostrador"}
+            {submitting?"Procesando...":"Pago en mostrador"}
           </Button>
 
           <Button
-            fullWidth
-            variant="contained"
-            color="success"
+            fullWidth variant="contained" color="success"
             onClick={handleSubmit(onSubmit(true))}
             disabled={
               submittingOnline ||
@@ -577,7 +496,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               (tokenIsInvalid && !isValid)
             }
           >
-            {submittingOnline ? "Redirigiendo…" : "Pago en línea"}
+            {submittingOnline?"Redirigiendo…":"Pago en línea"}
           </Button>
         </Box>
       </Box>
