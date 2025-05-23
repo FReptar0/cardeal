@@ -55,7 +55,7 @@ const Footer = () => {
                   <Box sx={{ display: "flex", gap: 2 }}>
                     <IconButton
                       component="a"
-                      href="https://www.facebook.com/Qardeal"
+                      href="https://www.facebook.com/profile.php?id=61575894780718"
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
@@ -71,7 +71,7 @@ const Footer = () => {
                     </IconButton>
                     <IconButton
                       component="a"
-                      href="https://www.instagram.com/Qardeal"
+                      href="https://www.instagram.com/qardealmx?igsh=NXRneXNqdXpkN245&utm_source=qr"
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
