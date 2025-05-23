@@ -76,7 +76,10 @@ const registrarReservaEnTSD = async ({
       throw new Error(tsdJson.message || "Error en la reserva con TSD");
     }
 
-    return true;
+    return {
+      success: true,
+      confirmNum: tsdJson.PRE?.TRNXML?.ConfirmNum || null,
+    };
   } catch (err) {
     console.error("❌ Error registrando en TSD:", err.message);
     return false;
@@ -196,13 +199,14 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
       : Number(selectedCar.price);
     let total = dailyCar * days - dailyCar * 0.1;
-    let totalOtherCharges = total;
 
     // Seguro
     if (selectedInsurance?.total) {
       const clean = selectedInsurance.total.replace(/[^0-9.]/g, "");
       total += Number(clean) * days;
     }
+
+    let totalOtherCharges = total;
 
     // Extras
     Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
@@ -212,6 +216,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     const totalOtherChargesSum = totalOtherCharges * 0.23;
 
+    console.log("Total other charges:", totalOtherChargesSum);
+
     total += totalOtherChargesSum;
 
     // Descuento
@@ -219,6 +225,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     // IVA 16%
     total = total * 1.16;
+
+    console.log("Total con IVA:", total);
 
     return total.toFixed(2);
   };
@@ -351,7 +359,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
       // Registro en TSD si es pago en mostrador
       if (!isOnline) {
-        const success = await registrarReservaEnTSD({
+        const tsdResponse = await registrarReservaEnTSD({
           bookingId: jB.bookingId,
           contactName,
           selectedCar,
@@ -360,11 +368,22 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           searchData,
         });
 
-        if (!success) {
+        if (!tsdResponse.success) {
           toast.error(
             "La reserva fue registrada localmente, pero falló en TSD."
           );
           return;
+        }
+
+        if (tsdResponse.confirmNum) {
+          await fetch(`/api/bookings/${jB.bookingId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ confirmNum: tsdResponse.confirmNum }),
+          });
         }
       }
       // 5) Pago en mostrador → Confirmación

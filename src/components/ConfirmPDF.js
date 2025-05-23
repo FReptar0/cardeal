@@ -212,9 +212,14 @@ export default function ConfirmPDF({ booking }) {
         {/* Importes y fechas */}
         <View style={styles.twoColumn}>
           <View style={{ flex: 2 }}>
-            <Text style={[styles.sectionLabel, { fontSize: 12 }]}>
-              pueden ir datos de la reserva
-            </Text>
+            {booking.tsdConfirmNum && (
+              <>
+                <Text style={[styles.sectionLabel, { marginTop: 6 }]}>
+                  Número de confirmación TSD:
+                </Text>
+                <Text style={styles.sectionValue}>{booking.tsdConfirmNum}</Text>
+              </>
+            )}
             {/* <Text style={[styles.sectionValue, { fontSize: 12 }]}>
               {totalValue.toLocaleString("es-MX", {
                 style: "currency",
