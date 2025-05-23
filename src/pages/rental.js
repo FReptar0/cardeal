@@ -122,7 +122,12 @@ export default function RentalPage() {
       const res = await fetch("/api/rates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pickupLocationId, returnLocationId, pickupDateTime, returnDateTime }),
+        body: JSON.stringify({
+          pickupLocationId,
+          returnLocationId,
+          pickupDateTime,
+          returnDateTime,
+        }),
       });
 
       // console.log("🛞 Respuesta de TSD:", res);
@@ -248,6 +253,10 @@ export default function RentalPage() {
   };
 
   const handleSearch = (filters) => {
+    if (!filters) {
+      setFilteredCars([]); // limpia autos si no hay filtros válidos
+      return;
+    }
     //console.log("Filtros de búsqueda:", filters);
     const pickDt = new Date(filters.pickupDate);
     const [pickTime, pickAmpm] = filters.pickupTime.split(" ");

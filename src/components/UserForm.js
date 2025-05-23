@@ -220,7 +220,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       });
 
       const tsdJson = await tsdRes.json();
-      console.log("Respuesta del backend:", tsdJson);
+      //console.log("Respuesta del backend:", tsdJson);
 
       if (!tsdRes.ok) {
         toast.error(tsdJson.message || "Error al registrar la reserva");

@@ -15,9 +15,14 @@ export const BookingProvider = ({ children }) => {
 
   // Cargar desde localStorage al iniciar
   useEffect(() => {
-    if (sessionStorage.getItem("bookingCleared") === "true") {
+    const cleared = sessionStorage.getItem("bookingCleared") === "true";
+    if (cleared) {
       sessionStorage.removeItem("bookingCleared");
-      return;
+    } else {
+      // ───── Tu lógica de carga desde localStorage ─────
+      const carFromStorage = localStorage.getItem("selectedCar");
+      if (carFromStorage) setSelectedCar(JSON.parse(carFromStorage));
+      // … resto de cargas (insurance, extras, userData, discount)
     }
 
     const carFromStorage = localStorage.getItem("selectedCar");
@@ -48,14 +53,21 @@ export const BookingProvider = ({ children }) => {
 
   useEffect(() => {
     if (selectedInsurance) {
-      localStorage.setItem("selectedInsurance", JSON.stringify(selectedInsurance));
+      localStorage.setItem(
+        "selectedInsurance",
+        JSON.stringify(selectedInsurance)
+      );
     } else {
       localStorage.removeItem("selectedInsurance");
     }
   }, [selectedInsurance]);
 
   useEffect(() => {
-    localStorage.setItem("selectedExtras", JSON.stringify(selectedExtras));
+    if (selectedExtras) {
+      localStorage.setItem("selectedExtras", JSON.stringify(selectedExtras));
+    } else {
+      localStorage.removeItem("selectedExtras");
+    }
   }, [selectedExtras]);
 
   useEffect(() => {

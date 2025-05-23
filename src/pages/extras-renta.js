@@ -87,57 +87,63 @@ const ExtrasRenta = () => {
   }, []);
 
   useEffect(() => {
-    if (!isCarLoaded) return;
-
     if (
-      !searchData ||
-      !selectedCar ||
-      !selectedCar.category ||
-      !searchData.pickupLocation?.id ||
-      !searchData.returnLocation?.id
+      isCarLoaded &&
+      selectedCar?.category &&
+      searchData?.pickupLocation?.id &&
+      searchData?.returnLocation?.id &&
+      searchData?.pickupDate &&
+      searchData?.returnDate &&
+      searchData?.pickupTime &&
+      searchData?.returnTime
     ) {
-      console.log(
-        "⏳ Aún no están listos los datos para lanzar la petición..."
-      );
-      return;
-    }
-
-    console.log("🚀 Ejecutando fetch con:", {
-      category: selectedCar.category,
-      pickup: searchData.pickupLocation.id,
-      return: searchData.returnLocation.id,
-    });
-
-    const obtenerExtras = async () => {
-      const response = await fetch("/api/extras", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pickupLocationId: searchData.pickupLocation.id,
-          returnLocationId: searchData.sameOffice
-            ? searchData.pickupLocation.id
-            : searchData.returnLocation.id,
-          pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
-          returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-          classCode: selectedCar.category,
-          allExtras: extrasCatalogo,
-        }),
+      console.log("🚀 Ejecutando fetch con:", {
+        category: selectedCar.category,
+        pickup: searchData.pickupLocation.id,
+        return: searchData.returnLocation.id,
       });
 
-      const data = await response.json();
-      console.log("📥 Extras recibidos:", data);
-      const precioPorDia = (total, dias) => (dias > 0 ? total / dias : total);
+      const obtenerExtras = async () => {
+        const response = await fetch("/api/extras", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pickupLocationId: searchData.pickupLocation.id,
+            returnLocationId: searchData.sameOffice
+              ? searchData.pickupLocation.id
+              : searchData.returnLocation.id,
+            pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
+            returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
+            classCode: selectedCar.category,
+            allExtras: extrasCatalogo,
+          }),
+        });
 
-      const dataConPrecioBase = data.map((extra) => ({
-        ...extra,
-        precio: precioPorDia(extra.precio, rentalDays),
-      }));
+        const data = await response.json();
+        console.log("📥 Extras recibidos:", data);
+        const precioPorDia = (total, dias) => (dias > 0 ? total / dias : total);
 
-      setExtrasDisponibles(dataConPrecioBase);
-    };
+        const dataConPrecioBase = data.map((extra) => ({
+          ...extra,
+          precio: precioPorDia(extra.precio, rentalDays),
+        }));
 
-    obtenerExtras();
-  }, [isCarLoaded, searchData, selectedCar]);
+        setExtrasDisponibles(dataConPrecioBase);
+      };
+
+      obtenerExtras();
+    }
+  }, [
+    isCarLoaded,
+    selectedCar?.category,
+    searchData?.pickupLocation?.id,
+    searchData?.returnLocation?.id,
+    searchData?.pickupDate,
+    searchData?.returnDate,
+    searchData?.pickupTime,
+    searchData?.returnTime,
+    searchData?.sameOffice,
+  ]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -203,7 +209,7 @@ const ExtrasRenta = () => {
     setSelectedExtras(updated);
   };
 
-  const total = Object.values(selectedExtras).reduce(
+  const total = Object.values(selectedExtras || {}).reduce(
     (acc, extra) => acc + extra.precio * extra.cantidad * rentalDays,
     0
   );
@@ -265,7 +271,7 @@ const ExtrasRenta = () => {
 
       <Grid container spacing={3} justifyContent="center">
         {extrasDisponibles.map((extra) => {
-          const cantidad = selectedExtras[extra.id]?.cantidad || 0;
+          const cantidad = selectedExtras?.[extra.id]?.cantidad || 0;
 
           return (
             <Grid item xs={12} sm={6} md={12} key={extra.id}>

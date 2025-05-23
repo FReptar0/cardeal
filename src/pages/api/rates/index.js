@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     TSD_PASSCODE,
   } = process.env;
 
-  console.log("📦 Datos recibidos:", req.body);
+  //console.log("📦 Datos recibidos:", req.body);
 
   const { pickupLocationId, returnLocationId, pickupDateTime, returnDateTime } =
     req.body;
@@ -65,7 +65,7 @@ export default async function handler(req, res) {
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
 
-    console.log("JSON completo:", JSON.stringify(json, null, 2));
+    //console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
     let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
       totalCharges: rp.TotalPricing?.TotalCharges,
     }));
 
-    console.log("Rates:", rates);
+    //console.log("Rates:", rates);
 
     res.status(200).json(rates);
   } catch (error) {

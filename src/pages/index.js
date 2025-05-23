@@ -1,9 +1,17 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import { Box } from "@mui/material";
 import Carousel from "../components/Carousel";
 import Hero from "../components/Hero";
+import { useSearch } from "@/contexts/SearchContext";
+import { useBooking } from "@/contexts/BookingContext";
 
 export default function Index() {
+  const {clearSearch} = useSearch();
+  const { clearBooking } = useBooking();
+  useEffect(() => {
+    clearSearch();
+    clearBooking();
+  }, []);
   return (
     <Box sx={{ width: "100%", textAlign: "center" }}>
       {/* Sección Hero */}

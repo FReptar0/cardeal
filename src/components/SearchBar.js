@@ -41,9 +41,11 @@ function generateTimeSlots(startTime, endTime, forToday = false) {
     if (!forToday || current > limit) {
       const h = current.getHours();
       const m = current.getMinutes();
-      const formatted = `${(h % 12 || 12).toString().padStart(2, "0")}:${m
+      const suffix = h < 12 ? "AM" : "PM";
+      const formatted = `${h.toString().padStart(2, "0")}:${m
         .toString()
-        .padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+        .padStart(2, "0")} ${suffix}`;
+
       slots.push(formatted);
     }
     current.setMinutes(current.getMinutes() + 30);
@@ -223,7 +225,7 @@ function DateTimeSelector({
             <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
           ) : timeSlots.length === 0 ? (
             <Typography variant="body2" color="error">
-              No hay horarios disponibles
+              Fecha y ubicación sin horarios
             </Typography>
           ) : (
             <Select
@@ -259,7 +261,7 @@ function DateTimeSelector({
 export default function SearchBar({ sx = {}, onSearch }) {
   const router = useRouter();
   const { searchData, setSearchData } = useSearch(); // Contexto global
-  const [debouncedSearchData] = useDebounce(searchData, 500);
+  const [debouncedSearchData] = useDebounce(searchData, 200);
   const { selectedCar } = useBooking();
   const isRentalPage =
     router.pathname === "/rental" ||
@@ -274,6 +276,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
 
   const [loadingPickupHours, setLoadingPickupHours] = useState(false);
   const [loadingReturnHours, setLoadingReturnHours] = useState(false);
+
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const fetchBusinessHours = async (locationId, setHoursFn, setLoadingFn) => {
     try {
@@ -311,18 +315,28 @@ export default function SearchBar({ sx = {}, onSearch }) {
       returnDate &&
       returnTime;
 
-    if (valid) {
-      const filters = {
-        pickupLocation,
-        returnLocation,
-        pickupDate,
-        pickupTime,
-        returnDate,
-        returnTime,
-        sameOffice: debouncedSearchData.sameOffice,
-      };
+    const filters = {
+      pickupLocation,
+      returnLocation,
+      pickupDate,
+      pickupTime,
+      returnDate,
+      returnTime,
+      sameOffice: debouncedSearchData.sameOffice,
+    };
 
-      onSearch?.(filters);
+    // 🧼 Nuevo: si los filtros se volvieron inválidos, limpia autos
+    if (!valid) {
+      onSearch?.(null); // Esto hará que RentalPage borre los autos
+      return;
+    }
+
+    if (router.pathname === "/rental") {
+      onSearch?.(filters); // Si ya está en rental, actualiza autos
+    } else if (shouldRedirect && router.pathname !== "/") {
+      // Esto nunca correrá en "/", solo en /proteccion, /extras-renta, etc.
+      router.push("/rental");
+      setShouldRedirect(false);
     }
   }, [
     debouncedSearchData.pickupLocation,
@@ -332,6 +346,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
     debouncedSearchData.returnDate,
     debouncedSearchData.returnTime,
     debouncedSearchData.sameOffice,
+    shouldRedirect,
   ]);
 
   // ——— NUEVO: estado y fetch de sucursales desde API ———
@@ -372,7 +387,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
   // Handlers sin tocar
   const handlePickupLocationChange = (e, newValue) => {
     setSearchData({ ...searchData, pickupLocation: newValue });
-
+    setShouldRedirect(true);
     if (newValue?.id) {
       fetchBusinessHours(
         newValue.id,
@@ -416,6 +431,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
     }
   };
   const handleReturnLocationChange = (e, newValue) => {
+    setShouldRedirect(true);
     // Si el usuario seleccionó la misma ubicación de origen, volvemos a activar el check
     if (
       newValue?.id &&
@@ -473,6 +489,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
 
   const handleSameOfficeChange = () => {
+    setShouldRedirect(true);
     const same = !searchData.sameOffice;
 
     const newSearchData = {
@@ -493,7 +510,6 @@ export default function SearchBar({ sx = {}, onSearch }) {
         );
       }
     } else {
-      // Al desactivar: limpiar returnLocation (dejar que usuario la seleccione)
       newSearchData.returnLocation = null;
       newSearchData.returnTime = "";
       setReturnHours(null);
@@ -502,7 +518,29 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setSearchData(newSearchData);
   };
 
+  useEffect(() => {
+    const pickupId = searchData.pickupLocation?.id;
+    const returnId = searchData.returnLocation?.id;
+
+    if (
+      pickupId &&
+      returnId &&
+      pickupId === returnId &&
+      !searchData.sameOffice
+    ) {
+      setSearchData((prev) => ({
+        ...prev,
+        sameOffice: true,
+      }));
+    }
+  }, [
+    searchData.pickupLocation?.id,
+    searchData.returnLocation?.id,
+    searchData.sameOffice,
+  ]);
+
   const handlePickupDateChange = (newDate) => {
+    setShouldRedirect(true);
     const newPickup = new Date(newDate);
     newPickup.setHours(0, 0, 0, 0);
 
@@ -522,6 +560,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
 
   const handleReturnDateChange = (newDate) => {
+    setShouldRedirect(true);
     const newReturnDate = new Date(newDate);
     newReturnDate.setHours(0, 0, 0, 0);
 
@@ -576,10 +615,15 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setSearchData({ ...searchData, returnDate: newReturnDate });
   };
 
-  const handlePickupTimeChange = (newTime) =>
+  const handlePickupTimeChange = (newTime) => {
+    setShouldRedirect(true);
     setSearchData({ ...searchData, pickupTime: newTime });
-  const handleReturnTimeChange = (newTime) =>
+  };
+
+  const handleReturnTimeChange = (newTime) => {
+    setShouldRedirect(true);
     setSearchData({ ...searchData, returnTime: newTime });
+  };
 
   useEffect(() => {
     if (pickupHours) {
@@ -796,32 +840,30 @@ export default function SearchBar({ sx = {}, onSearch }) {
         </Box>
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ backgroundColor: "#d60812", width: "100%" }}
-        onClick={() => {
-          const filters = {
-            pickupLocation: searchData.pickupLocation,
-            returnLocation: searchData.returnLocation,
-            pickupDate: searchData.pickupDate,
-            pickupTime: searchData.pickupTime,
-            returnDate: searchData.returnDate,
-            returnTime: searchData.returnTime,
-            sameOffice: searchData.sameOffice,
-          };
+      {router.pathname === "/" && (
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ backgroundColor: "#d60812", width: "100%" }}
+          onClick={() => {
+            const filters = {
+              pickupLocation: searchData.pickupLocation,
+              returnLocation: searchData.returnLocation,
+              pickupDate: searchData.pickupDate,
+              pickupTime: searchData.pickupTime,
+              returnDate: searchData.returnDate,
+              returnTime: searchData.returnTime,
+              sameOffice: searchData.sameOffice,
+            };
 
-          setSearchData(filters);
-
-          onSearch?.(filters);
-
-          if (router.pathname !== "/rental") {
+            setSearchData(filters);
+            onSearch?.(filters);
             router.push("/rental");
-          }
-        }}
-      >
-        Buscar
-      </Button>
+          }}
+        >
+          Buscar
+        </Button>
+      )}
     </>
   );
 
