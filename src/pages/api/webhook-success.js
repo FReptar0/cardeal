@@ -2,32 +2,6 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 
-function formatDate(dateInput) {
-  const date = new Date(dateInput);
-  if (isNaN(date.getTime())) {
-    console.error("❌ Fecha inválida:", dateInput);
-    return "01012025"; // fallback
-  }
-
-  const pad = (n) => n.toString().padStart(2, "0");
-  return `${pad(date.getMonth() + 1)}${pad(
-    date.getDate()
-  )}${date.getFullYear()}`;
-}
-
-function convertTo12Hour(timeRaw) {
-  // limpia el AM/PM si viene mal puesto
-  const cleanTime = timeRaw.replace(/\s?(AM|PM)/i, "").trim();
-  const [hourStr, minStr = "00"] = cleanTime.split(":");
-  let hour = parseInt(hourStr, 10);
-  const minutes = minStr.padStart(2, "0");
-
-  const ampm = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12 || 12;
-
-  return `${hour}:${minutes} ${ampm}`;
-}
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -93,12 +67,10 @@ export default async function handler(req, res) {
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
         returnLocationId: booking.search.returnLocation.id,
-        pickupDateTime: `${formatDate(
-          booking.search.pickupDate
-        )} ${convertTo12Hour(booking.search.pickupTime)}`,
-        returnDateTime: `${formatDate(
-          booking.search.returnDate
-        )} ${convertTo12Hour(booking.search.returnTime)}`,
+        pickupDate: booking.search.pickupDate,
+        pickupTime: booking.search.pickupTime,
+        returnDate: booking.search.returnDate,
+        returnTime: booking.search.returnTime,
         classCode: booking.car.abbreviation,
         renterFirst: booking.contact.fullName.split(" ")[0],
         renterLast: booking.contact.fullName.split(" ").slice(1).join(" "),
