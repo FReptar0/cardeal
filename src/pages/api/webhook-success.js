@@ -1,6 +1,7 @@
 // pages/api/webhook-success.js
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
+import { parseStringPromise } from "xml2js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -92,9 +93,19 @@ export default async function handler(req, res) {
       );
 
       const responseText = await tsdRes.text();
+      let tsdJson;
 
       try {
-        const tsdJson = JSON.parse(responseText);
+        tsdJson = await parseStringPromise(responseText, {
+          explicitArray: false,
+        });
+
+        const msg = tsdJson?.PRE?.TRNXML?.Message || {};
+        if (msg.MessageID === "RSPERR") {
+          console.error("❌ TSD respondió error:", msg.MessageDescription);
+          return res.status(400).json({ error: msg.MessageDescription });
+        }
+
         const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
 
         if (confirmNum) {
@@ -104,13 +115,13 @@ export default async function handler(req, res) {
           console.log("✅ confirmNum guardado:", confirmNum);
         } else {
           console.error(
-            "⚠️ TSD no devolvió confirmNum. JSON recibido:",
+            "⚠️ TSD no devolvió confirmNum. XML parseado:",
             tsdJson
           );
         }
       } catch (err) {
         console.error("❌ Error al parsear respuesta TSD:", err);
-        console.error("🔍 Respuesta TSD sin parsear:", responseText);
+        console.error("🔍 XML sin parsear:", responseText);
       }
     }
 
