@@ -74,7 +74,7 @@ export default async function handler(req, res) {
       };
 
       const tsdRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/registerReservation`,
+        `https://cardeal-beige.vercel.app/api/bookings/registerReservation`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -94,7 +94,10 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.redirect(302, `/confirm/${mp_order}`);
+    return res.redirect(
+      302,
+      `https://cardeal-beige.vercel.app/confirm/${mp_order}`
+    );
   } catch (err) {
     console.error("Error actualizando reserva (success):", err);
     return res.status(500).send("Error interno");
