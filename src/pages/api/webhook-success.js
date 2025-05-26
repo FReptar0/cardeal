@@ -55,6 +55,13 @@ export default async function handler(req, res) {
       }
     );
 
+    if (!booking.searchData) {
+      console.error("❌ booking.searchData está vacío o no definido:", booking);
+      return res
+        .status(500)
+        .send("La reserva no contiene datos de búsqueda para TSD");
+    }
+
     if (!booking.confirmNum) {
       const tsdBody = {
         pickupLocationId: booking.searchData.pickupLocation,
@@ -82,15 +89,26 @@ export default async function handler(req, res) {
         }
       );
 
-      const tsdJson = await tsdRes.json();
-      const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
+      const responseText = await tsdRes.text();
 
-      if (confirmNum) {
-        await db
-          .collection("bookings")
-          .updateOne({ _id: mp_order }, { $set: { confirmNum } });
-      } else {
-        console.error("⚠️ No se obtuvo confirmNum de TSD", tsdJson);
+      try {
+        const tsdJson = JSON.parse(responseText);
+        const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
+
+        if (confirmNum) {
+          await db
+            .collection("bookings")
+            .updateOne({ _id: mp_order }, { $set: { confirmNum } });
+          console.log("✅ confirmNum guardado:", confirmNum);
+        } else {
+          console.error(
+            "⚠️ TSD no devolvió confirmNum. JSON recibido:",
+            tsdJson
+          );
+        }
+      } catch (err) {
+        console.error("❌ Error al parsear respuesta TSD:", err);
+        console.error("🔍 Respuesta TSD sin parsear:", responseText);
       }
     }
 
