@@ -2,13 +2,30 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 
-function formatDate(isoDateString) {
-  const date = new Date(isoDateString);
+function formatDate(dateInput) {
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) {
+    console.error("❌ Fecha inválida:", dateInput);
+    return "01012025"; // fallback
+  }
+
   const pad = (n) => n.toString().padStart(2, "0");
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const year = date.getFullYear();
-  return `${month}${day}${year}`;
+  return `${pad(date.getMonth() + 1)}${pad(
+    date.getDate()
+  )}${date.getFullYear()}`;
+}
+
+function convertTo12Hour(timeRaw) {
+  // limpia el AM/PM si viene mal puesto
+  const cleanTime = timeRaw.replace(/\s?(AM|PM)/i, "").trim();
+  const [hourStr, minStr = "00"] = cleanTime.split(":");
+  let hour = parseInt(hourStr, 10);
+  const minutes = minStr.padStart(2, "0");
+
+  const ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12 || 12;
+
+  return `${hour}:${minutes} ${ampm}`;
 }
 
 export default async function handler(req, res) {
@@ -76,12 +93,12 @@ export default async function handler(req, res) {
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
         returnLocationId: booking.search.returnLocation.id,
-        pickupDateTime: `${formatDate(booking.search.pickupDate)} ${
-          booking.search.pickupTime
-        }`,
-        returnDateTime: `${formatDate(booking.search.returnDate)} ${
-          booking.search.returnTime
-        }`,
+        pickupDateTime: `${formatDate(
+          booking.search.pickupDate
+        )} ${convertTo12Hour(booking.search.pickupTime)}`,
+        returnDateTime: `${formatDate(
+          booking.search.returnDate
+        )} ${convertTo12Hour(booking.search.returnTime)}`,
         classCode: booking.car.abbreviation,
         renterFirst: booking.contact.fullName.split(" ")[0],
         renterLast: booking.contact.fullName.split(" ").slice(1).join(" "),
