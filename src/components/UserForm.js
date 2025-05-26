@@ -70,7 +70,6 @@ const registrarReservaEnTSD = async ({
     });
 
     const tsdJson = await res.json();
-    console.log("✅ Respuesta de TSD:", tsdJson);
 
     if (!res.ok) {
       throw new Error(tsdJson.message || "Error en la reserva con TSD");
@@ -216,8 +215,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
 
     const totalOtherChargesSum = totalOtherCharges * 0.23;
 
-    console.log("Total other charges:", totalOtherChargesSum);
-
     total += totalOtherChargesSum;
 
     // Descuento
@@ -226,15 +223,12 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     // IVA 16%
     total = total * 1.16;
 
-    console.log("Total con IVA:", total);
-
     return total.toFixed(2);
   };
 
   useEffect(() => {
     if (paidOnline) {
       const amount = calculateTotal(true);
-      console.log("💵 Monto estimado para pago en línea:", amount);
     }
   }, [paidOnline]);
 
@@ -309,9 +303,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         const order = String(jB.bookingId);
         const reference = `${order}-${Date.now()}`;
         const amount = calculateTotal(true);
-
-        console.log("amount", amount);
-
         const resP = await fetch("/api/create-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
