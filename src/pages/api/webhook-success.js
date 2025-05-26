@@ -2,6 +2,15 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 
+function formatDate(isoDateString) {
+  const date = new Date(isoDateString);
+  const pad = (n) => n.toString().padStart(2, "0");
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const year = date.getFullYear();
+  return `${month}${day}${year}`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -55,7 +64,7 @@ export default async function handler(req, res) {
       }
     );
 
-    if (!booking.searchData) {
+    if (!booking.search) {
       console.error("❌ booking.searchData está vacío o no definido:", booking);
       return res.status(500).json({
         message: "La reserva no contiene datos de búsqueda para TSD",
@@ -65,20 +74,23 @@ export default async function handler(req, res) {
 
     if (!booking.confirmNum) {
       const tsdBody = {
-        pickupLocationId: booking.searchData.pickupLocation,
-        returnLocationId: booking.searchData.returnLocation,
-        pickupDateTime: booking.searchData.pickupDateTime,
-        returnDateTime: booking.searchData.returnDateTime,
-        classCode: booking.selectedCar.abbreviation,
-        unitNumber: booking.selectedCar.unitNumber || "",
-        renterFirst: booking.contactName.split(" ")[0],
-        renterLast: booking.contactName.split(" ").slice(1).join(" "),
-        extrasCodes: booking.selectedExtras.map((e) => ({
+        pickupLocationId: booking.search.pickupLocation.id,
+        returnLocationId: booking.search.returnLocation.id,
+        pickupDateTime: `${formatDate(booking.search.pickupDate)} ${
+          booking.search.pickupTime
+        }`,
+        returnDateTime: `${formatDate(booking.search.returnDate)} ${
+          booking.search.returnTime
+        }`,
+        classCode: booking.car.abbreviation,
+        renterFirst: booking.contact.fullName.split(" ")[0],
+        renterLast: booking.contact.fullName.split(" ").slice(1).join(" "),
+        extrasCodes: booking.extras.map((e) => ({
           id: e.id,
           cantidad: e.cantidad,
         })),
-        insuranceCode: booking.selectedInsurance?.id || "",
-        rateId: booking.selectedCar?.rateId || "",
+        insuranceCode: booking.insurance?.code || "",
+        rateId: booking.car?.rateId || "",
       };
 
       const tsdRes = await fetch(
