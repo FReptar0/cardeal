@@ -70,7 +70,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!booking.confirmNum) {
+    if (!booking.tsdConfirmNum) {
       console.log("📨 Registrando en TSD (sin confirmNum aún):", mp_order);
 
       const tsdBody = {
@@ -113,19 +113,21 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: msg.MessageDescription });
       }
 
-      const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
+      const confirmNum = tsdJson?.PRE?.TRNXML?.ConfirmNum || null;
 
       if (confirmNum) {
         await db
           .collection("bookings")
-          .updateOne({ _id: mp_order }, { $set: { confirmNum } });
-        console.log("✅ confirmNum guardado en Mongo:", confirmNum);
+          .updateOne(
+            { _id: mp_order },
+            { $set: { tsdConfirmNum: confirmNum } }
+          );
       } else {
-        console.warn("⚠️ TSD no devolvió confirmNum. XML parseado:", tsdJson);
+        console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
       }
     } else {
       console.log(
-        "ℹ️ Reserva ya tenía confirmNum, no se vuelve a registrar en TSD."
+        "Reserva ya tenía confirmNum, no se vuelve a registrar en TSD."
       );
     }
 
