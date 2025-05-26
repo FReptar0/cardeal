@@ -76,10 +76,8 @@ export default async function handler(req, res) {
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
         returnLocationId: booking.search.returnLocation.id,
-        pickupDate: booking.search.pickupDate,
-        pickupTime: booking.search.pickupTime,
-        returnDate: booking.search.returnDate,
-        returnTime: booking.search.returnTime,
+        pickupDateTime: `${booking.search.pickupDate} ${booking.search.pickupTime}`,
+        returnDateTime: `${booking.search.returnDate} ${booking.search.returnTime}`,
         classCode: booking.car.abbreviation,
         renterFirst: booking.contact.fullName.split(" ")[0],
         renterLast: booking.contact.fullName.split(" ").slice(1).join(" "),
