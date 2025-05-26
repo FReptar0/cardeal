@@ -57,9 +57,10 @@ export default async function handler(req, res) {
 
     if (!booking.searchData) {
       console.error("❌ booking.searchData está vacío o no definido:", booking);
-      return res
-        .status(500)
-        .send("La reserva no contiene datos de búsqueda para TSD");
+      return res.status(500).json({
+        message: "La reserva no contiene datos de búsqueda para TSD",
+        booking,
+      });
     }
 
     if (!booking.confirmNum) {
