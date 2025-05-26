@@ -1,10 +1,10 @@
 // pages/api/webhook-success.js
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
-import { parseStringPromise } from "xml2js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
+    console.warn("⚠️ Método no permitido:", req.method);
     res.setHeader("Allow", "POST");
     return res.status(405).send("Método no permitido");
   }
@@ -19,14 +19,16 @@ export default async function handler(req, res) {
     mp_concept,
   } = req.body;
 
-  // 1) Verificar firma HMAC: order + reference + amount + authorization
+  console.log("🔐 Validando firma HMAC para orden:", mp_order);
+
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_authorization}`;
   const expected = CryptoJS.HmacSHA256(payload, secret).toString(
     CryptoJS.enc.Hex
   );
+
   if (expected !== mp_signature) {
-    console.error("Firma inválida (success)", {
+    console.error("❌ Firma inválida (success)", {
       expected,
       received: mp_signature,
     });
@@ -35,12 +37,16 @@ export default async function handler(req, res) {
 
   try {
     const { db } = await connectToDatabase();
+    console.log("📦 Conectado a la base de datos");
 
-    // 1) Verificar que la reserva existe
     const booking = await db.collection("bookings").findOne({ _id: mp_order });
-    if (!booking) return res.status(404).send("Reserva no encontrada");
+    if (!booking) {
+      console.error("❌ Reserva no encontrada con ID:", mp_order);
+      return res.status(404).send("Reserva no encontrada");
+    }
 
-    // 2) Actualizar la reserva: marque como pagada
+    console.log("📝 Actualizando reserva como pagada:", mp_order);
+
     await db.collection("bookings").updateOne(
       { _id: mp_order },
       {
@@ -57,7 +63,7 @@ export default async function handler(req, res) {
     );
 
     if (!booking.search) {
-      console.error("❌ booking.searchData está vacío o no definido:", booking);
+      console.error("❌ booking.search está vacío o no definido:", booking);
       return res.status(500).json({
         message: "La reserva no contiene datos de búsqueda para TSD",
         booking,
@@ -65,6 +71,8 @@ export default async function handler(req, res) {
     }
 
     if (!booking.confirmNum) {
+      console.log("📨 Registrando en TSD (sin confirmNum aún):", mp_order);
+
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
         returnLocationId: booking.search.returnLocation.id,
@@ -83,6 +91,9 @@ export default async function handler(req, res) {
         rateId: booking.car?.rateId || "",
       };
 
+      console.log("📤 Enviando a /api/bookings/registerReservation con body:");
+      console.log(JSON.stringify(tsdBody, null, 2));
+
       const tsdRes = await fetch(
         `https://cardeal-beige.vercel.app/api/bookings/registerReservation`,
         {
@@ -92,45 +103,40 @@ export default async function handler(req, res) {
         }
       );
 
-      const responseText = await tsdRes.text();
-      let tsdJson;
+      const tsdJson = await tsdRes.json();
+      console.log(
+        "📥 Respuesta de TSD (parseada):",
+        JSON.stringify(tsdJson, null, 2)
+      );
 
-      try {
-        tsdJson = await parseStringPromise(responseText, {
-          explicitArray: false,
-        });
-
-        const msg = tsdJson?.PRE?.TRNXML?.Message || {};
-        if (msg.MessageID === "RSPERR") {
-          console.error("❌ TSD respondió error:", msg.MessageDescription);
-          return res.status(400).json({ error: msg.MessageDescription });
-        }
-
-        const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
-
-        if (confirmNum) {
-          await db
-            .collection("bookings")
-            .updateOne({ _id: mp_order }, { $set: { confirmNum } });
-          console.log("✅ confirmNum guardado:", confirmNum);
-        } else {
-          console.error(
-            "⚠️ TSD no devolvió confirmNum. XML parseado:",
-            tsdJson
-          );
-        }
-      } catch (err) {
-        console.error("❌ Error al parsear respuesta TSD:", err);
-        console.error("🔍 XML sin parsear:", responseText);
+      const msg = tsdJson?.PRE?.TRNXML?.Message || {};
+      if (msg.MessageID === "RSPERR") {
+        console.error("❌ TSD respondió error:", msg.MessageDescription);
+        return res.status(400).json({ error: msg.MessageDescription });
       }
+
+      const confirmNum = tsdJson?.PRE?.TRNXML?.PayLoad?.ConfirmNum || null;
+
+      if (confirmNum) {
+        await db
+          .collection("bookings")
+          .updateOne({ _id: mp_order }, { $set: { confirmNum } });
+        console.log("✅ confirmNum guardado en Mongo:", confirmNum);
+      } else {
+        console.warn("⚠️ TSD no devolvió confirmNum. XML parseado:", tsdJson);
+      }
+    } else {
+      console.log(
+        "ℹ️ Reserva ya tenía confirmNum, no se vuelve a registrar en TSD."
+      );
     }
 
-    return res.redirect(
-      302,
-      `https://cardeal-beige.vercel.app/confirm/${mp_order}`
-    );
+    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
+    console.log("✅ Redireccionando al cliente a:", redirectUrl);
+
+    return res.redirect(302, redirectUrl);
   } catch (err) {
-    console.error("Error actualizando reserva (success):", err);
+    console.error("❌ Error inesperado en webhook-success:", err);
     return res.status(500).send("Error interno");
   }
 }
