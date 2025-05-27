@@ -1,46 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Cardeal - Car Rental Booking Platform
+
+A Next.js-based car rental booking application that integrates with external services to provide a complete rental experience from search to confirmation.
+
+## Overview
+
+Cardeal is a full-stack web application that enables users to search, select, and book rental cars through integration with the TSD (Travel Service Distributor) service and Flap payment gateway. The application handles the complete user journey including car selection, insurance plans, extras booking, and payment processing. [1](#0-0) 
+
+## Features
+
+- **Car Search & Selection**: Real-time availability and pricing through TSD integration
+- **Insurance Plans**: Multiple protection levels with dynamic pricing based on vehicle category  
+- **Extras Management**: Additional services like GPS, child seats, and insurance add-ons
+- **Payment Processing**: Online payments via Flap gateway or counter payment options
+- **Booking Confirmation**: PDF generation and booking management
+- **User Authentication**: JWT-based authentication with persistent sessions
+
+## Technology Stack
+
+- **Frontend**: Next.js 15.3.1, React 19.0.0, Material-UI 6.4.3
+- **Backend**: Next.js API routes, MongoDB 6.15.0
+- **External Services**: TSD XML API, Flap Payment Gateway
+- **Key Libraries**: React Hook Form, React-PDF, XML2JS [2](#0-1) 
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (version compatible with Next.js 15.3.1)
+- MongoDB database
+- Environment variables for TSD and Flap integrations
 
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+``` [3](#0-2) 
+
+3. Set up environment variables in `.env.local`:
+   - Database connection strings
+   - TSD API credentials  
+   - Flap payment gateway keys
+   - JWT secrets
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+The application follows Next.js conventions with organized components and API routes:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- `/src/components/` - Reusable React components
+- `/src/pages/` - Next.js pages and API routes
+- `/src/contexts/` - React context providers for state management
+- `/src/data/` - Static data files for cars and extras
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Components
 
-## Learn More
+- **SearchBar**: Location and date selection with validation [4](#0-3) 
+- **OrderSummary**: Price breakdown with IVA calculations [5](#0-4) 
+- **ExtrasLoader**: Loading states for dynamic content [6](#0-5) 
 
+## API Integration
 
-To learn more about Next.js, take a look at the following resources:
+The application integrates with external services through Next.js API routes:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- `/api/rates` - Fetch car availability and pricing from TSD
+- `/api/bookings/*` - Manage reservations and confirmations
+- `/api/create-payment` - Initialize Flap payment processing
+- `/api/webhook-success` - Handle payment confirmations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+The application is optimized for deployment on Vercel: [7](#0-6) 
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Build the application:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```
 
+## Development Scripts [8](#0-7) 
 
-
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server  
+- `npm run lint` - Run ESLint
