@@ -4,7 +4,7 @@ A Next.js-based car rental booking application that integrates with external ser
 
 ## Overview
 
-Cardeal is a full-stack web application that enables users to search, select, and book rental cars through integration with the TSD (Travel Service Distributor) service and Flap payment gateway. The application handles the complete user journey including car selection, insurance plans, extras booking, and payment processing. [1](#0-0) 
+Cardeal is a full-stack web application that enables users to search, select, and book rental cars through integration with the TSD (Travel Service Distributor) service and Flap payment gateway. The application handles the complete user journey including car selection, insurance plans, extras booking, and payment processing.
 
 ## Features
 
@@ -20,7 +20,7 @@ Cardeal is a full-stack web application that enables users to search, select, an
 - **Frontend**: Next.js 15.3.1, React 19.0.0, Material-UI 6.4.3
 - **Backend**: Next.js API routes, MongoDB 6.15.0
 - **External Services**: TSD XML API, Flap Payment Gateway
-- **Key Libraries**: React Hook Form, React-PDF, XML2JS [2](#0-1) 
+- **Key Libraries**: React Hook Form, React-PDF, XML2JS
 
 ## Getting Started
 
@@ -66,9 +66,9 @@ The application follows Next.js conventions with organized components and API ro
 
 ## Key Components
 
-- **SearchBar**: Location and date selection with validation [4](#0-3) 
-- **OrderSummary**: Price breakdown with IVA calculations [5](#0-4) 
-- **ExtrasLoader**: Loading states for dynamic content [6](#0-5) 
+- **SearchBar**: Location and date selection with validation
+- **OrderSummary**: Price breakdown with IVA calculations 
+- **ExtrasLoader**: Loading states for dynamic content 
 
 ## API Integration
 
@@ -81,7 +81,7 @@ The application integrates with external services through Next.js API routes:
 
 ## Deployment
 
-The application is optimized for deployment on Vercel: [7](#0-6) 
+The application is optimized for deployment on Vercel:
 
 Build the application:
 
@@ -90,7 +90,7 @@ npm run build
 npm start
 ```
 
-## Development Scripts [8](#0-7) 
+## Development Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
