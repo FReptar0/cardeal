@@ -23,10 +23,15 @@ export default async function handler(req, res) {
   // 1) Verificar firma HMAC
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_response}`;
-  const expected = CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex);
+  const expected = CryptoJS.HmacSHA256(payload, secret).toString(
+    CryptoJS.enc.Hex
+  );
 
   if (expected !== mp_signature) {
-    console.error("❌ Firma inválida (failure)", { expected, received: mp_signature });
+    console.error("❌ Firma inválida (failure)", {
+      expected,
+      received: mp_signature,
+    });
     return res.status(400).send("Invalid signature");
   }
 
