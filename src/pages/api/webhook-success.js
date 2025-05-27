@@ -19,8 +19,6 @@ export default async function handler(req, res) {
     mp_concept,
   } = req.body;
 
-  console.log("🔐 Validando firma HMAC para orden:", mp_order);
-
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_authorization}`;
   const expected = CryptoJS.HmacSHA256(payload, secret).toString(
@@ -37,15 +35,12 @@ export default async function handler(req, res) {
 
   try {
     const { db } = await connectToDatabase();
-    console.log("📦 Conectado a la base de datos");
 
     const booking = await db.collection("bookings").findOne({ _id: mp_order });
     if (!booking) {
       console.error("❌ Reserva no encontrada con ID:", mp_order);
       return res.status(404).send("Reserva no encontrada");
     }
-
-    console.log("📝 Actualizando reserva como pagada:", mp_order);
 
     await db.collection("bookings").updateOne(
       { _id: mp_order },
@@ -71,7 +66,6 @@ export default async function handler(req, res) {
     }
 
     if (!booking.tsdConfirmNum) {
-      console.log("📨 Registrando en TSD (sin confirmNum aún):", mp_order);
 
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
@@ -89,9 +83,6 @@ export default async function handler(req, res) {
         rateId: booking.car?.rateId || "",
       };
 
-      console.log("📤 Enviando a /api/bookings/registerReservation con body:");
-      console.log(JSON.stringify(tsdBody, null, 2));
-
       const tsdRes = await fetch(
         `https://cardeal-beige.vercel.app/api/bookings/registerReservation`,
         {
@@ -102,14 +93,11 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
-      console.log(
-        "📥 Respuesta de TSD (parseada):",
-        JSON.stringify(tsdJson, null, 2)
-      );
+     
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
-        console.error("❌ TSD respondió error:", msg.MessageDescription);
+        console.error("TSD respondió error:", msg.MessageDescription);
         return res.status(400).json({ error: msg.MessageDescription });
       }
 
@@ -125,18 +113,13 @@ export default async function handler(req, res) {
       } else {
         console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
       }
-    } else {
-      console.log(
-        "Reserva ya tenía confirmNum, no se vuelve a registrar en TSD."
-      );
     }
 
     const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
-    console.log("✅ Redireccionando al cliente a:", redirectUrl);
 
     return res.redirect(302, redirectUrl);
   } catch (err) {
-    console.error("❌ Error inesperado en webhook-success:", err);
+    console.error("Error inesperado en webhook-success:", err);
     return res.status(500).send("Error interno");
   }
 }
