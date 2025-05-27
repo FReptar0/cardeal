@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   const secret = process.env.HMAC_SECRET;
   const endpoint = process.env.MP_ENDPOINT;
   const urlSuccess = process.env.MP_URL_SUCCESS;
-  const urlFailure = `https://cardeal-beige.vercel.app/confirm/${order}?status=failed`;
+  const urlFailure = `https://cardeal-beige.vercel.app/api/redirect-failure?order=${order}`;
 
   const payload = `${order}${reference}${amount}`;
   const signature = CryptoJS.HmacSHA256(payload, secret).toString(
