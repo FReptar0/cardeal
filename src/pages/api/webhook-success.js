@@ -19,6 +19,16 @@ export default async function handler(req, res) {
     mp_concept,
   } = req.body;
 
+  console.log("Webhook success received:", {
+    mp_order,
+    mp_reference,
+    mp_amount,
+    mp_authorization,
+    mp_signature,
+    mp_node,
+    mp_concept,
+  });
+
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_authorization}`;
   const expected = CryptoJS.HmacSHA256(payload, secret).toString(
