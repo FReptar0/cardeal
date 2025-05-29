@@ -3,11 +3,11 @@ import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    console.warn("⚠️ Método no permitido:", req.method);
-    res.setHeader("Allow", "POST");
-    return res.status(405).send("Método no permitido");
-  }
+  // if (req.method !== "POST") {
+  //   console.warn("⚠️ Método no permitido:", req.method);
+  //   res.setHeader("Allow", "POST");
+  //   return res.status(405).send("Método no permitido");
+  // }
 
   const {
     mp_order,
