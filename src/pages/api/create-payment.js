@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const urlSuccess = process.env.MP_URL_SUCCESS;
     const urlFailure = process.env.MP_URL_FAILURE;
 
-    const payload = `${order}${reference}${amount}`;
+    const payload = `${order}${reference}${10}`;
     const signature = CryptoJS.HmacSHA256(payload, secret).toString(CryptoJS.enc.Hex);
 
     return res.status(200).json({
