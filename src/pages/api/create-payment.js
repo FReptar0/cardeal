@@ -31,7 +31,7 @@ export default async function handler(req, res) {
             mp_product: product,
             mp_order: order,
             mp_reference: reference,
-            mp_amount: amount,
+            mp_amount: 10,
             mp_currency: '1',
             mp_node: node,
             mp_concept: concept,
