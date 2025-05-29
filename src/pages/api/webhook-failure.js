@@ -60,7 +60,9 @@ export default async function handler(req, res) {
       return res.status(404).send("Reserva no encontrada");
     }
 
-    return res.status(200).send("OK");
+    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
+
+    return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error("❌ Error actualizando reserva (failure):", err);
     return res.status(500).send("Error interno");
