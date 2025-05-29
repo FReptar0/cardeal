@@ -257,7 +257,7 @@ export default function BookingConfirmation() {
               <Box display="grid" gap={1}>
                 <Typography variant="subtitle1">
                   <b style={{ color: "#666" }}>Número de confirmación:</b> #
-                  {booking.tsdConfirmNum}
+                  {booking.tsdConfirmNum ? booking.tsdConfirmNum : "N/A"}
                 </Typography>
                 <Typography variant="body1">
                   <b style={{ color: "#666" }}>Nombre completo:</b>{" "}
@@ -278,7 +278,7 @@ export default function BookingConfirmation() {
                     <Chip
                       label="Pago en línea"
                       sx={{
-                        backgroundColor: theme => theme.palette.primary.text,
+                        backgroundColor: (theme) => theme.palette.primary.text,
                         color: "white",
                         fontWeight: "bold",
                       }}
@@ -289,8 +289,12 @@ export default function BookingConfirmation() {
                 </Box>
                 <Box display="flex" alignItems="center" gap={1}>
                   <Typography variant="body1" component="span">
-                    <b style={{ color: "#666" }}>Estado de pago:</b>
-                    {booking.paid ? " Pagado" : " Pendiente"}
+                    <b style={{ color: "#666" }}>Estado de pago:</b>{" "}
+                    {booking.paid
+                      ? "Pagado"
+                      : booking.status === "FAILED"
+                      ? "Pago no exitoso"
+                      : "Pendiente"}
                   </Typography>
                 </Box>
               </Box>
@@ -313,7 +317,7 @@ export default function BookingConfirmation() {
                 style={{
                   textDecoration: "none",
                   padding: "12px 20px",
-                  backgroundColor: theme => theme.palette.primary.text,
+                  backgroundColor: (theme) => theme.palette.primary.text,
                   color: "white",
                   borderRadius: 4,
                   width: "100%",
@@ -342,7 +346,7 @@ export default function BookingConfirmation() {
                 fullWidth
                 onClick={() => setShowPdfLink(true)}
                 sx={{
-                  backgroundColor: theme => theme.palette.primary.text,
+                  backgroundColor: (theme) => theme.palette.primary.text,
                   height: 48,
                   ":hover": { backgroundColor: "#0b704e" },
                 }}
@@ -357,7 +361,7 @@ export default function BookingConfirmation() {
               variant="contained"
               onClick={() => setOpenInvoiceModal(true)}
               sx={{
-                backgroundColor: theme => theme.palette.primary.text,
+                backgroundColor: (theme) => theme.palette.primary.text,
                 height: 48,
                 ":hover": { backgroundColor: "#0b704e" },
               }}
@@ -409,7 +413,7 @@ export default function BookingConfirmation() {
                     onClick={() => setOpenInvoiceModal(false)}
                     variant="contained"
                     sx={{
-                      backgroundColor: theme => theme.palette.primary.buttons,
+                      backgroundColor: (theme) => theme.palette.primary.buttons,
                       color: "white",
                       fontWeight: "bold",
                       px: 4,
