@@ -39,7 +39,7 @@ Cardeal is a full-stack web application that enables users to search, select, an
 npm install
 # or
 yarn install
-``` [3](#0-2) 
+```
 
 3. Set up environment variables in `.env.local`:
    - Database connection strings
