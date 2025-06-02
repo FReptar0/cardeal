@@ -25,10 +25,10 @@ const ExtrasLoader = () => {
         gap: 2,
       }}
     >
-      <CircularProgress sx={{ color: theme=> theme.palette.secondary.buttons }} size={48} />
+      <CircularProgress sx={{ color: theme=> theme.palette.primary.buttons }} size={48} />
       <Typography
         variant="h6"
-        sx={{ color: theme=> theme.palette.secondary.buttons, fontWeight: "bold", textAlign: "center" }}
+        sx={{ color: theme=> theme.palette.primary.buttons, fontWeight: "bold", textAlign: "center" }}
       >
         Cargando extras disponibles{dots}
       </Typography>

@@ -728,8 +728,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
             checked={searchData.sameOffice}
             onChange={handleSameOfficeChange}
             sx={{
-              color: "#d32f2f",
-              "&.Mui-checked": { color: "#d32f2f" },
+              color: theme => theme.palette.primary.buttons,
+              "&.Mui-checked": { color: theme => theme.palette.primary.buttons },
             }}
           />
         }
@@ -843,8 +843,11 @@ export default function SearchBar({ sx = {}, onSearch }) {
       {router.pathname === "/" && (
         <Button
           variant="contained"
-          sx={{ width: "100%" }}
-          color="secondary"
+          sx={{
+            width: "100%",
+            backgroundColor: theme => theme.palette.primary.buttons,
+            
+          }}
           onClick={() => {
             const filters = {
               pickupLocation: searchData.pickupLocation,
@@ -863,7 +866,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
         >
           Buscar
         </Button>
-      )}
+      )
+      }
     </>
   );
 

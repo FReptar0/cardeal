@@ -79,7 +79,7 @@ export default function Hero() {
             >
               <span
                 style={{
-                  color: "#ff3f60",
+                  color: "#10906a",
                   fontWeight: 900,
                   marginBottom: "20px",
                 }}
