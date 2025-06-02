@@ -35,7 +35,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 const basePlanesSeguros = [
   {
     id: "none",
-    nombre: "SIN PROTECCIÓN",
+    nombre: "RESPONSABILIDAD LIMITADA", 
     total: "$0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
@@ -517,7 +517,7 @@ const SeguroVehiculo = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: theme => theme.palette.secondary.main,
+              backgroundColor: theme => theme.palette.primary.main,
               color: "white",
               fontWeight: "bold",
               padding: "10px 16px",
