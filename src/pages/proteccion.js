@@ -35,7 +35,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 const basePlanesSeguros = [
   {
     id: "none",
-    nombre: "SIN PROTECCIÓN",
+    nombre: "RESPONSABILIDAD LIMITADA", 
     total: "$0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
@@ -54,7 +54,7 @@ const basePlanesSeguros = [
     nombre: "PAQUETE BÁSICO", // Equivale a PROTECCIÓN CDW 80%
     total: "$570",
     imagen: "/images-seguros/Seguro-basico.png",
-    color: "#d60812",
+    color: "#10906a",
     code: "CDW2",
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
@@ -70,7 +70,7 @@ const basePlanesSeguros = [
     nombre: "PAQUETE ESTÁNDAR", // Equivale a PROTECCIÓN CDW 90%
     total: "$710",
     imagen: "/images-seguros/Seguro-inter.png",
-    color: "#d60812",
+    color: "#10906a",
     code: "CDW",
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
@@ -86,7 +86,7 @@ const basePlanesSeguros = [
     nombre: "PAQUETE PREMIUM", // Equivale a PROTECCIÓN PDW 95%
     total: "$890",
     imagen: "/images-seguros/Seguro-completo.png",
-    color: "#d60812",
+    color: "#10906a",
     code: "PDW",
     recomendado: true,
     coberturas: [
@@ -353,9 +353,11 @@ const SeguroVehiculo = () => {
                     <ListItem key={index} disablePadding>
                       <ListItemIcon>
                         {isNoIncluye ? (
-                          <CancelIcon sx={{ color: "gray" }} />
+                          <CancelIcon sx={{ color: theme => theme.palette.secondary.buttons }} />
                         ) : (
-                          <CheckCircleIcon color="error" />
+                          <CheckCircleIcon sx={{
+                            color: theme => theme.palette.primary.buttons,
+                          }} />
                         )}
                       </ListItemIcon>
                       <ListItemText
@@ -515,7 +517,7 @@ const SeguroVehiculo = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: theme => theme.palette.secondary.main,
+              backgroundColor: theme => theme.palette.primary.main,
               color: "white",
               fontWeight: "bold",
               padding: "10px 16px",

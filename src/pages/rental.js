@@ -100,10 +100,10 @@ export default function RentalPage() {
           gap: 2,
         }}
       >
-        <CircularProgress sx={{ color: theme => theme.palette.secondary.text }} size={48} />
+        <CircularProgress sx={{ color: theme => theme.palette.primary.text }} size={48} />
         <Typography
           variant="h6"
-          sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", textAlign: "center" }}
+          sx={{ color: theme => theme.palette.primary.text, fontWeight: "bold", textAlign: "center" }}
         >
           Cargando autos disponibles{dots}
         </Typography>

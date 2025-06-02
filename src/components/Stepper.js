@@ -99,13 +99,13 @@ export default function RentalStepper() {
                   <step.icon
                     sx={{
                       fontSize: 32,
-                      color: isCompleted ? theme => theme.palette.secondary.buttons : "#b0b0b0",
+                      color: isCompleted ? theme => theme.palette.primary.buttons : "#b0b0b0",
                     }}
                   />
                 }
                 sx={{
                   cursor: isCompleted ? "pointer" : "default",
-                  color: isCompleted ? theme => theme.palette.secondary.buttons : "#b0b0b0",
+                  color: isCompleted ? theme => theme.palette.primary.buttons : "#b0b0b0",
                   fontSize: "18px",
                   whiteSpace: "nowrap",
                   overflow: "hidden",

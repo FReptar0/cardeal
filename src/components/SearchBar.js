@@ -332,9 +332,11 @@ export default function SearchBar({ sx = {}, onSearch }) {
     }
 
     if (router.pathname === "/rental") {
-      onSearch?.(filters); // Si ya está en rental, actualiza autos
-    } else if (shouldRedirect && router.pathname !== "/") {
-      // Esto nunca correrá en "/", solo en /proteccion, /extras-renta, etc.
+      onSearch?.(filters);
+    } else if (
+      shouldRedirect &&
+      !["/", "/vehiculos"].includes(router.pathname)
+    ) {
       router.push("/rental");
       setShouldRedirect(false);
     }
@@ -728,8 +730,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
             checked={searchData.sameOffice}
             onChange={handleSameOfficeChange}
             sx={{
-              color: "#d32f2f",
-              "&.Mui-checked": { color: "#d32f2f" },
+              color: (theme) => theme.palette.primary.buttons,
+              "&.Mui-checked": {
+                color: (theme) => theme.palette.primary.buttons,
+              },
             }}
           />
         }
@@ -840,11 +844,13 @@ export default function SearchBar({ sx = {}, onSearch }) {
         </Box>
       </Box>
 
-      {router.pathname === "/" && (
+      {["/", "/vehiculos"].includes(router.pathname) && (
         <Button
           variant="contained"
-          sx={{ width: "100%" }}
-          color="secondary"
+          sx={{
+            width: "100%",
+            backgroundColor: (theme) => theme.palette.primary.buttons,
+          }}
           onClick={() => {
             const filters = {
               pickupLocation: searchData.pickupLocation,
