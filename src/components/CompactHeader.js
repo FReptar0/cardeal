@@ -55,7 +55,7 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
             }}
           >
             Origen:{" "}
-            {searchData.pickupLocation.nombre
+            {searchData.pickupLocation?.nombre
               ? `${searchData.pickupLocation.nombre} - (${searchData.pickupLocation.pais})`
               : "No seleccionado"}
           </Typography>
