@@ -252,7 +252,7 @@ export default function CheckoutPage() {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: "#d60812",
+                backgroundColor: theme => theme.palette.primary.buttons,
                 color: "white",
                 fontWeight: "bold",
                 borderRadius: 2,
