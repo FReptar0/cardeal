@@ -28,7 +28,7 @@ function generateTimeSlots(startTime, endTime, forToday = false) {
   const [endHour, endMin] = endTime.split(":").map(Number);
 
   const now = new Date();
-  const limit = new Date(now.getTime() + 3 * 60 * 60 * 1000 + 20 * 60 * 1000); // +3h20min
+  const limit = new Date(now.getTime() + 2 * 60 * 60 * 1000);  // +2 hours
 
   const slots = [];
   let current = new Date();
@@ -225,7 +225,7 @@ function DateTimeSelector({
             <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
           ) : timeSlots.length === 0 ? (
             <Typography variant="body2" color="secondary.text">
-              Fecha y ubicación sin horarios
+              Favor de revisar nuestros horarios de oficina.
             </Typography>
           ) : (
             <Select
