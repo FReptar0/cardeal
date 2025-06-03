@@ -2,6 +2,7 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { encryptId } from "@/utils/encryption";
+import { logWebhook } from "@/utils/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -32,6 +33,14 @@ export default async function handler(req, res) {
       expected,
       received: mp_signature,
     });
+    await logWebhook({
+      webhook: "failure",
+      type: "invalid_signature",
+      mp_order,
+      payload: req.body,
+      message: "Firma inválida",
+      details: { expected, received: mp_signature },
+    });
     return res.status(400).send("Invalid signature");
   }
 
@@ -48,6 +57,14 @@ export default async function handler(req, res) {
       "Pago NO aprobado por el banco (failure). mp_authorization inválido:",
       mp_authorization
     );
+    await logWebhook({
+      webhook: "failure",
+      type: "invalid_auth",
+      mp_order,
+      payload: req.body,
+      message: "Autorización bancaria inválida",
+      details: { mp_authorization },
+    });
     return res
       .status(402)
       .json({ error: "Pago no aprobado por el banco", mp_authorization });
@@ -72,8 +89,25 @@ export default async function handler(req, res) {
 
     if (result.matchedCount === 0) {
       console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
+      await logWebhook({
+        webhook: "failure",
+        type: "booking_not_found",
+        mp_order,
+        payload: req.body,
+        message: "Reserva no encontrada",
+        details: {},
+      });
       return res.status(404).send("Reserva no encontrada");
     }
+
+    await logWebhook({
+      webhook: "failure",
+      type: "failure_handled",
+      mp_order,
+      payload: req.body,
+      message: "Reserva marcada como FAILED correctamente",
+      details: {},
+    });
 
     const encryptedId = encryptId(mp_order);
     const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
@@ -81,6 +115,15 @@ export default async function handler(req, res) {
     return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error("❌ Error actualizando reserva (failure):", err);
+
+    await logWebhook({
+      webhook: "failure",
+      type: "internal_error",
+      mp_order,
+      payload: req.body,
+      message: "Error interno al actualizar reserva",
+      details: { error: err.message },
+    });
     return res.status(500).send("Error interno");
   }
 }
