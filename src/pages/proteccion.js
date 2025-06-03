@@ -35,7 +35,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 const basePlanesSeguros = [
   {
     id: "none",
-    nombre: "RESPONSABILIDAD LIMITADA", 
+    nombre: "RESPONSABILIDAD LIMITADA",
     total: "$0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
@@ -52,7 +52,7 @@ const basePlanesSeguros = [
   {
     id: "basico",
     nombre: "PAQUETE BÁSICO", // Equivale a PROTECCIÓN CDW 80%
-    total: "$570",
+    total: "$610",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#10906a",
     code: "CDW2",
@@ -103,7 +103,7 @@ const basePlanesSeguros = [
 // Ajusta los precios de los planes según la categoría de auto seleccionada
 const getPlanesSeguros = (carCategory) => {
   const preciosBajos = {
-    basico: "$570",
+    basico: "$610",
     intermedio: "$710",
     completo: "$890",
   };
@@ -353,11 +353,17 @@ const SeguroVehiculo = () => {
                     <ListItem key={index} disablePadding>
                       <ListItemIcon>
                         {isNoIncluye ? (
-                          <CancelIcon sx={{ color: theme => theme.palette.secondary.buttons }} />
+                          <CancelIcon
+                            sx={{
+                              color: (theme) => theme.palette.secondary.buttons,
+                            }}
+                          />
                         ) : (
-                          <CheckCircleIcon sx={{
-                            color: theme => theme.palette.primary.buttons,
-                          }} />
+                          <CheckCircleIcon
+                            sx={{
+                              color: (theme) => theme.palette.primary.buttons,
+                            }}
+                          />
                         )}
                       </ListItemIcon>
                       <ListItemText
@@ -378,7 +384,7 @@ const SeguroVehiculo = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor:theme => theme.palette.primary.buttons,
+            backgroundColor: (theme) => theme.palette.primary.buttons,
             color: "white",
             fontWeight: "bold",
             p: "12px 30px",
@@ -416,7 +422,7 @@ const SeguroVehiculo = () => {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: theme => theme.palette.secondary.main,
+              backgroundColor: (theme) => theme.palette.secondary.main,
               color: "white",
               fontWeight: "bold",
               p: "12px 20px",
@@ -517,7 +523,7 @@ const SeguroVehiculo = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: theme => theme.palette.primary.main,
+              backgroundColor: (theme) => theme.palette.primary.main,
               color: "white",
               fontWeight: "bold",
               padding: "10px 16px",
