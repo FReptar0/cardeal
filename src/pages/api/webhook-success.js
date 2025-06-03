@@ -43,6 +43,24 @@ export default async function handler(req, res) {
     return res.status(400).send("Invalid signature");
   }
 
+  // Validación de aprobación bancaria
+  const invalidAuth =
+    mp_authorization === null ||
+    mp_authorization === undefined ||
+    mp_authorization === "" ||
+    mp_authorization === "0" ||
+    mp_authorization === 0 ||
+    /^0+$/.test(mp_authorization);
+  if (invalidAuth) {
+    console.error(
+      "❌ Pago NO aprobado por el banco. mp_authorization inválido:",
+      mp_authorization
+    );
+    return res
+      .status(402)
+      .json({ error: "Pago no aprobado por el banco", mp_authorization });
+  }
+
   try {
     const { db } = await connectToDatabase();
 
@@ -76,7 +94,6 @@ export default async function handler(req, res) {
     }
 
     if (!booking.tsdConfirmNum) {
-
       const tsdBody = {
         pickupLocationId: booking.search.pickupLocation.id,
         returnLocationId: booking.search.returnLocation.id,
@@ -103,7 +120,6 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
-
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
