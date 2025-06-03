@@ -4,7 +4,7 @@ import CryptoJS from "crypto-js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    console.warn("⚠️ Método no permitido:", req.method);
+    console.warn("Método no permitido:", req.method);
     res.setHeader("Allow", "POST");
     return res.status(405).send("Método no permitido");
   }
@@ -18,16 +18,6 @@ export default async function handler(req, res) {
     mp_node,
     mp_concept,
   } = req.body;
-
-  console.log("Webhook success received:", {
-    mp_order,
-    mp_reference,
-    mp_amount,
-    mp_authorization,
-    mp_signature,
-    mp_node,
-    mp_concept,
-  });
 
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_authorization}`;
@@ -51,14 +41,42 @@ export default async function handler(req, res) {
     mp_authorization === "0" ||
     mp_authorization === 0 ||
     /^0+$/.test(mp_authorization);
+    
   if (invalidAuth) {
     console.error(
       "❌ Pago NO aprobado por el banco. mp_authorization inválido:",
       mp_authorization
     );
-    return res
-      .status(402)
-      .json({ error: "Pago no aprobado por el banco", mp_authorization });
+
+    try {
+      const { db } = await connectToDatabase();
+
+      const result = await db.collection("bookings").updateOne(
+        { _id: mp_order },
+        {
+          $set: {
+            paid: false,
+            status: "FAILED",
+            failureReason: `Autorización inválida: ${mp_authorization}`,
+            node: mp_node,
+            concept: mp_concept,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      if (result.matchedCount === 0) {
+        console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
+        return res.status(404).send("Reserva no encontrada");
+      }
+
+      return res
+        .status(402)
+        .json({ error: "Pago no aprobado por el banco", mp_authorization });
+    } catch (err) {
+      console.error("Error actualizando booking tras invalidAuth:", err);
+      return res.status(500).send("Error interno");
+    }
   }
 
   try {

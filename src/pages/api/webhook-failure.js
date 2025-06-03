@@ -1,6 +1,7 @@
 // pages/api/webhook-failure.js
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
+import { encryptId } from "@/utils/encryption";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -19,8 +20,6 @@ export default async function handler(req, res) {
     mp_concept,
   } = req.body;
 
-  console.log("📥 Webhook de fallo recibido:", req.body);
-
   // 1) Verificar firma HMAC
   const secret = process.env.HMAC_SECRET;
   const payload = `${mp_order}${mp_reference}${mp_amount}${mp_authorization}`;
@@ -34,6 +33,24 @@ export default async function handler(req, res) {
       received: mp_signature,
     });
     return res.status(400).send("Invalid signature");
+  }
+
+  const invalidAuth =
+    mp_authorization === null ||
+    mp_authorization === undefined ||
+    mp_authorization === "" ||
+    mp_authorization === "0" ||
+    mp_authorization === 0 ||
+    /^0+$/.test(mp_authorization);
+
+  if (invalidAuth) {
+    console.error(
+      "Pago NO aprobado por el banco (failure). mp_authorization inválido:",
+      mp_authorization
+    );
+    return res
+      .status(402)
+      .json({ error: "Pago no aprobado por el banco", mp_authorization });
   }
 
   try {
@@ -53,14 +70,13 @@ export default async function handler(req, res) {
       }
     );
 
-    console.log("📦 Resultado de updateOne:", result);
-
     if (result.matchedCount === 0) {
       console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
       return res.status(404).send("Reserva no encontrada");
     }
 
-    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
+    const encryptedId = encryptId(mp_order);
+    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
   } catch (err) {
