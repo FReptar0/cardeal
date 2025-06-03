@@ -18,8 +18,10 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
 import RentalStepper from "@/components/Stepper";
+import ConfirmationStepper from "@/components/ConfirmationStepper";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
+import { decryptId } from "@/utils/encryption";
 
 // para el pdf
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -28,12 +30,21 @@ import ConfirmPDF from "@/components/ConfirmPDF";
 export default function BookingConfirmation() {
   const router = useRouter();
   const { jwt } = useAuth();
-  const { id } = router.query;
-  const { totals, discount } = useBooking(); // Obtener el descuento del contexto
+  const { id: encryptedId } = router.query;
+  const [id, setId] = useState(null);
+
+  const { totals, discount } = useBooking(); 
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
-  const [showPdfLink, setShowPdfLink] = useState(false); // NUEVO
+  const [showPdfLink, setShowPdfLink] = useState(false); 
+
+  useEffect(() => {
+    if (encryptedId) {
+      const realId = decryptId(encryptedId);
+      setId(realId);
+    }
+  }, [encryptedId]);
 
   useEffect(() => {
     if (!id || !jwt) return;
@@ -55,7 +66,7 @@ export default function BookingConfirmation() {
     // Skeleton placeholders
     return (
       <Container sx={{ mt: 24, maxWidth: "100vw", px: 2 }}>
-        <RentalStepper />
+        <ConfirmationStepper />
 
         <Box
           sx={{
@@ -138,8 +149,7 @@ export default function BookingConfirmation() {
 
   return (
     <Container sx={{ mt: 10, maxWidth: "100vw", px: 2 }}>
-      <RentalStepper />
-
+      <ConfirmationStepper />
       <Box
         sx={{
           display: "flex",
