@@ -1,6 +1,7 @@
 // pages/api/webhook-success.js
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
+import { logWebhook } from "@/utils/logger";
 
 async function validateBookingExists(db, mp_order, res) {
   const booking = await db.collection("bookings").findOne({ _id: mp_order });
@@ -196,6 +197,14 @@ export default async function handler(req, res) {
     return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error("Error inesperado en webhook-success:", err);
+    await logWebhook({
+      webhook: "success",
+      type: "internal_error",
+      mp_order,
+      payload: req.body,
+      message: "Error interno al procesar el webhook",
+      details: { error: err.message },
+    });
     return res.status(500).send("Error interno");
   }
 }
