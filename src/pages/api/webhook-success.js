@@ -2,6 +2,15 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 
+async function validateBookingExists(db, mp_order, res) {
+  const booking = await db.collection("bookings").findOne({ _id: mp_order });
+  if (!booking) {
+    console.error("❌ Reserva no encontrada con ID:", mp_order);
+    return res.status(404).send("Reserva no encontrada");
+  }
+  return booking;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     console.warn("Método no permitido:", req.method);
@@ -30,6 +39,16 @@ export default async function handler(req, res) {
       expected,
       received: mp_signature,
     });
+
+    await logWebhook({
+      webhook: "success",
+      type: "invalid_signature",
+      mp_order,
+      payload: req.body,
+      message: "Firma inválida",
+      details: { expected, received: mp_signature },
+    });
+
     return res.status(400).send("Invalid signature");
   }
 
@@ -41,17 +60,29 @@ export default async function handler(req, res) {
     mp_authorization === "0" ||
     mp_authorization === 0 ||
     /^0+$/.test(mp_authorization);
-    
+
   if (invalidAuth) {
     console.error(
       "❌ Pago NO aprobado por el banco. mp_authorization inválido:",
       mp_authorization
     );
 
+    await logWebhook({
+      webhook: "success",
+      type: "invalid_auth",
+      mp_order,
+      payload: req.body,
+      message: "Autorización bancaria inválida",
+      details: { mp_authorization },
+    });
+
     try {
       const { db } = await connectToDatabase();
 
-      const result = await db.collection("bookings").updateOne(
+      const booking = await validateBookingExists(db, mp_order, res);
+      if (!booking) return;
+
+      await db.collection("bookings").updateOne(
         { _id: mp_order },
         {
           $set: {
@@ -65,11 +96,6 @@ export default async function handler(req, res) {
         }
       );
 
-      if (result.matchedCount === 0) {
-        console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
-        return res.status(404).send("Reserva no encontrada");
-      }
-
       return res
         .status(402)
         .json({ error: "Pago no aprobado por el banco", mp_authorization });
@@ -82,11 +108,8 @@ export default async function handler(req, res) {
   try {
     const { db } = await connectToDatabase();
 
-    const booking = await db.collection("bookings").findOne({ _id: mp_order });
-    if (!booking) {
-      console.error("❌ Reserva no encontrada con ID:", mp_order);
-      return res.status(404).send("Reserva no encontrada");
-    }
+    const booking = await validateBookingExists(db, mp_order, res);
+    if (!booking) return;
 
     await db.collection("bookings").updateOne(
       { _id: mp_order },
@@ -158,6 +181,15 @@ export default async function handler(req, res) {
         console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
       }
     }
+
+    await logWebhook({
+      webhook: "success",
+      type: "success",
+      mp_order,
+      payload: req.body,
+      message: "Pago registrado correctamente",
+      details: { tsdConfirmNum: booking.tsdConfirmNum || confirmNum || null },
+    });
 
     const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
 
