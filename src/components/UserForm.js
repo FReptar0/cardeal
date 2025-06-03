@@ -32,8 +32,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
-import { locations } from "@/utils/locations";
-import { RateReview } from "@mui/icons-material";
+import { encryptId } from "@/utils/encryption";
 
 const registrarReservaEnTSD = async ({
   bookingId,
@@ -380,7 +379,8 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       // 5) Pago en mostrador → Confirmación
       clearBooking();
       clearSearch();
-      router.push(`/confirm/${jB.bookingId}`);
+      const encryptedId = encryptId(jB.bookingId);
+      router.push(`/confirm/${encryptedId}`);
     } catch (err) {
       console.error(err);
       toast.error("Error de conexión");
