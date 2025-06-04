@@ -376,11 +376,12 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           });
         }
       }
+      const encryptedId = encryptId(jB.bookingId);
+      router.push(`/confirm/${encryptedId}`);
       // 5) Pago en mostrador → Confirmación
       clearBooking();
       clearSearch();
-      const encryptedId = encryptId(jB.bookingId);
-      router.push(`/confirm/${encryptedId}`);
+      
     } catch (err) {
       console.error(err);
       toast.error("Error de conexión");
