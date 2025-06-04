@@ -110,6 +110,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       return true;
     }
   };
+
   const tokenIsInvalid = !jwt || isJwtExpired(jwt);
 
   // Schema de validación
@@ -378,10 +379,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       }
       const encryptedId = encryptId(jB.bookingId);
       router.push(`/confirm/${encryptedId}`);
-      // 5) Pago en mostrador → Confirmación
-      clearBooking();
-      clearSearch();
-      
     } catch (err) {
       console.error(err);
       toast.error("Error de conexión");
@@ -616,9 +613,11 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                 checked={paidOnline}
                 onChange={(e) => setPaidOnline(e.target.checked)}
                 sx={{
-                  "& .Mui-checked": { color: theme => theme.palette.primary.buttons },
+                  "& .Mui-checked": {
+                    color: (theme) => theme.palette.primary.buttons,
+                  },
                   "& .Mui-checked+ .MuiSwitch-track": {
-                    backgroundColor: theme => theme.palette.primary.buttons,
+                    backgroundColor: (theme) => theme.palette.primary.buttons,
                   },
                 }}
               />
@@ -627,7 +626,12 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           />
           <Typography
             variant="caption"
-            sx={{ mt: 1, color: paidOnline ? theme => theme.palette.primary.text : "#6e7276" }}
+            sx={{
+              mt: 1,
+              color: paidOnline
+                ? (theme) => theme.palette.primary.text
+                : "#6e7276",
+            }}
           >
             {paidOnline
               ? "Estás eligiendo pagar ahora en línea."
