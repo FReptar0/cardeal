@@ -226,9 +226,9 @@ const Footer = () => {
                     },
                   }}
                   component="a"
-                  href="tel:8003332866"
+                  href="tel:8003332886"
                 >
-                  800 333 2866
+                  800 333 2886
                 </Typography>
                 <Typography
                   sx={{
