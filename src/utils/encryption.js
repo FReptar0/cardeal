@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY; 
+const SECRET_KEY = process.env.NEXT_PUBLIC_ID_ENCRYPTION_SECRET_KEY; 
 
 function base64ToBase64Url(base64) {
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
