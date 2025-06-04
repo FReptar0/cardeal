@@ -22,6 +22,7 @@ import ConfirmationStepper from "@/components/ConfirmationStepper";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
 import { decryptId } from "@/utils/encryption";
+import { useSearch } from "@/contexts/SearchContext";
 
 // para el pdf
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -33,11 +34,12 @@ export default function BookingConfirmation() {
   const { id: encryptedId } = router.query;
   const [id, setId] = useState(null);
 
-  const { totals, discount } = useBooking(); 
+  const { totals, discount, clearBooking } = useBooking();
+  const { clearSearch } = useSearch();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
-  const [showPdfLink, setShowPdfLink] = useState(false); 
+  const [showPdfLink, setShowPdfLink] = useState(false);
 
   useEffect(() => {
     if (encryptedId) {
@@ -45,6 +47,11 @@ export default function BookingConfirmation() {
       setId(realId);
     }
   }, [encryptedId]);
+
+  useEffect(() => {
+    clearBooking();
+    clearSearch();
+  }, []);
 
   useEffect(() => {
     if (!id || !jwt) return;
