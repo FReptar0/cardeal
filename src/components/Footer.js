@@ -219,7 +219,14 @@ const Footer = () => {
                     fontSize: "1.8rem",
                     marginTop: "10px",
                     color: "inherit",
+                    textDecoration: "none",
+                    '&:hover': {
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    },
                   }}
+                  component="a"
+                  href="tel:8003332866"
                 >
                   800 333 2866
                 </Typography>
@@ -245,8 +252,10 @@ const Footer = () => {
                     },
                   }}
                   color="secondary.text"
+                  component="a"
+                  href="mailto:atencionaclientes@qardeal.com.mx"
                 >
-                  soporte@qardeal.com.mx
+                  atencionaclientes@qardeal.com.mx
                 </Typography>
               </Box>
             </Box>
