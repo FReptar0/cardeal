@@ -22,13 +22,14 @@ import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 import { useDebounce } from "use-debounce";
+import { usePathname } from "next/navigation";
 
 function generateTimeSlots(startTime, endTime, forToday = false) {
   const [startHour, startMin] = startTime.split(":").map(Number);
   const [endHour, endMin] = endTime.split(":").map(Number);
 
   const now = new Date();
-  const limit = new Date(now.getTime() + 2 * 60 * 60 * 1000);  // +2 hours
+  const limit = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 hours
 
   const slots = [];
   let current = new Date();
@@ -278,6 +279,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const [loadingReturnHours, setLoadingReturnHours] = useState(false);
 
   const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  const pathname = usePathname();
+  const applyNegativeMargin =
+    pathname === "/" || pathname.startsWith("/vehiculos");
 
   const fetchBusinessHours = async (locationId, setHoursFn, setLoadingFn) => {
     try {
@@ -843,6 +848,17 @@ export default function SearchBar({ sx = {}, onSearch }) {
           />
         </Box>
       </Box>
+      <Typography
+        sx={{
+          color: "black",
+          fontSize: "0.8rem",
+          mt: applyNegativeMargin ? -2 : 0,
+          color: "text.secondary",
+          textAlign: "center",
+        }}
+      >
+        La reserva debe ser realizada con al menos 2 horas de anticipación.
+      </Typography>
 
       {["/", "/vehiculos"].includes(router.pathname) && (
         <Button
