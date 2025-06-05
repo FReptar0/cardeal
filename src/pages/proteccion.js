@@ -101,19 +101,27 @@ const basePlanesSeguros = [
   },
 ];
 
-const getPlanesSeguros = (carCategory) => {
+const getPlanesSeguros = (carCategoryRaw) => {
+  // Normalizamos también aquí para detectar SFAR/FFAR con mayúsculas y sin espacios
+  const carCategory = carCategoryRaw?.trim().toUpperCase();
+  console.log(
+    "🔧 [front] getPlanesSeguros, categoría normalizada:",
+    carCategory
+  );
+
   const preciosBajos = { basico: 1, intermedio: 1, completo: 1 };
   const preciosAltos = { basico: 1, intermedio: 1, completo: 1 };
 
-  let precios = preciosBajos;
-  if (
-    carCategory === "SUV 5 STANDARD" ||
-    carCategory === "SUV 5 LX" ||
+  // Consideramos SFAR y FFAR como SUVs
+  const esSUV =
     carCategory === "SFAR" ||
-    carCategory === "FFAR"
-  ) {
-    precios = preciosAltos;
-  }
+    carCategory === "FFAR" ||
+    carCategory === "SUV 5 STANDARD" ||
+    carCategory === "SUV 5 LX";
+
+  console.log("🔧 [front] ¿Categoría es SUV? ->", esSUV);
+
+  const precios = esSUV ? preciosAltos : preciosBajos;
 
   return basePlanesSeguros.map((plan) => {
     if (plan.id === "basico") {
@@ -143,9 +151,15 @@ const SeguroVehiculo = () => {
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
-  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
+  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category || "");
 
   useEffect(() => {
+    console.log(
+      "🚀 [front] Efecto de fetchProtecciones disparado. selectedCar.category:",
+      selectedCar?.category
+    );
+    console.log("🚀 [front] searchData disponible:", searchData);
+
     if (
       selectedCar?.category &&
       searchData?.pickupLocation?.id &&
@@ -168,6 +182,8 @@ const SeguroVehiculo = () => {
           classCode: selectedCar.category,
         };
 
+        console.log("📤 [front] Body para /api/carInsurance:", payload);
+
         try {
           const response = await fetch("/api/carInsurance", {
             method: "POST",
@@ -177,7 +193,7 @@ const SeguroVehiculo = () => {
 
           if (!response.ok) {
             console.error(
-              "❌ /api/carInsurance devolvió status:",
+              "❌ [front] /api/carInsurance devolvió status:",
               response.status
             );
             setProteccionesDisponibles([]);
@@ -186,6 +202,8 @@ const SeguroVehiculo = () => {
           }
 
           const data = await response.json();
+          console.log("📥 [front] Respuesta JSON de /api/carInsurance:", data);
+
           const rentalDays =
             searchData && searchData.pickupDate && searchData.returnDate
               ? Math.ceil(
@@ -194,6 +212,8 @@ const SeguroVehiculo = () => {
                     (1000 * 60 * 60 * 24)
                 )
               : 1;
+
+          console.log("🔢 [front] rentalDays calculados:", rentalDays);
 
           const proteccionesConPrecioPorDia = data.map((extra) => {
             const precioDia =
@@ -206,9 +226,16 @@ const SeguroVehiculo = () => {
             };
           });
 
+          console.log(
+            "🗂️ [front] proteccionesConPrecioPorDia:",
+            proteccionesConPrecioPorDia
+          );
           setProteccionesDisponibles(proteccionesConPrecioPorDia);
         } catch (error) {
-          console.error("❌ Error al llamar a /api/carInsurance:", error);
+          console.error(
+            "❌ [front] Error al llamar a /api/carInsurance:",
+            error
+          );
           setProteccionesDisponibles([]);
         } finally {
           setLoadingProtecciones(false);
@@ -259,7 +286,7 @@ const SeguroVehiculo = () => {
   const handleSelect = (plan) => {
     if (plan.id === "none" || plan.total !== "0") {
       setSelectedInsurance({ ...plan, code: plan.code });
-      console.log("Plan seleccionado:", plan);
+      console.log("✅ [front] Plan seleccionado:", plan);
 
       const planIndex = planesConPrecioDinamico.findIndex(
         (p) => p.id === plan.id
@@ -279,7 +306,10 @@ const SeguroVehiculo = () => {
     if (!selectedInsurance || selectedInsurance.total === "0") {
       setOpenWarning(true);
     } else {
-      console.log("Continuar con el seguro seleccionado:", selectedInsurance);
+      console.log(
+        "➡️ [front] Continuando con el seguro seleccionado:",
+        selectedInsurance
+      );
       router.push("/extras-renta");
     }
   };

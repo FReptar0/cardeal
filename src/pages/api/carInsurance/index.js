@@ -43,20 +43,32 @@ export default async function handler(req, res) {
     returnLocationId,
     pickupDateTime,
     returnDateTime,
-    classCode,
+    classCode: classCodeRaw,
   } = req.body;
+
+  console.log("📥 [carInsurance] Parámetros recibidos:", {
+    pickupLocationId,
+    returnLocationId,
+    pickupDateTime,
+    returnDateTime,
+    classCodeRaw,
+  });
 
   if (
     !pickupLocationId ||
     !returnLocationId ||
     !pickupDateTime ||
     !returnDateTime ||
-    !classCode
+    !classCodeRaw
   ) {
     return res
       .status(400)
       .json({ error: "Faltan parámetros en el body de la petición" });
   }
+
+  // Normalizamos classCode a mayúsculas y sin espacios al principio/final
+  const classCode = classCodeRaw.trim().toUpperCase();
+  console.log("🔧 [carInsurance] classCode normalizado:", classCode);
 
   const {
     TSD_ENDPOINT,
@@ -75,16 +87,17 @@ export default async function handler(req, res) {
     !TSD_CUSTOMER_NUMBER ||
     !TSD_PASSCODE
   ) {
+    console.error(
+      "❌ [carInsurance] Variables de entorno de TSD no configuradas"
+    );
     return res
       .status(500)
       .json({ error: "Variables de entorno de TSD no configuradas" });
   }
 
-  const formattedPickup = formatCustomDateTime(pickupDateTime);
-  const formattedReturn = formatCustomDateTime(returnDateTime);
-
-  // Si la clase es SFAR o FFAR, usamos códigos SUV
+  // Determinamos si es SUV basado en SFAR o FFAR
   const esSUV = classCode === "SFAR" || classCode === "FFAR";
+  console.log("🔧 [carInsurance] ¿Es SUV? ->", esSUV);
 
   const proteccionesCatalogo = esSUV
     ? [
@@ -93,9 +106,22 @@ export default async function handler(req, res) {
         { codeExtras: "PDW SUV" },
       ]
     : [{ codeExtras: "CDW2" }, { codeExtras: "CDW" }, { codeExtras: "PDW" }];
+  console.log(
+    "🔧 [carInsurance] proteccionesCatalogo utilizadas:",
+    proteccionesCatalogo
+  );
 
+  // Formateamos fechas para TSD
+  const formattedPickup = formatCustomDateTime(pickupDateTime);
+  const formattedReturn = formatCustomDateTime(returnDateTime);
+  console.log("🗓️ [carInsurance] Fechas formateadas:", {
+    formattedPickup,
+    formattedReturn,
+  });
+
+  // Construimos XML
   const extraCodesXML = proteccionesCatalogo
-    .map((e) => `<ExtraCode>${e.codeExtras}</ExtraCode>`)
+    .map((e) => `    <ExtraCode>${e.codeExtras}</ExtraCode>`)
     .join("\n");
 
   const xmlBody = `
@@ -120,10 +146,13 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickup}</PickupDateTime>
     <ReturnDateTime>${formattedReturn}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    ${extraCodesXML}
+${extraCodesXML}
     <TotalPricing>1</TotalPricing>
   </PayLoad>
-</TRNXML>`.trim();
+</TRNXML>
+  `.trim();
+
+  console.log("📤 [carInsurance] XML Body enviado a TSD:\n", xmlBody);
 
   try {
     const response = await fetch(TSD_ENDPOINT, {
@@ -134,19 +163,33 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const text = await response.text();
-      console.error("TSD devolvió error:", response.status, text);
+      console.error(
+        "❌ [carInsurance] TSD devolvió status:",
+        response.status,
+        "Response text:",
+        text
+      );
       return res
         .status(502)
         .json({ error: "Error al comunicarse con TSD", detail: text });
     }
 
     const xml = await response.text();
+    console.log("📨 [carInsurance] Respuesta bruta (XML) de TSD:\n", xml);
+
     const json = await parseStringPromise(xml, { explicitArray: false });
+    console.log(
+      "🔍 [carInsurance] Respuesta parseada (JSON) de TSD:\n",
+      JSON.stringify(json, null, 2)
+    );
 
     const dailyExtras =
       json?.PRE?.TRNXML?.Payload?.RateProduct?.TotalPricing?.DailyExtra;
 
     if (!dailyExtras) {
+      console.warn(
+        "⚠️ [carInsurance] No se encontraron extras en la respuesta."
+      );
       return res.status(200).json([]);
     }
 
@@ -159,9 +202,10 @@ export default async function handler(req, res) {
       precioTotal: parseFloat(extra.ExtraAmount),
     }));
 
+    console.log("✅ [carInsurance] Resultado final a retornar:\n", result);
     return res.status(200).json(result);
   } catch (error) {
-    console.error("Error interno al procesar /api/carInsurance:", error);
+    console.error("❌ [carInsurance] Error interno al procesar:", error);
     return res
       .status(500)
       .json({ error: "Error interno al procesar la solicitud" });
