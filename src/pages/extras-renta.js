@@ -91,7 +91,7 @@ const ExtrasRenta = () => {
   useEffect(() => {
     if (
       isCarLoaded &&
-      selectedCar?.category &&
+      selectedCar?.abbreviation &&
       searchData?.pickupLocation?.id &&
       searchData?.returnLocation?.id &&
       searchData?.pickupDate &&
@@ -99,12 +99,6 @@ const ExtrasRenta = () => {
       searchData?.pickupTime &&
       searchData?.returnTime
     ) {
-      console.log("🚀 Ejecutando fetch con:", {
-        category: selectedCar.category,
-        pickup: searchData.pickupLocation.id,
-        return: searchData.returnLocation.id,
-      });
-
       const obtenerExtras = async () => {
         setLoadingExtras(true); // ← inicia loader
         const response = await fetch("/api/extras", {
@@ -117,13 +111,12 @@ const ExtrasRenta = () => {
               : searchData.returnLocation.id,
             pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
             returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-            classCode: selectedCar.category,
+            classCode: selectedCar.abbreviation,
             allExtras: extrasCatalogo,
           }),
         });
 
         const data = await response.json();
-        console.log("📥 Extras recibidos:", data);
         const precioPorDia = (total, dias) => (dias > 0 ? total / dias : total);
 
         const dataConPrecioBase = data.map((extra) => ({
@@ -139,7 +132,7 @@ const ExtrasRenta = () => {
     }
   }, [
     isCarLoaded,
-    selectedCar?.category,
+    selectedCar?.abbreviation,
     searchData?.pickupLocation?.id,
     searchData?.returnLocation?.id,
     searchData?.pickupDate,
