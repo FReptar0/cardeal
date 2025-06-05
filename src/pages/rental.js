@@ -136,6 +136,7 @@ export default function RentalPage() {
 
       const filtered = rates
         .map((rate) => {
+          // Buscar por abbreviation, no por category
           const carInfo = carsData.find(
             (car) => car.abbreviation === rate.category
           );
@@ -149,10 +150,8 @@ export default function RentalPage() {
           return {
             ...carInfo,
             ...rate,
-            // category del JSON (amigable)
-            category: carInfo.category,
-            // abbreviation de la API (para paréntesis)
-            abbreviation: rate.category,
+            category: carInfo.category, // nombre amigable
+            abbreviation: carInfo.abbreviation, // código (ECAR, etc)
             price2: base,
             price: discount,
             rateId: rate.rateId,
