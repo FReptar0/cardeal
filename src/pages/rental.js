@@ -149,6 +149,10 @@ export default function RentalPage() {
           return {
             ...carInfo,
             ...rate,
+            // category del JSON (amigable)
+            category: carInfo.category,
+            // abbreviation de la API (para paréntesis)
+            abbreviation: rate.category,
             price2: base,
             price: discount,
             rateId: rate.rateId,
