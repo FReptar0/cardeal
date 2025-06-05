@@ -1,3 +1,5 @@
+// File: proteccion.js
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -24,22 +26,22 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import RentalStepper from "../components/Stepper";
 import CompactHeader from "../components/CompactHeader";
 import dynamic from "next/dynamic";
-// Importa el hook del contexto global
 import { useBooking } from "../contexts/BookingContext";
+import { useSearch } from "../contexts/SearchContext";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
-// Se reemplazan las coberturas de cada plan con la información de tu tabla
+// Base con metadatos de cada plan de seguro
 const basePlanesSeguros = [
   {
     id: "none",
     nombre: "RESPONSABILIDAD LIMITADA",
-    total: "$0",
+    total: "0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
-    code: "",
+    code: "", // No hay código TSD para "none"
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
       "Responsabilidad Civil: RASGO 300 MIL",
@@ -51,11 +53,11 @@ const basePlanesSeguros = [
   },
   {
     id: "basico",
-    nombre: "PAQUETE BÁSICO", // Equivale a PROTECCIÓN CDW 80%
-    total: "$610",
+    nombre: "PAQUETE BÁSICO",
+    total: "0",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#10906a",
-    code: "CDW2",
+    code: "CDW2", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -67,11 +69,11 @@ const basePlanesSeguros = [
   },
   {
     id: "intermedio",
-    nombre: "PAQUETE ESTÁNDAR", // Equivale a PROTECCIÓN CDW 90%
-    total: "$710",
+    nombre: "PAQUETE ESTÁNDAR",
+    total: "0",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#10906a",
-    code: "CDW",
+    code: "CDW", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -83,11 +85,11 @@ const basePlanesSeguros = [
   },
   {
     id: "completo",
-    nombre: "PAQUETE PREMIUM", // Equivale a PROTECCIÓN PDW 95%
-    total: "$890",
+    nombre: "PAQUETE PREMIUM",
+    total: "0",
     imagen: "/images-seguros/Seguro-completo.png",
     color: "#10906a",
-    code: "PDW",
+    code: "PDW", // Código TSD estándar
     recomendado: true,
     coberturas: [
       "Colisión y daños: RESPONSABLE 5%",
@@ -100,108 +102,237 @@ const basePlanesSeguros = [
   },
 ];
 
-// Ajusta los precios de los planes según la categoría de auto seleccionada
-const getPlanesSeguros = (carCategory) => {
-  const preciosBajos = {
-    basico: "$610",
-    intermedio: "$710",
-    completo: "$890",
-  };
-  const preciosAltos = {
-    basico: "$610",
-    intermedio: "$740",
-    completo: "$917",
-  };
+/**
+ * Devuelve un array de planes con:
+ *  - total (placeholder, será reemplazado luego en dinámico)
+ *  - código TSD (plan.codeTSD) adaptado si es SUV
+ */
+const getPlanesSeguros = (carCategoryRaw) => {
+  // Normalizamos la categoría para comparar sin espacios y en mayúsculas
+  const carCategory = (carCategoryRaw || "").trim().toUpperCase();
 
-  let precios = preciosBajos;
-  if (carCategory === "SUV 5 STANDARD" || carCategory === "SUV 5 LX") {
-    precios = preciosAltos;
-  }
+  // Precios placeholders (se reemplazan con datos reales más adelante)
+  const preciosBajos = { basico: 1, intermedio: 1, completo: 1 };
+  const preciosAltos = { basico: 1, intermedio: 1, completo: 1 };
+
+  // Consideramos SFAR y FFAR (o ciertos strings) como SUVs
+  const esSUV =
+    carCategory === "SFAR" ||
+    carCategory === "FFAR" ||
+    carCategory === "SUV 5 STANDARD" ||
+    carCategory === "SUV 5 LX";
+
+  const precios = esSUV ? preciosAltos : preciosBajos;
 
   return basePlanesSeguros.map((plan) => {
-    if (plan.id === "basico") {
-      return { ...plan, total: precios.basico };
-    } else if (plan.id === "intermedio") {
-      return { ...plan, total: precios.intermedio };
-    } else if (plan.id === "completo") {
-      return { ...plan, total: precios.completo };
+    // Determinamos el código exacto que usará TSD:
+    // - Si no es "none" y es SUV, reemplazamos:
+    //    basico.codeTSD = "CDW 2 SUV"
+    //    intermedio.codeTSD = "CDW SUV"
+    //    completo.codeTSD = "PDW SUV"
+    // - Si no es SUV, usamos el plan.code original ("CDW2", "CDW", "PDW").
+    let codeTSD = plan.code;
+    if (esSUV && plan.code) {
+      if (plan.id === "basico") codeTSD = "CDW 2 SUV";
+      else if (plan.id === "intermedio") codeTSD = "CDW SUV";
+      else if (plan.id === "completo") codeTSD = "PDW SUV";
     }
-    return plan;
+
+    // Ponemos un placeholder en total, se reemplaza luego
+    let totalPlaceholder = "0";
+    if (plan.id === "basico") totalPlaceholder = precios.basico;
+    if (plan.id === "intermedio") totalPlaceholder = precios.intermedio;
+    if (plan.id === "completo") totalPlaceholder = precios.completo;
+
+    return {
+      ...plan,
+      total: totalPlaceholder,
+      codeTSD,
+    };
   });
 };
 
 const SeguroVehiculo = () => {
-  // Usamos el contexto global
   const { selectedInsurance, setSelectedInsurance, selectedCar } = useBooking();
+  const { searchData } = useSearch();
+  const router = useRouter();
 
   const [openWarning, setOpenWarning] = useState(false);
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [recommendedPlan, setRecommendedPlan] = useState(null);
-  const router = useRouter();
 
-  // Estados para header y SearchBar
-  const [isSticky, setIsSticky] = useState(false);
   const [headerIsTop, setHeaderIsTop] = useState(true);
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
-  const [searchData, setSearchData] = useState(null);
+
+  // Estado para almacenar los precios reales que vienen de la API
+  const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
+  const [loadingProtecciones, setLoadingProtecciones] = useState(true);
+
+  // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
+  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category || "");
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
-      setHeaderIsTop(headerTop);
-      setShowCompactHeader(!headerTop);
-      setHideSearchSection(!headerTop);
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
+    if (
+      selectedCar?.category &&
+      searchData?.pickupLocation?.id &&
+      searchData?.returnLocation?.id &&
+      searchData?.pickupDate &&
+      searchData?.returnDate &&
+      searchData?.pickupTime &&
+      searchData?.returnTime
+    ) {
+      const fetchProtecciones = async () => {
+        setLoadingProtecciones(true);
 
-  // Planes ajustados según la categoría del auto
-  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category);
+        const payload = {
+          pickupLocationId: searchData.pickupLocation.id,
+          returnLocationId: searchData.sameOffice
+            ? searchData.pickupLocation.id
+            : searchData.returnLocation.id,
+          pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
+          returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
+          classCode: selectedCar.category,
+        };
 
-  // Seleccionar "premium" por defecto si no hay uno seleccionado
+        console.log("📤 [front] Body para /api/carInsurance:", payload);
+
+        try {
+          const response = await fetch("/api/carInsurance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            console.error(
+              "❌ [front] /api/carInsurance devolvió status:",
+              response.status
+            );
+            setProteccionesDisponibles([]);
+            setLoadingProtecciones(false);
+            return;
+          }
+
+          const data = await response.json();
+          console.log("📥 [front] Respuesta JSON de /api/carInsurance:", data);
+
+          const rentalDays =
+            searchData && searchData.pickupDate && searchData.returnDate
+              ? Math.ceil(
+                  (new Date(searchData.returnDate) -
+                    new Date(searchData.pickupDate)) /
+                    (1000 * 60 * 60 * 24)
+                )
+              : 1;
+
+          console.log("🔢 [front] rentalDays calculados:", rentalDays);
+
+          // Convertimos precioTotal a precio por día y guardamos en estado
+          const proteccionesConPrecioPorDia = data.map((extra) => {
+            const precioDia =
+              rentalDays > 0
+                ? parseFloat((extra.precioTotal / rentalDays).toFixed(2))
+                : parseFloat(extra.precioTotal.toFixed(2));
+            return {
+              codeExtras: extra.codeExtras,
+              precioDia,
+            };
+          });
+
+          console.log(
+            "🗂️ [front] proteccionesConPrecioPorDia:",
+            proteccionesConPrecioPorDia
+          );
+          setProteccionesDisponibles(proteccionesConPrecioPorDia);
+        } catch (error) {
+          console.error(
+            "❌ [front] Error al llamar a /api/carInsurance:",
+            error
+          );
+          setProteccionesDisponibles([]);
+        } finally {
+          setLoadingProtecciones(false);
+        }
+      };
+
+      fetchProtecciones();
+    }
+  }, [
+    selectedCar?.category,
+    searchData?.pickupLocation?.id,
+    searchData?.returnLocation?.id,
+    searchData?.pickupDate,
+    searchData?.pickupTime,
+    searchData?.returnDate,
+    searchData?.returnTime,
+    searchData?.sameOffice,
+  ]);
+
+  // Combinamos effectivePlanesSeguros + proteccionesDisponibles para asignar el total real
+  const planesConPrecioDinamico = React.useMemo(() => {
+    return effectivePlanesSeguros.map((plan) => {
+      if (plan.id === "none") {
+        // Para "none", queremos siempre mostrar 0.00
+        return { ...plan, total: "0.00" }; // >>> RESPONSABILIDAD = 0.00
+      }
+      // Buscamos el precio en proteccionesDisponibles
+      const match = proteccionesDisponibles.find(
+        (p) => p.codeExtras === plan.codeTSD
+      );
+      const precio = match ? match.precioDia : 0;
+      return {
+        ...plan,
+        total: precio.toFixed(2),
+      };
+    });
+  }, [effectivePlanesSeguros, proteccionesDisponibles]);
+
+  // Selección por defecto de "premium" si aún no hay selectedInsurance
   useEffect(() => {
-    if (!selectedInsurance) {
-      const premiumPlan = effectivePlanesSeguros.find(
+    if (!selectedInsurance && planesConPrecioDinamico.length > 0) {
+      const premiumPlan = planesConPrecioDinamico.find(
         (plan) => plan.id === "completo"
       );
       if (premiumPlan) {
         setSelectedInsurance({ ...premiumPlan, code: premiumPlan.code });
       }
     }
-    // Solo debe correr cuando effectivePlanesSeguros cambia o selectedInsurance es null
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectivePlanesSeguros]);
+  }, [planesConPrecioDinamico]);
 
-  // Seleccionar un plan
   const handleSelect = (plan) => {
-    setSelectedInsurance({
-      ...plan,
-      code: plan.code,
-    });
-    console.log("Plan seleccionado:", plan);
-    const planIndex = effectivePlanesSeguros.findIndex((p) => p.id === plan.id);
-    const nextPlan =
-      planIndex < effectivePlanesSeguros.length - 1
-        ? effectivePlanesSeguros[planIndex + 1]
-        : null;
-    if (nextPlan) {
-      setRecommendedPlan(nextPlan);
-      setOpenRecommendation(true);
+    // Permitimos seleccionar "none" (total 0) o cualquier plan con precio distinto de 0
+    if (plan.id === "none" || plan.total !== "0.00") {
+      setSelectedInsurance({ ...plan, code: plan.code });
+      console.log("✅ [front] Plan seleccionado:", plan);
+
+      const planIndex = planesConPrecioDinamico.findIndex(
+        (p) => p.id === plan.id
+      );
+      const nextPlan =
+        planIndex < planesConPrecioDinamico.length - 1
+          ? planesConPrecioDinamico[planIndex + 1]
+          : null;
+      if (nextPlan) {
+        setRecommendedPlan(nextPlan);
+        setOpenRecommendation(true);
+      }
     }
   };
 
-  // Continuar
   const handleContinue = () => {
-    if (!selectedInsurance) {
+    if (!selectedInsurance || selectedInsurance.total === "0.00") {
       setOpenWarning(true);
     } else {
-      console.log("Continuar con el seguro seleccionado:", selectedInsurance);
+      console.log(
+        "➡️ [front] Continuando con el seguro seleccionado:",
+        selectedInsurance
+      );
       router.push("/extras-renta");
     }
   };
 
-  // Aceptar recomendación de upgrade
   const handleSelectNextPlan = () => {
     if (recommendedPlan) {
       setSelectedInsurance(recommendedPlan);
@@ -211,7 +342,6 @@ const SeguroVehiculo = () => {
 
   return (
     <Container maxWidth="xl" sx={{ textAlign: "center", marginTop: "148px" }}>
-      {/* Sección de búsqueda */}
       <Box
         sx={{
           overflow: "hidden",
@@ -232,7 +362,7 @@ const SeguroVehiculo = () => {
             gap: 1,
           }}
         >
-          <SearchBar onValuesChange={setSearchData} />
+          <SearchBar onValuesChange={() => {}} />
         </Box>
       </Box>
 
@@ -250,8 +380,6 @@ const SeguroVehiculo = () => {
         <RentalStepper />
       </Box>
 
-      {isSticky && <Box sx={{ height: "120px" }} />}
-
       <Typography variant="h4" fontWeight="bold">
         Elige un tipo de protección
       </Typography>
@@ -259,128 +387,166 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
-      {/* Listado de planes */}
-      <Grid
-        container
-        spacing={3}
-        wrap="wrap"
-        justifyContent="center"
-        alignItems="stretch"
-      >
-        {effectivePlanesSeguros.map((plan) => (
-          <Grid item xs={12} sm={6} md={3} key={plan.id}>
-            <Card
-              sx={{
-                minWidth: { xs: "auto", md: 320 },
-                boxShadow: selectedInsurance?.id === plan.id ? 6 : 2,
-                border:
-                  selectedInsurance?.id === plan.id
-                    ? "3px solid black"
-                    : "1px solid #ddd",
-                cursor: "pointer",
-                p: 3,
-                backgroundColor: "#fff",
-                transition: "transform 0.3s",
-                "&:hover": { transform: "scale(1.05)" },
-                borderRadius: "10px",
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-              }}
-              onClick={() => handleSelect(plan)}
-            >
-              {plan.recomendado && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: -2,
-                    right: -8,
-                    p: "6px 12px",
-                    background: "black",
-                    color: "white",
-                    borderRadius: "5px",
-                  }}
-                >
-                  Recomendado
-                </Box>
-              )}
-
-              {/* Precio */}
-              <Typography
-                variant="h4"
-                fontWeight="bold"
-                sx={{ color: "black", display: "inline" }}
-              >
-                {plan.total.split(" ")[0]}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{ color: "gray", display: "inline", ml: 1 }}
-              >
-                MXN/día
-              </Typography>
-
-              <CardMedia
-                component="img"
-                sx={{ height: 200, objectFit: "contain", p: 1 }}
-                image={plan.imagen}
-                alt={plan.nombre}
-              />
-              <CardContent
+      {loadingProtecciones ? (
+        <Box
+          sx={{
+            height: "20vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h6">Cargando protecciones…</Typography>
+        </Box>
+      ) : (
+        <Grid
+          container
+          spacing={3}
+          wrap="wrap"
+          justifyContent="center"
+          alignItems="stretch"
+        >
+          {planesConPrecioDinamico.map((plan) => (
+            <Grid item xs={12} sm={6} md={3} key={plan.id}>
+              <Card
                 sx={{
-                  flexGrow: 1,
+                  minWidth: { xs: "auto", md: 320 },
+                  boxShadow: selectedInsurance?.id === plan.id ? 6 : 2,
+                  border:
+                    selectedInsurance?.id === plan.id
+                      ? "3px solid black"
+                      : "1px solid #ddd",
+                  cursor:
+                    plan.id === "none" || plan.total !== "0.00"
+                      ? "pointer"
+                      : "not-allowed",
+                  p: 3,
+                  backgroundColor: "#fff",
+                  transition: "transform 0.3s",
+                  "&:hover": {
+                    transform:
+                      plan.id === "none" || plan.total !== "0.00"
+                        ? "scale(1.05)"
+                        : "none",
+                  },
+                  borderRadius: "10px",
+                  position: "relative",
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  height: "100%",
                 }}
+                onClick={() => handleSelect(plan)}
               >
+                {plan.recomendado && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: -2,
+                      right: -8,
+                      p: "6px 12px",
+                      background: "black",
+                      color: "white",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    Recomendado
+                  </Box>
+                )}
+
+                <Typography
+                  variant="h4"
+                  fontWeight="bold"
+                  sx={{
+                    color: plan.total === "0.00" ? "gray" : "black",
+                    display: "inline",
+                  }}
+                >
+                  {plan.total}
+                </Typography>
                 <Typography
                   variant="h6"
-                  fontWeight="bold"
-                  sx={{ color: plan.color, mb: 1 }}
+                  sx={{
+                    color: plan.total === "0.00" ? "gray" : "gray",
+                    display: "inline",
+                    ml: 1,
+                  }}
                 >
-                  {plan.nombre}
+                  MXN/día
                 </Typography>
 
-                {/* Render de cada línea de cobertura */}
-                {plan.coberturas.map((detalle, index) => {
-                  // Muestra CancelIcon si la línea contiene "NO INCLUYE"
-                  const isNoIncluye = detalle
-                    .toLowerCase()
-                    .includes("no incluye");
-                  return (
-                    <ListItem key={index} disablePadding>
-                      <ListItemIcon>
-                        {isNoIncluye ? (
-                          <CancelIcon
-                            sx={{
-                              color: (theme) => theme.palette.secondary.buttons,
-                            }}
-                          />
-                        ) : (
-                          <CheckCircleIcon
-                            sx={{
-                              color: (theme) => theme.palette.primary.buttons,
-                            }}
-                          />
-                        )}
-                      </ListItemIcon>
-                      <ListItemText
-                        primaryTypographyProps={{ style: { fontSize: "14px" } }}
-                        primary={detalle}
-                      />
-                    </ListItem>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                <CardMedia
+                  component="img"
+                  sx={{
+                    height: 200,
+                    objectFit: "contain",
+                    p: 1,
+                  }}
+                  image={plan.imagen}
+                  alt={plan.nombre}
+                />
 
-      {/* Botón continuar */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
+                <CardContent
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    sx={{ color: plan.color, mb: 1 }}
+                  >
+                    {plan.nombre}
+                  </Typography>
+
+                  {plan.coberturas.map((detalle, index) => {
+                    const isNoIncluye = detalle
+                      .toLowerCase()
+                      .includes("no incluye");
+                    return (
+                      <ListItem key={index} disablePadding>
+                        <ListItemIcon>
+                          {isNoIncluye ? (
+                            <CancelIcon
+                              sx={{
+                                color: (theme) =>
+                                  theme.palette.secondary.buttons,
+                              }}
+                            />
+                          ) : (
+                            <CheckCircleIcon
+                              sx={{
+                                color: (theme) => theme.palette.primary.buttons,
+                              }}
+                            />
+                          )}
+                        </ListItemIcon>
+                        <ListItemText
+                          primaryTypographyProps={{
+                            style: { fontSize: "14px" },
+                          }}
+                          primary={detalle}
+                        />
+                      </ListItem>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          mt: 4,
+          pb: 3,
+        }}
+      >
         <Button
           variant="contained"
           sx={{
@@ -396,7 +562,6 @@ const SeguroVehiculo = () => {
         </Button>
       </Box>
 
-      {/* Diálogo de advertencia si no se selecciona un seguro */}
       <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
         <DialogTitle
           sx={{
@@ -435,7 +600,6 @@ const SeguroVehiculo = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de recomendación para subir de plan */}
       <Dialog
         open={openRecommendation}
         onClose={() => setOpenRecommendation(false)}
@@ -459,17 +623,16 @@ const SeguroVehiculo = () => {
             pt: 0,
             pb: 2,
             px: 3,
-            maxHeight: "90vh", // Limitar la altura máxima del contenido
-            overflow: "auto", // Habilitar scroll si es necesario
+            maxHeight: "90vh",
+            overflow: "auto",
           }}
         >
-          {/* Contenedor de la imagen */}
           <Box
             sx={{
               flex: 1,
               display: { xs: "none", md: "block" },
-              maxHeight: "300px", // Tamaño máximo para evitar scroll
-              maxWidth: "300px", // Tamaño máximo para evitar scroll
+              maxHeight: "300px",
+              maxWidth: "300px",
             }}
           >
             <Box
@@ -484,40 +647,29 @@ const SeguroVehiculo = () => {
             />
           </Box>
 
-          {/* Contenedor del texto */}
           <Box sx={{ flex: 2, textAlign: "justify" }}>
             <Typography
               variant="body1"
-              sx={{
-                fontSize: "16px",
-                lineHeight: 1.6,
-                mb: 2,
-              }}
+              sx={{ fontSize: "16px", lineHeight: 1.6, mb: 2 }}
             >
-              Disminuye tu Depósito en Garantía y Disminuye tu Deducible, te
-              ofrecemos el{" "}
+              Disminuye tu Depósito en Garantía y Deducible, te ofrecemos el{" "}
               <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>
             </Typography>
 
             <Typography
               variant="body1"
-              sx={{
-                fontSize: "16px",
-                lineHeight: 1.6,
-                mb: 3,
-              }}
+              sx={{ fontSize: "16px", lineHeight: 1.6, mb: 3 }}
             >
               Te recomendamos considerar el{" "}
               <strong>{recommendedPlan ? recommendedPlan.nombre : ""}</strong>{" "}
-              por solo{" "}
-              <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong> al
-              día. Este paquete incluye coberturas adicionales que te darán
-              mayor tranquilidad, seguridad y respaldo durante tu viaje.
+              por sólo{" "}
+              <strong>{recommendedPlan ? recommendedPlan.total : ""}</strong>{" "}
+              MXN/día. Este paquete incluye coberturas adicionales para tu
+              tranquilidad durante el viaje.
             </Typography>
           </Box>
         </DialogContent>
 
-        {/* Contenedor de los botones */}
         <Box sx={{ width: "100%", mt: 2 }}>
           <Button
             variant="contained"
@@ -529,7 +681,7 @@ const SeguroVehiculo = () => {
               padding: "10px 16px",
               borderRadius: "8px",
               fontSize: "14px",
-              mb: 2, // Margen inferior entre botones
+              mb: 2,
             }}
             onClick={handleSelectNextPlan}
           >
