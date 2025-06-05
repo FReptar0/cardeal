@@ -83,14 +83,16 @@ export default async function handler(req, res) {
   const formattedPickup = formatCustomDateTime(pickupDateTime);
   const formattedReturn = formatCustomDateTime(returnDateTime);
 
-  const proteccionesCatalogo = [
-    { codeExtras: "CDW2" },
-    { codeExtras: "CDW" },
-    { codeExtras: "PDW" },
-    { codeExtras: "CDW 2 SUV" },
-    { codeExtras: "CDW SUV" },
-    { codeExtras: "PDW SUV" },
-  ];
+  // Si la clase es SFAR o FFAR, usamos códigos SUV
+  const esSUV = classCode === "SFAR" || classCode === "FFAR";
+
+  const proteccionesCatalogo = esSUV
+    ? [
+        { codeExtras: "CDW 2 SUV" },
+        { codeExtras: "CDW SUV" },
+        { codeExtras: "PDW SUV" },
+      ]
+    : [{ codeExtras: "CDW2" }, { codeExtras: "CDW" }, { codeExtras: "PDW" }];
 
   const extraCodesXML = proteccionesCatalogo
     .map((e) => `<ExtraCode>${e.codeExtras}</ExtraCode>`)
