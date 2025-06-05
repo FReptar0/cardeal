@@ -33,6 +33,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
 });
 
+// Base con metadatos de cada plan de seguro
 const basePlanesSeguros = [
   {
     id: "none",
@@ -40,7 +41,7 @@ const basePlanesSeguros = [
     total: "0",
     imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
-    code: "",
+    code: "", // No hay código TSD para "none"
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
       "Responsabilidad Civil: RASGO 300 MIL",
@@ -56,7 +57,7 @@ const basePlanesSeguros = [
     total: "0",
     imagen: "/images-seguros/Seguro-basico.png",
     color: "#10906a",
-    code: "CDW2",
+    code: "CDW2", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -72,7 +73,7 @@ const basePlanesSeguros = [
     total: "0",
     imagen: "/images-seguros/Seguro-inter.png",
     color: "#10906a",
-    code: "CDW",
+    code: "CDW", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
       "Responsabilidad Civil: CUBRE 300 MIL",
@@ -88,7 +89,7 @@ const basePlanesSeguros = [
     total: "0",
     imagen: "/images-seguros/Seguro-completo.png",
     color: "#10906a",
-    code: "PDW",
+    code: "PDW", // Código TSD estándar
     recomendado: true,
     coberturas: [
       "Colisión y daños: RESPONSABLE 5%",
@@ -101,37 +102,53 @@ const basePlanesSeguros = [
   },
 ];
 
+/**
+ * Devuelve un array de planes con:
+ *  - total (placeholder, será reemplazado luego en dinámico)
+ *  - código TSD (plan.codeTSD) adaptado si es SUV
+ */
 const getPlanesSeguros = (carCategoryRaw) => {
-  // Normalizamos también aquí para detectar SFAR/FFAR con mayúsculas y sin espacios
-  const carCategory = carCategoryRaw?.trim().toUpperCase();
-  console.log(
-    "🔧 [front] getPlanesSeguros, categoría normalizada:",
-    carCategory
-  );
+  // Normalizamos la categoría para comparar sin espacios y en mayúsculas
+  const carCategory = (carCategoryRaw || "").trim().toUpperCase();
 
+  // Precios placeholders (se reemplazan con datos reales más adelante)
   const preciosBajos = { basico: 1, intermedio: 1, completo: 1 };
   const preciosAltos = { basico: 1, intermedio: 1, completo: 1 };
 
-  // Consideramos SFAR y FFAR como SUVs
+  // Consideramos SFAR y FFAR (o ciertos strings) como SUVs
   const esSUV =
     carCategory === "SFAR" ||
     carCategory === "FFAR" ||
     carCategory === "SUV 5 STANDARD" ||
     carCategory === "SUV 5 LX";
 
-  console.log("🔧 [front] ¿Categoría es SUV? ->", esSUV);
-
   const precios = esSUV ? preciosAltos : preciosBajos;
 
   return basePlanesSeguros.map((plan) => {
-    if (plan.id === "basico") {
-      return { ...plan, total: precios.basico };
-    } else if (plan.id === "intermedio") {
-      return { ...plan, total: precios.intermedio };
-    } else if (plan.id === "completo") {
-      return { ...plan, total: precios.completo };
+    // Determinamos el código exacto que usará TSD:
+    // - Si no es "none" y es SUV, reemplazamos:
+    //    basico.codeTSD = "CDW 2 SUV"
+    //    intermedio.codeTSD = "CDW SUV"
+    //    completo.codeTSD = "PDW SUV"
+    // - Si no es SUV, usamos el plan.code original ("CDW2", "CDW", "PDW").
+    let codeTSD = plan.code;
+    if (esSUV && plan.code) {
+      if (plan.id === "basico") codeTSD = "CDW 2 SUV";
+      else if (plan.id === "intermedio") codeTSD = "CDW SUV";
+      else if (plan.id === "completo") codeTSD = "PDW SUV";
     }
-    return plan;
+
+    // Ponemos un placeholder en total, se reemplaza luego
+    let totalPlaceholder = "0";
+    if (plan.id === "basico") totalPlaceholder = precios.basico;
+    if (plan.id === "intermedio") totalPlaceholder = precios.intermedio;
+    if (plan.id === "completo") totalPlaceholder = precios.completo;
+
+    return {
+      ...plan,
+      total: totalPlaceholder,
+      codeTSD,
+    };
   });
 };
 
@@ -148,18 +165,14 @@ const SeguroVehiculo = () => {
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
 
+  // Estado para almacenar los precios reales que vienen de la API
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
+  // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
   const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category || "");
 
   useEffect(() => {
-    console.log(
-      "🚀 [front] Efecto de fetchProtecciones disparado. selectedCar.category:",
-      selectedCar?.category
-    );
-    console.log("🚀 [front] searchData disponible:", searchData);
-
     if (
       selectedCar?.category &&
       searchData?.pickupLocation?.id &&
@@ -215,6 +228,7 @@ const SeguroVehiculo = () => {
 
           console.log("🔢 [front] rentalDays calculados:", rentalDays);
 
+          // Convertimos precioTotal a precio por día y guardamos en estado
           const proteccionesConPrecioPorDia = data.map((extra) => {
             const precioDia =
               rentalDays > 0
@@ -255,13 +269,16 @@ const SeguroVehiculo = () => {
     searchData?.sameOffice,
   ]);
 
+  // Combinamos effectivePlanesSeguros + proteccionesDisponibles para asignar el total real
   const planesConPrecioDinamico = React.useMemo(() => {
     return effectivePlanesSeguros.map((plan) => {
-      if (!plan.code) {
-        return { ...plan, total: "0" };
+      if (plan.id === "none") {
+        // Para "none", queremos siempre mostrar 0.00
+        return { ...plan, total: "0.00" }; // >>> RESPONSABILIDAD = 0.00
       }
+      // Buscamos el precio en proteccionesDisponibles
       const match = proteccionesDisponibles.find(
-        (p) => p.codeExtras === plan.code
+        (p) => p.codeExtras === plan.codeTSD
       );
       const precio = match ? match.precioDia : 0;
       return {
@@ -271,6 +288,7 @@ const SeguroVehiculo = () => {
     });
   }, [effectivePlanesSeguros, proteccionesDisponibles]);
 
+  // Selección por defecto de "premium" si aún no hay selectedInsurance
   useEffect(() => {
     if (!selectedInsurance && planesConPrecioDinamico.length > 0) {
       const premiumPlan = planesConPrecioDinamico.find(
@@ -284,7 +302,8 @@ const SeguroVehiculo = () => {
   }, [planesConPrecioDinamico]);
 
   const handleSelect = (plan) => {
-    if (plan.id === "none" || plan.total !== "0") {
+    // Permitimos seleccionar "none" (total 0) o cualquier plan con precio distinto de 0
+    if (plan.id === "none" || plan.total !== "0.00") {
       setSelectedInsurance({ ...plan, code: plan.code });
       console.log("✅ [front] Plan seleccionado:", plan);
 
@@ -303,7 +322,7 @@ const SeguroVehiculo = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedInsurance || selectedInsurance.total === "0") {
+    if (!selectedInsurance || selectedInsurance.total === "0.00") {
       setOpenWarning(true);
     } else {
       console.log(
@@ -398,7 +417,7 @@ const SeguroVehiculo = () => {
                       ? "3px solid black"
                       : "1px solid #ddd",
                   cursor:
-                    plan.id === "none" || plan.total !== "0"
+                    plan.id === "none" || plan.total !== "0.00"
                       ? "pointer"
                       : "not-allowed",
                   p: 3,
@@ -406,7 +425,7 @@ const SeguroVehiculo = () => {
                   transition: "transform 0.3s",
                   "&:hover": {
                     transform:
-                      plan.id === "none" || plan.total !== "0"
+                      plan.id === "none" || plan.total !== "0.00"
                         ? "scale(1.05)"
                         : "none",
                   },
@@ -438,16 +457,16 @@ const SeguroVehiculo = () => {
                   variant="h4"
                   fontWeight="bold"
                   sx={{
-                    color: plan.total === "0" ? "gray" : "black",
+                    color: plan.total === "0.00" ? "gray" : "black",
                     display: "inline",
                   }}
                 >
-                  {plan.total === "0" ? "--" : plan.total}
+                  {plan.total}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{
-                    color: plan.total === "0" ? "gray" : "gray",
+                    color: plan.total === "0.00" ? "gray" : "gray",
                     display: "inline",
                     ml: 1,
                   }}
