@@ -150,11 +150,12 @@ const SeguroVehiculo = () => {
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
-  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category || "");
+  // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
+  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.abbreviation || "");
 
   useEffect(() => {
     if (
-      selectedCar?.category &&
+      selectedCar?.abbreviation &&
       searchData?.pickupLocation?.id &&
       searchData?.returnLocation?.id &&
       searchData?.pickupDate &&
@@ -172,7 +173,7 @@ const SeguroVehiculo = () => {
             : searchData.returnLocation.id,
           pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
           returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-          classCode: selectedCar.category,
+          classCode: selectedCar.abbreviation,
         };
 
         console.log("📤 [front] Body para /api/carInsurance:", payload);
@@ -238,7 +239,7 @@ const SeguroVehiculo = () => {
       fetchProtecciones();
     }
   }, [
-    selectedCar?.category,
+    selectedCar?.abbreviation,
     searchData?.pickupLocation?.id,
     searchData?.returnLocation?.id,
     searchData?.pickupDate,

@@ -175,13 +175,8 @@ ${extraCodesXML}
     }
 
     const xml = await response.text();
-    console.log("📨 [carInsurance] Respuesta bruta (XML) de TSD:\n", xml);
 
     const json = await parseStringPromise(xml, { explicitArray: false });
-    console.log(
-      "🔍 [carInsurance] Respuesta parseada (JSON) de TSD:\n",
-      JSON.stringify(json, null, 2)
-    );
 
     const dailyExtras =
       json?.PRE?.TRNXML?.Payload?.RateProduct?.TotalPricing?.DailyExtra;
@@ -202,7 +197,6 @@ ${extraCodesXML}
       precioTotal: parseFloat(extra.ExtraAmount),
     }));
 
-    console.log("✅ [carInsurance] Resultado final a retornar:\n", result);
     return res.status(200).json(result);
   } catch (error) {
     console.error("❌ [carInsurance] Error interno al procesar:", error);
