@@ -1,5 +1,3 @@
-// File: proteccion.js
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -102,20 +100,11 @@ const basePlanesSeguros = [
   },
 ];
 
-/**
- * Devuelve un array de planes con:
- *  - total (placeholder, será reemplazado luego en dinámico)
- *  - código TSD (plan.codeTSD) adaptado si es SUV
- */
 const getPlanesSeguros = (carCategoryRaw) => {
-  // Normalizamos la categoría para comparar sin espacios y en mayúsculas
   const carCategory = (carCategoryRaw || "").trim().toUpperCase();
-
-  // Precios placeholders (se reemplazan con datos reales más adelante)
   const preciosBajos = { basico: 1, intermedio: 1, completo: 1 };
   const preciosAltos = { basico: 1, intermedio: 1, completo: 1 };
 
-  // Consideramos SFAR y FFAR (o ciertos strings) como SUVs
   const esSUV =
     carCategory === "SFAR" ||
     carCategory === "FFAR" ||
@@ -125,12 +114,6 @@ const getPlanesSeguros = (carCategoryRaw) => {
   const precios = esSUV ? preciosAltos : preciosBajos;
 
   return basePlanesSeguros.map((plan) => {
-    // Determinamos el código exacto que usará TSD:
-    // - Si no es "none" y es SUV, reemplazamos:
-    //    basico.codeTSD = "CDW 2 SUV"
-    //    intermedio.codeTSD = "CDW SUV"
-    //    completo.codeTSD = "PDW SUV"
-    // - Si no es SUV, usamos el plan.code original ("CDW2", "CDW", "PDW").
     let codeTSD = plan.code;
     if (esSUV && plan.code) {
       if (plan.id === "basico") codeTSD = "CDW 2 SUV";
@@ -138,7 +121,6 @@ const getPlanesSeguros = (carCategoryRaw) => {
       else if (plan.id === "completo") codeTSD = "PDW SUV";
     }
 
-    // Ponemos un placeholder en total, se reemplaza luego
     let totalPlaceholder = "0";
     if (plan.id === "basico") totalPlaceholder = precios.basico;
     if (plan.id === "intermedio") totalPlaceholder = precios.intermedio;
@@ -165,11 +147,9 @@ const SeguroVehiculo = () => {
   const [showCompactHeader, setShowCompactHeader] = useState(false);
   const [hideSearchSection, setHideSearchSection] = useState(false);
 
-  // Estado para almacenar los precios reales que vienen de la API
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
-  // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
   const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.category || "");
 
   useEffect(() => {
@@ -228,7 +208,6 @@ const SeguroVehiculo = () => {
 
           console.log("🔢 [front] rentalDays calculados:", rentalDays);
 
-          // Convertimos precioTotal a precio por día y guardamos en estado
           const proteccionesConPrecioPorDia = data.map((extra) => {
             const precioDia =
               rentalDays > 0
@@ -269,14 +248,11 @@ const SeguroVehiculo = () => {
     searchData?.sameOffice,
   ]);
 
-  // Combinamos effectivePlanesSeguros + proteccionesDisponibles para asignar el total real
   const planesConPrecioDinamico = React.useMemo(() => {
     return effectivePlanesSeguros.map((plan) => {
       if (plan.id === "none") {
-        // Para "none", queremos siempre mostrar 0.00
-        return { ...plan, total: "0.00" }; // >>> RESPONSABILIDAD = 0.00
+        return { ...plan, total: "0.00" };
       }
-      // Buscamos el precio en proteccionesDisponibles
       const match = proteccionesDisponibles.find(
         (p) => p.codeExtras === plan.codeTSD
       );
@@ -288,21 +264,26 @@ const SeguroVehiculo = () => {
     });
   }, [effectivePlanesSeguros, proteccionesDisponibles]);
 
-  // Selección por defecto de "premium" si aún no hay selectedInsurance
+  // —————————————————————————————————————————————————————————————————————————
+  // Opción 1: seleccionar “Premium” solo cuando loadingProtecciones === false
   useEffect(() => {
-    if (!selectedInsurance && planesConPrecioDinamico.length > 0) {
+    if (
+      !selectedInsurance &&
+      !loadingProtecciones &&
+      planesConPrecioDinamico.length > 0
+    ) {
       const premiumPlan = planesConPrecioDinamico.find(
         (plan) => plan.id === "completo"
       );
       if (premiumPlan) {
-        setSelectedInsurance({ ...premiumPlan, code: premiumPlan.code });
+        setSelectedInsurance({ ...premiumPlan, code: premiumPlan.codeTSD });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [planesConPrecioDinamico]);
+  }, [planesConPrecioDinamico, loadingProtecciones]);
+  // —————————————————————————————————————————————————————————————————————————
 
   const handleSelect = (plan) => {
-    // Permitimos seleccionar "none" (total 0) o cualquier plan con precio distinto de 0
     if (plan.id === "none" || plan.total !== "0.00") {
       setSelectedInsurance({ ...plan, code: plan.code });
       console.log("✅ [front] Plan seleccionado:", plan);
