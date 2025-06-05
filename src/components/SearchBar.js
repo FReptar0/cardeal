@@ -225,7 +225,7 @@ function DateTimeSelector({
           {loading ? (
             <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
           ) : timeSlots.length === 0 ? (
-            <Typography variant="body2" color="secondary.text">
+            <Typography variant="body2" color="black">
               Favor de revisar nuestros horarios de oficina.
             </Typography>
           ) : (
