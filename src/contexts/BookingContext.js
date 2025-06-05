@@ -19,24 +19,19 @@ export const BookingProvider = ({ children }) => {
     if (cleared) {
       sessionStorage.removeItem("bookingCleared");
     } else {
-      // ───── Tu lógica de carga desde localStorage ─────
       const carFromStorage = localStorage.getItem("selectedCar");
+      const insuranceFromStorage = localStorage.getItem("selectedInsurance");
+      const extrasFromStorage = localStorage.getItem("selectedExtras");
+      const userFromStorage = localStorage.getItem("userData");
+      const discountFromStorage = localStorage.getItem("discount");
+
       if (carFromStorage) setSelectedCar(JSON.parse(carFromStorage));
-      // … resto de cargas (insurance, extras, userData, discount)
+      if (insuranceFromStorage)
+        setSelectedInsurance(JSON.parse(insuranceFromStorage));
+      if (extrasFromStorage) setSelectedExtras(JSON.parse(extrasFromStorage));
+      if (userFromStorage) setUserData(JSON.parse(userFromStorage));
+      if (discountFromStorage) setDiscount(JSON.parse(discountFromStorage));
     }
-
-    const carFromStorage = localStorage.getItem("selectedCar");
-    const insuranceFromStorage = localStorage.getItem("selectedInsurance");
-    const extrasFromStorage = localStorage.getItem("selectedExtras");
-    const userFromStorage = localStorage.getItem("userData");
-    const discountFromStorage = localStorage.getItem("discount");
-
-    if (carFromStorage) setSelectedCar(JSON.parse(carFromStorage));
-    if (insuranceFromStorage)
-      setSelectedInsurance(JSON.parse(insuranceFromStorage));
-    if (extrasFromStorage) setSelectedExtras(JSON.parse(extrasFromStorage));
-    if (userFromStorage) setUserData(JSON.parse(userFromStorage));
-    if (discountFromStorage) setDiscount(JSON.parse(discountFromStorage));
 
     // ✅ Marca que ya se intentó cargar el coche
     setIsCarLoaded(true);
