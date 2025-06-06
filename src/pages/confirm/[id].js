@@ -328,31 +328,31 @@ export default function BookingConfirmation() {
                 key={booking.orderNumber}
                 document={<ConfirmPDF booking={booking} />}
                 fileName={`reserva_${booking.orderNumber}.pdf`}
-                style={{
-                  textDecoration: "none",
-                  padding: "12px 20px",
-                  backgroundColor: (theme) => theme.palette.primary.text,
-                  color: "white",
-                  borderRadius: 4,
-                  width: "100%",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
+                style={{ textDecoration: "none", width: "100%" }}
               >
-                {({ loading }) =>
-                  loading ? (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      GENERANDO PDF…
-                      <CircularProgress size={18} sx={{ color: "white" }} />
-                    </Box>
-                  ) : (
-                    "DESCARGAR PDF DE RESERVA"
-                  )
-                }
+                {({ loading }) => (
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    disabled={loading}
+                    sx={{
+                      backgroundColor: (theme) => theme.palette.primary.text,
+                      height: 48,
+                      ":hover": { backgroundColor: "#0b704e" },
+                    }}
+                  >
+                    {loading ? (
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        GENERANDO PDF…
+                        <CircularProgress size={18} sx={{ color: "white" }} />
+                      </Box>
+                    ) : (
+                      "DESCARGAR PDF DE RESERVA"
+                    )}
+                  </Button>
+                )}
               </PDFDownloadLink>
             ) : (
               <Button
