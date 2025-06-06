@@ -11,11 +11,11 @@ import {
 
 // Definición de nombres y precios de extras
 const extrasDefinitions = {
-  conductor_adicional: { nombre: "Conductor Adicional", precio: 110 },
-  conductor_menor: { nombre: "Conductor Menor", precio: 110 },
-  baby_seat: { nombre: "Baby Seat", precio: 150 },
-  child_seat: { nombre: "Child Seat", precio: 150 },
-  booster: { nombre: "Booster", precio: 150 },
+  conductor_adicional: { nombre: "Conductor Adicional" },
+  conductor_menor: { nombre: "Conductor Menor" },
+  baby_seat: { nombre: "Baby Seat" },
+  child_seat: { nombre: "Child Seat" },
+  booster: { nombre: "Booster" },
 };
 
 // Estilos PDF
@@ -26,12 +26,42 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#141414",
   },
-  sectionLabel: { fontFamily: "Helvetica-Bold", fontSize: 10, marginBottom: 2 },
-  sectionValue: { fontSize: 10, marginBottom: 4 },
-  italicValue: { fontSize: 10, fontStyle: "italic", marginBottom: 2 },
-  bold: { fontFamily: "Helvetica-Bold" },
-  divider: { borderBottomWidth: 1, borderColor: "#cccccc", marginVertical: 4 },
-  twoColumn: { flexDirection: "row" },
+  headerLine: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 22,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 2,
+  },
+  sectionLabel: {
+    fontFamily: "Helvetica-Bold",
+    fontSize: 10,
+    marginBottom: 2,
+  },
+  sectionValue: {
+    fontSize: 10,
+    marginBottom: 4,
+  },
+  italicValue: {
+    fontSize: 10,
+    fontStyle: "italic",
+    marginBottom: 2,
+  },
+  bold: {
+    fontFamily: "Helvetica-Bold",
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderColor: "#cccccc",
+    marginVertical: 4,
+  },
+  twoColumn: {
+    flexDirection: "row",
+  },
   column: {
     flex: 1,
     padding: 4,
@@ -39,8 +69,16 @@ const styles = StyleSheet.create({
     borderColor: "#cccccc",
     marginRight: 4,
   },
-  columnLast: { flex: 1, padding: 4, borderWidth: 1, borderColor: "#cccccc" },
-  listItem: { flexDirection: "row", alignItems: "flex-start" },
+  columnLast: {
+    flex: 1,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
   bullet: {
     width: 4,
     height: 4,
@@ -62,7 +100,8 @@ export default function ConfirmPDF({ booking }) {
     );
   }
 
-  const { car, insurance, extras, search, contact, discount } = booking;
+  const { car, insurance, extras, search, contact, discount, tsdConfirmNum } =
+    booking;
 
   // Fecha y hora actuales formato MMDDYYYY hh:mm AM/PM
   const now = new Date();
@@ -83,56 +122,28 @@ export default function ConfirmPDF({ booking }) {
     )
   );
 
-  // Características del vehículo
-  const features = [
-    car.seats && `${car.seats} Pasajeros`,
-    car.airConditioning && "Aire Acondicionado",
-    car.doors && `${car.doors} Puertas`,
-    car.transmission && car.transmission,
-  ].filter(Boolean);
-
-  // Extras seleccionados
+  // Extras seleccionados (solo nombre y cantidad)
   const extrasArr = Object.entries(extras || {})
     .filter(([, qty]) => qty > 0)
     .map(([key, qty]) => ({
-      key,
       nombre: extrasDefinitions[key]?.nombre || key,
       qty,
     }));
 
-  // Cálculo de importes
-  const subtotal = (car.price || 0) * days;
-  const insuranceCost = insurance
-    ? parseFloat(String(insurance.total).replace(/[^\d.]/g, "")) * days
-    : 0;
-  const extrasCost = extrasArr.reduce(
-    (sum, e) => sum + e.qty * (extrasDefinitions[e.key]?.precio || 0) * days,
-    0
-  );
-  const totalValue = subtotal + insuranceCost + extrasCost - (discount || 0);
+  // Formateo de fechas para mostrar
+  const formatDateTime = (iso) =>
+    new Date(iso).toLocaleString("es-MX", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header: logo a la derecha, título grande a la izquierda */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: 12,
-          }}
-        >
+        <View style={styles.headerLine}>
           <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontFamily: "Helvetica-Bold",
-                marginBottom: 2,
-              }}
-            >
-              Confirmación de la{"\n"}reserva
-            </Text>
+            <Text style={styles.title}>Confirmación de la{"\n"}reserva</Text>
             <Text style={styles.sectionLabel}>ARRENDATARIO</Text>
             <Text
               style={[
@@ -142,12 +153,17 @@ export default function ConfirmPDF({ booking }) {
             >
               {contact.fullName || "NOMBRE COMPLETO"}
             </Text>
+
+            {/* --------- AÑADIDO: Datos de vehículo, extras, días y fechas --------- */}
+            <View style={{ marginTop: 8 }}></View>
+            {/* ------------------------------------------------------------- */}
           </View>
           <Image
             src="/logos/Qardeal-original.png"
             style={{ width: 170, height: 80, marginLeft: 8 }}
           />
         </View>
+
         {/* Fecha arriba a la derecha */}
         <Text
           style={{
@@ -159,18 +175,48 @@ export default function ConfirmPDF({ booking }) {
         >
           {dateTime}
         </Text>
+
         <View style={styles.divider} />
 
         {/* Importes y fechas */}
         <View style={styles.twoColumn}>
           <View style={{ flex: 2 }}>
-            {booking.tsdConfirmNum && (
+            {tsdConfirmNum && (
               <>
                 <Text style={[styles.sectionLabel, { marginTop: 6 }]}>
                   Número de confirmación:
                 </Text>
-                <Text style={styles.sectionValue}>{booking.tsdConfirmNum}</Text>
+                <Text style={styles.sectionValue}>{tsdConfirmNum}</Text>
               </>
+            )}
+            <Text style={styles.sectionLabel}>Vehículo:</Text>
+            <Text style={styles.sectionValue}>{car.name}</Text>
+
+            <Text style={styles.sectionLabel}>Días de renta:</Text>
+            <Text style={styles.sectionValue}>{days}</Text>
+
+            <Text style={styles.sectionLabel}>Entrega:</Text>
+            <Text style={styles.sectionValue}>
+              {formatDateTime(search.pickupDate)}
+            </Text>
+
+            <Text style={styles.sectionLabel}>Devolución:</Text>
+            <Text style={styles.sectionValue}>
+              {formatDateTime(search.returnDate)}
+            </Text>
+
+            <Text style={styles.sectionLabel}>Extras:</Text>
+            {extrasArr.length === 0 ? (
+              <Text style={styles.sectionValue}>— Ninguno —</Text>
+            ) : (
+              extrasArr.map((e, i) => (
+                <View style={styles.listItem} key={i}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.sectionValue}>
+                    {e.nombre} x{e.qty}
+                  </Text>
+                </View>
+              ))
             )}
           </View>
           <View style={{ flex: 1 }}>
@@ -178,15 +224,11 @@ export default function ConfirmPDF({ booking }) {
               RECEPCIÓN
             </Text>
             <Text style={styles.sectionValue}>
-              {new Date(search.pickupDate).toLocaleString("es-MX", {
-                dateStyle: "short",
-                timeStyle: "short",
-              })}
+              {formatDateTime(search.pickupDate)}
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de Recepción
             </Text>
-            {/* Ahora usamos "ciudad" en lugar de "nombre" */}
             <Text style={styles.italicValue}>
               {search.pickupLocation?.ciudad
                 ? search.pickupLocation.ciudad
@@ -203,23 +245,18 @@ export default function ConfirmPDF({ booking }) {
               DEVOLUCIÓN
             </Text>
             <Text style={styles.sectionValue}>
-              {new Date(search.returnDate).toLocaleString("es-MX", {
-                dateStyle: "short",
-                timeStyle: "short",
-              })}
+              {formatDateTime(search.returnDate)}
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de devolución
             </Text>
-            {/* Para devolución, si es misma oficina, agregamos "ciudad"; si no, usamos "city" */}
             <Text style={styles.italicValue}>
               {search.sameOffice
                 ? search.pickupLocation?.ciudad
                     .toLowerCase()
                     .replace(/\b\w/g, (l) => l.toUpperCase())
                 : search.returnLocation?.city
-                ? // Convertir "CDMX" a "Ciudad Cdmx"
-                  `Ciudad ${search.returnLocation.city
+                ? `Ciudad ${search.returnLocation.city
                     .charAt(0)
                     .toUpperCase()}${search.returnLocation.city
                     .slice(1)
@@ -232,11 +269,6 @@ export default function ConfirmPDF({ booking }) {
                 : search.returnLocation?.direccion ??
                   "[Dirección de devolución no disponible]"}
             </Text>
-
-            <Text style={[styles.sectionLabel, { fontSize: 12, marginTop: 8 }]}>
-              EMPRESA DE ALQUILER
-            </Text>
-            <Text style={styles.sectionValue}>Qardeal</Text>
           </View>
         </View>
 
@@ -307,12 +339,20 @@ export default function ConfirmPDF({ booking }) {
           <View style={styles.column}>
             <Text style={styles.sectionLabel}>Tu reserva:</Text>
             <Text style={styles.bold}>{car.name || "Vehículo Nombre"}</Text>
-            {features.map((f, i) => (
-              <View style={styles.listItem} key={i}>
-                <View style={styles.bullet} />
-                <Text style={styles.sectionValue}>{f}</Text>
-              </View>
-            ))}
+            {/* Características */}
+            {[
+              car.seats && `${car.seats} Pasajeros`,
+              car.airConditioning && "Aire Acondicionado",
+              car.doors && `${car.doors} Puertas`,
+              car.transmission && car.transmission,
+            ]
+              .filter(Boolean)
+              .map((f, i) => (
+                <View style={styles.listItem} key={i}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.sectionValue}>{f}</Text>
+                </View>
+              ))}
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Servicios adicionales contratados
             </Text>
@@ -352,11 +392,6 @@ export default function ConfirmPDF({ booking }) {
             )}
           </View>
         </View>
-
-        {/* Footer */}
-        {/* <Text style={styles.footer}>
-          Gracias por tu preferencia • www.qardeal.com
-        </Text> */}
       </Page>
     </Document>
   );
