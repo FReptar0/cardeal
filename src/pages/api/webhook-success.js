@@ -164,7 +164,10 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
-      console.log("Respuesta completa de TSD:", JSON.stringify(tsdJson, null, 2));
+      console.log(
+        "Respuesta completa de TSD:",
+        JSON.stringify(tsdJson, null, 2)
+      );
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
@@ -181,19 +184,28 @@ export default async function handler(req, res) {
             { _id: mp_order },
             { $set: { tsdConfirmNum: confirmNum } }
           );
+        await logWebhook({
+          webhook: "success",
+          type: "success",
+          mp_order,
+          payload: req.body,
+          message: "Pago registrado correctamente",
+          details: {
+            tsdConfirmNum: confirmNum,
+          },
+        });
       } else {
         console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
+        await logWebhook({
+          webhook: "success",
+          type: "internal_error",
+          mp_order,
+          payload: req.body,
+          message: "Error interno al procesar el webhook",
+          details: { error: "TSD no devolvió confirmNum" },
+        });
       }
     }
-
-    await logWebhook({
-      webhook: "success",
-      type: "success",
-      mp_order,
-      payload: req.body,
-      message: "Pago registrado correctamente",
-      details: { tsdConfirmNum: booking.tsdConfirmNum || confirmNum || null },
-    });
 
     const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
 
