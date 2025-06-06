@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
-import RentalStepper from "@/components/Stepper";
 import ConfirmationStepper from "@/components/ConfirmationStepper";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
@@ -151,8 +150,6 @@ export default function BookingConfirmation() {
     booking.discount > 0 ? total - booking.discount : total; // Aplicar el descuento si es mayor a 0
 
   //const totalLabel = booking.paid ? "Total" : "Total a pagar"; // Cambiar el texto si el pago está completado
-
-  console.log("tsdBooking", booking.tsdConfirmNumber);
 
   return (
     <Container sx={{ mt: 10, maxWidth: "100vw", px: 2 }}>
