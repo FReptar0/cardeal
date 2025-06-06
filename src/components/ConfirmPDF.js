@@ -26,20 +26,9 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#141414",
   },
-  headerLine: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  title: { fontSize: 16, fontFamily: "Helvetica-Bold" },
-  coupon: {
-    fontSize: 12,
-    fontFamily: "Helvetica-Bold",
-    marginTop: 2,
-    marginBottom: 6,
-  },
   sectionLabel: { fontFamily: "Helvetica-Bold", fontSize: 10, marginBottom: 2 },
   sectionValue: { fontSize: 10, marginBottom: 4 },
+  italicValue: { fontSize: 10, fontStyle: "italic", marginBottom: 2 },
   bold: { fontFamily: "Helvetica-Bold" },
   divider: { borderBottomWidth: 1, borderColor: "#cccccc", marginVertical: 4 },
   twoColumn: { flexDirection: "row" },
@@ -51,13 +40,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   columnLast: { flex: 1, padding: 4, borderWidth: 1, borderColor: "#cccccc" },
-  warningBox: {
-    borderWidth: 1,
-    borderColor: "#d9534f",
-    padding: 6,
-    marginVertical: 6,
-  },
-  warningText: { fontSize: 9, lineHeight: 1.2 },
   listItem: { flexDirection: "row", alignItems: "flex-start" },
   bullet: {
     width: 4,
@@ -66,15 +48,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#141414",
     marginRight: 4,
     marginTop: 4,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    textAlign: "center",
-    fontSize: 8,
-    color: "#666666",
   },
 });
 
@@ -89,16 +62,7 @@ export default function ConfirmPDF({ booking }) {
     );
   }
 
-  const {
-    car,
-    insurance,
-    extras,
-    search,
-    contact,
-    discount,
-    orderNumber,
-    coupon,
-  } = booking;
+  const { car, insurance, extras, search, contact, discount } = booking;
 
   // Fecha y hora actuales formato MMDDYYYY hh:mm AM/PM
   const now = new Date();
@@ -150,7 +114,7 @@ export default function ConfirmPDF({ booking }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header tipo rentcars: logo a la derecha, título grande a la izquierda */}
+        {/* Header: logo a la derecha, título grande a la izquierda */}
         <View
           style={{
             flexDirection: "row",
@@ -167,20 +131,8 @@ export default function ConfirmPDF({ booking }) {
                 marginBottom: 2,
               }}
             >
-              Confirmación de la
-              {"\n"}reserva
+              Confirmación de la{"\n"}reserva
             </Text>
-            {coupon && (
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: "Helvetica-Bold",
-                  marginBottom: 6,
-                }}
-              >
-                Cupón: {coupon}
-              </Text>
-            )}
             <Text style={styles.sectionLabel}>ARRENDATARIO</Text>
             <Text
               style={[
@@ -220,16 +172,10 @@ export default function ConfirmPDF({ booking }) {
                 <Text style={styles.sectionValue}>{booking.tsdConfirmNum}</Text>
               </>
             )}
-            {/* <Text style={[styles.sectionValue, { fontSize: 12 }]}>
-              {totalValue.toLocaleString("es-MX", {
-                style: "currency",
-                currency: "MXN",
-              })}
-            </Text> */}
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[styles.sectionLabel, { fontSize: 12 }]}>
-              Recepción
+              RECEPCIÓN
             </Text>
             <Text style={styles.sectionValue}>
               {new Date(search.pickupDate).toLocaleString("es-MX", {
@@ -239,6 +185,14 @@ export default function ConfirmPDF({ booking }) {
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de Recepción
+            </Text>
+            {/* Ahora usamos "ciudad" en lugar de "nombre" */}
+            <Text style={styles.italicValue}>
+              {search.pickupLocation?.ciudad
+                ? search.pickupLocation.ciudad
+                    .toLowerCase()
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                : "[Ciudad no disponible]"}
             </Text>
             <Text style={styles.sectionValue}>
               {search.pickupLocation?.direccion ??
@@ -256,6 +210,21 @@ export default function ConfirmPDF({ booking }) {
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de devolución
+            </Text>
+            {/* Para devolución, si es misma oficina, agregamos "ciudad"; si no, usamos "city" */}
+            <Text style={styles.italicValue}>
+              {search.sameOffice
+                ? search.pickupLocation?.ciudad
+                    .toLowerCase()
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                : search.returnLocation?.city
+                ? // Convertir "CDMX" a "Ciudad Cdmx"
+                  `Ciudad ${search.returnLocation.city
+                    .charAt(0)
+                    .toUpperCase()}${search.returnLocation.city
+                    .slice(1)
+                    .toLowerCase()}`
+                : "[Ciudad no disponible]"}
             </Text>
             <Text style={styles.sectionValue}>
               {search.sameOffice
@@ -287,6 +256,13 @@ export default function ConfirmPDF({ booking }) {
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de Recepción
             </Text>
+            <Text style={styles.italicValue}>
+              {search.pickupLocation?.ciudad
+                ? search.pickupLocation.ciudad
+                    .toLowerCase()
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                : "[Ciudad no disponible]"}
+            </Text>
             <Text style={styles.sectionValue}>
               {search.pickupLocation?.direccion ??
                 "[Dirección de Recepción no disponible]"}
@@ -303,6 +279,19 @@ export default function ConfirmPDF({ booking }) {
             </Text>
             <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
               Dirección de devolución
+            </Text>
+            <Text style={styles.italicValue}>
+              {search.sameOffice
+                ? search.pickupLocation?.ciudad
+                    .toLowerCase()
+                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                : search.returnLocation?.city
+                ? `Ciudad ${search.returnLocation.city
+                    .charAt(0)
+                    .toUpperCase()}${search.returnLocation.city
+                    .slice(1)
+                    .toLowerCase()}`
+                : "[Ciudad no disponible]"}
             </Text>
             <Text style={styles.sectionValue}>
               {search.sameOffice
@@ -365,9 +354,9 @@ export default function ConfirmPDF({ booking }) {
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>
+        {/* <Text style={styles.footer}>
           Gracias por tu preferencia • www.qardeal.com
-        </Text>
+        </Text> */}
       </Page>
     </Document>
   );
