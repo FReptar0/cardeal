@@ -112,6 +112,8 @@ export default async function handler(req, res) {
     const booking = await validateBookingExists(db, mp_order, res);
     if (!booking) return;
 
+    let confirmNum = null;
+
     await db.collection("bookings").updateOne(
       { _id: mp_order },
       {
@@ -162,6 +164,7 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
+      console.log("Respuesta completa de TSD:", JSON.stringify(tsdJson, null, 2));
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
