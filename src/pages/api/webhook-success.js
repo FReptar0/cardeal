@@ -2,6 +2,7 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { logWebhook } from "@/utils/logger";
+import { encryptId } from "@/utils/encryption";
 
 async function validateBookingExists(db, mp_order, res) {
   const booking = await db.collection("bookings").findOne({ _id: mp_order });
@@ -112,6 +113,8 @@ export default async function handler(req, res) {
     const booking = await validateBookingExists(db, mp_order, res);
     if (!booking) return;
 
+    let confirmNum = null;
+
     await db.collection("bookings").updateOne(
       { _id: mp_order },
       {
@@ -162,6 +165,10 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
+      console.log(
+        "Respuesta completa de TSD:",
+        JSON.stringify(tsdJson, null, 2)
+      );
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
@@ -178,21 +185,31 @@ export default async function handler(req, res) {
             { _id: mp_order },
             { $set: { tsdConfirmNum: confirmNum } }
           );
+        await logWebhook({
+          webhook: "success",
+          type: "success",
+          mp_order,
+          payload: req.body,
+          message: "Pago registrado correctamente",
+          details: {
+            tsdConfirmNum: confirmNum,
+          },
+        });
       } else {
         console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
+        await logWebhook({
+          webhook: "success",
+          type: "internal_error",
+          mp_order,
+          payload: req.body,
+          message: "Error interno al procesar el webhook",
+          details: { error: "TSD no devolvió confirmNum" },
+        });
       }
     }
 
-    await logWebhook({
-      webhook: "success",
-      type: "success",
-      mp_order,
-      payload: req.body,
-      message: "Pago registrado correctamente",
-      details: { tsdConfirmNum: booking.tsdConfirmNum || confirmNum || null },
-    });
-
-    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
+    const encryptedId = encryptId(mp_order);
+    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
   } catch (err) {
