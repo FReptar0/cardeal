@@ -2,6 +2,7 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { logWebhook } from "@/utils/logger";
+import { encryptId } from "@/utils/encryption";
 
 async function validateBookingExists(db, mp_order, res) {
   const booking = await db.collection("bookings").findOne({ _id: mp_order });
@@ -207,7 +208,8 @@ export default async function handler(req, res) {
       }
     }
 
-    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${mp_order}`;
+    const encryptedId = encryptId(mp_order);
+    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
   } catch (err) {
