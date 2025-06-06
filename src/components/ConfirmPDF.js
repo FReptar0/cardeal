@@ -392,6 +392,18 @@ export default function ConfirmPDF({ booking }) {
             )}
           </View>
         </View>
+        {/* Enlace a retenciones fuera de la sección de reserva */}
+        <Text
+          style={{
+            marginTop: 18,
+            fontSize: 10,
+            color: "#10906a",
+            textDecoration: "underline",
+          }}
+          src="https://cardeal-beige.vercel.app/retenciones"
+        >
+          Consulta aquí la tabla de retenciones de depósito en garantía
+        </Text>
       </Page>
     </Document>
   );
