@@ -137,6 +137,30 @@ export default function ConfirmPDF({ booking }) {
       timeStyle: "short",
     });
 
+  // Cálculos de cargos (igual que en [id].js)
+  const carPrice = booking.paidOnline ? car.price : car.price2;
+  const subtotal = carPrice * days;
+  const insuranceCost = insurance
+    ? parseFloat(insurance.total.replace(/[^\d.]/g, "")) * days
+    : 0;
+  const extrasCost = Array.isArray(booking.extras)
+    ? booking.extras.reduce((sum, item) => {
+        const precio = Number(item.precio?.$numberInt ?? item.precio);
+        return sum + precio * Number(item.cantidad) * days;
+      }, 0)
+    : 0;
+  const otherCharges = (subtotal + extrasCost + insuranceCost) * 0.23;
+  const subTotal = subtotal + extrasCost + insuranceCost + otherCharges;
+  const iva = subTotal * 0.16;
+  const total = subTotal + iva;
+  const totalWithDiscount =
+    booking.discount > 0 ? total - booking.discount : total;
+  const formatCurrency = (amt) => {
+    const num = Number(amt);
+    if (isNaN(num)) return "$0.00";
+    return num.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -392,18 +416,190 @@ export default function ConfirmPDF({ booking }) {
             )}
           </View>
         </View>
-        {/* Enlace a retenciones fuera de la sección de reserva */}
-        <Text
+        {/* Resumen de cargos y total a pagar */}
+        <View
           style={{
-            marginTop: 18,
-            fontSize: 10,
-            color: "#10906a",
-            textDecoration: "underline",
+            marginTop: 28,
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+            width: "100%",
           }}
-          src="https://cardeal-beige.vercel.app/retenciones"
         >
-          Consulta aquí la tabla de retenciones de depósito en garantía
-        </Text>
+          {/* Depósito en garantía a la izquierda, resumen de cargos a la derecha */}
+          <View
+            style={{
+              flex: 1,
+              maxWidth: 260,
+              marginRight: 32,
+              alignItems: "flex-start",
+              display: "flex",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: "#f3f7f5",
+                borderRadius: 8,
+                padding: 14,
+                border: "1px solid #e0e0e0",
+                marginBottom: 4,
+                boxSizing: "border-box",
+                minWidth: 180,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "Helvetica-Bold",
+                  color: "#10906a",
+                  fontSize: 11,
+                  marginBottom: 7,
+                }}
+              >
+                Depósito en garantía
+              </Text>
+              <Text
+                style={{
+                  fontSize: 9.5,
+                  color: "#333",
+                  marginBottom: 9,
+                  lineHeight: 1.35,
+                }}
+              >
+                Para recoger tu vehículo es indispensable realizar un depósito
+                en garantía con tarjeta de crédito a nombre del titular de la
+                reserva. El monto varía según el tipo de vehículo y la
+                protección seleccionada. Consulta la tabla de retenciones para
+                conocer el importe exacto y asegúrate de contar con el saldo
+                disponible antes de tu viaje.
+              </Text>
+              <Text
+                style={{
+                  fontSize: 9.5,
+                  color: "#10906a",
+                  textDecoration: "underline",
+                  marginTop: 2,
+                }}
+                src="https://cardeal-beige.vercel.app/retenciones"
+              >
+                Consulta aquí la tabla de retenciones de depósito en garantía
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              minWidth: 220,
+              padding: 14,
+              border: "1px solid #e0e0e0",
+              borderRadius: 8,
+              backgroundColor: "#f8f8f8",
+              boxSizing: "border-box",
+            }}
+          >
+            <Text
+              style={[styles.sectionLabel, { fontSize: 12, marginBottom: 8 }]}
+            >
+              Resumen de cargos
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 2,
+              }}
+            >
+              <Text style={styles.sectionValue}>Subtotal vehículo:</Text>
+              <Text style={styles.sectionValue}>
+                {formatCurrency(subtotal)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 2,
+              }}
+            >
+              <Text style={styles.sectionValue}>Extras:</Text>
+              <Text style={styles.sectionValue}>
+                {formatCurrency(extrasCost)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 2,
+              }}
+            >
+              <Text style={styles.sectionValue}>Seguro:</Text>
+              <Text style={styles.sectionValue}>
+                {formatCurrency(insuranceCost)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 2,
+              }}
+            >
+              <Text style={styles.sectionValue}>Otros cargos:</Text>
+              <Text style={styles.sectionValue}>
+                {formatCurrency(otherCharges)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 2,
+              }}
+            >
+              <Text style={styles.sectionValue}>IVA (16%):</Text>
+              <Text style={styles.sectionValue}>{formatCurrency(iva)}</Text>
+            </View>
+            {booking.discount > 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 2,
+                }}
+              >
+                <Text style={[styles.sectionValue, { color: "#c62828" }]}>
+                  Descuento:
+                </Text>
+                <Text style={[styles.sectionValue, { color: "#c62828" }]}>
+                  - {formatCurrency(booking.discount)}
+                </Text>
+              </View>
+            )}
+            <View
+              style={{ borderTop: "1px solid #e0e0e0", marginVertical: 8 }}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 2,
+              }}
+            >
+              <Text style={[styles.sectionLabel, { fontSize: 13 }]}>
+                Total a pagar:
+              </Text>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: "#10906a",
+                  fontFamily: "Helvetica-Bold",
+                }}
+              >
+                {formatCurrency(totalWithDiscount)}
+              </Text>
+            </View>
+          </View>
+        </View>
       </Page>
     </Document>
   );
