@@ -8,6 +8,7 @@ Cardeal is a full-stack web application that enables users to search, select, an
 
 
 
+
 ## Features
 
 - **Car Search & Selection**: Real-time availability and pricing through TSD integration
