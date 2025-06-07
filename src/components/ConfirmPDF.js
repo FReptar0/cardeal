@@ -66,14 +66,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 4,
     borderWidth: 1,
-    borderColor: "#cccccc",
-    marginRight: 4,
+    border: "1px solid #e0e0e0",
+    borderRadius: 8,
+    backgroundColor: "#f8f8f8",
+    boxSizing: "border-box",
+    margin: 2,
   },
   columnLast: {
     flex: 1,
     padding: 4,
-    borderWidth: 1,
-    borderColor: "#cccccc",
+    border: "1px solid #e0e0e0",
+    borderRadius: 8,
+    backgroundColor: "#f8f8f8",
+    boxSizing: "border-box",
+    margin: 2,
   },
   listItem: {
     flexDirection: "row",
@@ -177,10 +183,6 @@ export default function ConfirmPDF({ booking }) {
             >
               {contact.fullName || "NOMBRE COMPLETO"}
             </Text>
-
-            {/* --------- AÑADIDO: Datos de vehículo, extras, días y fechas --------- */}
-            <View style={{ marginTop: 8 }}></View>
-            {/* ------------------------------------------------------------- */}
           </View>
           <Image
             src="/logos/Qardeal-original.png"
@@ -419,7 +421,7 @@ export default function ConfirmPDF({ booking }) {
         {/* Resumen de cargos y total a pagar */}
         <View
           style={{
-            marginTop: 28,
+            marginTop: 10, // reducido de 28 a 10 para disminuir el espacio
             flexDirection: "row",
             justifyContent: "flex-end",
             alignItems: "flex-start",
