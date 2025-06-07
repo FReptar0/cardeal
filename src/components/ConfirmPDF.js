@@ -421,7 +421,7 @@ export default function ConfirmPDF({ booking }) {
         {/* Resumen de cargos y total a pagar */}
         <View
           style={{
-            marginTop: 10, // reducido de 28 a 10 para disminuir el espacio
+            marginTop: 4, // reducido de 28 a 10 para disminuir el espacio
             flexDirection: "row",
             justifyContent: "flex-end",
             alignItems: "flex-start",
@@ -433,7 +433,7 @@ export default function ConfirmPDF({ booking }) {
             style={{
               flex: 1,
               maxWidth: 260,
-              marginRight: 32,
+              marginRight: 4,
               alignItems: "flex-start",
               display: "flex",
             }}
@@ -490,6 +490,7 @@ export default function ConfirmPDF({ booking }) {
           <View
             style={{
               minWidth: 220,
+              maerginLeft: 4,
               padding: 14,
               border: "1px solid #e0e0e0",
               borderRadius: 8,
