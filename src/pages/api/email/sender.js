@@ -1,14 +1,25 @@
+import { getEmailData } from '@/emails/templateResolver';
 import * as nodeMailer from 'nodemailer';
 export default async function handler(req, res) {
 
     try {
-        const { to, subject, text, html } = req.body;
+        const { to, templateId, data } = req.body;
+
+        let responseGetEmailData
 
         if (req.method !== 'POST')
             return res.status(405).json({ message: 'Método no permitido' });
 
-        if (!to || !subject || !text || !templateId || !data)
-            return res.status(400).json({ message: 'Faltan parámetros: to, subject, text o html' });
+        if (!to || !templateId || !data)
+            return res.status(400).json({ message: 'Faltan parámetros: to, templateId o data' });
+
+
+        try {
+            responseGetEmailData = getEmailData(templateId, data);
+        } catch (error) {
+            console.error('Error al obtener la plantilla de email:', error);
+            return res.status(400).json({ message: 'Plantilla de email no encontrada', error: error.message });
+        }
 
         const transport = nodeMailer.createTransport({
             service: 'gmail',
@@ -24,9 +35,8 @@ export default async function handler(req, res) {
         const mailOptions = {
             from: process.env.GMAIL_SENDER_EMAIL,
             to,
-            subject,
-            text,
-            html
+            subject: responseGetEmailData.subject,
+            html: responseGetEmailData.template,
         };
 
         const info = await transport.sendMail(mailOptions);
