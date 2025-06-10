@@ -1,7 +1,7 @@
 // pages/api/webhook-success.js
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
-import { logWebhook } from "@/utils/logger";
+import { logEvent } from "@/utils/logger";
 import { encryptId } from "@/utils/encryption";
 
 async function validateBookingExists(db, mp_order, res) {
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       received: mp_signature,
     });
 
-    await logWebhook({
+    await logEvent({
       webhook: "success",
       type: "invalid_signature",
       mp_order,
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       mp_authorization
     );
 
-    await logWebhook({
+    await logEvent({
       webhook: "success",
       type: "invalid_auth",
       mp_order,
@@ -185,7 +185,7 @@ export default async function handler(req, res) {
             { _id: mp_order },
             { $set: { tsdConfirmNum: confirmNum } }
           );
-        await logWebhook({
+        await logEvent({
           webhook: "success",
           type: "success",
           mp_order,
@@ -197,7 +197,7 @@ export default async function handler(req, res) {
         });
       } else {
         console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
-        await logWebhook({
+        await logEvent({
           webhook: "success",
           type: "internal_error",
           mp_order,
@@ -214,7 +214,7 @@ export default async function handler(req, res) {
     return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error("Error inesperado en webhook-success:", err);
-    await logWebhook({
+    await logEvent({
       webhook: "success",
       type: "internal_error",
       mp_order,
