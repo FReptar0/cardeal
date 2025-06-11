@@ -1,5 +1,4 @@
 # Cardeal - Car Rental Booking Platform
-
 A Next.js-based car rental booking application that integrates with external services to provide a complete rental experience from search to confirmation.
 
 ## Overview
