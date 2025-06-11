@@ -2,16 +2,24 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { Box } from "@mui/material";
 import ChatBubble from "./ChatBubble";
+import { useRouter } from "next/router";
 
 const Layout = ({ children }) => {
+  const router = useRouter();
+
+  // Rutas donde no se deben mostrar Header y Footer
+  const hideLayout = ["/verify"];
+
+  const shouldHideLayout = hideLayout.includes(router.pathname);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Header />
+      {!shouldHideLayout && <Header />}
       <Box component="main" sx={{ flex: 1 }}>
         {children}
       </Box>
-      <ChatBubble />
-      <Footer />
+      {!shouldHideLayout && <ChatBubble />}
+      {!shouldHideLayout && <Footer />}
     </Box>
   );
 };
