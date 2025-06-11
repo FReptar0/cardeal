@@ -245,7 +245,7 @@ const FAQ = () => {
         <AccordionDetails>
           <Typography>
             Se refiere a los costos derivados del uso del vehículo que son
-            obligaciones del arrendatario, tales como extravío de plagas,
+            obligaciones del arrendatario, tales como extravío de placas,
             tarjeta de circulación, pérdida de documentos, pago de deducibles,
             servicios de grúas, gestoría, notarías, gastos legales por
             recuperación vehicular y cuotas locales o federales.
