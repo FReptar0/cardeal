@@ -42,7 +42,7 @@ const basePlanesSeguros = [
     code: "", // No hay código TSD para "none"
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
-      "Responsabilidad Civil: RASGO 300 MIL",
+      "Responsabilidad Civil: HASTA 300 MIL",
       "Protección de Robo: RESPONSABLE 100%",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
       "Gastos médicos ocupantes: NO INCLUYE",
@@ -151,7 +151,9 @@ const SeguroVehiculo = () => {
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
   // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
-  const effectivePlanesSeguros = getPlanesSeguros(selectedCar?.abbreviation || "");
+  const effectivePlanesSeguros = getPlanesSeguros(
+    selectedCar?.abbreviation || ""
+  );
 
   useEffect(() => {
     if (
@@ -304,7 +306,7 @@ const SeguroVehiculo = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedInsurance || selectedInsurance.total === "0.00") {
+    if (!selectedInsurance) {
       setOpenWarning(true);
     } else {
       console.log(
