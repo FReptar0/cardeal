@@ -61,7 +61,7 @@ const Footer = () => {
                       sx={{
                         color: "inherit",
                         transition: "transform 0.3s, color 0.3s",
-                        '&:hover': {
+                        "&:hover": {
                           color: "#3b5998", // Color azul de Facebook
                           transform: "scale(1.2)",
                         },
@@ -77,13 +77,29 @@ const Footer = () => {
                       sx={{
                         color: "inherit",
                         transition: "transform 0.3s, color 0.3s",
-                        '&:hover': {
+                        "&:hover": {
                           color: "#E1306C", // Color rosa de Instagram
                           transform: "scale(1.2)",
                         },
                       }}
                     >
                       <Instagram />
+                    </IconButton>
+                    <IconButton
+                      component="a"
+                      href="https://www.linkedin.com/company/qardeal"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: "inherit",
+                        transition: "transform 0.3s, color 0.3s",
+                        "&:hover": {
+                          color: "#0077b5", // Color azul de LinkedIn
+                          transform: "scale(1.2)",
+                        },
+                      }}
+                    >
+                      <LinkedIn />
                     </IconButton>
                   </Box>
                 </Box>
@@ -220,9 +236,9 @@ const Footer = () => {
                     marginTop: "10px",
                     color: "inherit",
                     textDecoration: "none",
-                    '&:hover': {
-                      textDecoration: 'underline',
-                      cursor: 'pointer',
+                    "&:hover": {
+                      textDecoration: "underline",
+                      cursor: "pointer",
                     },
                   }}
                   component="a"
