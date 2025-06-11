@@ -34,7 +34,7 @@ export default function Sucursales() {
       link: "https://maps.app.goo.gl/7VXfPvDwTpXLHX6f7",
       wazeLink:
         "https://ul.waze.com/ul?place=ChIJc2NKtCED0oURAHZjN8CoZhE&ll=19.50052010%2C-99.23726180&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location",
-      hours: "Horario de atención: 9:00 AM - 6:00 PM",
+      hours: "Horario de atención: 9:00 AM - 8:00 PM",
     },
   ];
 
