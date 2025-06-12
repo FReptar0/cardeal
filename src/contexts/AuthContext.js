@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [jwt, setJwt] = useState(null);
   const [sessionStart, setSessionStart] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isVerified, setIsVerified] = useState(true);
 
   const isJwtExpired = (token) => {
     try {
@@ -20,11 +21,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const decodeJwt = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload;
+    } catch {
+      return null;
+    }
+  };
+
   // Al montar el componente, intenta leer los datos del localStorage
   useEffect(() => {
     const storedJwt = localStorage.getItem("authJwt");
     const storedSessionStart = localStorage.getItem("sessionStart");
     const storedIsLoggedIn = localStorage.getItem("isLoggedIn");
+    const storedIsVerified = localStorage.getItem("isVerified");
 
     if (storedJwt && storedSessionStart && storedIsLoggedIn === "true") {
       if (isJwtExpired(storedJwt)) {
@@ -33,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         setJwt(storedJwt);
         setSessionStart(new Date(storedSessionStart));
         setIsLoggedIn(true);
+        setIsVerified(storedIsVerified === "true"); 
       }
     }
   }, []);
@@ -63,9 +75,16 @@ export const AuthProvider = ({ children }) => {
   // Función para iniciar sesión: guarda el JWT, la fecha de inicio y establece el status en true
   const login = (token) => {
     return new Promise((resolve) => {
+      const payload = decodeJwt(token);
       setJwt(token);
       setSessionStart(new Date());
       setIsLoggedIn(true);
+      setIsVerified(payload?.isVerified ?? true);
+
+      localStorage.setItem(
+        "isVerified",
+        (payload?.isVerified ?? true).toString()
+      );
 
       setTimeout(() => {
         resolve(token);
@@ -85,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ jwt, sessionStart, isLoggedIn, login, logout }}
+      value={{ jwt, sessionStart, isLoggedIn, isVerified, login, logout }}
     >
       {children}
     </AuthContext.Provider>

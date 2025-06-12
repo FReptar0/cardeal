@@ -41,6 +41,7 @@ export default async function handler(req, res) {
             {
                 userId: user._id,
                 email: user.email,
+                isVerified: user.isVerified,
             },
             JWT_SECRET,
             remember ? { expiresIn: '10y' } : { expiresIn: '1h' }
