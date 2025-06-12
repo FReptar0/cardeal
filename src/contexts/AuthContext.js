@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ jwt, sessionStart, isLoggedIn, isVerified, login, logout }}
+      value={{ jwt, sessionStart, isLoggedIn, isVerified, login, logout, setIsVerified}}
     >
       {children}
     </AuthContext.Provider>

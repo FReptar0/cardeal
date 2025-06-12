@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
                 variant="body2"
                 sx={{ color: "#a15b00", fontWeight: 500 }}
               >
-                ¡Tu cuenta aún no ha sido verificada! Revisa tu correo y haz
+                ¡Tu cuenta aún no ha sido verificada! Revisa el correo registrado y haz
                 clic en el enlace de verificación.
               </Typography>
             </Box>

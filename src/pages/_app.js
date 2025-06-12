@@ -11,6 +11,7 @@ import Layout from "../components/Layout";
 import { SearchProvider } from "../contexts/SearchContext";
 import { BookingProvider } from "../contexts/BookingContext";
 import { AuthProvider } from "../contexts/AuthContext"; // Importamos el AuthProvider
+import { ToastContainer } from "react-toastify";
 
 function MyApp({ Component, pageProps }) {
   const useLayout = Component.useLayout ?? true;
@@ -39,6 +40,7 @@ function MyApp({ Component, pageProps }) {
               ) : (
                 <Component {...pageProps} />
               )}
+                <ToastContainer position="top-right" autoClose={2000} />
             </AuthProvider>
           </BookingProvider>
         </SearchProvider>
