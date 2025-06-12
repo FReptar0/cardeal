@@ -59,6 +59,7 @@ export default async function handler(req, res) {
       body: xmlBody,
     });
     const xml = await response.text();
+    //console.log("Respuesta XML de TSD:", xml);
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
