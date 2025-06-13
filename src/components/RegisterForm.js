@@ -111,7 +111,7 @@ const RegisterForm = ({ onToggle }) => {
     };
 
     return (
-        <Box sx={{ width: "100%", maxWidth: 400 }}>
+        <Box sx={{ width: "100%", maxWidth: 400, userSelect: "none", outline: "none" }} tabIndex={-1}>
             <ToastContainer position="top-center" autoClose={5000} />
 
             <Box

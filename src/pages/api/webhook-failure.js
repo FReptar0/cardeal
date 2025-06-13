@@ -2,7 +2,7 @@
 import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { encryptId } from "@/utils/encryption";
-import { logWebhook } from "@/utils/logger";
+import { logEvent } from "@/utils/logger";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       expected,
       received: mp_signature,
     });
-    await logWebhook({
+    await logEvent({
       webhook: "failure",
       type: "invalid_signature",
       mp_order,
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       "Pago NO aprobado por el banco (failure). mp_authorization inválido:",
       mp_authorization
     );
-    await logWebhook({
+    await logEvent({
       webhook: "failure",
       type: "invalid_auth",
       mp_order,
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
 
     if (result.matchedCount === 0) {
       console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
-      await logWebhook({
+      await logEvent({
         webhook: "failure",
         type: "booking_not_found",
         mp_order,
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
       return res.status(404).send("Reserva no encontrada");
     }
 
-    await logWebhook({
+    await logEvent({
       webhook: "failure",
       type: "failure_handled",
       mp_order,
@@ -116,7 +116,7 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("❌ Error actualizando reserva (failure):", err);
 
-    await logWebhook({
+    await logEvent({
       webhook: "failure",
       type: "internal_error",
       mp_order,

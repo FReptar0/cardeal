@@ -1,6 +1,6 @@
 import { connectToDatabase } from "@/utils/mongodb";
 
-export async function logWebhook({ webhook, type, mp_order, payload, message, details }) {
+export async function logEvent({ webhook, type, mp_order, payload, message, details }) {
   try {
     const { db } = await connectToDatabase();
     await db.collection("logs_webhooks").insertOne({
