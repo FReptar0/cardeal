@@ -76,7 +76,8 @@ const LoginForm = ({ onToggle }) => {
     };
 
     return (
-        <Box sx={{ width: "100%", maxWidth: 400 }}>
+        <Box sx={{ width: "100%", maxWidth: 400, userSelect: "none", outline: "none"}}
+        tabIndex={-1}>
             {/* Toast Container para mostrar los mensajes */}
             <ToastContainer position="top-center" autoClose={5000} />
 
@@ -139,7 +140,7 @@ const LoginForm = ({ onToggle }) => {
                         control={<Checkbox {...register("remember")} />}
                         label="Recordarme"
                     />
-                    <Typography variant="body2" sx={{ cursor: "pointer" }}>
+                    <Typography variant="body2" sx={{ cursor: "pointer" }} onClick={() => router.push("/recuperar-cuenta")}>
                         ¿Olvidaste tu contraseña?
                     </Typography>
                 </Box>

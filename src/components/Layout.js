@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
   console.log("isLoggedIn:", isLoggedIn);
   console.log("isVerified:", isVerified);
 
-  const hideLayout = ["/verify"];
+  const hideLayout = ["/verify", "/recuperar-cuenta", "/cambiar-acceso"];
   const shouldHideLayout = hideLayout.includes(router.pathname);
 
   return (
