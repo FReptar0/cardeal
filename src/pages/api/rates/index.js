@@ -67,13 +67,15 @@ export default async function handler(req, res) {
     products = Array.isArray(products) ? products : [products];
 
     // console.log("RateProducts:", products);
-    // Simplificamos a [{ category, baseRate, totalCharges }, …]
-    const rates = products.map((rp) => ({
-      category: rp.ClassCode,
-      rateId: rp.RateID,
-      baseRate: rp.RateAmount,
-      totalCharges: rp.TotalPricing?.TotalCharges,
-    }));
+    // Filtrar solo los productos con RateCode === 'BASIC'
+    const rates = products
+      .filter((rp) => rp.RateCode === 'BASIC')
+      .map((rp) => ({
+        category: rp.ClassCode,
+        rateId: rp.RateID,
+        baseRate: rp.RateAmount,
+        totalCharges: rp.TotalPricing?.TotalCharges,
+      }));
 
     res.status(200).json(rates);
   } catch (error) {
