@@ -1,12 +1,12 @@
 import React, { use, useEffect } from "react";
-import { Box } from "@mui/material";
+import { Box, Container, Typography, Divider } from "@mui/material";
 import Carousel from "../components/Carousel";
 import Hero from "../components/Hero";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 
 export default function Index() {
-  const {clearSearch} = useSearch();
+  const { clearSearch } = useSearch();
   const { clearBooking } = useBooking();
   useEffect(() => {
     clearSearch();
@@ -49,27 +49,43 @@ export default function Index() {
       </div>
 
       {/* Sección Nuestra Flota */}
-      <div
+      <Box
+        component="section"
         id="sectionTwo"
-        style={{
-          paddingTop: "80px",
-          paddingBottom: "40px",
-          width: "100%",
-          backgroundColor: "#fff",
-        }}
+        sx={{ bgcolor: "background.paper", py: { xs: 6, md: 10 } }}
       >
-        <div style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: "44px", marginBottom: "10px" }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: 700 }}
+          >
             Nuestra flota
-          </h2>
-          <p style={{ fontSize: "1.3rem", fontWeight: "600" }}>
+          </Typography>
+          <Divider
+            variant="middle"
+            sx={{
+              width: 60,
+              height: 4,
+              backgroundColor: "primary.main",
+              mx: "auto",
+              mb: 2,
+            }}
+          />
+          <Typography
+            variant="subtitle1"
+            align="center"
+            color="text.secondary"
+            sx={{ mb: 4 }}
+          >
             Tenemos los mejores autos de acuerdo a tus necesidades
-          </p>
-        </div>
-        <div style={{ width: "100%", marginTop: "-5%" }}>
-          <Carousel />
-        </div>
-      </div>
+          </Typography>
+          <Box sx={{ mx: -2, px: 2 }}>
+            <Carousel />
+          </Box>
+        </Container>
+      </Box>
     </Box>
   );
 }
