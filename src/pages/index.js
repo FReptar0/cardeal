@@ -1,5 +1,5 @@
 import React, { use, useEffect } from "react";
-import { Box, Container, Typography, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import Carousel from "../components/Carousel";
 import Hero from "../components/Hero";
 import { useSearch } from "@/contexts/SearchContext";
@@ -49,43 +49,27 @@ export default function Index() {
       </div>
 
       {/* Sección Nuestra Flota */}
-      <Box
-        component="section"
+      <div
         id="sectionTwo"
-        sx={{ bgcolor: "background.paper", py: { xs: 6, md: 10 } }}
+        style={{
+          paddingTop: "80px",
+          paddingBottom: "40px",
+          width: "100%",
+          backgroundColor: "#fff",
+        }}
       >
-        <Container maxWidth="lg">
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: 700 }}
-          >
+        <div style={{ textAlign: "center" }}>
+          <h2 style={{ fontSize: "44px", marginBottom: "10px" }}>
             Nuestra flota
-          </Typography>
-          <Divider
-            variant="middle"
-            sx={{
-              width: 60,
-              height: 4,
-              backgroundColor: "primary.main",
-              mx: "auto",
-              mb: 2,
-            }}
-          />
-          <Typography
-            variant="subtitle1"
-            align="center"
-            color="text.secondary"
-            sx={{ mb: 4 }}
-          >
+          </h2>
+          <p style={{ fontSize: "1.3rem", fontWeight: "600" }}>
             Tenemos los mejores autos de acuerdo a tus necesidades
-          </Typography>
-          <Box sx={{ mx: -2, px: 2 }}>
-            <Carousel />
-          </Box>
-        </Container>
-      </Box>
+          </p>
+        </div>
+        <div style={{ width: "100%", marginTop: "24px" }}>
+          <Carousel />
+        </div>
+      </div>
     </Box>
   );
 }
