@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
-const ExtrasLoader = () => {
+const Loader = ({ message = "Cargando" }) => {
   const [dots, setDots] = useState("");
 
   useEffect(() => {
@@ -25,15 +25,20 @@ const ExtrasLoader = () => {
         gap: 2,
       }}
     >
-      <CircularProgress sx={{ color: theme=> theme.palette.primary.buttons }} size={48} />
+      <CircularProgress sx={{ color: (theme) => theme.palette.primary.buttons }} size={48} />
       <Typography
         variant="h6"
-        sx={{ color: theme=> theme.palette.primary.buttons, fontWeight: "bold", textAlign: "center" }}
+        sx={{
+          color: (theme) => theme.palette.primary.buttons,
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
       >
-        Cargando extras disponibles{dots}
+        {message}
+        {dots}
       </Typography>
     </Box>
   );
 };
 
-export default ExtrasLoader;
+export default Loader;

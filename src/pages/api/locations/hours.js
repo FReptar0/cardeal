@@ -44,8 +44,6 @@ export default async function handler(req, res) {
   `;
 
   try {
-    // console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
-
     const response = await fetch(TSD_ENDPOINT, {
       method: "POST",
       headers: {
@@ -54,15 +52,26 @@ export default async function handler(req, res) {
       body: xmlBody,
     });
 
+    // Si la respuesta no es ok, lanzamos error manual
+    if (!response.ok) {
+      throw new Error(`TSD respondió con status ${response.status}`);
+    }
+
     const xml = await response.text();
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     const hours = json?.PRE?.TRNXML?.Payload?.RentalLocation?.BusinessHours;
-    //console.log("JSON completo:", JSON.stringify(json, null, 2));
-
     res.status(200).json(hours || {});
   } catch (error) {
-    console.error("Error al consultar horarios:", error);
-    res.status(500).json({ error: "No se pudo obtener horarios" });
+    console.error("❌ Error al consultar horarios:", error);
+
+    // Puedes decidir si enviar un 200 vacío o un 500 con mensaje controlado
+    res
+      .status(200)
+      .json({
+        error: true,
+        message: "No se pudo obtener horarios",
+        details: error.message,
+      });
   }
 }

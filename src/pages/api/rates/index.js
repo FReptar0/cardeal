@@ -63,13 +63,22 @@ export default async function handler(req, res) {
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
-    let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
+    let products = json?.PRE?.TRNXML?.Payload?.RateProduct;
+
+    if (!products) {
+      // Si no hay productos, devolvemos un arreglo vacío con un mensaje controlado
+      return res.status(200).json([]);
+    }
+
     products = Array.isArray(products) ? products : [products];
 
-    // console.log("RateProducts:", products);
     // Filtrar solo los productos con RateCode === 'BASIC'
+
+
+    // I kind of forgot why I filtered by BASIC, but it seems to be the only one we care about
+    
     const rates = products
-      .filter((rp) => rp.RateCode === 'BASIC')
+      .filter((rp) => rp.RateCode === "BASIC")
       .map((rp) => ({
         category: rp.ClassCode,
         rateId: rp.RateID,
@@ -77,7 +86,7 @@ export default async function handler(req, res) {
         totalCharges: rp.TotalPricing?.TotalCharges,
       }));
 
-    res.status(200).json(rates);
+    return res.status(200).json(Array.isArray(rates) ? rates : []);
   } catch (error) {
     console.error("Error al consumir REQRAT:", error);
     res.status(500).json({ error: "Error al procesar la solicitud" });

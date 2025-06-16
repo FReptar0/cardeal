@@ -85,20 +85,6 @@ export default function CheckoutPage() {
   const totalWithIva = subTotal + ivaCost;
   const totalWithIva2 = subTotal2 + ivaCost2;
 
-  // Add a console log to print protection and extras data
-  useEffect(() => {
-    console.log("Selected Insurance:", selectedInsurance);
-    console.log("Selected Extras:", selectedExtras);
-  }, [selectedInsurance, selectedExtras]);
-
-  useEffect(() => {
-    console.log("Selected Car:", selectedCar);
-  }, [selectedCar]);
-
-  useEffect(() => {
-    console.log("Selected Car Abbreviation:", selectedCar?.abbreviation);
-  }, [selectedCar]);
-
   useEffect(() => {
     if (!openTimerDialog) {
       setShowFloatingTimer(true);

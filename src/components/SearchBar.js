@@ -287,15 +287,27 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const fetchBusinessHours = async (locationId, setHoursFn, setLoadingFn) => {
     try {
       setLoadingFn?.(true);
+
       const res = await fetch("/api/locations/hours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locationId }),
       });
+
       const data = await res.json();
+
+      if (!res.ok || data?.error) {
+        console.warn(
+          "⚠️ Error al obtener horarios:",
+          data?.message || "Respuesta inválida"
+        );
+        setHoursFn(null);
+        return;
+      }
+
       setHoursFn(data);
     } catch (err) {
-      console.error("Error al obtener horarios:", err);
+      console.error("❌ Error al obtener horarios:", err);
       setHoursFn(null);
     } finally {
       setLoadingFn?.(false);

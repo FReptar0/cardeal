@@ -20,7 +20,7 @@ import RentalStepper from "../components/Stepper";
 import CompactHeader from "../components/CompactHeader";
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
-import ExtrasLoader from "../components/ExtrasLoader";
+import Loader from "@/components/Loader";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -267,7 +267,7 @@ const ExtrasRenta = () => {
       </Typography>
 
       {loadingExtras ? (
-        <ExtrasLoader />
+        <Loader message="Cargando extras disponibles" />
       ) : extrasDisponibles.length === 0 ? (
         <Box
           sx={{

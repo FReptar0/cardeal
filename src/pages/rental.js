@@ -22,6 +22,7 @@ import dynamic from "next/dynamic";
 // Importa el contexto global
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
+import Loader from "../components/Loader";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -77,40 +78,6 @@ export default function RentalPage() {
     }
   }, [selectedCarIndex]);
 
-  // Loader visual
-  const Loader = () => {
-    const [dots, setDots] = useState("");
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setDots((prev) => (prev.length < 3 ? prev + "." : ""));
-      }, 200); // Cambia cada medio segundo
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "20vh",
-          width: "100%",
-          gap: 2,
-        }}
-      >
-        <CircularProgress sx={{ color: theme => theme.palette.primary.text }} size={48} />
-        <Typography
-          variant="h6"
-          sx={{ color: theme => theme.palette.primary.text, fontWeight: "bold", textAlign: "center" }}
-        >
-          Cargando autos disponibles{dots}
-        </Typography>
-      </Box>
-    );
-  };
-
   // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
   const fetchRates = async (
     { pickupLocationId, returnLocationId, pickupDateTime, returnDateTime },
@@ -130,9 +97,15 @@ export default function RentalPage() {
         }),
       });
 
-      // console.log("🛞 Respuesta de TSD:", res);
       const rates = await res.json();
-      //console.log("🛞 Precios TSD por categoría:", rates);
+
+      if (!Array.isArray(rates)) {
+        console.warn("⚠️ La respuesta de tarifas no es un arreglo:", rates);
+        setCarsFn([]);
+        setLoadedFn(false);
+        setLoadingPrices(false);
+        return;
+      }
 
       // Filtrar rates para que solo quede el primer registro de cada categoría
       const uniqueRates = [];
@@ -288,11 +261,6 @@ export default function RentalPage() {
     const pickupDateTime = formatTSDDate(pickDt);
     const returnDateTime = formatTSDDate(retDt);
 
-    //console.log("filters", filters);
-    //console.log("pickupLocationId", filters.pickupLocation?.id);
-    //console.log("returnLocationId", filters.returnLocation?.id);
-    //console.log("sameOffice", filters.sameOffice);
-
     fetchRates(
       {
         pickupLocationId: filters.pickupLocation?.id,
@@ -369,12 +337,16 @@ export default function RentalPage() {
           }}
         >
           {loadingPrices ? (
-            <Loader />
+            <Loader message="Cargando autos disponibles" />
           ) : filteredCars.length === 0 ? (
             <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
               <Typography
                 variant="h5"
-                sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", mt: 4 }}
+                sx={{
+                  color: (theme) => theme.palette.secondary.text,
+                  fontWeight: "bold",
+                  mt: 4,
+                }}
               >
                 No hay autos disponibles para tu búsqueda.
               </Typography>
@@ -411,9 +383,9 @@ export default function RentalPage() {
             fontWeight: "bold",
             padding: "12px 30px",
             fontSize: "16px",
-            backgroundColor: theme => theme.palette.primary.buttons,
+            backgroundColor: (theme) => theme.palette.primary.buttons,
             "&:hover": {
-              backgroundColor: theme => theme.palette.primary.buttonsHover,
+              backgroundColor: (theme) => theme.palette.primary.buttonsHover,
             },
           }}
           onClick={handleContinue}
@@ -448,7 +420,7 @@ export default function RentalPage() {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: theme => theme.palette.secondary.buttons,
+              backgroundColor: (theme) => theme.palette.secondary.buttons,
               color: "white",
               fontWeight: "bold",
               padding: "12px 20px",
@@ -519,7 +491,7 @@ export default function RentalPage() {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: theme => theme.palette.secondary.buttons,
+                backgroundColor: (theme) => theme.palette.secondary.buttons,
                 color: "white",
                 fontWeight: "bold",
                 padding: "10px 16px",

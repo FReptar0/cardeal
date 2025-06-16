@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -26,6 +27,7 @@ import CompactHeader from "../components/CompactHeader";
 import dynamic from "next/dynamic";
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
+import Loader from "../components/Loader";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -150,24 +152,40 @@ const SeguroVehiculo = () => {
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
 
+  const [errorProtecciones, setErrorProtecciones] = useState(false);
+
   // Obtenemos el arreglo de planes con placeholders y codeTSD dinámico
   const effectivePlanesSeguros = getPlanesSeguros(
     selectedCar?.abbreviation || ""
   );
 
   useEffect(() => {
+    // 1) Solo arrancar cuando estén TODOS los datos
     if (
-      selectedCar?.abbreviation &&
-      searchData?.pickupLocation?.id &&
-      searchData?.returnLocation?.id &&
-      searchData?.pickupDate &&
-      searchData?.returnDate &&
-      searchData?.pickupTime &&
-      searchData?.returnTime
+      !selectedCar?.abbreviation ||
+      !searchData?.pickupLocation?.id ||
+      !searchData?.returnLocation?.id ||
+      !searchData?.pickupDate ||
+      !searchData?.returnDate ||
+      !searchData?.pickupTime ||
+      !searchData?.returnTime
     ) {
-      const fetchProtecciones = async () => {
-        setLoadingProtecciones(true);
+      return;
+    }
 
+    // 2) Resetea estados
+    setLoadingProtecciones(true);
+    setErrorProtecciones(false);
+
+    // 3) Timeout de expiración (15 s)
+    const timer = setTimeout(() => {
+      setLoadingProtecciones(false);
+      setErrorProtecciones(true); // forzamos un “error” para romper el loader
+    }, 5000);
+
+    // 4) Función de fetch
+    const fetchProtecciones = async () => {
+      try {
         const payload = {
           pickupLocationId: searchData.pickupLocation.id,
           returnLocationId: searchData.sameOffice
@@ -178,68 +196,46 @@ const SeguroVehiculo = () => {
           classCode: selectedCar.abbreviation,
         };
 
-        console.log("📤 [front] Body para /api/carInsurance:", payload);
+        const res = await fetch("/api/carInsurance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
-        try {
-          const response = await fetch("/api/carInsurance", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (!response.ok) {
-            console.error(
-              "❌ [front] /api/carInsurance devolvió status:",
-              response.status
-            );
-            setProteccionesDisponibles([]);
-            setLoadingProtecciones(false);
-            return;
-          }
-
-          const data = await response.json();
-          console.log("📥 [front] Respuesta JSON de /api/carInsurance:", data);
-
-          const rentalDays =
-            searchData && searchData.pickupDate && searchData.returnDate
-              ? Math.ceil(
-                  (new Date(searchData.returnDate) -
-                    new Date(searchData.pickupDate)) /
-                    (1000 * 60 * 60 * 24)
-                )
-              : 1;
-
-          console.log("🔢 [front] rentalDays calculados:", rentalDays);
-
-          const proteccionesConPrecioPorDia = data.map((extra) => {
-            const precioDia =
-              rentalDays > 0
-                ? parseFloat((extra.precioTotal / rentalDays).toFixed(2))
-                : parseFloat(extra.precioTotal.toFixed(2));
-            return {
-              codeExtras: extra.codeExtras,
-              precioDia,
-            };
-          });
-
-          console.log(
-            "🗂️ [front] proteccionesConPrecioPorDia:",
-            proteccionesConPrecioPorDia
-          );
-          setProteccionesDisponibles(proteccionesConPrecioPorDia);
-        } catch (error) {
-          console.error(
-            "❌ [front] Error al llamar a /api/carInsurance:",
-            error
-          );
-          setProteccionesDisponibles([]);
-        } finally {
-          setLoadingProtecciones(false);
+        if (!res.ok) {
+          const errorBody = await res.text();
+          throw new Error(`Error ${res.status}: ${errorBody}`);
         }
-      };
 
-      fetchProtecciones();
-    }
+        const data = await res.json();
+        const rentalDays = Math.max(
+          1,
+          Math.ceil(
+            (new Date(searchData.returnDate) -
+              new Date(searchData.pickupDate)) /
+              (1000 * 60 * 60 * 24)
+          )
+        );
+
+        const protecciones = data.map((extra) => ({
+          codeExtras: extra.codeExtras,
+          precioDia: parseFloat((extra.precioTotal / rentalDays).toFixed(2)),
+        }));
+
+        setProteccionesDisponibles(protecciones);
+      } catch (err) {
+        console.error("Error fetch /api/carInsurance:", err);
+        setProteccionesDisponibles([]);
+        setErrorProtecciones(true);
+      } finally {
+        clearTimeout(timer);
+        setLoadingProtecciones(false);
+      }
+    };
+
+    fetchProtecciones();
+
+    return () => clearTimeout(timer);
   }, [
     selectedCar?.abbreviation,
     searchData?.pickupLocation?.id,
@@ -266,6 +262,10 @@ const SeguroVehiculo = () => {
       };
     });
   }, [effectivePlanesSeguros, proteccionesDisponibles]);
+
+  const hayProtecciones = planesConPrecioDinamico.some(
+    (plan) => plan.id !== "none" && parseFloat(plan.total) > 0
+  );
 
   // —————————————————————————————————————————————————————————————————————————
   // Opción 1: seleccionar “Premium” solo cuando loadingProtecciones === false
@@ -371,7 +371,7 @@ const SeguroVehiculo = () => {
         que se va a cubrir al rentar un carro
       </Typography>
 
-      {loadingProtecciones ? (
+      {errorProtecciones ? (
         <Box
           sx={{
             height: "20vh",
@@ -380,7 +380,24 @@ const SeguroVehiculo = () => {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h6">Cargando protecciones…</Typography>
+          <Typography variant="h6" color="error">
+            No se pudieron cargar las protecciones.
+          </Typography>
+        </Box>
+      ) : loadingProtecciones ? (
+        <Loader message="Cargando protecciones" />
+      ) : !hayProtecciones ? (
+        <Box
+          sx={{
+            height: "20vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h6">
+            No hay protecciones disponibles para mostrar.
+          </Typography>
         </Box>
       ) : (
         <Grid
