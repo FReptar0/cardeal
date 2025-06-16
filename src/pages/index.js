@@ -6,7 +6,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 
 export default function Index() {
-  const {clearSearch} = useSearch();
+  const { clearSearch } = useSearch();
   const { clearBooking } = useBooking();
   useEffect(() => {
     clearSearch();
@@ -66,7 +66,7 @@ export default function Index() {
             Tenemos los mejores autos de acuerdo a tus necesidades
           </p>
         </div>
-        <div style={{ width: "100%", marginTop: "-5%" }}>
+        <div style={{ width: "100%", marginTop: "24px" }}>
           <Carousel />
         </div>
       </div>

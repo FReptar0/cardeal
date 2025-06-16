@@ -1,3 +1,4 @@
+// components/Carousel.js
 import React, { useRef } from "react";
 import Slider from "react-slick";
 import {
@@ -7,121 +8,140 @@ import {
   CardContent,
   Typography,
   IconButton,
+  useTheme,
 } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material"; // Íconos de flechas
+import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
+import cars from "../data/cars.json";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import cars from "../data/cars.json"; // Importar datos del JSON
 
-const Carousel = () => {
-  const sliderRef = useRef(null); // Referencia al Slider
+export default function Carousel() {
+  const sliderRef = useRef(null);
+  const theme = useTheme();
 
   const settings = {
     dots: true,
     infinite: true,
-    speed: 800, // Transición más fluida
-    slidesToShow: 3, // 3 por defecto
+    speed: 600,
+    slidesToShow: 3,
     slidesToScroll: 1,
-    autoplay: true, // Activa la animación automática
-    autoplaySpeed: 5000, // Cambia cada 5 segundos
+    arrows: false,
+    autoplay: true,
+    autoplaySpeed: 4500,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } }, // 2 en medianas
-      { breakpoint: 600, settings: { slidesToShow: 1 } }, // 1 en chicas
+      { breakpoint: 1200, settings: { slidesToShow: 2 } },
+      { breakpoint: 600, settings: { slidesToShow: 1 } },
     ],
-    centerMode: true,
-    centerPadding: "10px",
   };
-
-  const slogans = [
-    "Confort y estilo en cada viaje",
-    "La mejor elección para tu aventura",
-    "Seguridad y rendimiento garantizados",
-  ];
 
   return (
     <Box
-      id="sectionTwo"
       sx={{
-        height: "70vh",
-        width: "80%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        margin: "auto",
-        position: "relative", // Necesario para posicionar las flechas
+        position: "relative",
+        width: "100%",
+        overflow: "visible",
+        px: { xs: 2, md: 0 },
       }}
     >
-      {/* Flecha izquierda */}
       <IconButton
-        id="flechaIzquierda"
         onClick={() => sliderRef.current.slickPrev()}
         sx={{
           position: "absolute",
-          top: "48%",
-          left: "-60px",
-          zIndex: 1,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          padding: "10px",
-          borderRadius: "50%",
+          top: "50%",
+          left: { xs: 8, md: 16 },
+          transform: "translateY(-50%)",
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[3],
+          zIndex: 2,
+          "&:hover": { backgroundColor: theme.palette.background.paper },
         }}
       >
-        <ArrowBack style={{ color: "white" }} />
+        <ArrowBackIosNew />
       </IconButton>
-
-      <Slider ref={sliderRef} {...settings} style={{ width: "100%" }}>
-        {cars.map((car, index) => (
-          <Card
-            key={index}
-            sx={{
-              padding: "20px",
-              textAlign: "center",
-              transition: "transform 0.3s ease-in-out",
-              "&:hover": { transform: "scale(1.03)" }, // Efecto hover
-            }}
-          >
-            <CardMedia
-              component="img"
-              height="150"
-              width="150"
-              image={car.image}
-              alt={car.name}
-              sx={{ objectFit: "contain" }} // Esto asegura que las imágenes se ajusten bien sin distorsión
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div"
-                sx={{ fontWeight: "bold" }}
-              >
-                {car.name.replace(" o Similar", "")}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {car.description}
-              </Typography>
-              <Typography variant="caption" color="textSecondary" sx={{ fontWeight: "bold" }}>
-                {slogans[index % slogans.length]}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Slider>
-
-      {/* Flecha derecha */}
       <IconButton
-        id="flechaDerecha"
         onClick={() => sliderRef.current.slickNext()}
         sx={{
           position: "absolute",
-          top: "48%",
-          right: "-60px",
-          zIndex: 1,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          padding: "10px",
-          borderRadius: "50%",
+          top: "50%",
+          right: { xs: 8, md: 16 },
+          transform: "translateY(-50%)",
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[3],
+          zIndex: 2,
+          "&:hover": { backgroundColor: theme.palette.background.paper },
         }}
       >
-        <ArrowForward style={{ color: "white" }} />
+        <ArrowForwardIos />
       </IconButton>
+
+      <Box
+        sx={{
+          "& .slick-dots": {
+            bottom: -28,
+            "& li": { margin: "0 4px" },
+            "& li button:before": {
+              fontSize: "10px",
+              color: theme.palette.text.disabled,
+              opacity: 1,
+            },
+            "& li.slick-active button:before": {
+              color: theme.palette.primary.main,
+            },
+          },
+        }}
+      >
+        <Slider ref={sliderRef} {...settings}>
+          {cars.map((car, i) => (
+            <Box key={i} px={{ xs: 1, md: 2 }}>
+              <Card
+                sx={{
+                  bgcolor: "#fff",
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                  transition: "transform 0.3s",
+                  "&:hover": { transform: "scale(1.05)" },
+                  marginBottom: 2,
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={car.image}
+                  alt={car.name}
+                  sx={{
+                    height: { xs: 220, md: 300 }, // más altura
+                    objectFit: "contain",
+                    bgcolor: "#fff",
+                    p: { xs: 4, md: 5 }, // padding uniforme
+                  }}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 700,
+                      textAlign: "center",
+                      fontSize: { xs: "1rem", md: "1.1rem" },
+                    }}
+                  >
+                    {car.name.replace(" o Similar", "")}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ textAlign: "center" }}
+                  >
+                    {car.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Slider>
+      </Box>
     </Box>
   );
-};
-
-export default Carousel;
+}
