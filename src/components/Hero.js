@@ -20,7 +20,7 @@ export default function Hero() {
       <Grid
         container
         spacing={0}
-        sx={{ flexGrow: 1, overflowX: "hidden", width: "100%", margin: 0 }}
+        sx={{ flexGrow: 1, overflow: "hidden", width: "100%", margin: 0 }}
       >
         {/* Sección Izquierda */}
         <Grid
@@ -42,6 +42,7 @@ export default function Hero() {
             alt="Fondo"
             style={{
               maxWidth: "90%",
+              width: "100%",
               height: "auto",
               position: "absolute",
               top: "45%",
@@ -57,6 +58,7 @@ export default function Hero() {
             alt="Auto de ejemplo"
             style={{
               maxWidth: "80%",
+              width: "100%",
               height: "auto",
               position: "absolute",
               top: "73%",
