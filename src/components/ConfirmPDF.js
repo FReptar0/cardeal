@@ -421,32 +421,28 @@ export default function ConfirmPDF({ booking }) {
         {/* Resumen de cargos y total a pagar */}
         <View
           style={{
-            marginTop: 4, // reducido de 28 a 10 para disminuir el espacio
             flexDirection: "row",
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
             width: "100%",
+            marginTop: 10, // o el valor que prefieras
           }}
         >
           {/* Depósito en garantía a la izquierda, resumen de cargos a la derecha */}
           <View
             style={{
-              flex: 1,
-              maxWidth: 260,
-              marginRight: 4,
-              alignItems: "flex-start",
-              display: "flex",
+              flex: 1, // ocupa todo el espacio sobrante
+              marginRight: 8, // separación con el resumen
             }}
           >
             <View
               style={{
+                width: "100%",
                 backgroundColor: "#f3f7f5",
                 borderRadius: 8,
                 padding: 14,
                 border: "1px solid #e0e0e0",
                 marginBottom: 4,
                 boxSizing: "border-box",
-                minWidth: 180,
+                // minWidth, maxWidth y marginRight eliminados para ancho completo
               }}
             >
               <Text
@@ -489,10 +485,10 @@ export default function ConfirmPDF({ booking }) {
           </View>
           <View
             style={{
-              minWidth: 220,
-              maerginLeft: 4,
+              width: 220, // ancho fijo
               padding: 14,
-              border: "1px solid #e0e0e0",
+              borderWidth: 1,
+              borderColor: "#e0e0e0",
               borderRadius: 8,
               backgroundColor: "#f8f8f8",
               boxSizing: "border-box",

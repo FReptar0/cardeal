@@ -16,6 +16,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
 import ConfirmationStepper from "@/components/ConfirmationStepper";
 import { useAuth } from "@/contexts/AuthContext";
@@ -151,6 +152,24 @@ export default function BookingConfirmation() {
 
   //const totalLabel = booking.paid ? "Total" : "Total a pagar"; // Cambiar el texto si el pago está completado
 
+  let mensaje = "";
+  let lowerMessage = "";
+  let wasSuccessful;
+
+  if (booking.paidOnline && !booking.paid && booking.status === "FAILED") {
+    mensaje = "Reserva no realizada.";
+    lowerMessage = "Por favor, verfica el metodo de pago e inténtalo de nuevo.";
+    wasSuccessful = false;
+  } else if (booking.paidOnline && booking.paid && booking.status === "PAID") {
+    mensaje = "Reserva realizada con éxito";
+    lowerMessage = "Gracias por elegir nuestro servicio.";
+    wasSuccessful = true;
+  } else {
+    mensaje = "Reserva realizada con éxito";
+    lowerMessage = "Gracias por elegir nuestro servicio.";
+    wasSuccessful = true;
+  }
+
   return (
     <Container sx={{ mt: 10, maxWidth: "100vw", px: 2 }}>
       <ConfirmationStepper />
@@ -253,17 +272,24 @@ export default function BookingConfirmation() {
           >
             <Box>
               <Box display="flex" alignItems="center" gap={2} mb={2}>
-                <CheckCircleOutlineIcon color="success" sx={{ fontSize: 60 }} />
+                {wasSuccessful ? (
+                  <CheckCircleOutlineIcon
+                    color="success"
+                    sx={{ fontSize: 60 }}
+                  />
+                ) : (
+                  <HighlightOffIcon color="error" sx={{ fontSize: 60 }} />
+                )}
                 <Box>
                   <Typography
                     variant="h5"
                     sx={{ fontSize: "1.8rem" }}
                     fontWeight="bold"
                   >
-                    ¡Reserva realizada con éxito!
+                    {mensaje || "Reserva confirmada"}
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary">
-                    Gracias por elegir nuestro servicio
+                    {lowerMessage || "¡Gracias por elegirnos!"}
                   </Typography>
                 </Box>
               </Box>
@@ -303,13 +329,25 @@ export default function BookingConfirmation() {
                 </Box>
                 <Box display="flex" alignItems="center" gap={1}>
                   <Typography variant="body1" component="span">
-                    <b style={{ color: "#666" }}>Estado de pago:</b>{" "}
-                    {booking.paid
-                      ? "Pagado"
-                      : booking.status === "FAILED"
-                      ? "Pago no exitoso"
-                      : "Pendiente"}
+                    <b style={{ color: "#666" }}>Estado de pago:</b>
                   </Typography>
+                  <Chip
+                    label={
+                      booking.paid
+                        ? "Pagado"
+                        : booking.status === "FAILED"
+                        ? "Pago no exitoso"
+                        : "Pendiente"
+                    }
+                    color={
+                      booking.paid
+                        ? "success"
+                        : booking.status === "FAILED"
+                        ? "error"
+                        : "warning"
+                    }
+                    sx={{ fontWeight: "bold" }}
+                  />
                 </Box>
               </Box>
             </Box>

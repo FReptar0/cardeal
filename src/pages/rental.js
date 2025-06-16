@@ -134,7 +134,17 @@ export default function RentalPage() {
       const rates = await res.json();
       //console.log("🛞 Precios TSD por categoría:", rates);
 
-      const filtered = rates
+      // Filtrar rates para que solo quede el primer registro de cada categoría
+      const uniqueRates = [];
+      const seenCategories = new Set();
+      for (const rate of rates) {
+        if (!seenCategories.has(rate.category)) {
+          uniqueRates.push(rate);
+          seenCategories.add(rate.category);
+        }
+      }
+
+      const filtered = uniqueRates
         .map((rate) => {
           // Buscar por abbreviation, no por category
           const carInfo = carsData.find(

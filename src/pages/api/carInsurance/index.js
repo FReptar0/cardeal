@@ -152,7 +152,7 @@ ${extraCodesXML}
 </TRNXML>
   `.trim();
 
-  console.log("📤 [carInsurance] XML Body enviado a TSD:\n", xmlBody);
+  //console.log("📤 [carInsurance] XML Body enviado a TSD:\n", xmlBody);
 
   try {
     const response = await fetch(TSD_ENDPOINT, {
@@ -178,24 +178,48 @@ ${extraCodesXML}
 
     const json = await parseStringPromise(xml, { explicitArray: false });
 
-    const dailyExtras =
-      json?.PRE?.TRNXML?.Payload?.RateProduct?.TotalPricing?.DailyExtra;
+    // Asignar correctamente los dailyExtras para poder regresarlos
+    let dailyExtras = [];
+    const rateProducts = json?.PRE?.TRNXML?.Payload?.RateProduct;
+    if (Array.isArray(rateProducts)) {
+      rateProducts.forEach((rate, idx) => {
+        if (rate.TotalPricing && rate.TotalPricing.DailyExtra) {
+          const extras = Array.isArray(rate.TotalPricing.DailyExtra)
+            ? rate.TotalPricing.DailyExtra
+            : [rate.TotalPricing.DailyExtra];
+          dailyExtras = dailyExtras.concat(extras);
+          console.log(`📥 [carInsurance] DailyExtra [RateProduct #${idx}]:`, JSON.stringify(extras, null, 2));
+        }
+      });
+    } else if (rateProducts) {
+      if (rateProducts.TotalPricing && rateProducts.TotalPricing.DailyExtra) {
+        const extras = Array.isArray(rateProducts.TotalPricing.DailyExtra)
+          ? rateProducts.TotalPricing.DailyExtra
+          : [rateProducts.TotalPricing.DailyExtra];
+        dailyExtras = dailyExtras.concat(extras);
+        console.log("📥 [carInsurance] DailyExtra:", JSON.stringify(extras, null, 2));
+      }
+    } else {
+      console.log("📥 [carInsurance] No se encontró RateProduct en la respuesta JSON de TSD");
+    }
 
-    if (!dailyExtras) {
+    if (!dailyExtras.length) {
       console.warn(
         "⚠️ [carInsurance] No se encontraron extras en la respuesta."
       );
       return res.status(200).json([]);
     }
 
-    const extrasArray = Array.isArray(dailyExtras)
-      ? dailyExtras
-      : [dailyExtras];
-
-    const result = extrasArray.map((extra) => ({
+    const result = dailyExtras.map((extra) => ({
       codeExtras: extra.ExtraCode,
       precioTotal: parseFloat(extra.ExtraAmount),
     }));
+
+    console.log(
+      "✅ [carInsurance] Respuesta procesada correctamente:",
+      result
+    );
+    // Devolvemos el resultado
 
     return res.status(200).json(result);
   } catch (error) {

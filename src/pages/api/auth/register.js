@@ -1,7 +1,6 @@
 import { connectToDatabase } from '@/utils/mongodb';
 import bcrypt from 'bcryptjs';
 import { generateUuid } from '@/utils/uuid';
-import { positions } from '@mui/system';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -48,6 +47,22 @@ export default async function handler(req, res) {
         };
 
         await db.collection('users').insertOne(newUser);
+
+        // Enviar email de verificación directamente desde backend
+        try {
+            const { sendEmail } = await import('@/utils/sendEmail');
+            await sendEmail({
+                to: email,
+                templateId: 'verify-account',
+                data: {
+                    name: fullName,
+                    url: `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${newUser._id}`,
+                },
+            });
+        } catch (error) {
+            console.error('Error al enviar el email de verificación:', error);
+            // No detener el registro del usuario si falla el envío del email
+        }
 
         return res.status(201).json({ message: 'Usuario registrado exitosamente' });
     } catch (error) {

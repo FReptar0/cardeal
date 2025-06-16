@@ -19,7 +19,8 @@ export default function Custom404() {
         src="/icons/404.jpg"
         alt="404"
         style={{
-          maxWidth: "550px", // Ajusta este valor para hacerla más grande o más pequeña
+          maxWidth: "550px",
+          width: "100%",
           height: "auto",
           marginBottom: "24px",
         }}
@@ -32,7 +33,14 @@ export default function Custom404() {
       </Typography>
 
       <Link href="/" passHref legacyBehavior>
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#10906a", // Verde del proyecto
+            "&:hover": { backgroundColor: "#0B5D3C" },
+            color: "#fff",
+          }}
+        >
           Volver a Inicio
         </Button>
       </Link>

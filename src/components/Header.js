@@ -102,7 +102,10 @@ const Header = () => {
     if (path === "/sucursales") return "Sucursales";
     if (path === "/soluciones-empresariales") return "Convenios corporativos";
     if (path === "/FAQ") return "Preguntas frecuentes";
-    return path.replace("/", "").charAt(0).toUpperCase() + path.slice(2).toLowerCase();
+    return (
+      path.replace("/", "").charAt(0).toUpperCase() +
+      path.slice(2).toLowerCase()
+    );
   };
 
   return (
@@ -274,45 +277,50 @@ const Header = () => {
             zIndex: 3,
           }}
         >
-          {["/", "/vehiculos", "/atencion-cliente", "/FAQ"].map(
-            (path, index) => (
-              <Box
-                key={index}
+          {[
+            "/", // Inicio
+            "/vehiculos", // Vehículos
+            "/sucursales", // Sucursales
+            "/soluciones-empresariales", // Convenios corporativos
+            "/atencion-cliente", // Atención a clientes
+            "/FAQ", // Preguntas frecuentes
+          ].map((path, index) => (
+            <Box
+              key={index}
+              sx={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <Link
+                href={path}
                 sx={{
-                  display: "flex",
-                  width: "100%",
-                  justifyContent: "center",
+                  color: "#000",
+                  display: "block",
+                  textDecoration: "none",
+                  width: "90%",
+                  py: 1,
+                  fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+                  fontWeight: 500,
+                  fontSize: "0.875rem",
+                  lineHeight: 1.75,
+                  letterSpacing: "0.02857em",
+                  textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
+                  borderBottom:
+                    activePath === path ? "2px solid #141414" : "none",
+                  cursor: "pointer",
+                  transition: "background 0.3s",
+                  borderRadius: "5px",
+                  "&:hover": {
+                    backgroundColor: "#D6D6D6",
+                  },
                 }}
               >
-                <Link
-                  href={path}
-                  sx={{
-                    color: "#000",
-                    display: "block",
-                    textDecoration: "none",
-                    width: "90%",
-                    py: 1,
-                    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-                    fontWeight: 500,
-                    fontSize: "0.875rem",
-                    lineHeight: 1.75,
-                    letterSpacing: "0.02857em",
-                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
-                    borderBottom:
-                      activePath === path ? "2px solid #141414" : "none",
-                    cursor: "pointer",
-                    transition: "background 0.3s",
-                    borderRadius: "5px",
-                    "&:hover": {
-                      backgroundColor: "#D6D6D6",
-                    },
-                  }}
-                >
-                  {formatPathName(path)}
-                </Link>
-              </Box>
-            )
-          )}
+                {formatPathName(path)}
+              </Link>
+            </Box>
+          ))}
         </Box>
       </Collapse>
     </>
