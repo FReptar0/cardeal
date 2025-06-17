@@ -4,11 +4,11 @@ const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB;
 
 if (!uri) {
-    throw new Error('Por favor, define la variable de entorno MONGODB_URI en .env.local');
+    throw new Error('[MongoDB] No se encontró la variable de entorno MONGODB_URI.');
 }
 
 if (!dbName) {
-    throw new Error('Por favor, define la variable de entorno MONGODB_DB en .env.local');
+    throw new Error('[MongoDB] No se encontró la variable de entorno MONGODB_DB.');
 }
 
 // Opciones de conexión (puedes agregar más opciones según necesites)
