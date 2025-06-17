@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, IconButton, Paper } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
+const CHAT_IFRAME_URL = process.env.NEXT_PUBLIC_CHAT_IFRAME_URL;
+
 const ChatBubble = () => {
     const [open, setOpen] = useState(false);
 
@@ -57,7 +59,7 @@ const ChatBubble = () => {
                     </Box>
                     {/* Iframe con interactividad */}
                     <iframe 
-                        src="https://qwebhook.pymesdigital.store/webhook/d3d04c98-9076-45c8-bf6c-d3e2bd3fb62a/chat"
+                        src={CHAT_IFRAME_URL}
                         width="100%"
                         height="100%"
                         style={{ border: "none", pointerEvents: "auto" }}
