@@ -29,8 +29,12 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/logos/logo.png" />
-        <link href="/logos/logo.png" rel="shortcut icon" type="image/x-icon" />
+        <link rel="icon" href="/logos/Logo.png" type="image/png" sizes="32x32" />
+        <link rel="shortcut icon" href="/logos/Logo.png" type="image/png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/logos/Logo.png" />
+        <meta name="msapplication-TileImage" content="/logos/Logo.png" />
+        <meta name="msapplication-TileColor" content="#191919" />
+        <meta name="theme-color" content="#191919" />
         <title>Qardeal</title>
       </Head>
 
