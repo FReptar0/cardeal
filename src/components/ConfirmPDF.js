@@ -232,17 +232,17 @@ export default function ConfirmPDF({ booking }) {
             </Text>
 
             <Text style={styles.sectionLabel}>Extras:</Text>
-            {extrasArr.length === 0 ? (
-              <Text style={styles.sectionValue}>— Ninguno —</Text>
-            ) : (
-              extrasArr.map((e, i) => (
-                <View style={styles.listItem} key={i}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.sectionValue}>
-                    {e.nombre} x{e.qty}
+            {Array.isArray(booking.extras) && booking.extras.length > 0 ? (
+              <>
+                {booking.extras.map((item, idx) => (
+                  <Text style={styles.sectionValue} key={idx}>
+                    • {item.nombre || item.name} x{item.cantidad} —{" "}
+                    {formatCurrency(item.precio)}
                   </Text>
-                </View>
-              ))
+                ))}
+              </>
+            ) : (
+              <Text style={styles.sectionValue}>— Ninguno —</Text>
             )}
           </View>
           <View style={{ flex: 1 }}>
@@ -379,18 +379,6 @@ export default function ConfirmPDF({ booking }) {
                   <Text style={styles.sectionValue}>{f}</Text>
                 </View>
               ))}
-            <Text style={[styles.sectionLabel, { marginTop: 4 }]}>
-              Servicios adicionales contratados
-            </Text>
-            {extrasArr.length === 0 ? (
-              <Text style={styles.sectionValue}>-</Text>
-            ) : (
-              extrasArr.map((e, i) => (
-                <Text style={styles.sectionValue} key={i}>
-                  • {e.nombre} x{e.qty}
-                </Text>
-              ))
-            )}
           </View>
           <View style={styles.columnLast}>
             <Text style={styles.sectionLabel}>Protección seleccionada</Text>
