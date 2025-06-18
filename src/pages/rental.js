@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
-// import CompactHeader from "../components/CompactHeader";
 import carsData from "../data/cars.json";
 import dynamic from "next/dynamic";
 

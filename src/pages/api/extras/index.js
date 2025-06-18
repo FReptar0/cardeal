@@ -55,15 +55,6 @@ export default async function handler(req, res) {
     TSD_PASSCODE,
   } = process.env;
 
-  console.log("🔐 Variables de entorno:");
-  console.log({
-    TSD_ENDPOINT,
-    TSD_SENDER_ID,
-    TSD_RECIPIENT_ID,
-    TSD_TRADING_PARTNER_CODE,
-    TSD_CUSTOMER_NUMBER,
-    TSD_PASSCODE,
-  });
 
   const formattedPickup = formatCustomDateTime(pickupDateTime);
   const formattedReturn = formatCustomDateTime(returnDateTime);

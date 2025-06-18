@@ -25,12 +25,17 @@ const registerSchema = yup.object().shape({
         .email("Correo inválido"),
     birthDate: yup
         .date()
+        .typeError("Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)")
         .required("La fecha de nacimiento es obligatoria")
-        .typeError("Por favor, ingresa una fecha válida")
         .test(
             "is-adult",
             "Debes tener al menos 18 años para registrarte",
-            (value) => value && differenceInYears(new Date(), new Date(value)) >= 18
+            (value) => {
+                if (!value || Object.prototype.toString.call(value) !== '[object Date]' || isNaN(value.getTime())) {
+                    return false;
+                }
+                return differenceInYears(new Date(), new Date(value)) >= 18;
+            }
         ),
     location: yup.string().required("La ubicación es obligatoria"),
     password: yup
