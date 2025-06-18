@@ -44,6 +44,7 @@ export default async function handler(req, res) {
             lastLogin: null,
             isActive: true,
             isVerified: false,
+            lastVerificationEmailSent: new Date(),
         };
 
         await db.collection('users').insertOne(newUser);

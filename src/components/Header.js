@@ -29,7 +29,31 @@ const Header = () => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   // Obtener el estado de autenticación del AuthContext
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, isVerified } = useAuth();
+
+  const handleResendVerification = async () => {
+    try {
+      const token = localStorage.getItem("authJwt"); // o donde sea que guardes el JWT
+
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message);
+      } else {
+        alert("Correo de verificación reenviado con éxito.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error al reenviar el correo.");
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem("isHeaderTop", JSON.stringify(isTop));
@@ -109,7 +133,7 @@ const Header = () => {
   };
 
   return (
-    <>
+    <Box sx={{ position: "relative" }}>
       <AppBar
         position="fixed"
         sx={{
@@ -262,6 +286,48 @@ const Header = () => {
         </Toolbar>
       </AppBar>
 
+      {isLoggedIn && !isVerified && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: isTop ? "100px" : "60px", // debajo del AppBar
+            left: 0,
+            width: "100%",
+            height: "auto",
+            bgcolor: "#fff4e5",
+            border: "1px solid #ffc107",
+            textAlign: "center",
+            py: 1.5,
+            zIndex: 1201, // asegúrate que esté arriba del AppBar (MUI usa 1100 por default)
+            boxShadow: "inset 0px 1px 2px rgba(0, 0, 0, 0.05)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "#a15b00", fontWeight: 600, padding: 0 }}
+          >
+            ¡Tu cuenta aún no ha sido verificada! Revisa el correo registrado y
+            haz clic en el enlace de verificación.
+          </Typography>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              color: "#a15b00",
+              textDecoration: "underline",
+              fontWeight: 500,
+              ml: 1,
+            }}
+            onClick={handleResendVerification}
+          >
+            Reenviar correo
+          </Button>
+        </Box>
+      )}
+
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box
           id="collapsedMenu"
@@ -323,7 +389,7 @@ const Header = () => {
           ))}
         </Box>
       </Collapse>
-    </>
+    </Box>
   );
 };
 

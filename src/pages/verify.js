@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "react-toastify";
 
 export default function VerifyPage() {
+  const [shouldRender, setShouldRender] = useState(false);
   const { isLoggedIn, setIsVerified } = useAuth();
   const router = useRouter();
   const { token } = router.query;
@@ -37,6 +38,14 @@ export default function VerifyPage() {
       return;
     }
 
+    if (localStorage.getItem("isVerified") === "true") {
+      toast.info("Tu cuenta ya ha sido validada.");
+      router.replace("/perfil");
+      return;
+    }
+
+    // Si pasó todas las validaciones, permitimos renderizar
+    setShouldRender(true);
     // 2) Hacer la petición de verificación
     (async () => {
       try {
@@ -88,6 +97,8 @@ export default function VerifyPage() {
     }, 200); // 200 ms × 10 = 2 s aprox.
     return () => clearInterval(iv);
   }, [redirecting, router]);
+
+  if (!shouldRender) return null;
 
   return (
     <Box
