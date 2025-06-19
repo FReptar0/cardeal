@@ -35,10 +35,20 @@ const ChatBubble = () => {
                     justifyContent: "center",
                     mb: .3,
                     '&:hover': { backgroundColor: WHATSAPP_GREEN },
+                    '@media (max-width: 600px)': {
+                        width: waSize * 0.8,
+                        height: waSize * 0.8,
+                    },
                 }}
                 disableRipple
             >
-                <WhatsAppIcon sx={{ fontSize: waIconSz, color: "#fff" }} />
+                <WhatsAppIcon sx={{
+                    fontSize: waIconSz,
+                    color: "#fff",
+                    '@media (max-width: 600px)': {
+                        fontSize: waIconSz * 0.8,
+                    },
+                }} />
             </IconButton>
 
             {/* Chatbot burbuja (abajo, tamaño normal) */}
@@ -54,6 +64,10 @@ const ChatBubble = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     '&:hover': { backgroundColor: "#fff" },
+                    '@media (max-width: 600px)': {
+                        width: size * 0.8,
+                        height: size * 0.8,
+                    },
                 }}
                 disableRipple
             >
@@ -61,7 +75,14 @@ const ChatBubble = () => {
                     component="img"
                     src="/bot/Bot-IA-Alpha-Cabeza.webp"
                     alt="Chatbot"
-                    sx={{ width: iconSz, height: iconSz }}
+                    sx={{
+                        width: iconSz,
+                        height: iconSz,
+                        '@media (max-width: 600px)': {
+                            width: iconSz * 0.8,
+                            height: iconSz * 0.8,
+                        },
+                    }}
                 />
             </IconButton>
 
