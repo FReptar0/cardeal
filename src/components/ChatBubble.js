@@ -103,8 +103,7 @@ const ChatBubble = () => {
                         flexDirection: "column",
                         transition: "opacity 0.3s ease",
                         '@media (max-width: 600px)': {
-                            width: '95vw',
-                            maxWidth: '380px',
+                            width: '90vw',
                             height: '70vh',
                             minHeight: '320px',
                             bottom: 10,
