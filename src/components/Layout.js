@@ -10,8 +10,6 @@ const Layout = ({ children }) => {
   const { isLoggedIn, isVerified } = useAuth();
 
   console.log("Ruta:", router.pathname);
-  console.log("isLoggedIn:", isLoggedIn);
-  console.log("isVerified:", isVerified);
 
   const hideLayout = ["/verify", "/recuperar-cuenta", "/cambiar-acceso"];
   const shouldHideLayout = hideLayout.includes(router.pathname);
