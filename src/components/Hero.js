@@ -164,7 +164,7 @@ export default function Hero() {
                 // --- estilos móviles ---
                 ...(typeof window !== "undefined" && window.innerWidth <= 600
                   ? {
-                      marginTop: "32px", // Espacio reducido en mobile
+                      marginTop: "12px", // Espacio aún más reducido en mobile
                       marginLeft: 0,
                       padding: "0 16px",
                       boxSizing: "border-box",
