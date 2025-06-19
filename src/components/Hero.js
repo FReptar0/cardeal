@@ -93,6 +93,19 @@ export default function Hero() {
                   fontSize: "2rem",
                   textAlign: "start",
                   marginBottom: "24px",
+                  // --- estilos móviles ---
+                  "@media (max-width: 600px)": {
+                    textAlign: "justify",
+                    fontSize: "1.6rem",
+                    lineHeight: 1.3,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "50vh",
+                    marginTop: 0,
+                    marginBottom: 0,
+                  },
                 }}
               >
                 <span
@@ -100,6 +113,12 @@ export default function Hero() {
                     color: "#10906a",
                     fontWeight: 900,
                     marginBottom: "20px",
+                    // --- estilos móviles ---
+                    "@media (max-width: 600px)": {
+                      width: "100%",
+                      display: "block",
+                      textAlign: "justify",
+                    },
                   }}
                 >
                   Renta el auto que necesitas, sin letras chiquitas
@@ -123,6 +142,12 @@ export default function Hero() {
                 justifyContent: "center",
                 marginTop: "140px",
                 marginLeft: "20px",
+                // --- estilos móviles ---
+                "@media (max-width: 600px)": {
+                  marginLeft: 0,
+                  padding: "0 16px",
+                  boxSizing: "border-box",
+                },
               }}
             >
               <SearchBar onSearch={handleSearch} />
@@ -130,24 +155,6 @@ export default function Hero() {
           </div>
         </Grid>
       </Grid>
-
-      {/* ——— Estilos responsivos para móvil ——— */}
-      <style jsx global>{`
-        @media (max-width: 600px) {
-          /* Centrar y ajustar tamaño del título */
-          #sectionDerechaTitle {
-            text-align: center !important;
-            font-size: 1.6rem !important;
-            line-height: 1.3;
-          }
-          /* Remover ese marginLeft y añadir padding lateral al buscador */
-          .custom-search-bar {
-            margin-left: 0 !important;
-            padding: 0 16px;
-            box-sizing: border-box;
-          }
-        }
-      `}</style>
     </>
   );
 }

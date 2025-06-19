@@ -136,7 +136,7 @@ const Header = () => {
             onClick={() => handleNavigation("/")}
           >
             <img
-              src="/logos/Qardeal_logo completo verde y rojo.png"
+              src="/logos/Qardeal_logo_completo_color.png"
               alt="Logo"
               id="logoHeader"
               style={{
