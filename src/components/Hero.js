@@ -75,63 +75,82 @@ export default function Hero() {
               width: "100%",
               display: "flex",
               flexDirection: "column",
+              alignItems: "flex-start",
+              // --- estilos móviles ---
+              ...(typeof window !== "undefined" && window.innerWidth <= 600
+                ? {
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }
+                : {}),
             }}
           >
             <div
               style={{
                 position: "relative",
-                top: "100px",
                 width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                // --- estilos móviles ---
+                ...(typeof window !== "undefined" && window.innerWidth <= 600
+                  ? {
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minHeight: "160px",
+                      padding: "0 8px",
+                      position: "static",
+                      marginTop: "120px", // Espacio para la navbar
+                    }
+                  : { top: "100px" }),
               }}
             >
               <h2
                 id="sectionDerechaTitle"
                 style={{
-                  position: "relative",
-                  top: "40px",
                   fontWeight: 300,
                   fontSize: "2rem",
                   textAlign: "start",
                   marginBottom: "24px",
+                  marginTop: 0,
+                  position: "relative",
                   // --- estilos móviles ---
-                  "@media (max-width: 600px)": {
-                    textAlign: "justify",
-                    fontSize: "1.6rem",
-                    lineHeight: 1.3,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    minHeight: "50vh",
-                    marginTop: 0,
-                    marginBottom: 0,
-                  },
+                  ...(typeof window !== "undefined" && window.innerWidth <= 600
+                    ? {
+                        textAlign: "center",
+                        fontSize: "1.7rem",
+                        lineHeight: 1.2,
+                        display: "block",
+                        fontWeight: 700,
+                        margin: 0,
+                        width: "100%",
+                        position: "static",
+                      }
+                    : { top: "40px" }),
                 }}
               >
                 <span
                   style={{
                     color: "#10906a",
                     fontWeight: 900,
-                    marginBottom: "20px",
+                    marginBottom: 0,
+                    display: "block",
                     // --- estilos móviles ---
-                    "@media (max-width: 600px)": {
-                      width: "100%",
-                      display: "block",
-                      textAlign: "justify",
-                    },
+                    ...(typeof window !== "undefined" &&
+                    window.innerWidth <= 600
+                      ? {
+                          width: "100%",
+                          textAlign: "center",
+                          fontSize: "1.7rem",
+                          lineHeight: 1.2,
+                        }
+                      : {}),
                   }}
                 >
-                  Renta el auto que necesitas, sin letras chiquitas
-                </span>{" "}
-                <br />{" "}
-                <span
-                  style={{
-                    fontSize: "1.3rem",
-                    fontWeight: "600",
-                    position: "relative",
-                    top: "-10px",
-                  }}
-                ></span>
+                  Renta el auto que necesitas,
+                  <br />
+                  sin letras chiquitas
+                </span>
               </h2>
             </div>
             <div
@@ -143,11 +162,16 @@ export default function Hero() {
                 marginTop: "140px",
                 marginLeft: "20px",
                 // --- estilos móviles ---
-                "@media (max-width: 600px)": {
-                  marginLeft: 0,
-                  padding: "0 16px",
-                  boxSizing: "border-box",
-                },
+                ...(typeof window !== "undefined" && window.innerWidth <= 600
+                  ? {
+                      marginTop: "12px", // Espacio aún más reducido en mobile
+                      marginLeft: 0,
+                      padding: "0 16px",
+                      boxSizing: "border-box",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }
+                  : {}),
               }}
             >
               <SearchBar onSearch={handleSearch} />
