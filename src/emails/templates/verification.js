@@ -15,7 +15,7 @@ export default function verificationTemplate({ name, url }) {
               <!-- Logo -->
               <tr>
                 <td style="padding: 30px 0; text-align:center; background-color:#ffffff;">
-                  <img src="https://www.qardeal.com.mx/logos/Qardeal_logo%20completo%20verde%20y%20rojo.png" 
+                  <img src="https://www.qardeal.com.mx/logos/Qardeal_logo_completo_color.png" 
                        alt="Qardeal" 
                        width="160" 
                        style="display:block; margin:0 auto;" />
