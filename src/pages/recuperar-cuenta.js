@@ -71,7 +71,7 @@ const ForgotPasswordForm = () => {
       >
         <Box
           component="img"
-          src="/logos/Qardeal_logo completo verde y rojo.png"
+          src="/logos/Qardeal_logo_completo_color.png"
           alt="Qardeal logo"
           sx={{
             width: "100%",

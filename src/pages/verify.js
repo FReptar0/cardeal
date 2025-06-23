@@ -112,7 +112,7 @@ export default function VerifyPage() {
         {/* Logo de Qardeal */}
         <Box
           component="img"
-          src="/logos/Qardeal_logo completo verde y rojo.png"
+          src="/logos/Qardeal_logo_completo_color.png"
           alt="Qardeal Logo"
           sx={{ width: "65%", maxWidth: 280, mx: "auto", mb: 2 }}
         />
