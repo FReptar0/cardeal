@@ -571,7 +571,7 @@ const SeguroVehiculo = () => {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.secondary.main,
+              backgroundColor: (theme) => theme.palette.primary.main,
               color: "white",
               fontWeight: "bold",
               p: "12px 20px",
