@@ -48,22 +48,64 @@ const AtencionCliente = () => {
 
           {/* Teléfono México */}
           <Grid item xs={12} sm={6} md={3}>
-            <CallIcon fontSize="large" color="error" />
-            <Typography variant="h6" fontWeight="bold">
-              (800) 333 2886
-            </Typography>
-            <Typography variant="body2">Lada sin costo desde México</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer", // Indica que es interactivo
+                textDecoration: "none", // Evita subrayado
+                color: "black", // Asegura que el texto sea negro
+                "&:hover": {
+                  "& svg": {
+                    transform: "scale(1.4)", // Incrementa el zoom al ícono
+                    transition: "transform 0.2s ease-in-out", // Suaviza el efecto
+                  },
+                },
+              }}
+              component="a"
+              href="tel:8003332886"
+            >
+              <CallIcon fontSize="large" color="error" />
+              <Typography variant="h6" fontWeight="bold" color="inherit">
+                (800) 333 2886
+              </Typography>
+              <Typography variant="body2" color="inherit">
+                Lada sin costo desde México
+              </Typography>
+            </Box>
           </Grid>
 
           {/* WhatsApp */}
           <Grid item xs={12} sm={6} md={3}>
-            <WhatsAppIcon fontSize="large" color="error" />
-            <Typography variant="h6" fontWeight="bold">
-              WhatsApp
-            </Typography>
-            <Typography variant="body2">
-              Contacto directo desde la aplicación
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer", // Indica que es interactivo
+                textDecoration: "none", // Evita subrayado
+                color: "black", // Asegura que el texto sea negro
+                "&:hover": {
+                  "& svg": {
+                    transform: "scale(1.4)", // Incrementa el zoom al ícono
+                    transition: "transform 0.2s ease-in-out", // Suaviza el efecto
+                  },
+                },
+              }}
+              component="a"
+              href="https://api.whatsapp.com/send/?phone=525545773150"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WhatsAppIcon fontSize="large" color="error" />
+              <Typography variant="h6" fontWeight="bold" color="inherit">
+                WhatsApp
+              </Typography>
+              <Typography variant="body2" color="inherit">
+                Contacto directo desde la aplicación
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
       </Box>
@@ -90,13 +132,27 @@ const AtencionCliente = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            cursor: "pointer", // Indica que es interactivo
+            textDecoration: "none", // Evita subrayado
+            color: "black", // Asegura que el texto sea negro
+            "&:hover": {
+              "& svg": {
+                transform: "scale(1.4)", // Incrementa el zoom al ícono
+                transition: "transform 0.2s ease-in-out", // Suaviza el efecto
+              },
+            },
           }}
+          component="a"
+          href="mailto:atencionaclientes@qardeal.com.mx"
         >
-          <EmailIcon fontSize="large" sx={{ color: theme => theme.palette.primary.text }} />
-          <Typography variant="h6" fontWeight="bold">
+          <EmailIcon
+            fontSize="large"
+            sx={{ color: (theme) => theme.palette.primary.text }}
+          />
+          <Typography variant="h6" fontWeight="bold" color="inherit">
             Correo electrónico de atención a clientes
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" color="inherit">
             atencionaclientes@qardeal.com.mx
           </Typography>
         </Box>
@@ -107,16 +163,29 @@ const AtencionCliente = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            cursor: "pointer", // Indica que es interactivo
+            textDecoration: "none", // Evita subrayado
+            color: "black", // Asegura que el texto sea negro
+            "&:hover": {
+              "& svg": {
+                transform: "scale(1.4)", // Incrementa el zoom al ícono
+                transition: "transform 0.2s ease-in-out", // Suaviza el efecto
+              },
+            },
           }}
+          component="a"
+          href="mailto:soporte@qardeal.com.mx"
         >
           <EmailIcon
             fontSize="large"
-            sx={{ color: theme => theme.palette.primary.text }}
+            sx={{ color: (theme) => theme.palette.primary.text }}
           />
-          <Typography variant="h6" fontWeight="bold">
+          <Typography variant="h6" fontWeight="bold" color="inherit">
             Correo electrónico de soporte
           </Typography>
-          <Typography variant="body2">soporte@qardeal.com.mx</Typography>
+          <Typography variant="body2" color="inherit">
+            soporte@qardeal.com.mx
+          </Typography>
         </Box>
       </Box>
     </Box>
