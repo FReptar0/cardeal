@@ -20,7 +20,13 @@ export default function Hero() {
       <Grid
         container
         spacing={0}
-        sx={{ flexGrow: 1, overflowX: "hidden", width: "100%", margin: 0 }}
+        sx={{
+          flexGrow: 1,
+          overflowX: "hidden",
+          overflowY: "hidden", // Evitar desbordamiento vertical
+          width: "100%",
+          margin: 0,
+        }}
       >
         {/* Sección Izquierda */}
         <Grid
