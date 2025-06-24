@@ -135,7 +135,7 @@ const getPlanesSeguros = (carCategoryRaw) => {
 
 // Map car categories to protection folders
 const categoryToFolderMap = {
-  ECONOMICO: "economico",
+  ECONOMICA: "economico",
   COMPACTO: "compacto",
   FULLSIZE: "fullsize",
   "SUV 5": "suv_5",
@@ -297,7 +297,11 @@ const SeguroVehiculo = () => {
     // console.log("Carro seleccionado:", selectedCar);
     return effectivePlanesSeguros.map((plan) => {
       if (plan.id === "none") {
-        return { ...plan, total: "0.00" };
+        return {
+          ...plan,
+          total: "0.00",
+          imagen: getDynamicImagePath(selectedCar?.category, "none"),
+        };
       }
       const match = proteccionesDisponibles.find(
         (p) => p.codeExtras === plan.codeTSD
