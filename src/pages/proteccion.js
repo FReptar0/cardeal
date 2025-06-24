@@ -133,9 +133,10 @@ const getPlanesSeguros = (carCategoryRaw) => {
   });
 };
 
-// Map car categories to protection folders
+// Normalizar las claves del mapa para evitar problemas con tildes o mayúsculas
 const categoryToFolderMap = {
-  ECONOMICA: "economico",
+  ECONOMICA: "economico", // Sin tilde
+  ECONÓMICO: "economico", // Con tilde
   COMPACTO: "compacto",
   FULLSIZE: "fullsize",
   "SUV 5": "suv_5",
