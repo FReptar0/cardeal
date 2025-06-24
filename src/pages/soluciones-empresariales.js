@@ -28,7 +28,7 @@ export default function SolucionesEmpresariales() {
         />
       </Box>
 
-      <Typography variant="h3" component="h1" color="text.primary" gutterBottom>
+      <Typography variant="h2" component="h1" color="text.primary" gutterBottom>
         Sitio en Construcción
       </Typography>
 
