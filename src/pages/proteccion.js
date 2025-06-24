@@ -146,7 +146,7 @@ const categoryToFolderMap = {
 const getDynamicImagePath = (category, planId) => {
   if (!category) {
     console.error("La categoría seleccionada es nula o indefinida.");
-    return "/Protecciones/default/default_cero.jpg";
+    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
   }
 
   const normalizedCategory = category.toUpperCase().trim();
@@ -156,11 +156,11 @@ const getDynamicImagePath = (category, planId) => {
     console.error(
       `La categoría '${normalizedCategory}' no está mapeada en categoryToFolderMap.`
     );
-    return "/Protecciones/default/default_cero.jpg";
+    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
   }
 
   const planImageMap = {
-    none: `${folder}_cero.jpg`,
+    none: `${folder}_0.jpg`, // Cambiar '_cero' por '_0'
     basico: `${folder}_80.jpg`,
     intermedio: `${folder}_90.jpg`,
     completo: `${folder}_95.jpg`,
@@ -168,10 +168,9 @@ const getDynamicImagePath = (category, planId) => {
 
   const imagePath = `/Protecciones/${folder}/${planImageMap[planId]}`;
 
-  console.log("Categoría seleccionada (normalizada):", normalizedCategory);
-  console.log("Plan ID:", planId);
-  console.log("Carpeta generada:", folder);
-  console.log("Ruta generada:", imagePath);
+  console.log(
+    `Ruta completa cero: /Protecciones/${folder}/${planImageMap.none}, Ruta completa básico: /Protecciones/${folder}/${planImageMap.basico}, Ruta completa intermedio: /Protecciones/${folder}/${planImageMap.intermedio}, Ruta completa completo: /Protecciones/${folder}/${planImageMap.completo}`
+  );
 
   return imagePath;
 };
