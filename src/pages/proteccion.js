@@ -37,15 +37,14 @@ const basePlanesSeguros = [
     id: "none",
     nombre: "RESPONSABILIDAD LIMITADA",
     total: "0",
-    imagen: "/images-seguros/Seguro-cero.png",
     color: "#999",
     code: "", // No hay código TSD para "none"
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
-      "Responsabilidad Civil: HASTA 300 MIL",
+      "Responsabilidad Civil: HASTA 350 MIL MXN",
       "Protección de Robo: RESPONSABLE 100%",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
-      "Gastos médicos ocupantes: NO INCLUYE",
+      "Gastos médicos ocupantes: HASTA 250 MIL MXN",
       "Asistencia Vial: NO INCLUYE",
     ],
   },
@@ -53,31 +52,31 @@ const basePlanesSeguros = [
     id: "basico",
     nombre: "PAQUETE BÁSICO",
     total: "0",
-    imagen: "/images-seguros/Seguro-basico.png",
+
     color: "#10906a",
     code: "CDW2", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
-      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Responsabilidad Civil: CUBRE 350 MIL MXN",
       "Protección de Robo: RESPONSABLE 20%",
-      "Asistencia Vial: SI INCLUYE",
+      "Asistencia Vial: NO INCLUYE",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
-      "Gastos médicos ocupantes: NO INCLUYE",
+      "Gastos médicos ocupantes: HASTA 250 MIL MXN",
     ],
   },
   {
     id: "intermedio",
     nombre: "PAQUETE ESTÁNDAR",
     total: "0",
-    imagen: "/images-seguros/Seguro-inter.png",
+
     color: "#10906a",
     code: "CDW", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
-      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Responsabilidad Civil: CUBRE 700 MIL MXN",
       "Protección de Robo: RESPONSABLE 10%",
-      "Gastos médicos ocupantes: COBERTURA 100 MIL",
-      "Asistencia Vial: SI INCLUYE",
+      "Gastos médicos ocupantes: HASTA 500 MIL MXN",
+      "Asistencia Vial: HASTA 40 KM",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
   },
@@ -85,16 +84,16 @@ const basePlanesSeguros = [
     id: "completo",
     nombre: "PAQUETE PREMIUM",
     total: "0",
-    imagen: "/images-seguros/Seguro-completo.png",
+
     color: "#10906a",
     code: "PDW", // Código TSD estándar
     recomendado: true,
     coberturas: [
       "Colisión y daños: RESPONSABLE 5%",
-      "Responsabilidad Civil: CUBRE 300 MIL",
+      "Responsabilidad Civil: CUBRE 700 MIL MXN",
       "Protección de Robo: RESPONSABLE 5%",
-      "Gastos médicos ocupantes: COBERTURA 100 MIL",
-      "Asistencia Vial: SI INCLUYE",
+      "Gastos médicos ocupantes: COBERTURA 500 MIL MXN",
+      "Asistencia Vial: HASTA 100 KM",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
   },
@@ -132,6 +131,49 @@ const getPlanesSeguros = (carCategoryRaw) => {
       codeTSD,
     };
   });
+};
+
+// Normalizar las claves del mapa para evitar problemas con tildes o mayúsculas
+const categoryToFolderMap = {
+  ECONOMICA: "economico", // Sin tilde
+  ECONÓMICO: "economico", // Con tilde
+  COMPACTO: "compacto",
+  FULLSIZE: "fullsize",
+  "SUV 5": "suv_5",
+  "SUV 5 LX": "suv_5_lx",
+};
+
+// Adjusted function to dynamically get the image path based on category and plan ID
+const getDynamicImagePath = (category, planId) => {
+  if (!category) {
+    console.error("La categoría seleccionada es nula o indefinida.");
+    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
+  }
+
+  const normalizedCategory = category.toUpperCase().trim();
+  const folder = categoryToFolderMap[normalizedCategory];
+
+  if (!folder) {
+    console.error(
+      `La categoría '${normalizedCategory}' no está mapeada en categoryToFolderMap.`
+    );
+    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
+  }
+
+  const planImageMap = {
+    none: `${folder}_0.jpg`, // Cambiar '_cero' por '_0'
+    basico: `${folder}_80.jpg`,
+    intermedio: `${folder}_90.jpg`,
+    completo: `${folder}_95.jpg`,
+  };
+
+  const imagePath = `/Protecciones/${folder}/${planImageMap[planId]}`;
+
+  console.log(
+    `Ruta completa cero: /Protecciones/${folder}/${planImageMap.none}, Ruta completa básico: /Protecciones/${folder}/${planImageMap.basico}, Ruta completa intermedio: /Protecciones/${folder}/${planImageMap.intermedio}, Ruta completa completo: /Protecciones/${folder}/${planImageMap.completo}`
+  );
+
+  return imagePath;
 };
 
 const SeguroVehiculo = () => {
@@ -251,21 +293,30 @@ const SeguroVehiculo = () => {
     searchData?.sameOffice,
   ]);
 
+  // Log the selected car and image paths for each insurance plan
   const planesConPrecioDinamico = React.useMemo(() => {
+    // console.log("Carro seleccionado:", selectedCar);
     return effectivePlanesSeguros.map((plan) => {
       if (plan.id === "none") {
-        return { ...plan, total: "0.00" };
+        return {
+          ...plan,
+          total: "0.00",
+          imagen: getDynamicImagePath(selectedCar?.category, "none"),
+        };
       }
       const match = proteccionesDisponibles.find(
         (p) => p.codeExtras === plan.codeTSD
       );
       const precio = match ? match.precioDia : 0;
+      const imagen = getDynamicImagePath(selectedCar?.category, plan.id);
+      // console.log(`Imagen para el plan ${plan.id}:`, imagen);
       return {
         ...plan,
         total: precio.toFixed(2),
+        imagen, // Dynamic image
       };
     });
-  }, [effectivePlanesSeguros, proteccionesDisponibles]);
+  }, [effectivePlanesSeguros, proteccionesDisponibles, selectedCar?.category]);
 
   // —————————————————————————————————————————————————————————————————————————
   // Opción 1: seleccionar “Premium” solo cuando loadingProtecciones === false
@@ -466,7 +517,6 @@ const SeguroVehiculo = () => {
                     p: 1,
                   }}
                   image={plan.imagen}
-                  alt={plan.nombre}
                 />
 
                 <CardContent
@@ -571,7 +621,7 @@ const SeguroVehiculo = () => {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.secondary.main,
+              backgroundColor: (theme) => theme.palette.primary.main,
               color: "white",
               fontWeight: "bold",
               p: "12px 20px",

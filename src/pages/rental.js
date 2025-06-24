@@ -99,10 +99,17 @@ export default function RentalPage() {
           gap: 2,
         }}
       >
-        <CircularProgress sx={{ color: theme => theme.palette.primary.text }} size={48} />
+        <CircularProgress
+          sx={{ color: (theme) => theme.palette.primary.text }}
+          size={48}
+        />
         <Typography
           variant="h6"
-          sx={{ color: theme => theme.palette.primary.text, fontWeight: "bold", textAlign: "center" }}
+          sx={{
+            color: (theme) => theme.palette.primary.text,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
         >
           Cargando autos disponibles{dots}
         </Typography>
@@ -373,7 +380,11 @@ export default function RentalPage() {
             <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
               <Typography
                 variant="h5"
-                sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", mt: 4 }}
+                sx={{
+                  color: (theme) => theme.palette.secondary.text,
+                  fontWeight: "bold",
+                  mt: 4,
+                }}
               >
                 No hay autos disponibles para tu búsqueda.
               </Typography>
@@ -410,9 +421,9 @@ export default function RentalPage() {
             fontWeight: "bold",
             padding: "12px 30px",
             fontSize: "16px",
-            backgroundColor: theme => theme.palette.primary.buttons,
+            backgroundColor: (theme) => theme.palette.primary.buttons,
             "&:hover": {
-              backgroundColor: theme => theme.palette.primary.buttonsHover,
+              backgroundColor: (theme) => theme.palette.primary.buttonsHover,
             },
           }}
           onClick={handleContinue}
@@ -447,7 +458,7 @@ export default function RentalPage() {
             onClick={() => setOpenWarning(false)}
             variant="contained"
             sx={{
-              backgroundColor: theme => theme.palette.secondary.buttons,
+              backgroundColor: (theme) => theme.palette.primary.buttons,
               color: "white",
               fontWeight: "bold",
               padding: "12px 20px",
@@ -518,7 +529,7 @@ export default function RentalPage() {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: theme => theme.palette.secondary.buttons,
+                backgroundColor: (theme) => theme.palette.primary.buttons,
                 color: "white",
                 fontWeight: "bold",
                 padding: "10px 16px",

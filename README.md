@@ -5,9 +5,6 @@ A Next.js-based car rental booking application that integrates with external ser
 
 Cardeal is a full-stack web application that enables users to search, select, and book rental cars through integration with the TSD (Travel Service Distributor) service and Flap payment gateway. The application handles the complete user journey including car selection, insurance plans, extras booking, and payment processing.
 
-
-
-
 ## Features
 
 - **Car Search & Selection**: Real-time availability and pricing through TSD integration
