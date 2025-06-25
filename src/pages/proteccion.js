@@ -66,7 +66,7 @@ const basePlanesSeguros = [
   },
   {
     id: "intermedio",
-    nombre: "PAQUETE ESTÁNDAR",
+    nombre: "PAQUETE INTERMEDIO",
     total: "0",
 
     color: "#10906a",
