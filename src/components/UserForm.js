@@ -582,7 +582,12 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           control={
             <Checkbox
               {...register("terms")}
-              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
+              sx={{
+                color: (theme) => theme.palette.primary.buttons || "#b0b0b0",
+                "&.Mui-checked": {
+                  color: (theme) => theme.palette.primary.buttons || "#b0b0b0",
+                },
+              }}
             />
           }
           label={
@@ -595,7 +600,12 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           control={
             <Checkbox
               {...register("privacy")}
-              sx={{ color: "#191919", "&.Mui-checked": { color: "#191919" } }}
+              sx={{
+                color: (theme) => theme.palette.primary.buttons || "#b0b0b0",
+                "&.Mui-checked": {
+                  color: (theme) => theme.palette.primary.buttons || "#b0b0b0",
+                },
+              }}
             />
           }
           label={
@@ -658,6 +668,14 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               paidOnline ||
               (!tokenIsInvalid && !isValid)
             }
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.primary.buttons || "#b0b0b0",
+              "&:hover": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#b0b0b0",
+              },
+            }}
           >
             {submitting ? "Procesando..." : "Pago en mostrador"}
           </Button>
@@ -674,6 +692,14 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               !paidOnline ||
               (tokenIsInvalid && !isValid)
             }
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.primary.buttons || "#b0b0b0",
+              "&:hover": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#b0b0b0",
+              },
+            }}
           >
             {submittingOnline ? "Redirigiendo…" : "Pago en línea"}
           </Button>
