@@ -20,7 +20,6 @@ import LuggageIcon from "@mui/icons-material/Luggage";
 import Button from "@mui/material/Button";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 
-import Hero from "../components/Hero";
 import CTA from "@/components/CTA";
 
 // Galería
@@ -55,14 +54,8 @@ export default function Flota() {
         overflowX: "hidden",
       }}
     >
-      <div
-        id="sectionOne"
-        style={{ height: "auto", width: "100%", marginTop: "-155px" }}
-      >
-        <Hero />
-      </div>
 
-      <Box sx={{ marginTop: 16 }}>
+      <Box>
         <Typography variant="h4" gutterBottom textAlign="center" color="black">
           FLOTA DE AUTOS
         </Typography>
