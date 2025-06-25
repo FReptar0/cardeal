@@ -14,6 +14,7 @@ body {
   height: 100%;
   width: 100%;
   font-family: 'Open Sans', sans-serif;
+  overflow-x: hidden; /* Eliminar el scroll horizontal */
 }
 
 #__next {

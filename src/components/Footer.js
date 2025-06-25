@@ -178,7 +178,7 @@ const Footer = () => {
                 >
                   Preguntas frecuentes
                 </Typography>
-                <Typography
+                {/* <Typography
                   component="a"
                   href="/facturacion"
                   sx={{
@@ -194,7 +194,7 @@ const Footer = () => {
                   }}
                 >
                   Facturación
-                </Typography>
+                </Typography> */}
               </Box>
             </Box>
           </Box>
