@@ -16,175 +16,106 @@ export default function Hero() {
   };
 
   return (
-    <>
+    <Grid
+      container
+      spacing={0}
+      sx={{
+        width: "100%",
+        margin: 0,
+        overflow: "hidden",
+        // Desplaza todo el Hero bajo la navbar (64px) sólo en móviles
+        mt: { xs: "64px", lg: 0 },
+        // Ocupa todo el alto restante y permite centrar verticalmente
+        minHeight: { xs: "calc(100vh - 64px)", lg: "auto" },
+      }}
+    >
+      {/* --- Sección Izquierda (imagen) --- */}
       <Grid
-        container
-        spacing={0}
+        item
+        xs={12}
+        lg={6}
         sx={{
-          flexGrow: 1,
-          overflowX: "hidden",
-          overflowY: "hidden", // Evitar desbordamiento vertical
+          display: { xs: "none", lg: "block" },
+          position: "relative",
+          overflow: "visible",
           width: "100%",
-          margin: 0,
+          minHeight: "400px",
         }}
       >
-        {/* Sección Izquierda */}
-        <Grid
-          item
-          xs={12}
-          md={12}
-          lg={6}
-          sx={{
-            display: { xs: "none", lg: "block" },
-            position: "relative",
-            overflow: "visible", // <-- seguimos con visible
-            width: "100%",
-            minHeight: "400px",
+        <img
+          src="/extras/background-mexico-light.png"
+          alt="Fondo"
+          style={{
+            maxWidth: "90%",
+            height: "auto",
+            position: "absolute",
+            top: "45%",
+            left: "52%",
+            transform: "translate(-50%, -50%)",
+            zIndex: -1,
+            pointerEvents: "none",
           }}
-        >
-          {/* Fondo detrás de la imagen */}
-          <img
-            src="/extras/background-mexico-light.png"
-            alt="Fondo"
-            style={{
-              maxWidth: "90%",
-              height: "auto",
-              position: "absolute",
-              top: "45%",
-              left: "52%",
-              transform: "translate(-50%, -50%)",
-              zIndex: -1,
-              pointerEvents: "none",
-            }}
-          />
-          {/* Imagen en primer plano */}
-          <img
-            src="/photos/suv-5-lx/Xtrail-lateral-frente.webp"
-            alt="Auto de ejemplo"
-            style={{
-              maxWidth: "80%",
-              height: "auto",
-              position: "absolute",
-              top: "73%",
-              left: "15%",
-              transform: "translateY(-50%)",
-              zIndex: 0,
-              pointerEvents: "none",
-            }}
-          />
-        </Grid>
+        />
+        <img
+          src="/photos/suv-5-lx/Xtrail-lateral-frente.webp"
+          alt="Auto de ejemplo"
+          style={{
+            maxWidth: "80%",
+            height: "auto",
+            position: "absolute",
+            top: "73%",
+            left: "15%",
+            transform: "translateY(-50%)",
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        />
+      </Grid>
 
-        {/* Sección Derecha */}
-        <Grid item xs={12} md={12} lg={6} sx={{ zIndex: 2 }}>
-          <div
+      {/* --- Sección Derecha (texto + buscador) --- */}
+      <Grid
+        item
+        xs={12}
+        lg={6}
+        sx={{
+          display: "flex",
+          // Centra vertical y horizontalmente en móvil
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          px: 2,
+        }}
+      >
+        <div style={{ width: "100%" }}>
+          <h2
+            id="sectionDerechaTitle"
             style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              // --- estilos móviles ---
-              ...(typeof window !== "undefined" && window.innerWidth <= 600
-                ? {
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }
-                : {}),
+              fontWeight: 700,
+              fontSize: "1.8rem",
+              margin: 0,
+              marginBottom: "8px", // espacio reducido
+              marginTop: "64px", // Desplaza el texto bajo la navbar
+              color: "#10906a",
+              textAlign: "center", // Asegura que el texto esté centrado
+              padding: "0 16px", // Añade espacio hacia los lados
+              boxSizing: "border-box", // Asegura que el padding no afecte el ancho
+              width: "100%", // Asegura que ocupe todo el ancho disponible
             }}
           >
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                // --- estilos móviles ---
-                ...(typeof window !== "undefined" && window.innerWidth <= 600
-                  ? {
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "160px",
-                      padding: "0 8px",
-                      position: "static",
-                      marginTop: "120px", // Espacio para la navbar
-                    }
-                  : { top: "100px" }),
-              }}
-            >
-              <h2
-                id="sectionDerechaTitle"
-                style={{
-                  fontWeight: 300,
-                  fontSize: "2rem",
-                  textAlign: "start",
-                  marginBottom: "24px",
-                  marginTop: 0,
-                  position: "relative",
-                  // --- estilos móviles ---
-                  ...(typeof window !== "undefined" && window.innerWidth <= 600
-                    ? {
-                        textAlign: "center",
-                        fontSize: "1.7rem",
-                        lineHeight: 1.2,
-                        display: "block",
-                        fontWeight: 700,
-                        margin: 0,
-                        width: "100%",
-                        position: "static",
-                      }
-                    : { top: "40px" }),
-                }}
-              >
-                <span
-                  style={{
-                    color: "#10906a",
-                    fontWeight: 900,
-                    marginBottom: 0,
-                    display: "block",
-                    // --- estilos móviles ---
-                    ...(typeof window !== "undefined" &&
-                    window.innerWidth <= 600
-                      ? {
-                          width: "100%",
-                          textAlign: "center",
-                          fontSize: "1.7rem",
-                          lineHeight: 1.2,
-                        }
-                      : {}),
-                  }}
-                >
-                  Renta el auto que necesitas,
-                  <br />
-                  sin letras chiquitas
-                </span>
-              </h2>
-            </div>
-            <div
-              className="custom-search-bar"
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "140px",
-                marginLeft: "20px",
-                // --- estilos móviles ---
-                ...(typeof window !== "undefined" && window.innerWidth <= 600
-                  ? {
-                      marginTop: "12px", // Espacio aún más reducido en mobile
-                      marginLeft: 0,
-                      padding: "0 16px",
-                      boxSizing: "border-box",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-                  : {}),
-              }}
-            >
-              <SearchBar onSearch={handleSearch} />
-            </div>
+            Renta el auto que necesitas, sin letras chiquitas
+          </h2>
+
+          <div
+            style={{
+              marginTop: "4px", // espacio mínimo
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <SearchBar onSearch={handleSearch} />
           </div>
-        </Grid>
+        </div>
       </Grid>
-    </>
+    </Grid>
   );
 }
