@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useRouter } from "next/router"; // AGREGAR: IMPORTAR useRouter PARA REDIRECCIÓN
-import { useBooking } from "@/contexts/BookingContext"; // AGREGAR: IMPORTAR useBooking PARA GUARDAR SELECCIÓN EN CONTEXTO
+import { useRouter } from "next/router";
+import { useBooking } from "@/contexts/BookingContext";
 import {
   Box,
   Card,
@@ -8,306 +8,338 @@ import {
   CardContent,
   Typography,
   Modal,
-  Tooltip,
   IconButton,
   Tabs,
   Tab,
+  Button,
+  useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import carData from "../data/cars.json";
-import InfoIcon from "@mui/icons-material/Info";
 import LuggageIcon from "@mui/icons-material/Luggage";
-import Button from "@mui/material/Button";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-
-import CTA from "@/components/CTA";
-
-// Galería
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
+import CTA from "@/components/CTA";
+import carData from "../data/cars.json";
 
 export default function Flota() {
-  const router = useRouter(); // AGREGAR: CREAR INSTANCIA router PARA NAVEGACIÓN
-  const { setmodalCar } = useBooking(); // AGREGAR: DESCTRUCTURAR setmodalCar PARA ACTUALIZAR CONTEXTO
+  const theme = useTheme();
+  const router = useRouter();
+  const { setmodalCar } = useBooking();
   const [open, setOpen] = useState(false);
   const [modalCar, setModalCar] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Función para abrir el modal con el auto seleccionado
   const handleOpenModal = (car) => {
-    setModalCar(car); // GUARDAMOS EN modalCar
+    setModalCar(car);
     setOpen(true);
   };
 
   return (
     <Box
       sx={{
+        width: "100vw",
         minHeight: "100vh",
+        bgcolor: theme.palette.background.default,
+        pt: 6,
+        pb: 6,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        pt: 4,
-        marginTop: "120px",
         overflowX: "hidden",
       }}
     >
-
-      <Box>
-        <Typography variant="h4" gutterBottom textAlign="center" color="black">
-          FLOTA DE AUTOS
-        </Typography>
-      </Box>
-
+      {/* Título y descripción */}
       <Typography
-        variant="body1"
+        variant="h3"
         gutterBottom
         textAlign="center"
-        maxWidth="600px"
-        color="black"
+        sx={{ mb: 6, mt: 9 }} // Incrementar margen inferior
+      >
+        FLOTA DE AUTOS
+      </Typography>
+      <Typography
+        variant="body1"
+        maxWidth="640px"
+        textAlign="center"
+        sx={{ mb: 6 }} // Incrementar margen inferior
       >
         Queremos que tu viaje sea cómodo y seguro, ofreciendo una amplia
         categoría de vehículos.
       </Typography>
 
-      {/* LISTADO DE AUTOS */}
+      {/* Carrusel centrado en full viewport */}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr", // una columna en pantallas pequeñas
-            sm: "1fr 1fr", // dos columnas en pantallas medianas
-            md: "1fr 1fr 1fr 1fr", // cuatro columnas en pantallas grandes
-          },
-          gap: 2,
+          width: "100%",
           maxWidth: "1200px",
+          overflow: "visible", // Cambiar de 'hidden' a 'visible' para permitir que el escalado de la tarjeta central se muestre completamente
           mt: 2,
         }}
       >
-        {carData.map((car, index) => (
-          <Card
-            key={index}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-              backgroundColor: "white",
-              color: "black",
-              border: "1px solid #ddd",
-              borderRadius: 2,
-              transition: "transform 0.2s ease-in-out",
-              "&:hover": {
-                transform: "scale(1.03)",
-              },
-            }}
-          >
-            <Box
-              sx={{
-                width: "100%",
-                height: 180,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
-              }}
-            >
-              <CardMedia
-                component="img"
-                onClick={() => handleOpenModal(car)}
-                image={car.image}
-                alt={car.name}
-                sx={{
-                  width: "90%",
-                  height: "100%",
-                  objectFit: "contain",
-                  cursor: "pointer",
-                }}
-              />
-            </Box>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  fontSize="1rem"
-                  textAlign="center"
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          slidesPerView={3} // Asegurar que solo se muestren 3 autos a la vez
+          centeredSlides
+          loop
+          spaceBetween={60}
+          autoplay={{ delay: 4000, disableOnInteraction: false }}
+          onSwiper={(sw) => setActiveIndex(sw.realIndex)}
+          onSlideChange={(sw) => setActiveIndex(sw.realIndex)}
+          style={{
+            overflow: "hidden", // Limitar el desbordamiento sin scroll
+            paddingTop: "50px", // Mantener espacio superior
+            paddingBottom: "50px", // Mantener espacio inferior
+          }}
+        >
+          {carData.map((car, i) => {
+            const isActive = i === activeIndex;
+            return (
+              <SwiperSlide key={i} style={{ overflow: "visible" }}>
+                <Card
+                  sx={{
+                    width: 350,
+                    height: 530,
+                    mx: "auto",
+                    bgcolor: theme.palette.common.white,
+                    borderRadius: 3,
+                    border: "2px solid",
+                    borderColor: isActive
+                      ? theme.palette.primary.main
+                      : theme.palette.divider,
+                    transition:
+                      "transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease",
+                    transform: isActive ? "scale(1.18)" : "scale(1)", // Reducir el zoom del auto central a 1.2x
+                    boxShadow: "none", // Eliminar el efecto de sombra
+                    display: "flex",
+                    flexDirection: "column",
+                    overflow: "visible",
+                  }}
                 >
-                  {car.category}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
-                }}
-              >
-                <Typography variant="subtitle2" color="gray" textAlign="center">
-                  {car.name}
-                </Typography>
-                {car.abbreviation && (
-                  <>
+                  <Box
+                    sx={{
+                      height: 260,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      onClick={() => handleOpenModal(car)}
+                      image={car.image}
+                      alt={car.name}
+                      sx={{
+                        width: "95%",
+                        height: "100%",
+                        objectFit: "contain",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Box>
+
+                  <CardContent sx={{ flexGrow: 1, px: 2 }}>
                     <Typography
-                      variant="subtitle2"
-                      color="gray"
+                      variant="h6"
+                      fontWeight="bold"
                       textAlign="center"
                     >
-                      ({car.abbreviation})
+                      {car.category}
                     </Typography>
-                    {car.abbreviationMeaning && car.abbreviationDescription && (
-                      <Tooltip
-                        title={`${car.abbreviationMeaning}: ${car.abbreviationDescription}`}
-                        arrow
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      textAlign="center"
+                      sx={{ mb: 2 }}
+                    >
+                      {car.name} {car.abbreviation && `(${car.abbreviation})`}
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 1.5,
+                        justifyContent: "center",
+                      }}
+                    >
+                      {/* Íconos y texto */}
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
-                        <IconButton size="small" sx={{ padding: 0 }}>
-                          <InfoIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </>
-                )}
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 1,
-                  justifyContent: "center",
-                  mt: 1,
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-pax.svg"
-                    alt="Pasajeros"
-                    width="16"
-                    height="16"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">{car.passengers}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-door.svg"
-                    alt="Puertas"
-                    width="16"
-                    height="16"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">{car.doors}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <LuggageIcon fontSize="small" sx={{ color: "black" }} />
-                  <Typography variant="body2">{car.luggage}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-trans.svg"
-                    alt="Transmisión"
-                    width="16"
-                    height="16"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">{car.transmission}</Typography>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  mt: 1,
-                  gap: 2, // Espaciado entre los botones
-                }}
-              >
-                <Button
-                  onClick={() => handleOpenModal(car)}
-                  variant="body2"
-                  fontWeight="medium"
-                  color="#10906a"
-                  startIcon={<PhotoLibraryIcon />}
-                  sx={{
-                    marginTop: 1,
-                    fontSize: "12px",
-                    textTransform: "none",
-                    color: "gray",
-                    "&:hover": {
-                      backgroundColor: "gray",
-                      color: "white",
-                      transition:
-                        "background-color 0.2s ease-in-out, color 0.2s ease-in-out",
-                    },
-                  }}
-                >
-                  Ver más detalles
-                </Button>
-                <Button
-                  onClick={() => router.push("/")}
-                  variant="contained"
-                  sx={{
-                    backgroundColor: theme => theme.palette.primary.buttons,
-                    color: "white",
-                    fontSize: "12px",
-                    textTransform: "none",
-                    "&:hover": {
-                      backgroundColor: "#0e7a5a",
-                    },
-                  }}
-                >
-                  Rentar
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+                        <img
+                          src="/icons/ic-pax.svg"
+                          alt="Pasajeros"
+                          width="20"
+                          height="20"
+                          style={{ filter: "brightness(0)" }}
+                        />
+                        <Typography variant="body2">
+                          {car.passengers} pasajeros
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <img
+                          src="/icons/ic-door.svg"
+                          alt="Puertas"
+                          width="20"
+                          height="20"
+                          style={{ filter: "brightness(0)" }}
+                        />
+                        <Typography variant="body2">
+                          {car.doors} puertas
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <LuggageIcon fontSize="small" />
+                        <Typography variant="body2">
+                          {car.luggage} maletas
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <img
+                          src="/icons/ic-trans.svg"
+                          alt="Transmisión"
+                          width="20"
+                          height="20"
+                          style={{ filter: "brightness(0)" }}
+                        />
+                        <Typography variant="body2">
+                          {car.transmission}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <img
+                          src="/icons/ic-pet.svg"
+                          alt="Pet friendly"
+                          width="20"
+                          height="20"
+                          style={{ filter: "brightness(0)" }}
+                        />
+                        <Typography variant="body2">Pet friendly</Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <img
+                          src="/icons/ice.svg"
+                          alt="Aire acondicionado"
+                          width="20"
+                          height="20"
+                          style={{ filter: "brightness(0)" }}
+                        />
+                        <Typography variant="body2">
+                          Aire acondicionado
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+
+                  <Button
+                    data-no-select
+                    startIcon={<PhotoLibraryIcon />}
+                    sx={{
+                      m: 2,
+                      mb: 0,
+                      fontSize: "12px",
+                      textTransform: "none",
+                      color: "#3e9279",
+                      "&:hover": { color: "black" },
+                      backgroundColor: "white",
+                      border: "1px solid #d9d9d9",
+                      borderRadius: 1,
+
+                      "&:hover": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                      "&:active": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                      "&:focus": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleOpenModal(car);
+                    }}
+                  >
+                    Ver galería
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    onClick={() => router.push("/")}
+                    sx={{
+                      m: 2,
+                      backgroundColor: theme.palette.primary.buttons,
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.buttons,
+                      },
+                    }}
+                  >
+                    Rentar ahora
+                  </Button>
+                </Card>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
       </Box>
 
       <Box
         sx={{
-          mt: 4,
-          // forzar full‐viewport width:
-          width: "100vw",
-
-          mb: 0,
+          mt: 6,
+          mb: -6,
+          width: "100%",
         }}
       >
         <CTA />
       </Box>
 
-      {/* MODAL */}
+      {/* Modal de detalle */}
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
       >
         <Box
           sx={{
-            backgroundColor: "white",
-            padding: 3,
-            borderRadius: 2,
             width: "80vw",
             maxWidth: "1200px",
             height: "90vh",
+            bgcolor: "white",
+            borderRadius: 3,
+            boxShadow: theme.shadows[24],
             position: "relative",
-            overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            overflow: "hidden",
           }}
         >
           <IconButton
             onClick={() => setOpen(false)}
-            sx={{ position: "absolute", top: 10, right: 10 }}
+            sx={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
           >
             <CloseIcon />
           </IconButton>
@@ -318,154 +350,111 @@ export default function Flota() {
                 variant="h4"
                 fontWeight="bold"
                 textAlign="center"
-                mb={2}
+                sx={{ mt: 4 }}
               >
                 {modalCar.name}
               </Typography>
 
               <Tabs
                 value={tabIndex}
-                onChange={(_, newIndex) => setTabIndex(newIndex)}
+                onChange={(_, ix) => setTabIndex(ix)}
                 centered
+                sx={{ mt: 2 }}
               >
                 <Tab label="IMÁGENES" />
                 <Tab label="VISTA 360°" />
               </Tabs>
 
-              {/* CONTENEDOR PRINCIPAL DE LA IMAGEN/IFRAME */}
               <Box
                 sx={{
-                  width: "100%",
-                  height: "100%",
+                  flexGrow: 1,
                   display: "flex",
-                  flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  p: 2,
                 }}
               >
                 {tabIndex === 0 ? (
                   <Swiper
-                    navigation={{
-                      nextEl: ".swiper-button-next",
-                      prevEl: ".swiper-button-prev",
-                    }}
+                    navigation
                     modules={[Navigation]}
-                    style={{ width: "100%", height: "60vh" }}
+                    style={{ width: "100%", height: "100%" }}
                   >
-                    {(modalCar.images || []).map((img, index) => (
+                    {(modalCar.images || []).map((img, idx) => (
                       <SwiperSlide
-                        key={index}
-                        style={{ display: "flex", justifyContent: "center" }}
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
                       >
                         <img
                           src={img}
-                          alt={`Imagen ${index + 1}`}
+                          alt={`Imagen ${idx + 1}`}
                           style={{
-                            width: "100%",
-                            height: "auto",
                             maxWidth: "100%",
                             maxHeight: "80vh",
-                            borderRadius: 5,
                             objectFit: "contain",
-                            margin: "0 ",
+                            borderRadius: 8,
                           }}
                         />
                       </SwiperSlide>
                     ))}
-                    <div
-                      className="swiper-button-next"
-                      style={{ color: "black" }}
-                    ></div>
-                    <div
-                      className="swiper-button-prev"
-                      style={{ color: "black" }}
-                    ></div>
                   </Swiper>
                 ) : (
                   <iframe
                     src={modalCar.image360}
                     style={{
                       width: "100%",
-                      height: "60vh",
+                      height: "100%",
                       border: "none",
-                      borderRadius: 5,
+                      borderRadius: 8,
                     }}
-                  ></iframe>
+                  />
                 )}
               </Box>
 
-              {/* CONTENEDOR DE ÍCONOS ABAJO */}
               <Box
                 sx={{
                   display: "flex",
                   flexWrap: "wrap",
-                  gap: 2,
+                  gap: 3,
                   justifyContent: "center",
-                  mt: 2,
+                  py: 2,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-pax.svg"
-                    alt="Pasajeros"
-                    width="20"
-                    height="20"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">
-                    {modalCar.passengers} pasajeros
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-door.svg"
-                    alt="Puertas"
-                    width="20"
-                    height="20"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">
-                    {modalCar.doors} puertas
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <LuggageIcon fontSize="small" sx={{ color: "black" }} />
-                  <Typography variant="body2">
-                    {modalCar.luggage} maletas
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-trans.svg"
-                    alt="Transmisión"
-                    width="20"
-                    height="20"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">
-                    {modalCar.transmission}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ic-pet.svg"
-                    alt="Pet friendly"
-                    width="20"
-                    height="20"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">Pet friendly</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
-                    src="/icons/ice.svg"
-                    alt="Aire acondicionado"
-                    width="20"
-                    height="20"
-                    style={{ filter: "brightness(0)" }}
-                  />
-                  <Typography variant="body2">Aire acondicionado</Typography>
-                </Box>
+                {[
+                  {
+                    icon: "/icons/ic-pax.svg",
+                    text: `${modalCar.passengers} pasajeros`,
+                  },
+                  {
+                    icon: "/icons/ic-door.svg",
+                    text: `${modalCar.doors} puertas`,
+                  },
+                  {
+                    icon: "/icons/ic-luggage.svg",
+                    text: `${modalCar.luggage} maletas`,
+                  },
+                  { icon: "/icons/ic-trans.svg", text: modalCar.transmission },
+                  { icon: "/icons/ic-pet.svg", text: "Pet friendly" },
+                  { icon: "/icons/ice.svg", text: "Aire acondicionado" },
+                ].map(({ icon, text }, j) => (
+                  <Box
+                    key={j}
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <img
+                      src={icon}
+                      alt={text}
+                      width="20"
+                      height="20"
+                      style={{ filter: "brightness(0)" }}
+                    />
+                    <Typography variant="body2">{text}</Typography>
+                  </Box>
+                ))}
               </Box>
             </>
           )}

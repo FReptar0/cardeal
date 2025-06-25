@@ -185,9 +185,9 @@ const SeguroVehiculo = () => {
   const [openRecommendation, setOpenRecommendation] = useState(false);
   const [recommendedPlan, setRecommendedPlan] = useState(null);
 
-  const [headerIsTop, setHeaderIsTop] = useState(true);
-  const [showCompactHeader, setShowCompactHeader] = useState(false);
-  const [hideSearchSection, setHideSearchSection] = useState(false);
+  const [headerIsTop, setHeaderIsTop] = useState(false);
+  const [showCompactHeader, setShowCompactHeader] = useState(true);
+  const [hideSearchSection, setHideSearchSection] = useState(true);
 
   const [proteccionesDisponibles, setProteccionesDisponibles] = useState([]);
   const [loadingProtecciones, setLoadingProtecciones] = useState(true);
@@ -378,15 +378,28 @@ const SeguroVehiculo = () => {
     setOpenRecommendation(false);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      setHeaderIsTop(scrollTop === 0);
+      setShowCompactHeader(scrollTop > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <Container
       maxWidth="xl"
       sx={{
         textAlign: "center",
-        marginTop: "148px",
-        paddingBottom: 5,
+        marginTop: "100px", // Ajustado para que el contenido esté debajo del navbar
+        paddingBottom: 0,
       }}
     >
+      {/* Temporarily hiding SearchBar section
       <Box
         sx={{
           overflow: "hidden",
@@ -410,11 +423,17 @@ const SeguroVehiculo = () => {
           <SearchBar onValuesChange={() => {}} />
         </Box>
       </Box>
+      */}
 
       <CompactHeader
         searchData={searchData}
         headerIsTop={headerIsTop}
         showCompactHeader={showCompactHeader}
+        sx={{
+          position: "relative", // Cambiar de fixed a relative para que no sea fijo
+          width: "100%", // Asegurar que abarque el 100% del ancho
+          marginTop: "0px", // Reducir espacio entre CompactHeader y Stepper
+        }}
       />
 
       {showCompactHeader && (
@@ -450,6 +469,7 @@ const SeguroVehiculo = () => {
           wrap="wrap"
           justifyContent="center"
           alignItems="stretch"
+          sx={{ marginTop: 2, marginBottom: 4 }}
         >
           {planesConPrecioDinamico.map((plan) => (
             <Grid item xs={12} sm={6} md={3} key={plan.id}>

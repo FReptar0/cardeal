@@ -221,7 +221,8 @@ const ExtrasRenta = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
+    <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "100px" }}>
+      {/* Temporarily hiding SearchBar section
       <Box
         sx={{
           overflow: "hidden",
@@ -246,16 +247,22 @@ const ExtrasRenta = () => {
           <SearchBar onValuesChange={setSearchDataLocal} />
         </Box>
       </Box>
+      */}
 
       {isClient && (
         <CompactHeader
           searchData={searchDataLocal}
           headerIsTop={headerIsTop}
-          showCompactHeader={showCompactHeader}
+          showCompactHeader={true}
+          sx={{
+            position: "relative", // Cambiar de fixed a relative para que no sea fijo
+            width: "100%", // Asegurar que abarque el 100% del ancho
+            marginTop: -12, // Reducir espacio entre CompactHeader y Stepper
+          }}
         />
       )}
 
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", marginTop: -9 }}>
         <RentalStepper />
       </Box>
 
@@ -265,6 +272,43 @@ const ExtrasRenta = () => {
       <Typography variant="body1" mb={4}>
         Añade servicios adicionales para mejorar tu experiencia
       </Typography>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 4,
+          p: 2,
+          backgroundColor: "#f8f8f8",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography variant="h5" fontWeight="bold">
+          TOTAL de extras:
+        </Typography>
+        <Typography variant="h5" fontWeight="bold" sx={{ color: "#000" }}>
+          {total.toFixed(2)} MXN
+        </Typography>
+      </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: (theme) => theme.palette.primary.buttons,
+            color: "white",
+            fontWeight: "bold",
+            padding: "12px 30px",
+            fontSize: "16px",
+          }}
+          onClick={irAcheckout}
+        >
+          {Object.keys(selectedExtras || {}).length === 0
+            ? "CONTINUAR SIN EXTRAS"
+            : "CONTINUAR"}
+        </Button>
+      </Box>
 
       {loadingExtras ? (
         <ExtrasLoader />
@@ -280,18 +324,29 @@ const ExtrasRenta = () => {
         >
           <Typography
             variant="h5"
-            sx={{ color: theme => theme.palette.secondary.text, fontWeight: "bold", mt: 4 }}
+            sx={{
+              color: (theme) => theme.palette.secondary.text,
+              fontWeight: "bold",
+              mt: 4,
+            }}
           >
             No se encontraron extras disponibles para tu selección.
           </Typography>
         </Box>
       ) : (
         <Grid container spacing={3} justifyContent="center">
-          {extrasDisponibles.map((extra) => {
+          {extrasDisponibles.map((extra, index) => {
             const cantidad = selectedExtras?.[extra.id]?.cantidad || 0;
 
             return (
-              <Grid item xs={12} sm={6} md={12} key={extra.id}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={12}
+                key={extra.id}
+                sx={{ pb: index === extrasDisponibles.length - 1 ? 4 : 0 }}
+              >
                 <Card
                   sx={{
                     display: "flex",
@@ -391,41 +446,6 @@ const ExtrasRenta = () => {
           })}
         </Grid>
       )}
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mt: 4,
-          p: 2,
-          backgroundColor: "#f8f8f8",
-          borderRadius: "8px",
-        }}
-      >
-        <Typography variant="h5" fontWeight="bold">
-          TOTAL de extras:
-        </Typography>
-        <Typography variant="h5" fontWeight="bold" sx={{ color: "#000" }}>
-          {total.toFixed(2)} MXN
-        </Typography>
-      </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor:theme => theme.palette.primary.buttons,
-            color: "white",
-            fontWeight: "bold",
-            padding: "12px 30px",
-            fontSize: "16px",
-          }}
-          onClick={irAcheckout}
-        >
-          CONTINUAR
-        </Button>
-      </Box>
     </Container>
   );
 };
