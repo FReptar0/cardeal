@@ -221,7 +221,8 @@ const ExtrasRenta = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "148px" }}>
+    <Container maxWidth="lg" sx={{ textAlign: "center", marginTop: "100px" }}>
+      {/* Temporarily hiding SearchBar section
       <Box
         sx={{
           overflow: "hidden",
@@ -246,16 +247,22 @@ const ExtrasRenta = () => {
           <SearchBar onValuesChange={setSearchDataLocal} />
         </Box>
       </Box>
+      */}
 
       {isClient && (
         <CompactHeader
           searchData={searchDataLocal}
           headerIsTop={headerIsTop}
-          showCompactHeader={showCompactHeader}
+          showCompactHeader={true}
+          sx={{
+            position: "relative", // Cambiar de fixed a relative para que no sea fijo
+            width: "100%", // Asegurar que abarque el 100% del ancho
+            marginTop: -12, // Reducir espacio entre CompactHeader y Stepper
+          }}
         />
       )}
 
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", marginTop: -9 }}>
         <RentalStepper />
       </Box>
 

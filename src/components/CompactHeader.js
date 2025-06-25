@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Tooltip } from "@mui/material";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { Box, Typography } from "@mui/material";
 import format from "date-fns/format";
 import { useSearch } from "../contexts/SearchContext";
 
@@ -12,12 +11,13 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
   return (
     <Box
       sx={{
-        position: "fixed",
-        top: headerIsTop ? "100px" : "60px",
-        left: 0,
-        width: "100%",
-        backgroundColor: theme => theme.palette.primary.buttons,
-        zIndex: 1200,
+        position: "relative", // ya no es fixed
+        top: "auto",
+        left: "50%", // centramos el ancho completo
+        transform: "translateX(-50%)",
+        width: "100vw", // ancho de toda la ventana
+        backgroundColor: (theme) => theme.palette.primary.buttons,
+        zIndex: 1000, // por encima del contenido
         opacity: showCompactHeader ? 1 : 0,
         pointerEvents: showCompactHeader ? "auto" : "none",
         visibility: showCompactHeader ? "visible" : "hidden",
@@ -33,7 +33,6 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
           py: 1,
         }}
       >
-        {/* Sección de textos: Origen, Destino, y Fechas */}
         <Box
           sx={{
             display: "flex",
@@ -44,14 +43,12 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
             justifyContent: "center",
           }}
         >
-          {/* Origen */}
           <Typography
             variant="body2"
             sx={{
               color: "white",
               fontSize: { xs: "0.9rem", sm: "1rem" },
               textAlign: { xs: "center", sm: "left" },
-              flexBasis: { xs: "100%", sm: "auto" },
             }}
           >
             Origen:{" "}
@@ -59,15 +56,12 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
               ? `${searchData.pickupLocation.nombre} - (${searchData.pickupLocation.pais})`
               : "No seleccionado"}
           </Typography>
-
-          {/* Destino */}
           <Typography
             variant="body2"
             sx={{
               color: "white",
               fontSize: { xs: "0.9rem", sm: "1rem" },
               textAlign: { xs: "center", sm: "left" },
-              flexBasis: { xs: "100%", sm: "auto" },
             }}
           >
             Destino:{" "}
@@ -77,15 +71,12 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
               ? `${searchData.returnLocation.nombre} - (${searchData.returnLocation.pais})`
               : "No seleccionado"}
           </Typography>
-
-          {/* Fecha y hora */}
           <Typography
             variant="body2"
             sx={{
               color: "white",
               fontSize: { xs: "0.9rem", sm: "1rem" },
               flexBasis: "100%",
-              marginBottom: 2,
               textAlign: "center",
             }}
           >
@@ -97,31 +88,6 @@ const CompactHeader = ({ headerIsTop, showCompactHeader }) => {
               }`}
           </Typography>
         </Box>
-
-        {/* Botón flotando a mitad fuera del contenedor */}
-        <Tooltip title="Volver arriba" arrow>
-          <Box
-            sx={{
-              position: "absolute",
-              left: "50%",
-              bottom: "-20px",
-              transform: "translateX(-50%)",
-              background: "white",
-              width: 35,
-              height: 35,
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-              transition: "background 0.3s",
-            }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
-            <ArrowUpwardIcon sx={{ color: theme => theme.palette.primary.buttons, fontSize: 20 }} />
-          </Box>
-        </Tooltip>
       </Box>
     </Box>
   );
