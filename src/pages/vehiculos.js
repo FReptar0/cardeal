@@ -76,7 +76,7 @@ export default function Flota() {
           width: "100%",
           maxWidth: "1200px",
           overflow: "visible", // Cambiar de 'hidden' a 'visible' para permitir que el escalado de la tarjeta central se muestre completamente
-          mt: 8,
+          mt: 2,
         }}
       >
         <Swiper
@@ -100,8 +100,8 @@ export default function Flota() {
               <SwiperSlide key={i} style={{ overflow: "visible" }}>
                 <Card
                   sx={{
-                    width: 300,
-                    height: 480,
+                    width: 350,
+                    height: 530,
                     mx: "auto",
                     bgcolor: theme.palette.common.white,
                     borderRadius: 3,
@@ -111,7 +111,7 @@ export default function Flota() {
                       : theme.palette.divider,
                     transition:
                       "transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease",
-                    transform: isActive ? "scale(1.2)" : "scale(1)", // Reducir el zoom del auto central a 1.2x
+                    transform: isActive ? "scale(1.18)" : "scale(1)", // Reducir el zoom del auto central a 1.2x
                     boxShadow: "none", // Eliminar el efecto de sombra
                     display: "flex",
                     flexDirection: "column",
