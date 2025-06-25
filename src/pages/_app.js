@@ -29,9 +29,22 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/logos/Logo_verde.png" type="image/png" sizes="32x32" />
-        <link rel="shortcut icon" href="/logos/Logo_verde.png" type="image/png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/logos/Logo_verde.png" />
+        <link
+          rel="icon"
+          href="/logos/Logo_verde.png"
+          type="image/png"
+          sizes="32x32"
+        />
+        <link
+          rel="shortcut icon"
+          href="/logos/Logo_verde.png"
+          type="image/png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/logos/Logo_verde.png"
+        />
         <meta name="msapplication-TileImage" content="/logos/Logo_verde.png" />
         <meta name="msapplication-TileColor" content="#191919" />
         <meta name="theme-color" content="#191919" />

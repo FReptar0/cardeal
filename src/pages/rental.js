@@ -234,14 +234,14 @@ export default function RentalPage() {
     setPreviousCarIndex(selectedCarIndex);
     setSelectedCarIndex(index);
     setSelectedCar(car); // Guarda el auto seleccionado en el contexto
-    // console.log("Seleccionaste el índice:", index);
 
     if (index < filteredCars.length - 1) {
       const nextCar = filteredCars[index + 1];
       setTempRecommendedCar(nextCar);
       setOpenRecommendation(true);
     } else {
-      setTempRecommendedCar(null);
+      // Si es la última opción, pasar automáticamente a la siguiente pantalla
+      router.push("/proteccion");
     }
   };
 
@@ -314,7 +314,7 @@ export default function RentalPage() {
   };
 
   return (
-    <Container sx={{ marginTop: "148px", paddingX: 2 }}>
+    <Container sx={{ marginTop: "148px", paddingX: 2, paddingBottom: 5 }}>
       {/* Barra de búsqueda y Stepper */}
       <Box
         sx={{
@@ -413,7 +413,7 @@ export default function RentalPage() {
       </Box>
 
       {/* Botón CONTINUAR */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
+      {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
         <Button
           variant="contained"
           sx={{
@@ -430,7 +430,7 @@ export default function RentalPage() {
         >
           CONTINUAR
         </Button>
-      </Box>
+      </Box> */}
 
       {/* Modal de recomendación */}
       <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
@@ -473,7 +473,7 @@ export default function RentalPage() {
 
       <Dialog
         open={openRecommendation}
-        onClose={() => setOpenRecommendation(false)}
+        onClose={() => {}}
         PaperProps={{
           sx: {
             borderRadius: "12px",
@@ -501,7 +501,7 @@ export default function RentalPage() {
         <DialogContent
           sx={{
             pt: 0,
-            pb: 2,
+            pb: 3 /* Ajuste de padding */,
             px: 3,
             textAlign: "center",
           }}
@@ -525,7 +525,10 @@ export default function RentalPage() {
 
           {tempRecommendedCar && (
             <Button
-              onClick={handleSelectNextCar}
+              onClick={() => {
+                handleSelectNextCar();
+                router.push("/proteccion");
+              }}
               variant="contained"
               fullWidth
               sx={{
@@ -554,7 +557,10 @@ export default function RentalPage() {
                 textDecoration: "underline",
                 cursor: "pointer",
               }}
-              onClick={handleKeepCurrent}
+              onClick={() => {
+                handleKeepCurrent();
+                router.push("/proteccion");
+              }}
             >
               Mantener la selección actual
             </Typography>
