@@ -506,6 +506,27 @@ export default function RentalPage() {
             textAlign: "center",
           }}
         >
+          {tempRecommendedCar && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 1,
+                mb: 1,
+              }}
+            >
+              <img
+                src={tempRecommendedCar.image}
+                alt={tempRecommendedCar.name}
+                style={{
+                  maxWidth: "300px",
+                  height: "auto",
+                  borderRadius: "8px",
+                }}
+              />
+            </Box>
+          )}
           <Typography
             variant="body1"
             sx={{
