@@ -13,7 +13,6 @@ Cardeal is a full-stack web application that enables users to search, select, an
 - **User Authentication**: JWT-based authentication with persistent sessions
 
 ## Technology Stack
-
 - **Frontend**: Next.js 15.3.1, React 19.0.0, Material-UI 6.4.3
 - **Backend**: Next.js API routes, MongoDB 6.15.0
 - **External Services**: TSD XML API, Flap Payment Gateway
