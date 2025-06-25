@@ -26,7 +26,7 @@ export default function CTA() {
         background: "linear-gradient(135deg, #10906A 0%, #43AD8B 100%)",
         color: "#fff",
         textAlign: "center",
-        py: { xs: 4, md: 8 },
+        py: { xs: 4, md: 6 },
         px: { xs: 2, md: 4 },
         boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
         position: "relative",
@@ -40,6 +40,7 @@ export default function CTA() {
           position: "absolute",
           top: 0,
           left: 0,
+          bottom: 0,
           width: "100%",
           height: "100%",
           background:
@@ -82,7 +83,7 @@ export default function CTA() {
         variant="contained"
         sx={{
           backgroundColor: "#fff",
-          color: theme => theme.palette.primary.buttons,
+          color: (theme) => theme.palette.primary.buttons,
           px: { xs: 4, md: 6 },
           py: { xs: 1.5, md: 2 },
           fontSize: { xs: "0.9rem", md: "1.1rem" },
