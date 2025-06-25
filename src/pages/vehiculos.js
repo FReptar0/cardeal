@@ -269,9 +269,9 @@ export default function Flota() {
 
       <Box
         sx={{
-          mt: 12, // Incrementar margen superior
+          mt: 6,
+          mb: -6,
           width: "100%",
-          mb: 0,
         }}
       >
         <CTA />
