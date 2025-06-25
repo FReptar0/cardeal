@@ -111,25 +111,30 @@ function DateTimeSelector({
   setTime,
   businessHours,
   loading,
-  autoFocusTime = false,
-  onTimeSelected = () => {},
+  dateId,
+  timeId,
   autoFocusDate = false,
+  autoFocusTime = false,
   onDateSelected = () => {},
+  onTimeSelected = () => {},
 }) {
   const dateInputRef = useRef(null);
   const timeSelectRef = useRef(null);
+  const [timeMenuOpen, setTimeMenuOpen] = useState(false);
 
   useEffect(() => {
     if (autoFocusDate && dateInputRef.current) {
-      dateInputRef.current.showPicker(); // Usar showPicker para abrir el selector de fecha
+      setTimeout(() => {
+        dateInputRef.current.showPicker();
+      }, 0);
     }
   }, [autoFocusDate]);
 
   useEffect(() => {
-    if (autoFocusTime && timeSelectRef.current) {
+    if (autoFocusTime) {
       setTimeout(() => {
-        timeSelectRef.current.focus();
-      }, 100); // Agregar un pequeño retraso para garantizar que el DOM esté listo
+        setTimeMenuOpen(true);
+      }, 0);
     }
   }, [autoFocusTime]);
 
@@ -162,7 +167,9 @@ function DateTimeSelector({
             cursor: "pointer",
           }}
         >
-          <Typography variant="body1">{formatDay(date)}</Typography>
+          <Typography variant="body1">
+            {date ? formatDay(date) : "Seleccione una fecha"}
+          </Typography>
           <Typography
             variant="h5"
             sx={{
@@ -174,9 +181,11 @@ function DateTimeSelector({
               },
             }}
           >
-            {formatNumber(date)}
+            {date ? formatNumber(date) : "--"}
           </Typography>
-          <Typography variant="body2">{formatMonthYear(date)}</Typography>
+          <Typography variant="body2">
+            {date ? formatMonthYear(date) : ""}
+          </Typography>
           <Button
             sx={{
               position: "absolute",
@@ -194,9 +203,10 @@ function DateTimeSelector({
             onClick={() => dateInputRef.current?.showPicker()}
           />
           <TextField
+            id={dateId}
             type="date"
             inputRef={dateInputRef}
-            value={format(date, "yyyy-MM-dd")}
+            value={date ? format(date, "yyyy-MM-dd") : ""}
             onChange={(e) => {
               const [year, month, day] = e.target.value.split("-");
               const selectedDate = new Date(year, month - 1, day);
@@ -241,16 +251,21 @@ function DateTimeSelector({
             </Typography>
           ) : (
             <Select
+              id={timeId}
               ref={timeSelectRef}
               value={timeSlots.includes(time) ? time : ""}
               onChange={(e) => {
                 setTime(e.target.value);
                 onTimeSelected();
+                setTimeMenuOpen(false);
               }}
               fullWidth
               variant="standard"
               disableUnderline
               displayEmpty
+              open={timeMenuOpen}
+              onOpen={() => setTimeMenuOpen(true)}
+              onClose={() => setTimeMenuOpen(false)}
               sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
               MenuProps={{
                 PaperProps: {
@@ -873,19 +888,21 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setTime={handlePickupTimeChange}
             businessHours={pickupHours}
             loading={loadingPickupHours}
+            dateId="pickupDateInput"
+            timeId="pickupTimeSelect"
             autoFocusDate={!searchData.pickupDate}
+            autoFocusTime={!!searchData.pickupDate && !searchData.pickupTime}
             onDateSelected={() => {
               if (!searchData.pickupTime) {
                 setTimeout(() => {
-                  timeSelectRef.current?.focus(); // Enfocar el selector de hora
+                  document.getElementById("pickupTimeSelect")?.focus();
                 }, 0);
               }
             }}
-            autoFocusTime={!!searchData.pickupDate && !searchData.pickupTime}
             onTimeSelected={() => {
               if (!searchData.returnDate) {
                 setTimeout(() => {
-                  document.querySelector("#returnDateInput")?.focus();
+                  document.getElementById("returnDateInput")?.showPicker();
                 }, 0);
               }
             }}
@@ -900,15 +917,20 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setTime={handleReturnTimeChange}
             businessHours={returnHours}
             loading={loadingReturnHours}
+            dateId="returnDateInput"
+            timeId="returnTimeSelect"
             autoFocusDate={!!searchData.pickupTime && !searchData.returnDate}
+            autoFocusTime={!!searchData.returnDate && !searchData.returnTime}
             onDateSelected={() => {
               if (!searchData.returnTime) {
                 setTimeout(() => {
-                  document.querySelector("#returnTimeSelect")?.focus();
+                  document.getElementById("returnTimeSelect")?.focus();
                 }, 0);
               }
             }}
-            autoFocusTime={!!searchData.returnDate && !searchData.returnTime}
+            onTimeSelected={() => {
+              // Callback final, si hace falta
+            }}
           />
         </Box>
       </Box>
