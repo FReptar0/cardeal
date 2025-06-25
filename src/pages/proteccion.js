@@ -352,6 +352,9 @@ const SeguroVehiculo = () => {
       if (nextPlan) {
         setRecommendedPlan(nextPlan);
         setOpenRecommendation(true);
+      } else {
+        // Si es la última opción, pasar automáticamente a la siguiente pantalla
+        router.push("/extras-renta");
       }
     }
   };
@@ -376,7 +379,14 @@ const SeguroVehiculo = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ textAlign: "center", marginTop: "148px" }}>
+    <Container
+      maxWidth="xl"
+      sx={{
+        textAlign: "center",
+        marginTop: "148px",
+        paddingBottom: 5,
+      }}
+    >
       <Box
         sx={{
           overflow: "hidden",
@@ -573,29 +583,6 @@ const SeguroVehiculo = () => {
         </Grid>
       )}
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          mt: 4,
-          pb: 3,
-        }}
-      >
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: (theme) => theme.palette.primary.buttons,
-            color: "white",
-            fontWeight: "bold",
-            p: "12px 30px",
-            fontSize: "16px",
-          }}
-          onClick={handleContinue}
-        >
-          CONTINUAR
-        </Button>
-      </Box>
-
       <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
         <DialogTitle
           sx={{
@@ -636,7 +623,7 @@ const SeguroVehiculo = () => {
 
       <Dialog
         open={openRecommendation}
-        onClose={() => setOpenRecommendation(false)}
+        onClose={() => {}}
         PaperProps={{
           sx: {
             borderRadius: "12px",
@@ -655,7 +642,7 @@ const SeguroVehiculo = () => {
             justifyContent: "space-between",
             gap: 2,
             pt: 0,
-            pb: 2,
+            pb: 3, // Ajuste de padding
             px: 3,
             maxHeight: "90vh",
             overflow: "auto",
@@ -717,7 +704,10 @@ const SeguroVehiculo = () => {
               fontSize: "14px",
               mb: 2,
             }}
-            onClick={handleSelectNextPlan}
+            onClick={() => {
+              handleSelectNextPlan();
+              router.push("/extras-renta");
+            }}
           >
             SELECCIONAR{" "}
             {recommendedPlan ? recommendedPlan.nombre.toUpperCase() : ""}
@@ -732,7 +722,10 @@ const SeguroVehiculo = () => {
               cursor: "pointer",
               textAlign: "center",
             }}
-            onClick={() => setOpenRecommendation(false)}
+            onClick={() => {
+              setOpenRecommendation(false);
+              router.push("/extras-renta");
+            }}
           >
             Mantener protección actual
           </Typography>
