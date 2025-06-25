@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import LuggageIcon from "@mui/icons-material/Luggage";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -247,11 +248,45 @@ export default function Flota() {
                   </CardContent>
 
                   <Button
+                    data-no-select
+                    startIcon={<PhotoLibraryIcon />}
+                    sx={{
+                      m: 2,
+                      mb: 0,
+                      fontSize: "12px",
+                      textTransform: "none",
+                      color: "#3e9279",
+                      "&:hover": { color: "black" },
+                      backgroundColor: "white",
+                      border: "1px solid #d9d9d9",
+                      borderRadius: 1,
+
+                      "&:hover": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                      "&:active": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                      "&:focus": {
+                        backgroundColor: "#d9d9d9",
+                        color: (theme) => theme.palette.primary.buttons,
+                      },
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleOpenModal(car);
+                    }}
+                  >
+                    Ver galería
+                  </Button>
+
+                  <Button
                     variant="contained"
                     onClick={() => router.push("/")}
                     sx={{
                       m: 2,
-
                       backgroundColor: theme.palette.primary.buttons,
                       "&:hover": {
                         backgroundColor: theme.palette.primary.buttons,
