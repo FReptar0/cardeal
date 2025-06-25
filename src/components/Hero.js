@@ -79,6 +79,7 @@ export default function Hero() {
         lg={6}
         sx={{
           display: "flex",
+          marginTop: { xs: "64px", lg: "200px" }, // Baja el texto en móvil
           // Centra vertical y horizontalmente en móvil
           alignItems: "center",
           justifyContent: "center",
@@ -92,9 +93,10 @@ export default function Hero() {
             style={{
               fontWeight: 700,
               fontSize: "1.8rem",
-              margin: 0,
-              marginBottom: "8px", // espacio reducido
-              marginTop: "64px", // Desplaza el texto bajo la navbar
+
+              marginBottom: { xs: "8px", lg: "32px" }, // espacio reducido
+
+              marginTop: { xs: "64px", lg: "200px" }, // Baja el texto en escritorio
               color: "#10906a",
               textAlign: "center", // Asegura que el texto esté centrado
               padding: "0 16px", // Añade espacio hacia los lados
