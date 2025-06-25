@@ -41,10 +41,10 @@ const basePlanesSeguros = [
     code: "", // No hay código TSD para "none"
     coberturas: [
       "Colisión y daños: RESPONSABLE 100%",
-      "Responsabilidad Civil: HASTA 350 MIL MXN",
+      "Responsabilidad Civil: HASTA 350 MIL MX",
       "Protección de Robo: RESPONSABLE 100%",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
-      "Gastos médicos ocupantes: HASTA 250 MIL MXN",
+      "Gastos médicos ocupantes: HASTA 250 MIL MX",
       "Asistencia Vial: NO INCLUYE",
     ],
   },
@@ -57,11 +57,11 @@ const basePlanesSeguros = [
     code: "CDW2", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 20%",
-      "Responsabilidad Civil: CUBRE 350 MIL MXN",
+      "Responsabilidad Civil: HASTA 350 MIL MX",
       "Protección de Robo: RESPONSABLE 20%",
       "Asistencia Vial: NO INCLUYE",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
-      "Gastos médicos ocupantes: HASTA 250 MIL MXN",
+      "Gastos médicos ocupantes: HASTA 250 MIL MX",
     ],
   },
   {
@@ -73,9 +73,9 @@ const basePlanesSeguros = [
     code: "CDW", // Código TSD estándar
     coberturas: [
       "Colisión y daños: RESPONSABLE 10%",
-      "Responsabilidad Civil: CUBRE 700 MIL MXN",
+      "Responsabilidad Civil: HASTA 700 MIL MX",
       "Protección de Robo: RESPONSABLE 10%",
-      "Gastos médicos ocupantes: HASTA 500 MIL MXN",
+      "Gastos médicos ocupantes: HASTA 500 MIL MX",
       "Asistencia Vial: HASTA 40 KM",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
@@ -90,9 +90,9 @@ const basePlanesSeguros = [
     recomendado: true,
     coberturas: [
       "Colisión y daños: RESPONSABLE 5%",
-      "Responsabilidad Civil: CUBRE 700 MIL MXN",
+      "Responsabilidad Civil: HASTA 700 MIL MX",
       "Protección de Robo: RESPONSABLE 5%",
-      "Gastos médicos ocupantes: COBERTURA 500 MIL MXN",
+      "Gastos médicos ocupantes: COBERTURA 500 MIL MX",
       "Asistencia Vial: HASTA 100 KM",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
     ],
