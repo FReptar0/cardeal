@@ -59,9 +59,9 @@ const basePlanesSeguros = [
       "Colisión y daños: RESPONSABLE 20%",
       "Responsabilidad Civil: HASTA 350 MIL MX",
       "Protección de Robo: RESPONSABLE 20%",
-      "Asistencia Vial: NO INCLUYE",
       "Depósito en garantía: DE ACUERDO A LA CATEGORÍA",
       "Gastos médicos ocupantes: HASTA 250 MIL MX",
+      "Asistencia Vial: NO INCLUYE",
     ],
   },
   {
