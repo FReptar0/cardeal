@@ -49,7 +49,7 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ token, sessionStart: new Date() });
     } catch (error) {
-        console.error(error);
+        console.error(JSON.stringify(error, null, 2));
         return res.status(500).json({ message: 'Error de autenticación' });
     }
 }
