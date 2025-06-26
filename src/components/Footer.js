@@ -1,5 +1,6 @@
 import { Box, Grid, Typography, IconButton } from "@mui/material";
 import { Facebook, Instagram, Twitter, LinkedIn } from "@mui/icons-material";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -127,74 +128,78 @@ const Footer = () => {
                 <Typography sx={{ fontSize: "2rem" }} color="primary">
                   Ayuda e información
                 </Typography>
-                <Typography
-                  component="a"
-                  href="/aviso-de-privacidad"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Aviso de privacidad
-                </Typography>
-                <Typography
-                  component="a"
-                  href="/terminos-y-condiciones"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Términos y condiciones
-                </Typography>
-                <Typography
-                  component="a"
-                  href="/FAQ"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Preguntas frecuentes
-                </Typography>
-                {/* <Typography
-                  component="a"
-                  href="/facturacion"
-                  sx={{
-                    display: "block",
-                    fontSize: "1.1rem",
-                    marginTop: "10px",
-                    color: "inherit",
-                    textDecoration: "none",
-                    "&:hover": {
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  Facturación
-                </Typography> */}
+                <Link href="/aviso-de-privacidad" passHref legacyBehavior>
+                  <Typography
+                    component="a"
+                    sx={{
+                      display: "block",
+                      fontSize: "1.1rem",
+                      marginTop: "10px",
+                      color: "inherit",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    Aviso de privacidad
+                  </Typography>
+                </Link>
+                <Link href="/terminos-y-condiciones" passHref legacyBehavior>
+                  <Typography
+                    component="a"
+                    sx={{
+                      display: "block",
+                      fontSize: "1.1rem",
+                      marginTop: "10px",
+                      color: "inherit",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    Términos y condiciones
+                  </Typography>
+                </Link>
+                <Link href="/FAQ" passHref legacyBehavior>
+                  <Typography
+                    component="a"
+                    sx={{
+                      display: "block",
+                      fontSize: "1.1rem",
+                      marginTop: "10px",
+                      color: "inherit",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    Preguntas frecuentes
+                  </Typography>
+                </Link>
+                {/* <Link href="/facturacion" passHref legacyBehavior>
+                  <Typography
+                    component="a"
+                    sx={{
+                      display: "block",
+                      fontSize: "1.1rem",
+                      marginTop: "10px",
+                      color: "inherit",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    Facturación
+                  </Typography>
+                </Link> */}
               </Box>
             </Box>
           </Box>

@@ -35,7 +35,7 @@ export const LoaderProvider = ({ children }) => {
         const handleStart = (url) => {
             // Solo mostrar loader si la navegación toma más de 200ms
             timeout = setTimeout(() => {
-                setLoadingMessage('Navegando...');
+                setLoadingMessage('Cargando...');
                 setLoading(true);
             }, 200);
         };
