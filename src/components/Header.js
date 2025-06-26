@@ -7,7 +7,6 @@ import {
   Button,
   IconButton,
   Collapse,
-  Link,
   Menu,
   MenuItem,
   useMediaQuery,
@@ -15,18 +14,21 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "../contexts/AuthContext"; // Asegúrate de que la ruta sea correcta
+import { useAuth } from "../contexts/AuthContext";
+import Link from "next/link"; // Import de Next.js Link
+import { useRouter } from "next/router"; // Para obtener la ruta actual
 
 const Header = () => {
   const [open, setOpen] = useState(false);
-  const [activePath, setActivePath] = useState("");
-  const [anchorEl, setAnchorEl] = useState(null); // Control del menú de usuario
-  const openMenu = Boolean(anchorEl); // Determina si el menú está abierto
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
   const [showMenu, setShowMenu] = useState(true);
   const [isTop, setIsTop] = useState(true);
 
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const router = useRouter(); // Hook de Next.js para obtener la ruta actual
+  const activePath = router.pathname; // Ruta actual
 
   // Obtener el estado de autenticación del AuthContext
   const { isLoggedIn, logout } = useAuth();
@@ -35,25 +37,12 @@ const Header = () => {
     localStorage.setItem("isHeaderTop", JSON.stringify(isTop));
   }, [isTop]);
 
-  // Se ejecuta solo en el cliente para obtener la ruta activa
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setActivePath(window.location.pathname);
-    }
-  }, []);
-
   // Cierra el menú de navegación si la pantalla es grande
   useEffect(() => {
     if (isDesktop) {
       setOpen(false);
     }
   }, [isDesktop]);
-
-  const handleNavigation = (path) => {
-    if (typeof window !== "undefined") {
-      window.location.href = path;
-    }
-  };
 
   // Maneja la apertura del menú del usuario
   const handleClickUserIcon = (event) => {
@@ -68,16 +57,21 @@ const Header = () => {
   // Función para cerrar sesión
   const handleLogout = () => {
     console.log("Cerrar sesión");
-    handleCloseMenu(); // Cierra el menú
+    handleCloseMenu();
     logout();
-    // Opcionalmente, redirigir a la página principal
-    handleNavigation("/");
+    router.push("/"); // Usar router.push en lugar de window.location.href
   };
 
-  // Función para iniciar sesión: redirige a la página de login
+  // Función para iniciar sesión
   const handleLogin = () => {
     handleCloseMenu();
-    handleNavigation("/login");
+    router.push("/login"); // Usar router.push
+  };
+
+  // Función para navegar al perfil
+  const handleProfileNavigation = () => {
+    handleCloseMenu();
+    router.push("/perfil"); // Usar router.push
   };
 
   useEffect(() => {
@@ -123,29 +117,32 @@ const Header = () => {
           sx={{ justifyContent: "space-between", minHeight: "60px !important" }}
         >
           {/* LOGO */}
-          <Box
-            sx={{
-              width: isTop ? 350 : 200,
-              height: "auto",
-              overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
-            onClick={() => handleNavigation("/")}
-          >
-            <img
-              src="/logos/Qardeal_logo_completo_color.png"
-              alt="Logo"
-              id="logoHeader"
-              style={{
-                width: "100%",
+          <Link href="/" passHref>
+            <Box
+              component="a"
+              sx={{
+                width: isTop ? 350 : 200,
                 height: "auto",
-                transition: "width 0.3s",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                textDecoration: "none",
               }}
-            />
-          </Box>
+            >
+              <img
+                src="/logos/Qardeal_logo_completo_color.png"
+                alt="Logo"
+                id="logoHeader"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  transition: "width 0.3s",
+                }}
+              />
+            </Box>
+          </Link>
 
           {/* MENÚ NORMAL (SOLO EN ESCRITORIO) */}
           {isTop && (
@@ -166,21 +163,22 @@ const Header = () => {
                 "/atencion-cliente",
                 "/FAQ",
               ].map((path, index) => (
-                <Button
-                  key={index}
-                  sx={{
-                    color: "#000",
-                    textDecoration: "none",
-                    fontWeight: activePath === path ? "bold" : "normal",
-                    borderBottom:
-                      activePath === path ? "2px solid #141414" : "none",
-                    cursor: "pointer",
-                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
-                  }}
-                  onClick={() => handleNavigation(path)}
-                >
-                  {formatPathName(path)}
-                </Button>
+                <Link key={index} href={path} passHref>
+                  <Button
+                    component="a"
+                    sx={{
+                      color: "#000",
+                      textDecoration: "none",
+                      fontWeight: activePath === path ? "bold" : "normal",
+                      borderBottom:
+                        activePath === path ? "2px solid #141414" : "none",
+                      cursor: "pointer",
+                      textTransform: "none",
+                    }}
+                  >
+                    {formatPathName(path)}
+                  </Button>
+                </Link>
               ))}
             </Box>
           )}
@@ -191,10 +189,10 @@ const Header = () => {
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "column", // Asegura que el texto esté debajo del icono
-                  alignItems: "center", // Centra el texto horizontalmente
+                  flexDirection: "column",
+                  alignItems: "center",
                   cursor: "pointer",
-                  width: "80px", // Aumenta el ancho del contenedor
+                  width: "80px",
                 }}
                 onClick={handleClickUserIcon}
               >
@@ -207,16 +205,16 @@ const Header = () => {
                     color: "#000",
                     display: "block",
                     textDecoration: "none",
-                    textAlign: "center", // Centra el texto
+                    textAlign: "center",
                     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
                     fontWeight: 500,
-                    fontSize: "0.75rem", // Tamaño más pequeño
+                    fontSize: "0.75rem",
                     letterSpacing: "0.02857em",
-                    textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
+                    textTransform: "none",
                     cursor: "pointer",
                     transition: "background 0.3s",
                     borderRadius: "5px",
-                    marginTop: "4px", // Espaciado entre el icono y el texto
+                    marginTop: "4px",
                   }}
                 >
                   {isLoggedIn ? "Mi perfil" : "Iniciar sesión"}
@@ -239,7 +237,7 @@ const Header = () => {
               >
                 {isLoggedIn ? (
                   <>
-                    <MenuItem onClick={() => handleNavigation("/perfil")}>
+                    <MenuItem onClick={handleProfileNavigation}>
                       Mi perfil
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
@@ -278,12 +276,12 @@ const Header = () => {
           }}
         >
           {[
-            "/", // Inicio
-            "/vehiculos", // Vehículos
-            "/sucursales", // Sucursales
-            "/soluciones-empresariales", // Convenios corporativos
-            "/atencion-cliente", // Atención a clientes
-            "/FAQ", // Preguntas frecuentes
+            "/",
+            "/vehiculos",
+            "/sucursales",
+            "/soluciones-empresariales",
+            "/atencion-cliente",
+            "/FAQ",
           ].map((path, index) => (
             <Box
               key={index}
@@ -293,31 +291,33 @@ const Header = () => {
                 justifyContent: "center",
               }}
             >
-              <Link
-                href={path}
-                sx={{
-                  color: "#000",
-                  display: "block",
-                  textDecoration: "none",
-                  width: "90%",
-                  py: 1,
-                  fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-                  fontWeight: 500,
-                  fontSize: "0.875rem",
-                  lineHeight: 1.75,
-                  letterSpacing: "0.02857em",
-                  textTransform: "none", // Se asegura que solo la primera letra sea mayúscula y las demás minúsculas
-                  borderBottom:
-                    activePath === path ? "2px solid #141414" : "none",
-                  cursor: "pointer",
-                  transition: "background 0.3s",
-                  borderRadius: "5px",
-                  "&:hover": {
-                    backgroundColor: "#D6D6D6",
-                  },
-                }}
-              >
-                {formatPathName(path)}
+              <Link href={path} passHref>
+                <Box
+                  component="a"
+                  sx={{
+                    color: "#000",
+                    display: "block",
+                    textDecoration: "none",
+                    width: "90%",
+                    py: 1,
+                    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    lineHeight: 1.75,
+                    letterSpacing: "0.02857em",
+                    textTransform: "none",
+                    borderBottom:
+                      activePath === path ? "2px solid #141414" : "none",
+                    cursor: "pointer",
+                    transition: "background 0.3s",
+                    borderRadius: "5px",
+                    "&:hover": {
+                      backgroundColor: "#D6D6D6",
+                    },
+                  }}
+                >
+                  {formatPathName(path)}
+                </Box>
               </Link>
             </Box>
           ))}
