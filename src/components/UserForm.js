@@ -534,6 +534,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
         )}
 
         {/* Pickup & return */}
+        {/* Comentado el campo de Lugar de retiro
         <TextField
           label="Lugar de retiro"
           value={pickupDisplay}
@@ -555,7 +556,9 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             },
           }}
         />
+        */}
 
+        {/* Comentado el campo de Lugar de entrega
         <TextField
           label="Lugar de entrega"
           fullWidth
@@ -577,6 +580,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             },
           }}
         />
+        */}
 
         <FormControlLabel
           control={
