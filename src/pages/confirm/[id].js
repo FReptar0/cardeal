@@ -407,7 +407,7 @@ export default function BookingConfirmation() {
               </Button>
             )}
 
-            <Button
+            {/* <Button
               type="button"
               fullWidth
               variant="contained"
@@ -419,7 +419,7 @@ export default function BookingConfirmation() {
               }}
             >
               Facturar
-            </Button>
+            </Button> */}
 
             <Dialog
               open={openInvoiceModal}
