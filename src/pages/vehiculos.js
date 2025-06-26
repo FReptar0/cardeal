@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useBooking } from "@/contexts/BookingContext";
 import {
@@ -32,11 +32,25 @@ export default function Flota() {
   const [modalCar, setModalCar] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleOpenModal = (car) => {
     setModalCar(car);
     setOpen(true);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize(); // Ejecutar al montar el componente
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <Box
@@ -82,10 +96,10 @@ export default function Flota() {
       >
         <Swiper
           modules={[Navigation, Autoplay]}
-          slidesPerView={3} // Asegurar que solo se muestren 3 autos a la vez
+          slidesPerView={isMobile ? 1 : 3} // Mostrar solo una tarjeta en móviles
           centeredSlides
           loop
-          spaceBetween={60}
+          spaceBetween={isMobile ? 20 : 60} // Ajustar espacio entre tarjetas en móviles
           autoplay={{ delay: 4000, disableOnInteraction: false }}
           onSwiper={(sw) => setActiveIndex(sw.realIndex)}
           onSlideChange={(sw) => setActiveIndex(sw.realIndex)}

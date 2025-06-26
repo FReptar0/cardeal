@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Divider, Grid, Link } from "@mui/material";
+import { motion } from "framer-motion";
 
 export default function Sucursales() {
   // Datos de ubicaciones para CDMX
@@ -45,223 +46,286 @@ export default function Sucursales() {
    */
   const renderLocations = (locations, withLabel = false) =>
     locations.map((loc, index) => (
-      <Box
+      <motion.div
         key={index}
-        sx={{
-          position: "relative",
-          mb: 6,
-          p: 2,
-          // Cambio: fondo crema suave para romper con tanto blanco (#f7f3df)
-          backgroundColor: "#f7f3df",
-          borderRadius: 2,
-          boxShadow: 2,
-        }}
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.2 }}
+        viewport={{ once: true }}
       >
-        {/* Etiqueta roja para "Próxima apertura" (rojo vivo #ff3f40) */}
-        {withLabel && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              // Actualizado a #ff3f40 según paleta
-              backgroundColor: "#ff3f40",
-              color: "#fff",
-              fontWeight: "bold",
-              px: 2,
-              py: 1,
-              borderRadius: "0 0 0 8px",
-              zIndex: 999,
-            }}
-          >
-            Próxima apertura
-          </Box>
-        )}
-
-        <Grid
-          container
-          spacing={4}
-          direction={{ xs: "column", md: "row" }}
-          alignItems="stretch"
+        <Box
+          sx={{
+            position: "relative",
+            mb: { xs: 4, md: 6 },
+            p: { xs: 1, md: 2 },
+            backgroundColor: "#f7f3df",
+            borderRadius: 2,
+            boxShadow: 2,
+          }}
         >
-          {/* Mapa en relación 16:9 */}
-          <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                position: "relative",
-                width: "100%",
-                paddingTop: "56.25%", // 16:9
-                borderRadius: 2,
-                overflow: "hidden",
-                boxShadow: 1,
-              }}
+          {/* Etiqueta roja para "Próxima apertura" (rojo vivo #ff3f40) */}
+          {withLabel && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
             >
-              <iframe
-                title={`map-${index}`}
-                src={loc.iframeSrc}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </Box>
-          </Grid>
-
-          {/* Texto de la ubicación */}
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <Box sx={{ textAlign: "center", px: { xs: 1, md: 4 } }}>
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                sx={{ mb: 1, color: "#141414" }} // Texto en negro profundo
-              >
-                {loc.address}
-              </Typography>
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  mt: 2,
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  backgroundColor: "#ff3f40",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  px: 2,
+                  py: 1,
+                  borderRadius: "0 0 0 8px",
+                  zIndex: 999,
+                  fontSize: { xs: "0.75rem", md: "1rem" },
                 }}
               >
-                {/* Iconos con enlace a Google Maps y Waze */}
-                <Link
-                  href={loc.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                Próxima apertura
+              </Box>
+            </motion.div>
+          )}
+
+          <Grid
+            container
+            spacing={{ xs: 2, md: 4 }}
+            direction={{ xs: "column", md: "row" }}
+            alignItems="stretch"
+          >
+            {/* Mapa en relación 16:9 */}
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ scale: 0.9 }}
+                whileHover={{ scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 60,
-                    height: 60,
-                    borderRadius: "50%",
-                    border: "1px solid #cecece",
-                    cursor: "pointer",
-                    transition: "transform 0.2s",
-                    ":hover": {
-                      transform: "scale(1.1)",
-                    },
+                    position: "relative",
+                    width: "100%",
+                    paddingTop: "56.25%", // 16:9
                   }}
                 >
-                  <img
-                    src="/icons/ic-google-maps.png"
-                    alt="Google Maps"
-                    style={{ width: 32, height: 32 }}
-                  />
-                </Link>
-                {loc.wazeLink && (
-                  <Link
-                    href={loc.wazeLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 60,
-                      height: 60,
-                      borderRadius: "50%",
-                      border: "1px solid #cecece",
-                      cursor: "pointer",
-                      transition: "transform 0.2s",
-                      ":hover": {
-                        transform: "scale(1.1)",
-                      },
+                  <iframe
+                    title={`map-${index}`}
+                    src={loc.iframeSrc}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      border: 0,
                     }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </Box>
+              </motion.div>
+            </Grid>
+
+            {/* Texto de la ubicación */}
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Box sx={{ textAlign: "center", px: { xs: 1, md: 4 } }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{
+                    mb: 1,
+                    color: "#141414",
+                    fontSize: { xs: "1rem", md: "1.25rem" },
+                  }}
+                >
+                  {loc.address}
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: { xs: 1, md: 2 },
+                    mt: 2,
+                    flexWrap: "wrap", // Ensure buttons wrap on smaller screens
+                  }}
+                >
+                  {/* Iconos con enlace a Google Maps y Waze */}
+                  <motion.div whileHover={{ scale: 1.1 }}>
+                    <Link
+                      href={loc.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: { xs: 40, md: 60 },
+                        height: { xs: 40, md: 60 },
+                        borderRadius: "50%",
+                        border: "1px solid #cecece",
+                        cursor: "pointer",
+                        transition: "transform 0.2s",
+                      }}
+                    >
+                      <img
+                        src="/icons/ic-google-maps.png"
+                        alt="Google Maps"
+                        style={{ width: "70%", height: "70%" }}
+                      />
+                    </Link>
+                  </motion.div>
+                  {loc.wazeLink && (
+                    <motion.div whileHover={{ scale: 1.1 }}>
+                      <Link
+                        href={loc.wazeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: { xs: 40, md: 60 },
+                          height: { xs: 40, md: 60 },
+                          borderRadius: "50%",
+                          border: "1px solid #cecece",
+                          cursor: "pointer",
+                          transition: "transform 0.2s",
+                        }}
+                      >
+                        <img
+                          src="/icons/ic-waze.svg"
+                          alt="Waze"
+                          style={{ width: "70%", height: "70%" }}
+                        />
+                      </Link>
+                    </motion.div>
+                  )}
+                </Box>
+                {loc.hours && (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 1, fontSize: { xs: "0.75rem", md: "1rem" } }}
                   >
-                    <img
-                      src="/icons/ic-waze.svg"
-                      alt="Waze"
-                      style={{ width: 32, height: 32 }}
-                    />
-                  </Link>
+                    {loc.hours}
+                  </Typography>
                 )}
               </Box>
-              {loc.hours && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  {loc.hours}
-                </Typography>
-              )}
-            </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </motion.div>
     ));
 
   return (
     <Box
       sx={{ maxWidth: 1200, mx: "auto", pt: 10, px: { xs: 2, md: 4 }, mt: 8 }}
     >
-      {/* Título principal */}
-      <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
-        Sucursales
-      </Typography>
-
-      {/* Subtítulo */}
-      <Typography
-        variant="subtitle1"
-        align="center"
-        sx={{ mb: 8, color: "text.secondary" }}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
       >
-        Encuentra nuestras sucursales en CDMX y EDOMEX
-      </Typography>
+        {/* Título principal */}
+        <Typography
+          variant="h4"
+          align="center"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }}
+        >
+          Sucursales
+        </Typography>
+
+        {/* Subtítulo */}
+        <Typography
+          variant="subtitle1"
+          align="center"
+          sx={{
+            mb: 8,
+            color: "text.secondary",
+            fontSize: { xs: "1rem", md: "1.25rem" },
+          }}
+        >
+          Encuentra nuestras sucursales en CDMX y EDOMEX
+        </Typography>
+      </motion.div>
 
       {/* Sección CDMX */}
       <Box sx={{ mb: 8 }}>
-        <Typography
-          variant="h2"
-          align="center"
-          sx={{ fontWeight: "medium", mb: 1, color: theme => theme.palette.primary.text }} // Título de sección en verde
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
         >
-          CDMX
-        </Typography>
-        <Divider
-          sx={{
-            mb: 4,
-            width: "50%",
-            mx: "auto",
-            // Divider verde para mantener la paleta
-            borderColor: theme => theme.palette.primary.text,
-          }}
-        />
+          <Typography
+            variant="h2"
+            align="center"
+            sx={{
+              fontWeight: "medium",
+              mb: 1,
+              color: (theme) => theme.palette.primary.text,
+              fontSize: { xs: "1.25rem", md: "2rem" },
+            }} // Título de sección en verde
+          >
+            CDMX
+          </Typography>
+          <Divider
+            sx={{
+              mb: 4,
+              width: "50%",
+              mx: "auto",
+              // Divider verde para mantener la paleta
+              borderColor: (theme) => theme.palette.primary.text,
+            }}
+          />
+        </motion.div>
         {/* Con etiqueta */}
         {renderLocations(cdmxLocations, true)}
       </Box>
 
       {/* Sección EDOMEX */}
       <Box sx={{ mb: 6 }}>
-        <Typography
-          variant="h2"
-          align="center"
-          sx={{ fontWeight: "medium", mb: 1, color: theme => theme.palette.primary.text }}
-        > 
-          EDOMEX
-        </Typography>
-        <Divider
-          sx={{ mb: 4, width: "50%", mx: "auto", borderColor: theme => theme.palette.primary.text }}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <Typography
+            variant="h2"
+            align="center"
+            sx={{
+              fontWeight: "medium",
+              mb: 1,
+              color: (theme) => theme.palette.primary.text,
+              fontSize: { xs: "1.25rem", md: "2rem" },
+            }}
+          >
+            EDOMEX
+          </Typography>
+          <Divider
+            sx={{
+              mb: 4,
+              width: "50%",
+              mx: "auto",
+              borderColor: (theme) => theme.palette.primary.text,
+            }}
+          />
+        </motion.div>
         {renderLocations(edoMexLocations)}
       </Box>
     </Box>
