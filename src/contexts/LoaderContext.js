@@ -37,7 +37,7 @@ export const LoaderProvider = ({ children }) => {
             timeout = setTimeout(() => {
                 setLoadingMessage('Cargando...');
                 setLoading(true);
-            }, 200);
+            }, 10);
         };
 
         const handleComplete = () => {
