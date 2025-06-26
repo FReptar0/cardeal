@@ -3,6 +3,7 @@ import { Box, IconButton, Paper } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
+import { SupportAgent } from "@mui/icons-material";
 
 const WHATSAPP_GREEN = "#25D366";
 
@@ -51,7 +52,7 @@ const ChatBubble = () => {
         {open ? (
           <CloseIcon sx={{ fontSize: iconSz }} />
         ) : (
-          <LiveHelpIcon sx={{ fontSize: iconSz }} />
+          <SupportAgent sx={{ fontSize: iconSz, color: (theme) => theme.palette.primary.buttons }} />
         )}
       </IconButton>
 
@@ -90,7 +91,7 @@ const ChatBubble = () => {
           }}
           disableRipple
         >
-          <WhatsAppIcon sx={{ fontSize: iconSz, color: "#fff" }} />
+          <WhatsAppIcon sx={{ fontSize: iconSz * 0.8, color: "#fff" }} />
         </IconButton>
 
         {/* Chatbot burbuja */}
