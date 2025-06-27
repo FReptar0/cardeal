@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
-import Carousel from "../components/Carousel";
-import CarouselFlota from "../components/CarouselFlota";
-import Hero from "../components/Hero";
+import Carousel from "@/components/Carousel";
+import CarouselFlota from "@/components/CarouselFlota";
+import Hero from "@/components/Hero";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 
@@ -83,7 +83,7 @@ export default function Index() {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", textAlign: "center" }}>
+    <Box sx={{ width: "100%", textAlign: "center" }} id="home">
       {/* Sección Hero */}
       <AnimatedSection 
         id="sectionOne" 
