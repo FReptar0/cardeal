@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import Carousel from "../components/Carousel";
+import CarouselFlota from "../components/CarouselFlota";
 import Hero from "../components/Hero";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
@@ -179,9 +180,9 @@ export default function Index() {
         <AnimatedSection 
           direction="up" 
           delay={0.7}
-          style={{ width: "100%", marginTop: "24px" }}
+          style={{ width: "100%", marginTop: "24px", display: "flex", justifyContent: "center" }}
         >
-          <Carousel />
+          <CarouselFlota />
         </AnimatedSection>
       </AnimatedSection>
     </Box>
