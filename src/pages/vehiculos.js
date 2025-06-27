@@ -115,7 +115,8 @@ export default function Flota() {
               <SwiperSlide key={i} style={{ overflow: "visible" }}>
                 <Card
                   sx={{
-                    width: 350,
+                    width: isMobile ? "75vw" : 350, // 80% del ancho en móviles
+                    maxWidth: 350, // Limita el ancho máximo en escritorio
                     height: 530,
                     mx: "auto",
                     bgcolor: theme.palette.common.white,
