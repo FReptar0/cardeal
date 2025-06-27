@@ -111,8 +111,14 @@ function DateTimeSelector({
   setTime,
   businessHours,
   loading,
+  dateInputRef,
+  timeSelectRef,
+  open,
+  setOpen,
+  onDateChange,
+  onTimeChange,
 }) {
-  const dateInputRef = useRef(null);
+  const datePickerRef = useRef(null);
   const router = useRouter();
   const isRentalPage =
     router.pathname === "/rental" ||
@@ -181,7 +187,7 @@ function DateTimeSelector({
             }}
             disableRipple
             disableFocusRipple
-            onClick={() => dateInputRef.current?.showPicker()}
+            onClick={() => dateInputRef?.current?.showPicker()}
           />
           <TextField
             type="date"
@@ -191,6 +197,10 @@ function DateTimeSelector({
               const [year, month, day] = e.target.value.split("-");
               const selectedDate = new Date(year, month - 1, day);
               setDate(selectedDate);
+              // Ejecutar callback después del cambio
+              if (onDateChange) {
+                setTimeout(() => onDateChange(), 100);
+              }
             }}
             sx={{
               position: "absolute",
@@ -230,8 +240,18 @@ function DateTimeSelector({
             </Typography>
           ) : (
             <Select
+              open={open}
+              onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
+              inputRef={timeSelectRef}
               value={timeSlots.includes(time) ? time : ""}
-              onChange={(e) => setTime(e.target.value)}
+              onChange={(e) => {
+                setTime(e.target.value);
+                // Ejecutar callback después del cambio
+                if (onTimeChange) {
+                  setTimeout(() => onTimeChange(), 100);
+                }
+              }}
               fullWidth
               variant="standard"
               disableUnderline
@@ -260,6 +280,16 @@ function DateTimeSelector({
 }
 
 export default function SearchBar({ sx = {}, onSearch }) {
+  // Definir los refs necesarios para el flujo secuencial automático ANTES de usarlos en el JSX
+  const pickupDateRef = useRef(null);
+  const pickupTimeRef = useRef(null);
+  const returnDateRef = useRef(null);
+  const returnTimeRef = useRef(null);
+
+  // --- NUEVO: estados para controlar la apertura de los Select de hora ---
+  const [pickupTimeOpen, setPickupTimeOpen] = useState(false);
+  const [returnTimeOpen, setReturnTimeOpen] = useState(false);
+
   const router = useRouter();
   const { searchData, setSearchData } = useSearch(); // Contexto global
   const [debouncedSearchData] = useDebounce(searchData, 200);
@@ -392,7 +422,11 @@ export default function SearchBar({ sx = {}, onSearch }) {
         fetchBusinessHours(returnId, setReturnHours, setLoadingReturnHours);
       }
     }
-  }, [searchData.pickupLocation, searchData.sameOffice, searchData.returnLocation]);
+  }, [
+    searchData.pickupLocation,
+    searchData.sameOffice,
+    searchData.returnLocation,
+  ]);
 
   // Handlers sin tocar
   const handlePickupLocationChange = (e, newValue) => {
@@ -549,8 +583,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
     searchData.sameOffice,
   ]);
 
+  // --- Cambios para abrir automáticamente el selector de hora tras seleccionar fecha ---
+  // Usar estado controlado para abrir los Select de hora
+  // 1. Abre el selector de hora de recepción justo después de cambiar la fecha de recepción
   const handlePickupDateChange = (newDate) => {
-    setShouldRedirect(true);
     const newPickup = new Date(newDate);
     newPickup.setHours(0, 0, 0, 0);
 
@@ -567,10 +603,13 @@ export default function SearchBar({ sx = {}, onSearch }) {
       pickupDate: newPickup,
       returnDate: newReturn,
     });
+
+    // Abre el selector de hora de recepción
+    setTimeout(() => setPickupTimeOpen(true), 100);
   };
 
+  // 2. Abre el selector de hora de devolución justo después de cambiar la fecha de devolución
   const handleReturnDateChange = (newDate) => {
-    setShouldRedirect(true);
     const newReturnDate = new Date(newDate);
     newReturnDate.setHours(0, 0, 0, 0);
 
@@ -584,86 +623,79 @@ export default function SearchBar({ sx = {}, onSearch }) {
     );
     today.setHours(0, 0, 0, 0);
 
-    // 🟥 Caso 1: misma fecha ➜ mover returnDate un día después
     if (newReturnDate.getTime() === currentPickupDate.getTime()) {
       const adjustedReturn = new Date(newReturnDate);
       adjustedReturn.setDate(adjustedReturn.getDate() + 1);
-
       setSearchData({
         ...searchData,
         returnDate: adjustedReturn,
       });
+      setTimeout(() => setReturnTimeOpen(true), 100);
       return;
     }
-
-    // 🟥 Caso 2: devolución antes que recogida
     if (newReturnDate.getTime() < currentPickupDate.getTime()) {
       const adjustedPickup = new Date(newReturnDate);
       adjustedPickup.setDate(adjustedPickup.getDate() - 1);
-
-      // Si el nuevo pickup caería antes de hoy, no lo permitimos. Mejor mover return
       if (adjustedPickup < today) {
         const adjustedReturn = new Date(currentPickupDate);
         adjustedReturn.setDate(adjustedReturn.getDate() + 1);
-
         setSearchData({
           ...searchData,
           returnDate: adjustedReturn,
         });
+        setTimeout(() => setReturnTimeOpen(true), 100);
       } else {
         setSearchData({
           ...searchData,
           pickupDate: adjustedPickup,
           returnDate: newReturnDate,
         });
+        setTimeout(() => setReturnTimeOpen(true), 100);
       }
-
       return;
     }
-
-    // ✅ Caso normal: devolución válida
     setSearchData({ ...searchData, returnDate: newReturnDate });
+    setTimeout(() => setReturnTimeOpen(true), 100);
   };
 
   const handlePickupTimeChange = (newTime) => {
-    setShouldRedirect(true);
     setSearchData({ ...searchData, pickupTime: newTime });
+    setPickupTimeOpen(false); // Cierra el menú después de seleccionar
   };
 
   const handleReturnTimeChange = (newTime) => {
-    setShouldRedirect(true);
     setSearchData({ ...searchData, returnTime: newTime });
+    setReturnTimeOpen(false); // Cierra el menú después de seleccionar
   };
 
-  useEffect(() => {
-    if (pickupHours) {
-      const horario = parseBusinessHours(pickupHours);
-      const validHours = horario
-        ? generateTimeSlots(horario.start, horario.end)
-        : [];
-
-      if (!validHours.includes(searchData.pickupTime)) {
-        setSearchData((prev) => ({
-          ...prev,
-          pickupTime: validHours[0] || "",
-        }));
-      }
+  // Funciones para el flujo secuencial automático
+  const openPickupTime = () => {
+    if (pickupTimeRef.current) {
+      pickupTimeRef.current.focus();
+      // Abrir el dropdown del Select automáticamente
+      setTimeout(() => {
+        const event = new MouseEvent("mousedown", { bubbles: true });
+        pickupTimeRef.current.dispatchEvent(event);
+      }, 150);
     }
+  };
 
-    if (returnHours) {
-      const horario = parseBusinessHours(returnHours);
-      const validHours = horario
-        ? generateTimeSlots(horario.start, horario.end)
-        : [];
-
-      if (!validHours.includes(searchData.returnTime)) {
-        setSearchData((prev) => ({
-          ...prev,
-          returnTime: validHours[0] || "",
-        }));
-      }
+  const openReturnDate = () => {
+    if (returnDateRef.current) {
+      returnDateRef.current.showPicker();
     }
-  }, [pickupHours, returnHours]);
+  };
+
+  const openReturnTime = () => {
+    if (returnTimeRef.current) {
+      returnTimeRef.current.focus();
+      // Abrir el dropdown del Select automáticamente
+      setTimeout(() => {
+        const event = new MouseEvent("mousedown", { bubbles: true });
+        returnTimeRef.current.dispatchEvent(event);
+      }, 150);
+    }
+  };
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -837,6 +869,12 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setTime={handlePickupTimeChange}
             businessHours={pickupHours}
             loading={loadingPickupHours}
+            dateInputRef={pickupDateRef}
+            timeSelectRef={pickupTimeRef}
+            open={pickupTimeOpen}
+            setOpen={setPickupTimeOpen}
+            onDateChange={null}
+            onTimeChange={openReturnDate}
           />
         </Box>
         <Box sx={{ flex: 1 }}>
@@ -848,6 +886,12 @@ export default function SearchBar({ sx = {}, onSearch }) {
             setTime={handleReturnTimeChange}
             businessHours={returnHours}
             loading={loadingReturnHours}
+            dateInputRef={returnDateRef}
+            timeSelectRef={returnTimeRef}
+            open={returnTimeOpen}
+            setOpen={setReturnTimeOpen}
+            onDateChange={null}
+            onTimeChange={null}
           />
         </Box>
       </Box>
