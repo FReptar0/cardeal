@@ -270,8 +270,6 @@ export default function SearchBar({ sx = {}, onSearch }) {
     router.pathname === "/extras-renta";
   const showCarImage =
     router.pathname === "/extras-renta" || router.pathname === "/proteccion";
-  const [isMounted, setIsMounted] = useState(false);
-
   const [pickupHours, setPickupHours] = useState(null);
   const [returnHours, setReturnHours] = useState(null);
 
@@ -364,17 +362,22 @@ export default function SearchBar({ sx = {}, onSearch }) {
         if (!res.ok) throw new Error(`Status ${res.status}`);
         return res.json();
       })
-      .then((data) => setLocations(data))
+      .then((data) => {
+        setLocations(data);
+        // Seleccionar la tercera opción automáticamente y deshabilitar el Autocomplete
+        if (data && data.length >= 3) {
+          setSearchData((prev) => ({
+            ...prev,
+            pickupLocation: data[2],
+          }));
+        }
+      })
       .catch((err) => console.error("Error al cargar sucursales:", err));
   }, []);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  // useEffect para cargar horarios cuando pickupLocation cambie
   useEffect(() => {
     if (searchData.pickupLocation?.id) {
-      // siempre cargo pickup
       fetchBusinessHours(
         searchData.pickupLocation.id,
         setPickupHours,
@@ -389,7 +392,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
         fetchBusinessHours(returnId, setReturnHours, setLoadingReturnHours);
       }
     }
-  }, [isMounted]);
+  }, [searchData.pickupLocation, searchData.sameOffice, searchData.returnLocation]);
 
   // Handlers sin tocar
   const handlePickupLocationChange = (e, newValue) => {
@@ -665,8 +668,6 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
 
-  if (!isMounted) return null;
-
   const searchForm = (
     <>
       {!isRentalPage && (
@@ -727,13 +728,15 @@ export default function SearchBar({ sx = {}, onSearch }) {
         value={searchData.pickupLocation || null}
         onChange={handlePickupLocationChange}
         sx={{ width: "100%" }}
+        disabled // Deshabilita el Autocomplete para que no se pueda cambiar
       />
 
       <FormControlLabel
         control={
           <Checkbox
-            checked={searchData.sameOffice}
-            onChange={handleSameOfficeChange}
+            checked={true} // Siempre activo
+            onChange={() => {}} // No hace nada
+            disabled // No se puede desactivar
             sx={{
               color: (theme) => theme.palette.primary.buttons,
               "&.Mui-checked": {
