@@ -117,7 +117,7 @@ const Header = () => {
           sx={{ justifyContent: "space-between", minHeight: "60px !important" }}
         >
           {/* LOGO */}
-          <Link href="/" passHref>
+          <Link href="/" passHref legacyBehavior>
             <Box
               component="a"
               sx={{
@@ -163,7 +163,7 @@ const Header = () => {
                 "/atencion-cliente",
                 "/FAQ",
               ].map((path, index) => (
-                <Link key={index} href={path} passHref>
+                <Link key={index} href={path} passHref legacyBehavior>
                   <Button
                     component="a"
                     sx={{
@@ -291,7 +291,7 @@ const Header = () => {
                 justifyContent: "center",
               }}
             >
-              <Link href={path} passHref>
+              <Link href={path} passHref legacyBehavior>
                 <Box
                   component="a"
                   sx={{
