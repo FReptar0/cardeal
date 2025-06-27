@@ -22,7 +22,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import CTA from "@/components/CTA";
-import carData from "../data/cars.json";
+
+import CarruselFlota from "@/components/CarouselFlota";
 
 export default function Flota() {
   const theme = useTheme();
@@ -31,26 +32,12 @@ export default function Flota() {
   const [open, setOpen] = useState(false);
   const [modalCar, setModalCar] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
 
+  // Handler para abrir el modal desde el carrusel
   const handleOpenModal = (car) => {
     setModalCar(car);
     setOpen(true);
   };
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize(); // Ejecutar al montar el componente
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return (
     <Box
@@ -85,237 +72,8 @@ export default function Flota() {
         categoría de vehículos.
       </Typography>
 
-      {/* Carrusel centrado en full viewport */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "1200px",
-          overflow: "visible", // Cambiar de 'hidden' a 'visible' para permitir que el escalado de la tarjeta central se muestre completamente
-          mt: 2,
-        }}
-      >
-        <Swiper
-          modules={[Navigation, Autoplay]}
-          slidesPerView={isMobile ? 1 : 3} // Mostrar solo una tarjeta en móviles
-          centeredSlides
-          loop
-          spaceBetween={isMobile ? 20 : 60} // Ajustar espacio entre tarjetas en móviles
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          onSwiper={(sw) => setActiveIndex(sw.realIndex)}
-          onSlideChange={(sw) => setActiveIndex(sw.realIndex)}
-          style={{
-            overflow: "hidden", // Limitar el desbordamiento sin scroll
-            paddingTop: "50px", // Mantener espacio superior
-            paddingBottom: "50px", // Mantener espacio inferior
-          }}
-        >
-          {carData.map((car, i) => {
-            const isActive = i === activeIndex;
-            return (
-              <SwiperSlide key={i} style={{ overflow: "visible" }}>
-                <Card
-                  sx={{
-                    width: isMobile ? "75vw" : 350, // 80% del ancho en móviles
-                    maxWidth: 350, // Limita el ancho máximo en escritorio
-                    height: 530,
-                    mx: "auto",
-                    bgcolor: theme.palette.common.white,
-                    borderRadius: 3,
-                    border: "2px solid",
-                    borderColor: isActive
-                      ? theme.palette.primary.main
-                      : theme.palette.divider,
-                    transition:
-                      "transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease",
-                    transform: isActive ? "scale(1.18)" : "scale(1)", // Reducir el zoom del auto central a 1.2x
-                    boxShadow: "none", // Eliminar el efecto de sombra
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "visible",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: 260,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
-                      onClick={() => handleOpenModal(car)}
-                      image={car.image}
-                      alt={car.name}
-                      sx={{
-                        width: "95%",
-                        height: "100%",
-                        objectFit: "contain",
-                        cursor: "pointer",
-                      }}
-                    />
-                  </Box>
-
-                  <CardContent sx={{ flexGrow: 1, px: 2 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      textAlign="center"
-                    >
-                      {car.category}
-                    </Typography>
-                    <Typography
-                      variant="subtitle2"
-                      color="text.secondary"
-                      textAlign="center"
-                      sx={{ mb: 2 }}
-                    >
-                      {car.name} {car.abbreviation && `(${car.abbreviation})`}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: 1.5,
-                        justifyContent: "center",
-                      }}
-                    >
-                      {/* Íconos y texto */}
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <img
-                          src="/icons/ic-pax.svg"
-                          alt="Pasajeros"
-                          width="20"
-                          height="20"
-                          style={{ filter: "brightness(0)" }}
-                        />
-                        <Typography variant="body2">
-                          {car.passengers} pasajeros
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <img
-                          src="/icons/ic-door.svg"
-                          alt="Puertas"
-                          width="20"
-                          height="20"
-                          style={{ filter: "brightness(0)" }}
-                        />
-                        <Typography variant="body2">
-                          {car.doors} puertas
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <LuggageIcon fontSize="small" />
-                        <Typography variant="body2">
-                          {car.luggage} maletas
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <img
-                          src="/icons/ic-trans.svg"
-                          alt="Transmisión"
-                          width="20"
-                          height="20"
-                          style={{ filter: "brightness(0)" }}
-                        />
-                        <Typography variant="body2">
-                          {car.transmission}
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <img
-                          src="/icons/ic-pet.svg"
-                          alt="Pet friendly"
-                          width="20"
-                          height="20"
-                          style={{ filter: "brightness(0)" }}
-                        />
-                        <Typography variant="body2">Pet friendly</Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <img
-                          src="/icons/ice.svg"
-                          alt="Aire acondicionado"
-                          width="20"
-                          height="20"
-                          style={{ filter: "brightness(0)" }}
-                        />
-                        <Typography variant="body2">
-                          Aire acondicionado
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-
-                  <Button
-                    data-no-select
-                    startIcon={<PhotoLibraryIcon />}
-                    sx={{
-                      m: 2,
-                      mb: 0,
-                      fontSize: "12px",
-                      textTransform: "none",
-                      color: "#3e9279",
-                      "&:hover": { color: "black" },
-                      backgroundColor: "white",
-                      border: "1px solid #d9d9d9",
-                      borderRadius: 1,
-
-                      "&:hover": {
-                        backgroundColor: "#d9d9d9",
-                        color: (theme) => theme.palette.primary.buttons,
-                      },
-                      "&:active": {
-                        backgroundColor: "#d9d9d9",
-                        color: (theme) => theme.palette.primary.buttons,
-                      },
-                      "&:focus": {
-                        backgroundColor: "#d9d9d9",
-                        color: (theme) => theme.palette.primary.buttons,
-                      },
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleOpenModal(car);
-                    }}
-                  >
-                    Ver galería
-                  </Button>
-
-                  <Button
-                    variant="contained"
-                    onClick={() => router.push("/")}
-                    sx={{
-                      m: 2,
-                      backgroundColor: theme.palette.primary.buttons,
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.buttons,
-                      },
-                    }}
-                  >
-                    Rentar ahora
-                  </Button>
-                </Card>
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
-      </Box>
+      {/* CarruselFlota modularizado */}
+      <CarruselFlota onOpenModal={handleOpenModal} />
 
       <Box
         sx={{
