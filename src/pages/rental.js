@@ -374,6 +374,19 @@ export default function RentalPage() {
             alignItems: "center",
           }}
         >
+          {/* Título antes de las cards */}
+          <Typography
+            variant="h5"
+            sx={{
+              color: (theme) => theme.palette.primary.text,
+              fontWeight: "bold",
+              mb: 2,
+              mt: 2,
+              textAlign: "center",
+            }}
+          >
+            Selecciona tu auto ideal.
+          </Typography>
           {loadingPrices ? (
             <Loader />
           ) : filteredCars.length === 0 ? (
