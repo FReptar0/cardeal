@@ -5,279 +5,29 @@ import { useRouter } from "next/router";
 import {
   Box,
   Typography,
-  Select,
-  MenuItem,
-  Divider,
   TextField,
   Autocomplete,
   FormControlLabel,
   Button,
   Checkbox,
-  CircularProgress,
 } from "@mui/material";
-import { es } from "date-fns/locale";
-import format from "date-fns/format";
+import { generateTimeSlots } from "../utils/timeSlots";
+import { parseBusinessHours } from "../utils/locations";
+import { adjustReturnDate, validateAndAdjustDates } from "../utils/bookingLogic";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
 import { useBooking } from "@/contexts/BookingContext";
 import { useDebounce } from "use-debounce";
 import { usePathname } from "next/navigation";
+import { useAutoOpenSelectors } from "../hooks/useAutoOpenSelectors";
+import { useBusinessHours } from "../hooks/useBusinessHours";
+import { useLocations } from "../hooks/useLocations";
+import { isRentalPage, showCarImageOnPage } from "../utils/routes";
 
-function generateTimeSlots(startTime, endTime, forToday = false) {
-  const [startHour, startMin] = startTime.split(":").map(Number);
-  const [endHour, endMin] = endTime.split(":").map(Number);
 
-  const now = new Date();
-  const limit = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 hours
-
-  const slots = [];
-  let current = new Date();
-  current.setHours(startHour, startMin, 0, 0);
-
-  const end = new Date();
-  end.setHours(endHour, endMin, 0, 0);
-
-  while (current <= end) {
-    if (!forToday || current > limit) {
-      const h = current.getHours();
-      const m = current.getMinutes();
-      const suffix = h < 12 ? "AM" : "PM";
-      const formatted = `${h.toString().padStart(2, "0")}:${m
-        .toString()
-        .padStart(2, "0")} ${suffix}`;
-
-      slots.push(formatted);
-    }
-    current.setMinutes(current.getMinutes() + 30);
-  }
-
-  return slots;
-}
-
-const parseBusinessHours = (raw) => {
-  const daysMap = {
-    0: "OpenCloseSun",
-    1: "OpenCloseMon",
-    2: "OpenCloseTue",
-    3: "OpenCloseWed",
-    4: "OpenCloseThu",
-    5: "OpenCloseFri",
-    6: "OpenCloseSat",
-  };
-
-  const dayKey = daysMap[new Date().getDay()];
-  const horario = raw?.[dayKey];
-
-  const rango = Array.isArray(horario) ? horario[0] : horario;
-
-  if (rango && /^[0-9]{4}-[0-9]{4}$/.test(rango)) {
-    const [start, end] = rango.split("-");
-    const formatHour = (h) => `${h.slice(0, 2)}:${h.slice(2)}`;
-    return {
-      start: formatHour(start),
-      end: formatHour(end),
-    };
-  }
-
-  return null; // Cerrado o inválido
-};
-
-// Funciones para formatear fechas
-const formatDay = (date) =>
-  date instanceof Date && !isNaN(date)
-    ? format(date, "EEEE", { locale: es })
-    : "Día inválido";
-const formatNumber = (date) =>
-  date instanceof Date && !isNaN(date) ? format(date, "dd") : "--";
-const formatMonthYear = (date) =>
-  date instanceof Date && !isNaN(date)
-    ? format(date, "MMMM yyyy", { locale: es })
-    : "Fecha inválida";
-
-// Función para obtener la fecha actual en la zona "America/Mexico_City"
-const getTodayDate = () => {
-  const mexicoDate = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" })
-  );
-  return format(mexicoDate, "yyyy-MM-dd");
-};
-
-function DateTimeSelector({
-  label,
-  date,
-  setDate,
-  time,
-  setTime,
-  businessHours,
-  loading,
-  dateInputRef,
-  timeSelectRef,
-  open,
-  setOpen,
-  onDateChange,
-  onTimeChange,
-}) {
-  const datePickerRef = useRef(null);
-  const router = useRouter();
-  const isRentalPage =
-    router.pathname === "/rental" ||
-    router.pathname === "/proteccion" ||
-    router.pathname === "/extras-renta";
-
-  const horario = parseBusinessHours(businessHours);
-  const isToday = format(date, "yyyy-MM-dd") === getTodayDate();
-  const timeSlots = horario
-    ? generateTimeSlots(horario.start, horario.end, isToday)
-    : [];
-
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <Typography
-        variant={isRentalPage ? "body1" : "h6"}
-        sx={{ color: "black", fontWeight: "bold" }}
-      >
-        {label}
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          backgroundColor: "#e0e0e0",
-          borderRadius: 1,
-          padding: 0.2,
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box
-          sx={{
-            textAlign: "center",
-            width: "50%",
-            position: "relative",
-            cursor: "pointer",
-          }}
-        >
-          <Typography variant="body1">{formatDay(date)}</Typography>
-          <Typography
-            variant="h5"
-            sx={{
-              cursor: "pointer",
-              transition: "0.2s",
-              "&:hover": {
-                color: "#d32f2f",
-                textShadow: "0px 0px 8px rgba(211, 47, 47, 0.6)",
-              },
-            }}
-          >
-            {formatNumber(date)}
-          </Typography>
-          <Typography variant="body2">{formatMonthYear(date)}</Typography>
-          {/* Botón invisible que activa el DatePicker */}
-          <Button
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              zIndex: 10,
-            }}
-            disableRipple
-            disableFocusRipple
-            onClick={() => dateInputRef?.current?.showPicker()}
-          />
-          <TextField
-            type="date"
-            inputRef={dateInputRef}
-            value={format(date, "yyyy-MM-dd")}
-            onChange={(e) => {
-              const [year, month, day] = e.target.value.split("-");
-              const selectedDate = new Date(year, month - 1, day);
-              setDate(selectedDate);
-              // Ejecutar callback después del cambio
-              if (onDateChange) {
-                setTimeout(() => onDateChange(), 100);
-              }
-            }}
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              opacity: 0,
-              cursor: "pointer",
-            }}
-            inputProps={{
-              min: getTodayDate(),
-              max: format(
-                new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-                "yyyy-MM-dd"
-              ),
-            }}
-          />
-        </Box>
-        <Divider orientation="vertical" flexItem />
-        <Box
-          sx={{
-            textAlign: "center",
-            width: "50%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginLeft: 3,
-            px: 2,
-          }}
-        >
-          {loading ? (
-            <CircularProgress size={24} sx={{ color: "#9e9e9e" }} />
-          ) : timeSlots.length === 0 ? (
-            <Typography variant="body2" color="black">
-              Favor de revisar nuestros horarios de oficina.
-            </Typography>
-          ) : (
-            <Select
-              open={open}
-              onOpen={() => setOpen(true)}
-              onClose={() => setOpen(false)}
-              inputRef={timeSelectRef}
-              value={timeSlots.includes(time) ? time : ""}
-              onChange={(e) => {
-                setTime(e.target.value);
-                // Ejecutar callback después del cambio
-                if (onTimeChange) {
-                  setTimeout(() => onTimeChange(), 100);
-                }
-              }}
-              fullWidth
-              variant="standard"
-              disableUnderline
-              displayEmpty
-              sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 300 },
-                },
-              }}
-            >
-              <MenuItem value="" disabled>
-                Selecciona
-              </MenuItem>
-              {timeSlots.map((slot) => (
-                <MenuItem key={slot} value={slot}>
-                  {slot}
-                </MenuItem>
-              ))}
-            </Select>
-          )}
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+// Importar el nuevo componente modularizado
+import DateTimeSelector from "./DateTimeSelector";
 
 export default function SearchBar({ sx = {}, onSearch }) {
   // Definir los refs necesarios para el flujo secuencial automático ANTES de usarlos en el JSX
@@ -294,17 +44,21 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const { searchData, setSearchData } = useSearch(); // Contexto global
   const [debouncedSearchData] = useDebounce(searchData, 200);
   const { selectedCar } = useBooking();
-  const isRentalPage =
-    router.pathname === "/rental" ||
-    router.pathname === "/proteccion" ||
-    router.pathname === "/extras-renta";
-  const showCarImage =
-    router.pathname === "/extras-renta" || router.pathname === "/proteccion";
-  const [pickupHours, setPickupHours] = useState(null);
-  const [returnHours, setReturnHours] = useState(null);
+  const isRental = isRentalPage(router.pathname);
+  const showCarImage = showCarImageOnPage(router.pathname);
 
-  const [loadingPickupHours, setLoadingPickupHours] = useState(false);
-  const [loadingReturnHours, setLoadingReturnHours] = useState(false);
+  // Hook para manejar horarios de sucursal
+  const {
+    pickupHours,
+    setPickupHours,
+    loadingPickupHours,
+    setLoadingPickupHours,
+    returnHours,
+    setReturnHours,
+    loadingReturnHours,
+    setLoadingReturnHours,
+    fetchBusinessHours,
+  } = useBusinessHours();
 
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
@@ -312,23 +66,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const applyNegativeMargin =
     pathname === "/" || pathname.startsWith("/vehiculos");
 
-  const fetchBusinessHours = async (locationId, setHoursFn, setLoadingFn) => {
-    try {
-      setLoadingFn?.(true);
-      const res = await fetch("/api/locations/hours", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locationId }),
-      });
-      const data = await res.json();
-      setHoursFn(data);
-    } catch (err) {
-      console.error("Error al obtener horarios:", err);
-      setHoursFn(null);
-    } finally {
-      setLoadingFn?.(false);
-    }
-  };
+  // (Eliminada función fetchBusinessHours, ahora se usa el hook)
 
   useEffect(() => {
     const {
@@ -384,26 +122,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
     shouldRedirect,
   ]);
 
-  // ——— NUEVO: estado y fetch de sucursales desde API ———
-  const [locations, setLocations] = useState([]);
-  useEffect(() => {
-    fetch("/api/locations")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setLocations(data);
-        // Seleccionar la tercera opción automáticamente y deshabilitar el Autocomplete
-        if (data && data.length >= 3) {
-          setSearchData((prev) => ({
-            ...prev,
-            pickupLocation: data[2],
-          }));
-        }
-      })
-      .catch((err) => console.error("Error al cargar sucursales:", err));
-  }, []);
+  // Hook para manejar sucursales y selección automática
+  const { locations, setLocations, loadingLocations, errorLocations } = useLocations(setSearchData);
 
   // useEffect para cargar horarios cuando pickupLocation cambie
   useEffect(() => {
@@ -586,75 +306,25 @@ export default function SearchBar({ sx = {}, onSearch }) {
   // --- Cambios para abrir automáticamente el selector de hora tras seleccionar fecha ---
   // Usar estado controlado para abrir los Select de hora
   // 1. Abre el selector de hora de recepción justo después de cambiar la fecha de recepción
+
+  // Ajuste de fechas usando utilería
   const handlePickupDateChange = (newDate) => {
-    const newPickup = new Date(newDate);
-    newPickup.setHours(0, 0, 0, 0);
-
-    let newReturn = new Date(searchData.returnDate);
-    newReturn.setHours(0, 0, 0, 0);
-
-    if (newReturn <= newPickup) {
-      newReturn = new Date(newPickup);
-      newReturn.setDate(newReturn.getDate() + 1);
-    }
-
+    const { pickupDate, returnDate } = adjustReturnDate(newDate, searchData.returnDate);
     setSearchData({
       ...searchData,
-      pickupDate: newPickup,
-      returnDate: newReturn,
+      pickupDate,
+      returnDate,
     });
-
-    // Abre el selector de hora de recepción
     setTimeout(() => setPickupTimeOpen(true), 100);
   };
 
-  // 2. Abre el selector de hora de devolución justo después de cambiar la fecha de devolución
   const handleReturnDateChange = (newDate) => {
-    const newReturnDate = new Date(newDate);
-    newReturnDate.setHours(0, 0, 0, 0);
-
-    const currentPickupDate = new Date(searchData.pickupDate);
-    currentPickupDate.setHours(0, 0, 0, 0);
-
-    const today = new Date(
-      new Date().toLocaleString("en-US", {
-        timeZone: "America/Mexico_City",
-      })
-    );
-    today.setHours(0, 0, 0, 0);
-
-    if (newReturnDate.getTime() === currentPickupDate.getTime()) {
-      const adjustedReturn = new Date(newReturnDate);
-      adjustedReturn.setDate(adjustedReturn.getDate() + 1);
-      setSearchData({
-        ...searchData,
-        returnDate: adjustedReturn,
-      });
-      setTimeout(() => setReturnTimeOpen(true), 100);
-      return;
-    }
-    if (newReturnDate.getTime() < currentPickupDate.getTime()) {
-      const adjustedPickup = new Date(newReturnDate);
-      adjustedPickup.setDate(adjustedPickup.getDate() - 1);
-      if (adjustedPickup < today) {
-        const adjustedReturn = new Date(currentPickupDate);
-        adjustedReturn.setDate(adjustedReturn.getDate() + 1);
-        setSearchData({
-          ...searchData,
-          returnDate: adjustedReturn,
-        });
-        setTimeout(() => setReturnTimeOpen(true), 100);
-      } else {
-        setSearchData({
-          ...searchData,
-          pickupDate: adjustedPickup,
-          returnDate: newReturnDate,
-        });
-        setTimeout(() => setReturnTimeOpen(true), 100);
-      }
-      return;
-    }
-    setSearchData({ ...searchData, returnDate: newReturnDate });
+    const { pickupDate, returnDate } = validateAndAdjustDates(searchData.pickupDate, newDate);
+    setSearchData({
+      ...searchData,
+      pickupDate,
+      returnDate,
+    });
     setTimeout(() => setReturnTimeOpen(true), 100);
   };
 
@@ -668,41 +338,19 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setReturnTimeOpen(false); // Cierra el menú después de seleccionar
   };
 
-  // Funciones para el flujo secuencial automático
-  const openPickupTime = () => {
-    if (pickupTimeRef.current) {
-      pickupTimeRef.current.focus();
-      // Abrir el dropdown del Select automáticamente
-      setTimeout(() => {
-        const event = new MouseEvent("mousedown", { bubbles: true });
-        pickupTimeRef.current.dispatchEvent(event);
-      }, 150);
-    }
-  };
-
-  const openReturnDate = () => {
-    if (returnDateRef.current) {
-      returnDateRef.current.showPicker();
-    }
-  };
-
-  const openReturnTime = () => {
-    if (returnTimeRef.current) {
-      returnTimeRef.current.focus();
-      // Abrir el dropdown del Select automáticamente
-      setTimeout(() => {
-        const event = new MouseEvent("mousedown", { bubbles: true });
-        returnTimeRef.current.dispatchEvent(event);
-      }, 150);
-    }
-  };
+  // Hook para exponer funciones de apertura automática de selectores
+  const { openPickupTime, openReturnDate, openReturnTime } = useAutoOpenSelectors({
+    pickupTimeRef,
+    returnDateRef,
+    returnTimeRef,
+  });
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
 
   const searchForm = (
     <>
-      {!isRentalPage && (
+      {!isRental && (
         <Typography
           variant="h6"
           sx={{ color: "black", fontWeight: "bold", mb: 1 }}
@@ -739,7 +387,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
           <TextField
             {...params}
             label={
-              isRentalPage ? "Ubicación de origen" : "Selecciona ubicación"
+              isRental ? "Ubicación de origen" : "Selecciona ubicación"
             }
             variant="outlined"
             sx={{
@@ -789,7 +437,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
 
       {!searchData.sameOffice && (
         <>
-          {!isRentalPage && (
+          {!isRental && (
             <Typography
               variant="h6"
               sx={{ color: "black", fontWeight: "bold", mt: 2, mb: 1 }}
@@ -826,7 +474,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
               <TextField
                 {...params}
                 label={
-                  isRentalPage ? "Ubicación de destino" : "Selecciona ubicación"
+                  isRental ? "Ubicación de destino" : "Selecciona ubicación"
                 }
                 variant="outlined"
                 sx={{
@@ -941,7 +589,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: isRentalPage ? 0.5 : 3,
+        gap: isRental ? 0.5 : 3,
         width: "100%",
         p: 3,
         backgroundColor: "#f5f5f5",
