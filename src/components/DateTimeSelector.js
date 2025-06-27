@@ -35,7 +35,8 @@ export default function DateTimeSelector({
     const datePickerRef = useRef(null);
     // No se importa useRouter aquí, el componente es agnóstico
 
-    const horario = parseBusinessHours(businessHours);
+    // Usar la fecha seleccionada para obtener el horario correcto del día
+    const horario = parseBusinessHours(businessHours, date);
     const isToday = format(date, "yyyy-MM-dd") === getTodayDate();
     const timeSlots = horario
         ? generateTimeSlots(horario.start, horario.end, isToday)

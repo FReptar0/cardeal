@@ -24,7 +24,13 @@ export const locations = [
  * @param {object} raw - Objeto de horarios de la sucursal (ej: { OpenCloseMon: "0800-1800", ... })
  * @returns {{start: string, end: string} | null} Rango horario en formato { start: "08:00", end: "18:00" } o null si está cerrado/indefinido
  */
-export function parseBusinessHours(raw) {
+/**
+ * Parsea el objeto de horarios de una sucursal y devuelve el rango de apertura/cierre para el día dado.
+ * @param {object} raw - Objeto de horarios de la sucursal (ej: { OpenCloseMon: "0800-1800", ... })
+ * @param {Date} [date] - Fecha para la que se quiere obtener el horario (por defecto: hoy)
+ * @returns {{start: string, end: string} | null} Rango horario en formato { start: "08:00", end: "18:00" } o null si está cerrado/indefinido
+ */
+export function parseBusinessHours(raw, date = new Date()) {
     const daysMap = {
         0: "OpenCloseSun",
         1: "OpenCloseMon",
@@ -35,7 +41,7 @@ export function parseBusinessHours(raw) {
         6: "OpenCloseSat",
     };
 
-    const dayKey = daysMap[new Date().getDay()];
+    const dayKey = daysMap[date.getDay()];
     const horario = raw?.[dayKey];
     const rango = Array.isArray(horario) ? horario[0] : horario;
 

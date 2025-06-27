@@ -32,6 +32,16 @@ export function useBusinessHours() {
                 body: JSON.stringify({ locationId }),
             });
             const data = await res.json();
+            // Forzar horarios de sábado y domingo a 09:00-16:00
+            if (data && typeof data === 'object') {
+                if (Array.isArray(data.OpenCloseSat) && data.OpenCloseSat.length > 0) {
+                    data.OpenCloseSat[0] = "0900-1600";
+                }
+                if (Array.isArray(data.OpenCloseSun) && data.OpenCloseSun.length > 0) {
+                    data.OpenCloseSun[0] = "0900-1600";
+                }
+            }
+            console.log(JSON.stringify(data, null, 2));
             setHoursFn(data);
         } catch (err) {
             console.error("Error al obtener horarios:", err);
