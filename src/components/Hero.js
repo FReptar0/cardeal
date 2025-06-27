@@ -93,9 +93,7 @@ export default function Hero() {
             style={{
               fontWeight: 700,
               fontSize: "1.8rem",
-
               marginBottom: { xs: "8px", lg: "32px" }, // espacio reducido
-
               marginTop: { xs: "64px", lg: "200px" }, // Baja el texto en escritorio
               color: "#10906a",
               textAlign: "center", // Asegura que el texto esté centrado
