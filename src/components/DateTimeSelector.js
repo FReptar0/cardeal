@@ -14,9 +14,6 @@ import { formatDay, formatNumber, formatMonthYear, getTodayDate } from "../utils
 import { generateTimeSlots } from "../utils/timeSlots";
 import { parseBusinessHours } from "../utils/locations";
 
-/**
- * Selector de fecha y hora reutilizable para reservas
- */
 export default function DateTimeSelector({
     label,
     date,
