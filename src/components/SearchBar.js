@@ -13,7 +13,10 @@ import {
 } from "@mui/material";
 import { generateTimeSlots } from "../utils/timeSlots";
 import { parseBusinessHours } from "../utils/locations";
-import { adjustReturnDate, validateAndAdjustDates } from "../utils/bookingLogic";
+import {
+  adjustReturnDate,
+  validateAndAdjustDates,
+} from "../utils/bookingLogic";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { useSearch } from "@/contexts/SearchContext";
@@ -24,7 +27,6 @@ import { useAutoOpenSelectors } from "../hooks/useAutoOpenSelectors";
 import { useBusinessHours } from "../hooks/useBusinessHours";
 import { useLocations } from "../hooks/useLocations";
 import { isRentalPage, showCarImageOnPage } from "../utils/routes";
-
 
 // Importar el nuevo componente modularizado
 import DateTimeSelector from "./DateTimeSelector";
@@ -123,7 +125,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
   ]);
 
   // Hook para manejar sucursales y selección automática
-  const { locations, setLocations, loadingLocations, errorLocations } = useLocations(setSearchData);
+  const { locations, setLocations, loadingLocations, errorLocations } =
+    useLocations(setSearchData);
 
   // useEffect para cargar horarios cuando pickupLocation cambie
   useEffect(() => {
@@ -309,7 +312,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
 
   // Ajuste de fechas usando utilería
   const handlePickupDateChange = (newDate) => {
-    const { pickupDate, returnDate } = adjustReturnDate(newDate, searchData.returnDate);
+    const { pickupDate, returnDate } = adjustReturnDate(
+      newDate,
+      searchData.returnDate
+    );
     setSearchData({
       ...searchData,
       pickupDate,
@@ -319,7 +325,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
   };
 
   const handleReturnDateChange = (newDate) => {
-    const { pickupDate, returnDate } = validateAndAdjustDates(searchData.pickupDate, newDate);
+    const { pickupDate, returnDate } = validateAndAdjustDates(
+      searchData.pickupDate,
+      newDate
+    );
     setSearchData({
       ...searchData,
       pickupDate,
@@ -336,14 +345,33 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const handleReturnTimeChange = (newTime) => {
     setSearchData({ ...searchData, returnTime: newTime });
     setReturnTimeOpen(false); // Cierra el menú después de seleccionar
+
+    // --- NUEVO: Ejecutar búsqueda automáticamente al seleccionar hora de devolución ---
+    const filters = {
+      pickupLocation: searchData.pickupLocation,
+      returnLocation: searchData.returnLocation,
+      pickupDate: searchData.pickupDate,
+      pickupTime: searchData.pickupTime,
+      returnDate: searchData.returnDate,
+      returnTime: newTime, // Usar el nuevo valor
+      sameOffice: searchData.sameOffice,
+    };
+    if (["/", "/vehiculos"].includes(router.pathname)) {
+      setSearchData(filters);
+      onSearch?.(filters);
+      router.push("/rental");
+    } else if (router.pathname === "/rental") {
+      onSearch?.(filters);
+    }
   };
 
   // Hook para exponer funciones de apertura automática de selectores
-  const { openPickupTime, openReturnDate, openReturnTime } = useAutoOpenSelectors({
-    pickupTimeRef,
-    returnDateRef,
-    returnTimeRef,
-  });
+  const { openPickupTime, openReturnDate, openReturnTime } =
+    useAutoOpenSelectors({
+      pickupTimeRef,
+      returnDateRef,
+      returnTimeRef,
+    });
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -386,9 +414,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
         renderInput={(params) => (
           <TextField
             {...params}
-            label={
-              isRental ? "Ubicación de origen" : "Selecciona ubicación"
-            }
+            label={isRental ? "Ubicación de origen" : "Selecciona ubicación"}
             variant="outlined"
             sx={{
               "& .MuiOutlinedInput-root": { pt: "8px", pb: "6px" },
