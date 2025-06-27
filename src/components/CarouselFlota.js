@@ -7,9 +7,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import carData from "../data/cars.json";
+import { useRouter } from "next/router";
+
 
 export default function CarruselFlota({ onOpenModal }) {
     const theme = useTheme();
+    const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(
         typeof window !== "undefined" ? window.innerWidth <= 768 : false
@@ -22,6 +25,20 @@ export default function CarruselFlota({ onOpenModal }) {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    // Hook para manejar la acción de "Rentar ahora"
+    const handleRentNow = () => {
+        if (router.pathname === "/") {
+            const hero = document.getElementById("home");
+            if (hero) {
+                hero.scrollIntoView({ behavior: "smooth" });
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        } else {
+            router.push("/");
+        }
+    };
 
     return (
         <Box
@@ -215,7 +232,7 @@ export default function CarruselFlota({ onOpenModal }) {
                                 </Button>
                                 <Button
                                     variant="contained"
-                                    onClick={() => window.location.assign("/")}
+                                    onClick={handleRentNow}
                                     sx={{
                                         m: 2,
                                         backgroundColor: theme.palette.primary.buttons,
