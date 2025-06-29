@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -93,8 +94,8 @@ export default function CarCard({ car, isSelected }) {
           <CardMedia
             component="img"
             sx={{
-              width: { xs: "100%", sm: 120 },
-              height: "auto",
+              width: { xs: "100%", sm: 180 }, // Aumenta el tamaño en desktop
+              height: { xs: 160, sm: 140 }, // Altura fija para mayor presencia visual
               cursor: "pointer",
             }}
             image={car.image}
@@ -141,7 +142,7 @@ export default function CarCard({ car, isSelected }) {
         </Box>
 
         {/* Información del vehículo */}
-        <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
+        <CardContent sx={{ flex: 1, textAlign: { xs: "center", sm: "left" }, p: { xs: 1, sm: 1 }, minWidth: 0 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="h6" fontWeight="bold">
               {car.category}
@@ -175,9 +176,13 @@ export default function CarCard({ car, isSelected }) {
             sx={{
               display: "flex",
               flexWrap: "wrap",
-              gap: 2,
+              gap: 1.2,
               alignItems: "center",
               justifyContent: { xs: "center", sm: "flex-start" },
+              mt: 0.5,
+              mb: 0.5,
+              fontSize: "0.95rem",
+              maxWidth: { xs: "100%", sm: 340 },
             }}
           >
             <Box
@@ -188,12 +193,13 @@ export default function CarCard({ car, isSelected }) {
                 minWidth: "100px",
               }}
             >
-              <img
+              <Image
                 src="/icons/ic-pax.svg"
                 alt="Pasajeros"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 style={{ filter: "brightness(0)" }}
+                unoptimized
               />
               <Typography variant="body2">
                 {car.passengers} pasajeros
@@ -207,12 +213,13 @@ export default function CarCard({ car, isSelected }) {
                 minWidth: "100px",
               }}
             >
-              <img
+              <Image
                 src="/icons/ic-door.svg"
                 alt="Puertas"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 style={{ filter: "brightness(0)" }}
+                unoptimized
               />
               <Typography variant="body2">{car.doors} puertas</Typography>
             </Box>
@@ -240,12 +247,13 @@ export default function CarCard({ car, isSelected }) {
                 minWidth: "100px",
               }}
             >
-              <img
+              <Image
                 src="/icons/ic-trans.svg"
                 alt="Transmisión"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 style={{ filter: "brightness(0)" }}
+                unoptimized
               />
               <Typography variant="body2">{car.transmission}</Typography>
             </Box>
@@ -257,12 +265,13 @@ export default function CarCard({ car, isSelected }) {
                 minWidth: "100px",
               }}
             >
-              <img
+              <Image
                 src="/icons/ic-pet.svg"
                 alt="Pet friendly"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 style={{ filter: "brightness(0)" }}
+                unoptimized
               />
               <Typography variant="body2">Pet friendly</Typography>
             </Box>
@@ -274,12 +283,13 @@ export default function CarCard({ car, isSelected }) {
                 minWidth: "100px",
               }}
             >
-              <img
+              <Image
                 src="/icons/ice.svg"
                 alt="Aire acondicionado"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 style={{ filter: "brightness(0)" }}
+                unoptimized
               />
               <Typography variant="body2">Aire acondicionado</Typography>
             </Box>
@@ -333,7 +343,7 @@ export default function CarCard({ car, isSelected }) {
                 <Typography
                   variant="body2"
                   component="span"
-                  sx={{ color: "gray" }}
+                  sx={{ color: "black", ml: 0.5 }}
                 >
                   MXN/día
                 </Typography>
@@ -360,7 +370,7 @@ export default function CarCard({ car, isSelected }) {
                 <Typography
                   variant="body2"
                   component="span"
-                  sx={{ color: "gray" }}
+                  sx={{ color: "black", ml: 0.5 }}
                 >
                   MXN/día
                 </Typography>
@@ -456,9 +466,11 @@ export default function CarCard({ car, isSelected }) {
                       height: "100%",
                     }}
                   >
-                    <img
+                    <Image
                       src={img}
                       alt={`Imagen ${index + 1}`}
+                      width={800}
+                      height={500}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -466,6 +478,7 @@ export default function CarCard({ car, isSelected }) {
                         borderRadius: 5,
                       }}
                       onClick={stopAllPropagation}
+                      unoptimized
                     />
                   </SwiperSlide>
                 ))}
@@ -495,24 +508,26 @@ export default function CarCard({ car, isSelected }) {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
+                  <Image
                     src="/icons/ic-pax.svg"
                     alt="Pasajeros"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                     style={{ filter: "brightness(0)" }}
+                    unoptimized
                   />
                   <Typography variant="body2">
                     {car.passengers} pasajeros
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
+                  <Image
                     src="/icons/ic-door.svg"
                     alt="Puertas"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                     style={{ filter: "brightness(0)" }}
+                    unoptimized
                   />
                   <Typography variant="body2">{car.doors} puertas</Typography>
                 </Box>
@@ -521,32 +536,35 @@ export default function CarCard({ car, isSelected }) {
                   <Typography variant="body2">{car.luggage} maletas</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
+                  <Image
                     src="/icons/ic-trans.svg"
                     alt="Transmisión"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                     style={{ filter: "brightness(0)" }}
+                    unoptimized
                   />
                   <Typography variant="body2">{car.transmission}</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
+                  <Image
                     src="/icons/ic-pet.svg"
                     alt="Pet friendly"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                     style={{ filter: "brightness(0)" }}
+                    unoptimized
                   />
                   <Typography variant="body2">Pet friendly</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <img
+                  <Image
                     src="/icons/ice.svg"
                     alt="Aire acondicionado"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                     style={{ filter: "brightness(0)" }}
+                    unoptimized
                   />
                   <Typography variant="body2">Aire acondicionado</Typography>
                 </Box>
