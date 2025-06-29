@@ -86,6 +86,7 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickup}</PickupDateTime>
     <ReturnDateTime>${formattedReturn}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
+    <RateCode>BASIC</RateCode>
     ${extraCodesXML}
     <TotalPricing>1</TotalPricing>
   </PayLoad>
