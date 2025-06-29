@@ -34,16 +34,43 @@ const AtencionCliente = () => {
         <Grid container spacing={4} justifyContent="center" mt={3}>
           {/* Chat Online */}
           <Grid item xs={12} sm={6} md={3}>
-            <ChatIcon fontSize="large" color="error" />
-            <Typography variant="h6" fontWeight="bold">
-              Chat online
-            </Typography>
-            <Typography variant="body2">
-              Recibe asistencia personalizada de un agente.
-            </Typography>
-            <Typography variant="body2">
-              Tiempo estimado de respuesta: 15 minutos.
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "black",
+                transition: "transform 0.2s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.04)",
+                },
+              }}
+              onClick={() => {
+                const bubble = document.getElementById('bubble-open');
+                if (bubble) bubble.click();
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyPress={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  const bubble = document.getElementById('bubble-open');
+                  if (bubble) bubble.click();
+                }
+              }}
+            >
+              <ChatIcon fontSize="large" color="error" />
+              <Typography variant="h6" fontWeight="bold">
+                Chat online
+              </Typography>
+              <Typography variant="body2">
+                Recibe asistencia personalizada de un agente.
+              </Typography>
+              <Typography variant="body2">
+                Tiempo estimado de respuesta: 15 minutos.
+              </Typography>
+            </Box>
           </Grid>
 
           {/* Teléfono México */}
@@ -53,14 +80,12 @@ const AtencionCliente = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                cursor: "pointer", // Indica que es interactivo
-                textDecoration: "none", // Evita subrayado
-                color: "black", // Asegura que el texto sea negro
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "black",
+                transition: "transform 0.2s ease-in-out",
                 "&:hover": {
-                  "& svg": {
-                    transform: "scale(1.4)", // Incrementa el zoom al ícono
-                    transition: "transform 0.2s ease-in-out", // Suaviza el efecto
-                  },
+                  transform: "scale(1.04)",
                 },
               }}
               component="a"
@@ -83,14 +108,12 @@ const AtencionCliente = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                cursor: "pointer", // Indica que es interactivo
-                textDecoration: "none", // Evita subrayado
-                color: "black", // Asegura que el texto sea negro
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "black",
+                transition: "transform 0.2s ease-in-out",
                 "&:hover": {
-                  "& svg": {
-                    transform: "scale(1.4)", // Incrementa el zoom al ícono
-                    transition: "transform 0.2s ease-in-out", // Suaviza el efecto
-                  },
+                  transform: "scale(1.04)",
                 },
               }}
               component="a"
@@ -118,28 +141,24 @@ const AtencionCliente = () => {
           pt: 3,
           pb: 3,
           width: "100%",
-          display: "flex", // Activamos Flexbox
-          flexDirection: { xs: "column", md: "row" }, // En pantallas pequeñas, se apilan; en grandes, van en fila
-          justifyContent: "space-evenly", // Distribuye espacio equitativamente
-          alignItems: "center", // Alinea verticalmente
-          gap: 4, // Espacio entre los dos bloques
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           textAlign: "center",
         }}
       >
-        {/* Bloque de Atención a clientes */}
+        {/* Único bloque: Atención a clientes */}
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            cursor: "pointer", // Indica que es interactivo
-            textDecoration: "none", // Evita subrayado
-            color: "black", // Asegura que el texto sea negro
+            cursor: "pointer",
+            textDecoration: "none",
+            color: "black",
+            transition: "transform 0.2s ease-in-out",
             "&:hover": {
-              "& svg": {
-                transform: "scale(1.4)", // Incrementa el zoom al ícono
-                transition: "transform 0.2s ease-in-out", // Suaviza el efecto
-              },
+              transform: "scale(1.04)",
             },
           }}
           component="a"
@@ -154,37 +173,6 @@ const AtencionCliente = () => {
           </Typography>
           <Typography variant="body2" color="inherit">
             atencionaclientes@qardeal.com.mx
-          </Typography>
-        </Box>
-
-        {/* Bloque de Soporte */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            cursor: "pointer", // Indica que es interactivo
-            textDecoration: "none", // Evita subrayado
-            color: "black", // Asegura que el texto sea negro
-            "&:hover": {
-              "& svg": {
-                transform: "scale(1.4)", // Incrementa el zoom al ícono
-                transition: "transform 0.2s ease-in-out", // Suaviza el efecto
-              },
-            },
-          }}
-          component="a"
-          href="mailto:soporte@qardeal.com.mx"
-        >
-          <EmailIcon
-            fontSize="large"
-            sx={{ color: (theme) => theme.palette.primary.text }}
-          />
-          <Typography variant="h6" fontWeight="bold" color="inherit">
-            Correo electrónico de soporte
-          </Typography>
-          <Typography variant="body2" color="inherit">
-            soporte@qardeal.com.mx
           </Typography>
         </Box>
       </Box>

@@ -33,6 +33,7 @@ const ChatBubble = () => {
     >
       {/* Burbuja principal (X) */}
       <IconButton
+        id="bubble-open"
         onClick={toggleChat}
         sx={{
           width: size,
@@ -71,6 +72,7 @@ const ChatBubble = () => {
       >
         {/* WhatsApp burbuja */}
         <IconButton
+          id="bubble-whatsapp"
           component="a"
           href="https://wa.me/525545773150?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20una%20reserva."
           target="_blank"
@@ -96,6 +98,7 @@ const ChatBubble = () => {
 
         {/* Chatbot burbuja */}
         <IconButton
+          id="bubble-bot"
           onClick={toggleChatbot}
           sx={{
             width: size,
