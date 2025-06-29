@@ -6,14 +6,9 @@ import {
   Container,
   Typography,
   Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   CircularProgress,
 } from "@mui/material";
-import Image from "next/image";
+import RecommendationModal from "../components/RecommendationModal";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
@@ -67,7 +62,6 @@ export default function RentalPage() {
   const [searchData, setSearchData] = useState(null);
   const [modals, setModals] = useState({
     recommendation: false,
-    warning: false,
   });
   const [tempRecommendedCar, setTempRecommendedCar] = useState(null);
   const [ratesLoaded, setRatesLoaded] = useState(false);
@@ -166,18 +160,15 @@ export default function RentalPage() {
     fetchRates(params);
   };
 
-  // Manejadores de modal consolidados
-  const toggleModal = (type, state) => {
-    setModals(prev => ({ ...prev, [type]: state }));
-  };
+
+
 
   const handleCarSelect = (car, index) => {
     setSelectedCarIndex(index);
     setSelectedCar(car);
-
     if (index < filteredCars.length - 1) {
       setTempRecommendedCar(filteredCars[index + 1]);
-      toggleModal('recommendation', true);
+      setModals(prev => ({ ...prev, recommendation: true }));
     } else {
       router.push("/proteccion");
     }
@@ -189,7 +180,7 @@ export default function RentalPage() {
       setSelectedCarIndex(newIndex);
       setSelectedCar(filteredCars[newIndex]);
     }
-    toggleModal('recommendation', false);
+    setModals(prev => ({ ...prev, recommendation: false }));
     router.push("/proteccion");
   };
 
@@ -362,111 +353,14 @@ export default function RentalPage() {
         )}
       </Box>
 
-      {/* Modal de advertencia */}
-      <Dialog open={modals.warning} onClose={() => toggleModal('warning', false)}>
-        <DialogTitle sx={{ textAlign: "center", fontSize: "24px", fontWeight: "bold" }}>
-          🚨 ATENCIÓN 🚨
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong> seleccionar un vehículo antes de continuar.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
-          <Button
-            onClick={() => toggleModal('warning', false)}
-            variant="contained"
-            sx={{
-              backgroundColor: "primary.buttons",
-              color: "white",
-              fontWeight: "bold",
-              padding: "12px 20px",
-              borderRadius: "8px",
-              fontSize: "16px",
-            }}
-          >
-            SELECCIONAR UN VEHÍCULO
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       {/* Modal de recomendación */}
-      <Dialog
+      <RecommendationModal
         open={modals.recommendation}
         onClose={() => {}}
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            boxShadow: 8,
-            maxWidth: "500px",
-            width: "90%",
-          },
-        }}
-      >
-        <Box sx={{ py: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", textAlign: "center", fontSize: "20px" }}>
-            RECOMENDACIÓN
-          </Typography>
-        </Box>
-
-        <DialogContent sx={{ pt: 0, pb: 3, px: 3, textAlign: "center" }}>
-          {tempRecommendedCar && (
-            <>
-              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 1, mb: 1 }}>
-                <Image
-                  src={tempRecommendedCar.image}
-                  alt={tempRecommendedCar.name}
-                  width={300}
-                  height={180}
-                  style={{
-                    maxWidth: "300px",
-                    width: "100%",
-                    height: "auto",
-                    borderRadius: "8px",
-                    objectFit: "cover",
-                  }}
-                  unoptimized
-                />
-              </Box>
-              <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "16px", lineHeight: 1.6, mb: 3 }}>
-                Te recomendamos considerar el <strong>{tempRecommendedCar.category}</strong> ({tempRecommendedCar.name}) 
-                que ofrece mayores prestaciones por un precio competitivo.
-              </Typography>
-
-              <Button
-                onClick={() => handleRecommendationAction(true)}
-                variant="contained"
-                fullWidth
-                sx={{
-                  backgroundColor: "primary.buttons",
-                  color: "white",
-                  fontWeight: "bold",
-                  padding: "10px 16px",
-                  borderRadius: "8px",
-                  fontSize: "14px",
-                }}
-              >
-                SELECCIONAR {tempRecommendedCar.category.toUpperCase()}
-              </Button>
-
-              <Box sx={{ textAlign: "center", mt: 2 }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "#333",
-                    fontWeight: "bold",
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleRecommendationAction(false)}
-                >
-                  Mantener la selección actual
-                </Typography>
-              </Box>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+        recommendedCar={tempRecommendedCar}
+        onSelect={() => handleRecommendationAction(true)}
+        onKeep={() => handleRecommendationAction(false)}
+      />
     </Container>
   );
 }
