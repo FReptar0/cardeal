@@ -244,7 +244,7 @@ export default function SearchForm({
         La reserva debe ser realizada con al menos 2 horas de anticipación.
       </Typography>
 
-      {/* {['/', '/vehiculos'].includes(router.pathname) && (
+      {/* {["/", "/vehiculos"].includes(router.pathname) && (
         <Button
           variant="contained"
           sx={{
