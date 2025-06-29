@@ -48,6 +48,7 @@ export default async function handler(req, res) {
       <PickupDateTime>${pickupDateTime}</PickupDateTime>
       <ReturnDateTime>${returnDateTime}</ReturnDateTime>
       <ClassCode>${classCodes}</ClassCode>
+      <RateCode>BASIC</RateCode>
     </PayLoad>
   </TRNXML>
   `;
