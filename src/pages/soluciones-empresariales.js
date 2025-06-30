@@ -1,6 +1,5 @@
-import React from "react";
-import SitioEnConstruccion from "@/components/OnBuildSite";
+import CompaniesContactForm from "@/components/CompaniesContactForm";
 
 export default function SolucionesEmpresariales() {
-  return <SitioEnConstruccion />;
+  return <CompaniesContactForm />
 }
