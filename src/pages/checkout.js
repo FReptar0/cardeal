@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const [openTimerDialog, setOpenTimerDialog] = useState(true);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos en segundos
   const [showFloatingTimer, setShowFloatingTimer] = useState(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   const { selectedCar, selectedInsurance, selectedExtras, clearBooking } =
     useBooking();
@@ -73,8 +74,10 @@ export default function CheckoutPage() {
     }
   }
 
-  const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
-  const otherCharges2 = (totalCarCost2 + totalExtrasCost + totalInsuranceCost) * 0.23;
+  const otherCharges =
+    (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
+  const otherCharges2 =
+    (totalCarCost2 + totalExtrasCost + totalInsuranceCost) * 0.23;
 
   const subTotal =
     totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
@@ -130,17 +133,23 @@ export default function CheckoutPage() {
 
   // El contador debe seguir corriendo siempre que timeLeft > 0
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setOpenTimerDialog(false);
-      clearBooking(); // Limpiar booking context al regresar al home
-      router.push("/");
-      return;
+    if (timeLeft > 0) {
+      const interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
     }
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timeLeft, router, clearBooking]);
+  }, [timeLeft]);
+
+  // Efecto separado para redirigir y limpiar solo una vez
+  useEffect(() => {
+    if (timeLeft <= 0 && !hasRedirected) {
+      setHasRedirected(true);
+      setOpenTimerDialog(false);
+      clearBooking();
+      router.push("/");
+    }
+  }, [timeLeft, hasRedirected, clearBooking, router]);
 
   return (
     <>
@@ -229,7 +238,7 @@ export default function CheckoutPage() {
               <Typography
                 variant="body1"
                 sx={{
-                  color: theme => theme.palette.primary.text,
+                  color: (theme) => theme.palette.primary.text,
                   fontWeight: "bold",
                   fontSize: 18,
                   mb: 2,
@@ -252,7 +261,7 @@ export default function CheckoutPage() {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: theme => theme.palette.primary.buttons,
+                backgroundColor: (theme) => theme.palette.primary.buttons,
                 color: "white",
                 fontWeight: "bold",
                 borderRadius: 2,
@@ -288,8 +297,21 @@ export default function CheckoutPage() {
             minHeight: 0,
           }}
         >
-          <Box sx={{ position: 'relative', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width={80} height={80} style={{ position: 'absolute', top: 0, left: 0 }}>
+          <Box
+            sx={{
+              position: "relative",
+              width: 80,
+              height: 80,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg
+              width={80}
+              height={80}
+              style={{ position: "absolute", top: 0, left: 0 }}
+            >
               <circle
                 cx={40}
                 cy={40}
@@ -306,12 +328,26 @@ export default function CheckoutPage() {
                 strokeWidth={6}
                 fill="none"
                 strokeDasharray={2 * Math.PI * 36}
-                strokeDashoffset={(2 * Math.PI * 36) * (1 - timeLeft / 600)}
+                strokeDashoffset={2 * Math.PI * 36 * (1 - timeLeft / 600)}
                 strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 1s linear' }}
+                style={{ transition: "stroke-dashoffset 1s linear" }}
               />
             </svg>
-            <Box sx={{ position: 'relative', zIndex: 1, fontWeight: 700, fontSize: 18, color: '#d60812', width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', letterSpacing: 1 }}>
+            <Box
+              sx={{
+                position: "relative",
+                zIndex: 1,
+                fontWeight: 700,
+                fontSize: 18,
+                color: "#d60812",
+                width: 80,
+                height: 80,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                letterSpacing: 1,
+              }}
+            >
               {formatTime(timeLeft)}
             </Box>
           </Box>
