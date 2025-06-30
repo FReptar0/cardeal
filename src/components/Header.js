@@ -16,6 +16,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../contexts/AuthContext";
 import Link from "next/link"; // Import de Next.js Link
+import Image from "next/image";
 import { useRouter } from "next/router"; // Para obtener la ruta actual
 
 const Header = () => {
@@ -131,15 +132,19 @@ const Header = () => {
                 textDecoration: "none",
               }}
             >
-              <img
+              <Image
                 src="/logos/Qardeal_logo_completo_color.png"
                 alt="Logo"
                 id="logoHeader"
+                width={isTop ? 350 : 200}
+                height={isTop ? 100 : 60}
                 style={{
                   width: "100%",
                   height: "auto",
                   transition: "width 0.3s",
+                  objectFit: "contain",
                 }}
+                priority
               />
             </Box>
           </Link>

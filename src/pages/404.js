@@ -1,5 +1,6 @@
 import { Box, Typography, Button } from "@mui/material";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Custom404() {
   return (
@@ -15,15 +16,19 @@ export default function Custom404() {
       }}
     >
       {/* Imagen más pequeña */}
-      <img
+      <Image
         src="/icons/404.jpg"
         alt="404"
+        width={550}
+        height={350}
         style={{
           maxWidth: "550px",
           width: "100%",
           height: "auto",
           marginBottom: "24px",
+          objectFit: "contain",
         }}
+        priority
       />
 
       {/* Solo "ERROR:" en negritas */}

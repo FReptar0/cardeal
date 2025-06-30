@@ -6,66 +6,215 @@ import {
   Container,
   Typography,
   Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   CircularProgress,
 } from "@mui/material";
+import RecommendationModal from "../components/RecommendationModal";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
 import carsData from "../data/cars.json";
 import dynamic from "next/dynamic";
-
-// Importa el contexto global
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
 
-const SearchBar = dynamic(() => import("../components/SearchBar"), {
-  ssr: false,
-});
+const SearchBar = dynamic(() => import("../components/SearchBar"), { ssr: false });
+const CompactHeader = dynamic(() => import("../components/CompactHeader"), { ssr: false });
 
-const CompactHeader = dynamic(() => import("../components/CompactHeader"), {
-  ssr: false,
-});
+// Componente Loader optimizado
+const Loader = () => {
+  const [dots, setDots] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length < 3 ? prev + "." : ""));
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "20vh",
+        gap: 2,
+      }}
+    >
+      <CircularProgress sx={{ color: "primary.text" }} size={48} />
+      <Typography variant="h6" sx={{ color: "primary.text", fontWeight: "bold" }}>
+        Cargando autos disponibles{dots}
+      </Typography>
+    </Box>
+  );
+};
 
 export default function RentalPage() {
+  // Estados consolidados
   const [loadingPrices, setLoadingPrices] = useState(false);
-
-  // Estados locales
-  const [filteredCars, setFilteredCars] = useState([]); // <-- inicia vacío
+  const [filteredCars, setFilteredCars] = useState([]);
   const [selectedCarIndex, setSelectedCarIndex] = useState(null);
-  const [isSticky, setIsSticky] = useState(false);
-  const [headerIsTop, setHeaderIsTop] = useState(true);
-  const [showCompactHeader, setShowCompactHeader] = useState(false);
-  const [hideSearchSection, setHideSearchSection] = useState(false);
+  const [headerState, setHeaderState] = useState({
+    isTop: true,
+    showCompact: false,
+    hideSearch: false,
+  });
   const [searchData, setSearchData] = useState(null);
-  const [previousCarIndex, setPreviousCarIndex] = useState(null);
-  const [openRecommendation, setOpenRecommendation] = useState(false);
-  const [openWarning, setOpenWarning] = useState(false);
+  const [modals, setModals] = useState({
+    recommendation: false,
+  });
   const [tempRecommendedCar, setTempRecommendedCar] = useState(null);
+  const [ratesLoaded, setRatesLoaded] = useState(false);
 
   const router = useRouter();
   const scrollRefs = useRef([]);
-
-  // Extrae del contexto el auto seleccionado y su setter
   const { selectedCar, setSelectedCar } = useBooking();
   const { searchData: searchContextData } = useSearch();
 
-  const [ratesLoaded, setRatesLoaded] = useState(false);
-
-  function formatTSDDate(date) {
+  // Utilidad para formatear fecha TSD
+  const formatTSDDate = (date) => {
     const pad = (n) => String(n).padStart(2, "0");
     let h = date.getHours();
     const ampm = h >= 12 ? "PM" : "AM";
     h = h % 12 || 12;
-    return (
-      `${pad(date.getMonth() + 1)}${pad(
-        date.getDate()
-      )}${date.getFullYear()} ` + `${pad(h)}:${pad(date.getMinutes())} ${ampm}`
-    );
-  }
+    return `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
+  };
+
+  // Función para obtener tarifas optimizada
+  const fetchRates = async (params) => {
+    try {
+      setLoadingPrices(true);
+      const res = await fetch("/api/rates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+
+      const rates = await res.json();
+      
+      // Filtrar rates únicos por categoría
+      const uniqueRates = rates.reduce((acc, rate) => {
+        if (!acc.find(r => r.category === rate.category)) {
+          acc.push(rate);
+        }
+        return acc;
+      }, []);
+
+      const filtered = uniqueRates
+        .map((rate) => {
+          const carInfo = carsData.find(car => car.abbreviation === rate.category);
+          if (!carInfo || !rate.baseRate || rate.baseRate === "N/A") return null;
+
+          const base = parseFloat(rate.baseRate);
+          const discount = parseFloat((base * 0.9).toFixed(2));
+
+          return {
+            ...carInfo,
+            ...rate,
+            category: carInfo.category,
+            abbreviation: carInfo.abbreviation,
+            price2: base,
+            price: discount,
+            rateId: rate.rateId,
+          };
+        })
+        .filter(Boolean);
+
+      setFilteredCars(filtered);
+      setRatesLoaded(true);
+    } catch (err) {
+      console.error("❌ Error al obtener tarifas:", err);
+      setFilteredCars([]);
+      setRatesLoaded(false);
+    } finally {
+      setLoadingPrices(false);
+    }
+  };
+
+  // Manejador de búsqueda optimizado
+  const handleSearch = (filters) => {
+    if (!filters) {
+      setFilteredCars([]);
+      return;
+    }
+
+    const createDateTime = (date, time) => {
+      const dt = new Date(date);
+      const [timeStr, ampm] = time.split(" ");
+      let [hours, minutes] = timeStr.split(":").map(Number);
+      if (ampm === "PM" && hours < 12) hours += 12;
+      if (ampm === "AM" && hours === 12) hours = 0;
+      dt.setHours(hours, minutes, 0, 0);
+      return formatTSDDate(dt);
+    };
+
+    const params = {
+      pickupLocationId: filters.pickupLocation?.id,
+      returnLocationId: filters.sameOffice 
+        ? filters.pickupLocation?.id 
+        : filters.returnLocation?.id,
+      pickupDateTime: createDateTime(filters.pickupDate, filters.pickupTime),
+      returnDateTime: createDateTime(filters.returnDate, filters.returnTime),
+    };
+
+    fetchRates(params);
+  };
+
+
+
+
+  const handleCarSelect = (car, index) => {
+    setSelectedCarIndex(index);
+    setSelectedCar(car);
+    if (index < filteredCars.length - 1) {
+      setTempRecommendedCar(filteredCars[index + 1]);
+      setModals(prev => ({ ...prev, recommendation: true }));
+    } else {
+      router.push("/proteccion");
+    }
+  };
+
+  const handleRecommendationAction = (selectNext = false) => {
+    if (selectNext && selectedCarIndex < filteredCars.length - 1) {
+      const newIndex = selectedCarIndex + 1;
+      setSelectedCarIndex(newIndex);
+      setSelectedCar(filteredCars[newIndex]);
+    }
+    setModals(prev => ({ ...prev, recommendation: false }));
+    router.push("/proteccion");
+  };
+
+  // Effects consolidados
+  useEffect(() => {
+    if (searchContextData?.pickupDate) {
+      handleSearch(searchContextData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchData && searchContextData) {
+      setSearchData(searchContextData);
+    }
+  }, [searchData, searchContextData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
+      setHeaderState({
+        isTop: headerTop,
+        showCompact: !headerTop,
+        hideSearch: !headerTop,
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (selectedCar) {
+      const index = filteredCars.findIndex(car => car.name === selectedCar.name);
+      if (index !== -1) setSelectedCarIndex(index);
+    }
+  }, [selectedCar, filteredCars]);
 
   useEffect(() => {
     if (selectedCarIndex !== null && scrollRefs.current[selectedCarIndex]) {
@@ -76,131 +225,6 @@ export default function RentalPage() {
     }
   }, [selectedCarIndex]);
 
-  // Loader visual
-  const Loader = () => {
-    const [dots, setDots] = useState("");
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setDots((prev) => (prev.length < 3 ? prev + "." : ""));
-      }, 200); // Cambia cada medio segundo
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "20vh",
-          width: "100%",
-          gap: 2,
-        }}
-      >
-        <CircularProgress
-          sx={{ color: (theme) => theme.palette.primary.text }}
-          size={48}
-        />
-        <Typography
-          variant="h6"
-          sx={{
-            color: (theme) => theme.palette.primary.text,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          Cargando autos disponibles{dots}
-        </Typography>
-      </Box>
-    );
-  };
-
-  // NUEVO: al cargar o cambiar filtros / fechas, traemos precios de TSD
-  const fetchRates = async (
-    { pickupLocationId, returnLocationId, pickupDateTime, returnDateTime },
-    setCarsFn,
-    setLoadedFn
-  ) => {
-    try {
-      setLoadingPrices(true); // Mostrar loader
-      const res = await fetch("/api/rates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pickupLocationId,
-          returnLocationId,
-          pickupDateTime,
-          returnDateTime,
-        }),
-      });
-
-      // console.log("🛞 Respuesta de TSD:", res);
-      const rates = await res.json();
-      //console.log("🛞 Precios TSD por categoría:", rates);
-
-      // Filtrar rates para que solo quede el primer registro de cada categoría
-      const uniqueRates = [];
-      const seenCategories = new Set();
-      for (const rate of rates) {
-        if (!seenCategories.has(rate.category)) {
-          uniqueRates.push(rate);
-          seenCategories.add(rate.category);
-        }
-      }
-
-      const filtered = uniqueRates
-        .map((rate) => {
-          // Buscar por abbreviation, no por category
-          const carInfo = carsData.find(
-            (car) => car.abbreviation === rate.category
-          );
-
-          if (!carInfo || !rate.baseRate || rate.baseRate === "N/A")
-            return null;
-
-          const base = parseFloat(rate.baseRate);
-          const discount = parseFloat((base * 0.9).toFixed(2)); // 10% off
-
-          return {
-            ...carInfo,
-            ...rate,
-            category: carInfo.category, // nombre amigable
-            abbreviation: carInfo.abbreviation, // código (ECAR, etc)
-            price2: base,
-            price: discount,
-            rateId: rate.rateId,
-          };
-        })
-        .filter(Boolean); // elimina los nulos
-
-      setCarsFn(filtered);
-      setLoadedFn(true);
-      setLoadingPrices(false); // Oculta loader
-    } catch (err) {
-      console.error("❌ Error al obtener tarifas:", err);
-      setCarsFn([]);
-      setLoadedFn(false);
-      setLoadingPrices(false);
-    }
-  };
-
-  // 2) En tu useEffect, parsea la hora y monta bien los Date:
-  useEffect(() => {
-    if (searchContextData?.pickupDate) {
-      handleSearch(searchContextData);
-    }
-  }, []);
-
-  // Asegura que searchData tenga un valor inicial para evitar problemas de hidratación
-  useEffect(() => {
-    if (!searchData && searchContextData) {
-      setSearchData(searchContextData);
-    }
-  }, [searchData, searchContextData]);
-
-  // Evita que CompactHeader reciba valores nulos durante la hidratación
   const safeSearchData = searchData || {
     pickupLocation: "",
     returnLocation: "",
@@ -208,399 +232,135 @@ export default function RentalPage() {
     returnDate: "",
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const headerTop = JSON.parse(localStorage.getItem("isHeaderTop"));
-      setHeaderIsTop(headerTop);
-      setShowCompactHeader(!headerTop);
-      setHideSearchSection(!headerTop);
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
-
-  // NUEVO: Sincroniza el índice local con el vehículo seleccionado en el contexto
-  useEffect(() => {
-    if (selectedCar) {
-      const index = filteredCars.findIndex(
-        (car) => car.name === selectedCar.name
-      );
-      if (index !== -1) {
-        setSelectedCarIndex(index);
-      }
-    }
-  }, [selectedCar, filteredCars]);
-
-  const handleCarSelect = (car, index) => {
-    setPreviousCarIndex(selectedCarIndex);
-    setSelectedCarIndex(index);
-    setSelectedCar(car); // Guarda el auto seleccionado en el contexto
-
-    if (index < filteredCars.length - 1) {
-      const nextCar = filteredCars[index + 1];
-      setTempRecommendedCar(nextCar);
-      setOpenRecommendation(true);
-    } else {
-      // Si es la última opción, pasar automáticamente a la siguiente pantalla
-      router.push("/proteccion");
-    }
-  };
-
-  const handleKeepCurrent = () => {
-    // console.log(`Mantener selección: ${selectedCarIndex}`);
-    setOpenRecommendation(false);
-  };
-
-  const handleSelectNextCar = () => {
-    if (
-      selectedCarIndex !== null &&
-      selectedCarIndex < filteredCars.length - 1
-    ) {
-      // console.log("Seleccionar siguiente:", selectedCarIndex + 1);
-      const newIndex = selectedCarIndex + 1;
-      setSelectedCarIndex(newIndex);
-      setSelectedCar(filteredCars[newIndex]); // Actualizamos la selección global con el auto siguiente
-    }
-    setOpenRecommendation(false);
-  };
-
-  const handleContinue = () => {
-    if (selectedCarIndex === null) {
-      setOpenWarning(true);
-    } else {
-      router.push("/proteccion");
-    }
-  };
-
-  const handleSearch = (filters) => {
-    if (!filters) {
-      setFilteredCars([]); // limpia autos si no hay filtros válidos
-      return;
-    }
-    //console.log("Filtros de búsqueda:", filters);
-    const pickDt = new Date(filters.pickupDate);
-    const [pickTime, pickAmpm] = filters.pickupTime.split(" ");
-    let [ph, pm] = pickTime.split(":").map(Number);
-    if (pickAmpm === "PM" && ph < 12) ph += 12;
-    if (pickAmpm === "AM" && ph === 12) ph = 0;
-    pickDt.setHours(ph, pm, 0, 0);
-
-    const retDt = new Date(filters.returnDate);
-    const [retTime, retAmpm] = filters.returnTime.split(" ");
-    let [rh, rm] = retTime.split(":").map(Number);
-    if (retAmpm === "PM" && rh < 12) rh += 12;
-    if (retAmpm === "AM" && rh === 12) rh = 0;
-    retDt.setHours(rh, rm, 0, 0);
-
-    const pickupDateTime = formatTSDDate(pickDt);
-    const returnDateTime = formatTSDDate(retDt);
-
-    //console.log("filters", filters);
-    //console.log("pickupLocationId", filters.pickupLocation?.id);
-    //console.log("returnLocationId", filters.returnLocation?.id);
-    //console.log("sameOffice", filters.sameOffice);
-
-    fetchRates(
-      {
-        pickupLocationId: filters.pickupLocation?.id,
-        returnLocationId: filters.sameOffice
-          ? filters.pickupLocation?.id
-          : filters.returnLocation?.id,
-        pickupDateTime,
-        returnDateTime,
-      },
-      setFilteredCars,
-      setRatesLoaded
-    );
-  };
-
   return (
     <Container sx={{ marginTop: "148px", paddingX: 2, paddingBottom: 5 }}>
-      {/* Barra de búsqueda y Stepper */}
+      {/* Sección de búsqueda */}
       <Box
+        id="search-section-box"
         sx={{
           overflow: "hidden",
-          maxHeight: hideSearchSection ? 0 : "1000px",
-          opacity: hideSearchSection ? 0 : 1,
-          transform: hideSearchSection ? "translateY(-20px)" : "translateY(0)",
+          maxHeight: headerState.hideSearch ? 0 : "1000px",
+          opacity: headerState.hideSearch ? 0 : 1,
+          transform: headerState.hideSearch ? "translateY(-20px)" : "translateY(0)",
           transition: "all 0.5s ease-in-out",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            width: "100%",
-            margin: "0 auto",
-            boxSizing: "border-box",
-            gap: 1,
-          }}
-        >
+        <Box id="search-bar-container" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
       </Box>
 
       <CompactHeader
         searchData={safeSearchData}
-        headerIsTop={headerIsTop}
-        showCompactHeader={showCompactHeader}
+        headerIsTop={headerState.isTop}
+        showCompactHeader={headerState.showCompact}
       />
 
-      {showCompactHeader && <Box sx={{ height: "50px" }} />}
-      <Box sx={{ width: "100%", marginTop: -12 }}>
+      {headerState.showCompact && <Box sx={{ height: "50px" }} />}
+      
+      <Box id="stepper-box" sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
       </Box>
 
-      {isSticky && <Box sx={{ height: "120px" }} />}
-
-      {/* Lista de autos o loader */}
+      {/* Sección principal de autos */}
       <Box
+        id="main-cars-section"
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          height: "auto",
+          maxWidth: { xs: "100%", sm: "100%", md: "1100px", lg: "1300px", xl: "1500px" },
+          margin: "0 auto",
+          boxSizing: "border-box",
         }}
       >
-        <Box
+        <Typography
+          variant="h5"
           sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-            height: "auto",
-            alignItems: "center",
-          }}
-        >
-          {/* Título antes de las cards */}
-          <Typography
-            variant="h5"
-            sx={{
-              color: (theme) => theme.palette.primary.text,
-              fontWeight: "bold",
-              mb: 2,
-              mt: 2,
-              textAlign: "center",
-            }}
-          >
-            Selecciona tu auto ideal.
-          </Typography>
-          {loadingPrices ? (
-            <Loader />
-          ) : filteredCars.length === 0 ? (
-            <Box sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  color: (theme) => theme.palette.secondary.text,
-                  fontWeight: "bold",
-                  mt: 4,
-                }}
-              >
-                No hay autos disponibles para tu búsqueda.
-              </Typography>
-            </Box>
-          ) : (
-            filteredCars.map((car, index) => (
-              <Box
-                key={index}
-                ref={(el) => (scrollRefs.current[index] = el)}
-                onClick={() => handleCarSelect(car, index)}
-                sx={{
-                  width: "100%",
-                  maxWidth: "1200px",
-                  cursor: "pointer",
-                }}
-              >
-                <CarCard
-                  car={car}
-                  price={car.price}
-                  isSelected={selectedCarIndex === index}
-                />
-              </Box>
-            ))
-          )}
-        </Box>
-      </Box>
-
-      {/* Botón CONTINUAR */}
-      {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, pb: 3 }}>
-        <Button
-          variant="contained"
-          sx={{
-            color: "white",
+            color: "primary.text",
             fontWeight: "bold",
-            padding: "12px 30px",
-            fontSize: "16px",
-            backgroundColor: (theme) => theme.palette.primary.buttons,
-            "&:hover": {
-              backgroundColor: (theme) => theme.palette.primary.buttonsHover,
-            },
-          }}
-          onClick={handleContinue}
-        >
-          CONTINUAR
-        </Button>
-      </Box> */}
-
-      {/* Modal de recomendación */}
-      <Dialog open={openWarning} onClose={() => setOpenWarning(false)}>
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            fontSize: "24px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-          }}
-        >
-          🚨 ATENCIÓN 🚨
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Para tu seguridad y tranquilidad, es <strong>OBLIGATORIO</strong>{" "}
-            seleccionar un vehículo antes de continuar.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
-          <Button
-            onClick={() => setOpenWarning(false)}
-            variant="contained"
-            sx={{
-              backgroundColor: (theme) => theme.palette.primary.buttons,
-              color: "white",
-              fontWeight: "bold",
-              padding: "12px 20px",
-              borderRadius: "8px",
-              fontSize: "16px",
-            }}
-          >
-            SELECCIONAR UN VEHÍCULO
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={openRecommendation}
-        onClose={() => {}}
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            boxShadow: 8,
-            maxWidth: "500px",
-            width: "90%",
-          },
-        }}
-      >
-        {/* Título */}
-        <Box sx={{ py: 2 }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              fontSize: "20px",
-            }}
-          >
-            RECOMENDACIÓN
-          </Typography>
-        </Box>
-
-        {/* Contenido del diálogo */}
-        <DialogContent
-          sx={{
-            pt: 0,
-            pb: 3 /* Ajuste de padding */,
-            px: 3,
+            mb: 2,
+            mt: 2,
             textAlign: "center",
           }}
         >
-          {tempRecommendedCar && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 1,
-                mb: 1,
-              }}
-            >
-              <img
-                src={tempRecommendedCar.image}
-                alt={tempRecommendedCar.name}
-                style={{
-                  maxWidth: "300px",
-                  height: "auto",
-                  borderRadius: "8px",
-                }}
-              />
-            </Box>
-          )}
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "justify",
-              fontSize: "16px",
-              lineHeight: 1.6,
-              mb: 3,
-            }}
-          >
-            Te recomendamos considerar el{" "}
-            <strong>
-              {tempRecommendedCar ? tempRecommendedCar.category : ""}
-            </strong>{" "}
-            ({tempRecommendedCar ? tempRecommendedCar.name : ""}) que ofrece
-            mayores prestaciones por un precio competitivo.
-          </Typography>
+          Selecciona tu auto ideal.
+        </Typography>
 
-          {tempRecommendedCar && (
-            <Button
-              onClick={() => {
-                handleSelectNextCar();
-                router.push("/proteccion");
-              }}
-              variant="contained"
-              fullWidth
-              sx={{
-                backgroundColor: (theme) => theme.palette.primary.buttons,
-                color: "white",
-                fontWeight: "bold",
-                padding: "10px 16px",
-                borderRadius: "8px",
-                fontSize: "14px",
-              }}
-            >
-              SELECCIONAR{" "}
-              {tempRecommendedCar
-                ? tempRecommendedCar.category.toUpperCase()
-                : ""}
-            </Button>
-          )}
-
-          {/* Texto debajo del botón rojo */}
-          <Box sx={{ textAlign: "center", mt: 2 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#333",
-                fontWeight: "bold",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                handleKeepCurrent();
-                router.push("/proteccion");
-              }}
-            >
-              Mantener la selección actual
+        {loadingPrices ? (
+          <Loader />
+        ) : filteredCars.length === 0 ? (
+          <Box id="no-cars-message" sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
+            <Typography variant="h5" sx={{ color: "secondary.text", fontWeight: "bold" }}>
+              No hay autos disponibles para tu búsqueda.
             </Typography>
           </Box>
-        </DialogContent>
-      </Dialog>
+        ) : (
+          <Box
+            id="cars-grid-container"
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr", // 1 columna en móvil
+                sm: "1fr", // 1 columna en tablet pequeño
+                md: "1fr 1fr", // 2 columnas en desktop y superior
+              },
+              gap: { xs: 2, sm: 3, md: 4 },
+              width: "100%",
+              maxWidth: "100%",
+              mt: 2,
+              boxSizing: "border-box",
+              justifyItems: "center",
+            }}
+          >
+            {filteredCars.map((car, index) => {
+              // Centrar la última card si el número es impar y estamos en desktop (2 columnas)
+              const isLastOdd =
+                filteredCars.length % 2 === 1 &&
+                index === filteredCars.length - 1;
+              return (
+                <Box
+                  key={index}
+                  ref={(el) => (scrollRefs.current[index] = el)}
+                  onClick={() => handleCarSelect(car, index)}
+                  sx={{
+                    cursor: "pointer",
+                    width: "100%",
+                    maxWidth: { xs: "98vw", sm: "98vw", md: "500px", lg: "540px" },
+                    boxSizing: "border-box",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "stretch",
+                    gridColumn: {
+                      xs: undefined,
+                      sm: undefined,
+                      md: isLastOdd ? "1 / span 2" : undefined,
+                    },
+                    justifySelf: isLastOdd ? "center" : undefined,
+                  }}
+                  id={`car-card-box-${index}`}
+                >
+                  <CarCard
+                    car={car}
+                    price={car.price}
+                    isSelected={selectedCarIndex === index}
+                  />
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Box>
+
+      {/* Modal de recomendación */}
+      <RecommendationModal
+        open={modals.recommendation}
+        onClose={() => {}}
+        recommendedCar={tempRecommendedCar}
+        onSelect={() => handleRecommendationAction(true)}
+        onKeep={() => handleRecommendationAction(false)}
+      />
     </Container>
   );
 }

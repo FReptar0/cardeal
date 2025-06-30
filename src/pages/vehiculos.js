@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useBooking } from "@/contexts/BookingContext";
 import {
@@ -162,15 +163,19 @@ export default function Flota() {
                           alignItems: "center",
                         }}
                       >
-                        <img
+                        <Image
                           src={img}
                           alt={`Imagen ${idx + 1}`}
+                          width={800}
+                          height={500}
                           style={{
                             maxWidth: "100%",
                             maxHeight: "80vh",
                             objectFit: "contain",
                             borderRadius: 8,
+                            height: "auto",
                           }}
+                          priority={idx === 0}
                         />
                       </SwiperSlide>
                     ))}
@@ -218,12 +223,13 @@ export default function Flota() {
                     key={j}
                     sx={{ display: "flex", alignItems: "center", gap: 1 }}
                   >
-                    <img
+                    <Image
                       src={icon}
                       alt={text}
-                      width="20"
-                      height="20"
-                      style={{ filter: "brightness(0)" }}
+                      width={20}
+                      height={20}
+                      style={{ filter: "brightness(0)", width: 20, height: 20, objectFit: "contain" }}
+                      priority={j === 0}
                     />
                     <Typography variant="body2">{text}</Typography>
                   </Box>

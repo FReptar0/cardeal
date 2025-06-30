@@ -1,5 +1,6 @@
 // components/Hero.js
 import React, { useState } from "react";
+import Image from "next/image";
 import { Grid } from "@mui/material";
 import dynamic from "next/dynamic";
 import carsData from "../data/cars.json";
@@ -42,9 +43,12 @@ export default function Hero() {
           minHeight: "400px",
         }}
       >
-        <img
+        <Image
           src="/extras/background-mexico-light.png"
           alt="Fondo"
+          fill={false}
+          width={1200}
+          height={800}
           style={{
             maxWidth: "90%",
             height: "auto",
@@ -55,10 +59,14 @@ export default function Hero() {
             zIndex: -1,
             pointerEvents: "none",
           }}
+          priority
         />
-        <img
+        <Image
           src="/photos/suv-5-lx/Xtrail-lateral-frente.webp"
           alt="Auto de ejemplo"
+          fill={false}
+          width={900}
+          height={400}
           style={{
             maxWidth: "80%",
             height: "auto",
@@ -69,6 +77,7 @@ export default function Hero() {
             zIndex: 0,
             pointerEvents: "none",
           }}
+          priority
         />
       </Grid>
 

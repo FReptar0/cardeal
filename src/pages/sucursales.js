@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, Typography, Divider, Grid, Link } from "@mui/material";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Sucursales() {
   // Datos de ubicaciones para CDMX
@@ -179,10 +180,13 @@ export default function Sucursales() {
                         transition: "transform 0.2s",
                       }}
                     >
-                      <img
+                      <Image
                         src="/icons/ic-google-maps.png"
                         alt="Google Maps"
-                        style={{ width: "70%", height: "70%" }}
+                        width={40}
+                        height={40}
+                        style={{ width: "70%", height: "70%", objectFit: "contain" }}
+                        priority
                       />
                     </Link>
                   </motion.div>
@@ -204,10 +208,13 @@ export default function Sucursales() {
                           transition: "transform 0.2s",
                         }}
                       >
-                        <img
+                        <Image
                           src="/icons/ic-waze.svg"
                           alt="Waze"
-                          style={{ width: "70%", height: "70%" }}
+                          width={40}
+                          height={40}
+                          style={{ width: "70%", height: "70%", objectFit: "contain" }}
+                          priority
                         />
                       </Link>
                     </motion.div>

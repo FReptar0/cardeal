@@ -37,7 +37,7 @@ export default function SearchForm({
     applyNegativeMargin,
     router,
     setSearchData,
-    onSearch
+    onSearch,
 }) {
     return (
         <>
@@ -244,31 +244,31 @@ export default function SearchForm({
                 La reserva debe ser realizada con al menos 2 horas de anticipación.
             </Typography>
 
-            {["/", "/vehiculos"].includes(router.pathname) && (
-                <Button
-                    variant="contained"
-                    sx={{
-                        width: "100%",
-                        backgroundColor: (theme) => theme.palette.primary.buttons,
-                    }}
-                    onClick={() => {
-                        const filters = {
-                            pickupLocation: searchData.pickupLocation,
-                            returnLocation: searchData.returnLocation,
-                            pickupDate: searchData.pickupDate,
-                            pickupTime: searchData.pickupTime,
-                            returnDate: searchData.returnDate,
-                            returnTime: searchData.returnTime,
-                            sameOffice: searchData.sameOffice,
-                        };
-                        setSearchData(filters);
-                        onSearch?.(filters);
-                        router.push("/rental");
-                    }}
-                >
-                    Buscar
-                </Button>
-            )}
+            {/* {["/", "/vehiculos"].includes(router.pathname) && (
+        <Button
+          variant="contained"
+          sx={{
+            width: "100%",
+            backgroundColor: (theme) => theme.palette.primary.buttons,
+          }}
+          onClick={() => {
+            const filters = {
+              pickupLocation: searchData.pickupLocation,
+              returnLocation: searchData.returnLocation,
+              pickupDate: searchData.pickupDate,
+              pickupTime: searchData.pickupTime,
+              returnDate: searchData.returnDate,
+              returnTime: searchData.returnTime,
+              sameOffice: searchData.sameOffice,
+            };
+            setSearchData(filters);
+            onSearch?.(filters);
+            router.push("/rental");
+          }}
+        >
+          Buscar
+        </Button>
+      )} */}
         </>
     );
 }

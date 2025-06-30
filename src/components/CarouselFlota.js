@@ -8,6 +8,7 @@ import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import carData from "../data/cars.json";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 
 export default function CarruselFlota({ onOpenModal }) {
@@ -98,18 +99,30 @@ export default function CarruselFlota({ onOpenModal }) {
                                         overflow: "hidden",
                                     }}
                                 >
-                                    <CardMedia
-                                        component="img"
-                                        onClick={() => onOpenModal(car)}
-                                        image={car.image}
-                                        alt={car.name}
+                                    <Box
                                         sx={{
                                             width: "95%",
                                             height: "100%",
-                                            objectFit: "contain",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
                                             cursor: "pointer",
                                         }}
-                                    />
+                                        onClick={() => onOpenModal(car)}
+                                    >
+                                        <Image
+                                            src={car.image}
+                                            alt={car.name}
+                                            width={320}
+                                            height={200}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "contain",
+                                            }}
+                                            priority={true}
+                                        />
+                                    </Box>
                                 </Box>
                                 <CardContent sx={{ flexGrow: 1, px: 2 }}>
                                     <Typography variant="h6" fontWeight="bold" textAlign="center">
@@ -132,11 +145,11 @@ export default function CarruselFlota({ onOpenModal }) {
                                         }}
                                     >
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <img
+                                            <Image
                                                 src="/icons/ic-pax.svg"
                                                 alt="Pasajeros"
-                                                width="20"
-                                                height="20"
+                                                width={20}
+                                                height={20}
                                                 style={{ filter: "brightness(0)" }}
                                             />
                                             <Typography variant="body2">
@@ -144,11 +157,11 @@ export default function CarruselFlota({ onOpenModal }) {
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <img
+                                            <Image
                                                 src="/icons/ic-door.svg"
                                                 alt="Puertas"
-                                                width="20"
-                                                height="20"
+                                                width={20}
+                                                height={20}
                                                 style={{ filter: "brightness(0)" }}
                                             />
                                             <Typography variant="body2">
@@ -162,11 +175,11 @@ export default function CarruselFlota({ onOpenModal }) {
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <img
+                                            <Image
                                                 src="/icons/ic-trans.svg"
                                                 alt="Transmisión"
-                                                width="20"
-                                                height="20"
+                                                width={20}
+                                                height={20}
                                                 style={{ filter: "brightness(0)" }}
                                             />
                                             <Typography variant="body2">
@@ -174,21 +187,21 @@ export default function CarruselFlota({ onOpenModal }) {
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <img
+                                            <Image
                                                 src="/icons/ic-pet.svg"
                                                 alt="Pet friendly"
-                                                width="20"
-                                                height="20"
+                                                width={20}
+                                                height={20}
                                                 style={{ filter: "brightness(0)" }}
                                             />
                                             <Typography variant="body2">Pet friendly</Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <img
+                                            <Image
                                                 src="/icons/ice.svg"
                                                 alt="Aire acondicionado"
-                                                width="20"
-                                                height="20"
+                                                width={20}
+                                                height={20}
                                                 style={{ filter: "brightness(0)" }}
                                             />
                                             <Typography variant="body2">
