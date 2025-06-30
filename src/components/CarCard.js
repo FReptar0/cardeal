@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -78,8 +77,8 @@ export default function CarCard({ car, isSelected }) {
               src={car.image}
               alt={car.name}
               fill
-              style={{ objectFit: "cover" }}
-              sizes="(max-width: 600px) 100vw, 420px"
+              style={{ objectFit: "contain" }}
+              sizes="(max-width: 500px) 100vw, 420px"
               unoptimized
             />
           </Box>
@@ -98,15 +97,15 @@ export default function CarCard({ car, isSelected }) {
               minWidth: 0,
               "&:hover": {
                 backgroundColor: "#d9d9d9",
-                color: theme => theme.palette.primary.buttons
+                color: (theme) => theme.palette.primary.buttons,
               },
               "&:active": {
                 backgroundColor: "#d9d9d9",
-                color: theme => theme.palette.primary.buttons
+                color: (theme) => theme.palette.primary.buttons,
               },
               "&:focus": {
                 backgroundColor: "#d9d9d9",
-                color: theme => theme.palette.primary.buttons
+                color: (theme) => theme.palette.primary.buttons,
               },
             }}
             onClick={(event) => {
@@ -119,8 +118,23 @@ export default function CarCard({ car, isSelected }) {
         </Box>
 
         {/* Información del vehículo */}
-        <CardContent sx={{ flex: 1, textAlign: "center", p: { xs: 1, sm: 1 }, minWidth: 0, width: "100%" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
+        <CardContent
+          sx={{
+            flex: 1,
+            textAlign: "center",
+            p: { xs: 1, sm: 1 },
+            minWidth: 0,
+            width: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              justifyContent: "center",
+            }}
+          >
             <Typography variant="h6" fontWeight="bold">
               {car.category}
             </Typography>
@@ -334,7 +348,7 @@ export default function CarCard({ car, isSelected }) {
               <Typography
                 variant="body2"
                 fontWeight="bold"
-                sx={{ color: theme => theme.palette.secondary.text }}
+                sx={{ color: (theme) => theme.palette.secondary.text }}
               >
                 Pago en Mostrador
               </Typography>
@@ -361,7 +375,6 @@ export default function CarCard({ car, isSelected }) {
           </Box>
         </Box>
       </Card>
-
 
       <GalleryModal open={open} onClose={() => setOpen(false)} car={car} />
     </>

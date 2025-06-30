@@ -58,6 +58,7 @@ export default async function handler(req, res) {
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     const hours = json?.PRE?.TRNXML?.Payload?.RentalLocation?.BusinessHours;
+    console.log("BusinessHours:", hours);
     //console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     res.status(200).json(hours || {});
