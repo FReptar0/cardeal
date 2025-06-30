@@ -19,7 +19,6 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-  Switch,
 } from "@mui/material";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
@@ -84,7 +83,7 @@ const registrarReservaEnTSD = async ({
   }
 };
 
-export default function UserForm({ paidOnline, setPaidOnline }) {
+export default function UserForm() {
   const router = useRouter();
   const { jwt, login } = useAuth();
   const { userData, loading: loadingProfile } = useUserProfile();
@@ -134,7 +133,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           "Debes tener al menos 18 años",
           (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
         ),
-      location: yup.string().required("La ubicación es obligatoria"),
+      // location: yup.string().required("La ubicación es obligatoria"),
       password: yup
         .string()
         .required("La contraseña es obligatoria")
@@ -164,7 +163,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
       phone: "",
       email: "",
       birthDate: "",
-      location: "",
+      // location: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -187,50 +186,58 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
     }
   }, [tokenIsInvalid, loadingProfile, userData, reset]);
 
-  // Calcula el total exacto que se enviará a Flap
+  // Calcula el total exacto que se enviará a Flap, igual que en checkout.js
   const calculateTotal = (online) => {
     const start = new Date(searchData.pickupDate);
     const end = new Date(searchData.returnDate);
-    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
+    const rentalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 1;
 
-    // Precio coche según método
-    const dailyCar = online
-      ? Number(selectedCar.price2 ?? selectedCar.price) // price2 = online rebajado
-      : Number(selectedCar.price);
-    let total = dailyCar * days - dailyCar * 0.1;
+    // Precios diarios
+    // OJO: price2 es en línea, price es mostrador
+    const dailyCarCost = online
+      ? Number(selectedCar?.price || 0) // en línea usa price
+      : Number(selectedCar?.price2 || 0); // mostrador usa price2
+    const totalCarCost = dailyCarCost * rentalDays;
 
     // Seguro
-    if (selectedInsurance?.total) {
-      const clean = selectedInsurance.total.replace(/[^0-9.]/g, "");
-      total += Number(clean) * days;
-    }
-
-    let totalOtherCharges = total;
+    const parseInsuranceCost = (s) => {
+      const n = s ? s.replace(/[^\d.]/g, "") : "0";
+      return parseFloat(n) || 0;
+    };
+    const dailyInsuranceCost = selectedInsurance
+      ? parseInsuranceCost(selectedInsurance.total)
+      : 0;
+    const totalInsuranceCost = dailyInsuranceCost * rentalDays;
 
     // Extras
-    Object.values(selectedExtras).forEach(({ precio, cantidad }) => {
-      total += Number(precio) * Number(cantidad) * days;
-      totalOtherCharges += Number(precio) * Number(cantidad) * days;
-    });
+    let totalExtrasCost = 0;
+    for (const key in selectedExtras) {
+      const extra = selectedExtras[key];
+      if (extra.cantidad > 0) {
+        const lineCost = extra.precio * extra.cantidad * rentalDays;
+        totalExtrasCost += lineCost;
+      }
+    }
 
-    const totalOtherChargesSum = totalOtherCharges * 0.23;
+    // Otros cargos
+    const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
 
-    total += totalOtherChargesSum;
+    // Subtotal
+    const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
+
+    // IVA
+    const ivaCost = subTotal * 0.16;
+
+    // Total
+    let totalWithIva = subTotal + ivaCost;
 
     // Descuento
-    total -= Number(discount) || 0;
+    totalWithIva -= Number(discount) || 0;
 
-    // IVA 16%
-    total = total * 1.16;
-
-    return total.toFixed(2);
+    return totalWithIva.toFixed(2);
   };
 
-  useEffect(() => {
-    if (paidOnline) {
-      const amount = calculateTotal(true);
-    }
-  }, [paidOnline]);
+
 
   const onSubmit = (isOnline) => async (data) => {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
@@ -476,14 +483,7 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
-            <TextField
-              label="Ubicación"
-              fullWidth
-              margin="normal"
-              {...register("location")}
-              error={!!errors.location}
-              helperText={errors.location?.message}
-            />
+            {/* Eliminado campo de ubicación */}
             <TextField
               label="Contraseña"
               type={showPassword ? "text" : "password"}
@@ -532,56 +532,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             />
           </>
         )}
-
-        {/* Pickup & return */}
-        {/* Comentado el campo de Lugar de retiro
-        <TextField
-          label="Lugar de retiro"
-          value={pickupDisplay}
-          fullWidth
-          margin="normal"
-          disabled
-          InputProps={{
-            sx: {
-              color: "#212121",
-              "& input.Mui-disabled": {
-                WebkitTextFillColor: "#212121",
-                color: "#212121",
-              },
-            },
-          }}
-          InputLabelProps={{
-            style: {
-              color: "#212121", // color del label
-            },
-          }}
-        />
-        */}
-
-        {/* Comentado el campo de Lugar de entrega
-        <TextField
-          label="Lugar de entrega"
-          fullWidth
-          margin="normal"
-          value={returnDisplay}
-          disabled
-          InputProps={{
-            sx: {
-              color: "#212121",
-              "& input.Mui-disabled": {
-                WebkitTextFillColor: "#212121",
-                color: "#212121",
-              },
-            },
-          }}
-          InputLabelProps={{
-            style: {
-              color: "#212121", // color del label
-            },
-          }}
-        />
-        */}
-
         <FormControlLabel
           control={
             <Checkbox
@@ -619,40 +569,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
           }
         />
 
-        {/* Switch de pago en línea debajo de los checkboxes */}
-        <Box sx={{ mt: 2 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={paidOnline}
-                onChange={(e) => setPaidOnline(e.target.checked)}
-                sx={{
-                  "& .Mui-checked": {
-                    color: (theme) => theme.palette.primary.buttons,
-                  },
-                  "& .Mui-checked+ .MuiSwitch-track": {
-                    backgroundColor: (theme) => theme.palette.primary.buttons,
-                  },
-                }}
-              />
-            }
-            label="Quiero pagar en línea"
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              mt: 1,
-              color: paidOnline
-                ? (theme) => theme.palette.primary.text
-                : "#6e7276",
-            }}
-          >
-            {paidOnline
-              ? "Estás eligiendo pagar ahora en línea."
-              : "Puedes pagar al recoger el vehículo."}
-          </Typography>
-        </Box>
-
         <Box
           sx={{
             display: "flex",
@@ -667,33 +583,6 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
-              !watch("terms") ||
-              !watch("privacy") ||
-              paidOnline ||
-              (!tokenIsInvalid && !isValid)
-            }
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.primary.buttons || "#b0b0b0",
-              "&:hover": {
-                backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#b0b0b0",
-              },
-            }}
-          >
-            {submitting ? "Procesando..." : "Pago en mostrador"}
-          </Button>
-
-          <Button
-            fullWidth
-            variant="contained"
-            color="success"
-            onClick={handleSubmit(onSubmit(true))}
-            disabled={
-              submittingOnline ||
-              !watch("terms") ||
-              !watch("privacy") ||
-              !paidOnline ||
               (tokenIsInvalid && !isValid)
             }
             sx={{
@@ -703,9 +592,76 @@ export default function UserForm({ paidOnline, setPaidOnline }) {
                 backgroundColor: (theme) =>
                   theme.palette.primary.buttons || "#b0b0b0",
               },
+              position: "relative",
+              minHeight: 64,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {submittingOnline ? "Redirigiendo…" : "Pago en línea"}
+            <span style={{ width: '100%', textAlign: 'center' }}>
+              {submitting ? "Procesando..." : "Pago en mostrador".charAt(0).toUpperCase() + "Pago en mostrador".slice(1).toLowerCase()}
+            </span>
+            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color:
+                    submitting || (tokenIsInvalid && !isValid)
+                      ? '#b0b0b0'
+                      : '#fff',
+                  fontWeight: 500,
+                  display: 'block',
+                }}
+              >
+                ({`Total: $${calculateTotal(false)}`})
+              </Typography>
+            </span>
+          </Button>
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="success"
+            onClick={handleSubmit(onSubmit(true))}
+            disabled={
+              submittingOnline ||
+              (tokenIsInvalid && !isValid)
+            }
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.primary.buttons || "#b0b0b0",
+              "&:hover": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#b0b0b0",
+              },
+              position: "relative",
+              minHeight: 64,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ width: '100%', textAlign: 'center' }}>
+              {submittingOnline ? "Redirigiendo…" : "Pago en línea".charAt(0).toUpperCase() + "Pago en línea".slice(1).toLowerCase()}
+            </span>
+            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color:
+                    submittingOnline || (tokenIsInvalid && !isValid)
+                      ? '#b0b0b0'
+                      : '#fff',
+                  fontWeight: 500,
+                  display: 'block',
+                }}
+              >
+                ({`Total: $${calculateTotal(true)}`})
+              </Typography>
+            </span>
           </Button>
         </Box>
       </Box>
