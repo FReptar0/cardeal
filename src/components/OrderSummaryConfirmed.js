@@ -1,5 +1,6 @@
 // components/OrderSummaryConfirmed.jsx
 import React from "react";
+import Image from "next/image";
 import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
 import PropTypes from "prop-types";
 import extrasData from "../data/extras.json";
@@ -75,10 +76,13 @@ export default function OrderSummaryConfirmed({
                 gap: 1,
               }}
             >
-              <img
+              <Image
                 src={selectedCar.image}
                 alt={selectedCar.name}
-                style={{ width: "100%", maxWidth: 300, borderRadius: 8 }}
+                width={300}
+                height={180}
+                style={{ width: "100%", maxWidth: 300, borderRadius: 8, height: "auto", objectFit: "contain" }}
+                priority
               />
               <Typography variant="body1" fontWeight="bold">
                 {selectedCar.name}

@@ -1,5 +1,6 @@
 // /components/OrderSummary.jsx
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -84,10 +85,13 @@ export default function OrderSummary({
                 gap: 1,
               }}
             >
-              <img
+              <Image
                 src={selectedCar.image}
                 alt={selectedCar.name}
-                style={{ width: "100%", maxWidth: 300, borderRadius: 8 }}
+                width={300}
+                height={180}
+                style={{ width: "100%", maxWidth: 300, borderRadius: 8, height: "auto", objectFit: "contain" }}
+                priority
               />
               <Typography variant="body1" fontWeight="bold">
                 {selectedCar.name}
