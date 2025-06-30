@@ -536,7 +536,7 @@ const SeguroVehiculo = () => {
                     ml: 1,
                   }}
                 >
-                  MXN/día
+                  MXN
                 </Typography>
 
                 <CardMedia
