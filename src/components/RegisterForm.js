@@ -37,7 +37,7 @@ const registerSchema = yup.object().shape({
                 return differenceInYears(new Date(), new Date(value)) >= 18;
             }
         ),
-    location: yup.string().required("La ubicación es obligatoria"),
+    // location: yup.string().required("La ubicación es obligatoria"),
     password: yup
         .string()
         .required("La contraseña es obligatoria")
@@ -91,7 +91,6 @@ const RegisterForm = ({ onToggle }) => {
                     email: data.email,
                     password: data.password,
                     birthDate: data.birthDate,
-                    location: data.location,
                 }),
             });
 
@@ -207,15 +206,7 @@ const RegisterForm = ({ onToggle }) => {
                         helperText={errors.birthDate?.message}
                     />
 
-                    <TextField
-                        label="Ubicación"
-                        fullWidth
-                        margin="dense"
-                        sx={{ flex: "1 1 48%", ...thinInputSX }}
-                        {...register("location")}
-                        error={!!errors.location}
-                        helperText={errors.location?.message}
-                    />
+                    {/* Eliminado campo de ubicación */}
 
                     <TextField
                         label="Contraseña"

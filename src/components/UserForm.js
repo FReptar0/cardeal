@@ -19,7 +19,6 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-  Switch,
 } from "@mui/material";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
@@ -134,7 +133,7 @@ export default function UserForm() {
           "Debes tener al menos 18 años",
           (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
         ),
-      location: yup.string().required("La ubicación es obligatoria"),
+      // location: yup.string().required("La ubicación es obligatoria"),
       password: yup
         .string()
         .required("La contraseña es obligatoria")
@@ -164,7 +163,7 @@ export default function UserForm() {
       phone: "",
       email: "",
       birthDate: "",
-      location: "",
+      // location: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -484,14 +483,7 @@ export default function UserForm() {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
-            <TextField
-              label="Ubicación"
-              fullWidth
-              margin="normal"
-              {...register("location")}
-              error={!!errors.location}
-              helperText={errors.location?.message}
-            />
+            {/* Eliminado campo de ubicación */}
             <TextField
               label="Contraseña"
               type={showPassword ? "text" : "password"}
@@ -540,56 +532,6 @@ export default function UserForm() {
             />
           </>
         )}
-
-        {/* Pickup & return */}
-        {/* Comentado el campo de Lugar de retiro
-        <TextField
-          label="Lugar de retiro"
-          value={pickupDisplay}
-          fullWidth
-          margin="normal"
-          disabled
-          InputProps={{
-            sx: {
-              color: "#212121",
-              "& input.Mui-disabled": {
-                WebkitTextFillColor: "#212121",
-                color: "#212121",
-              },
-            },
-          }}
-          InputLabelProps={{
-            style: {
-              color: "#212121", // color del label
-            },
-          }}
-        />
-        */}
-
-        {/* Comentado el campo de Lugar de entrega
-        <TextField
-          label="Lugar de entrega"
-          fullWidth
-          margin="normal"
-          value={returnDisplay}
-          disabled
-          InputProps={{
-            sx: {
-              color: "#212121",
-              "& input.Mui-disabled": {
-                WebkitTextFillColor: "#212121",
-                color: "#212121",
-              },
-            },
-          }}
-          InputLabelProps={{
-            style: {
-              color: "#212121", // color del label
-            },
-          }}
-        />
-        */}
-
         <FormControlLabel
           control={
             <Checkbox

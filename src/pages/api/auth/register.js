@@ -7,7 +7,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Método no permitido' });
     }
 
-    const { fullName, phone, email, password, birthDate, location } = req.body;
+    const { fullName, phone, email, password, birthDate } = req.body;
 
     if (!fullName || !email || !password) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
@@ -33,7 +33,6 @@ export default async function handler(req, res) {
             email,
             password: hashedPassword,
             birthDate,
-            location,
             position: '',
             bio: '',
             profilePicture: '',
