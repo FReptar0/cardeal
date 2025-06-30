@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { Box, Card, CardMedia, CardContent, Typography, Button, useTheme } from "@mui/material";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
@@ -11,13 +12,19 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 
-export default function CarruselFlota({ onOpenModal }) {
+// Permite usar el modal de detalle si no se provee desde el padre
+const CarDetailModal = dynamic(() => import("./CarDetailModal"), { ssr: false });
+
+export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
     const theme = useTheme();
     const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(
         typeof window !== "undefined" ? window.innerWidth <= 768 : false
     );
+    // Modal local si no se provee desde el padre
+    const [modalCar, setModalCar] = useState(null);
+    const [open, setOpen] = useState(false);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -38,6 +45,16 @@ export default function CarruselFlota({ onOpenModal }) {
             }
         } else {
             router.push("/");
+        }
+    };
+
+    // Handler para abrir el modal, usa el del padre si existe
+    const handleOpenModal = (car) => {
+        if (parentOpenModal) {
+            parentOpenModal(car);
+        } else {
+            setModalCar(car);
+            setOpen(true);
         }
     };
 
@@ -108,7 +125,7 @@ export default function CarruselFlota({ onOpenModal }) {
                                             justifyContent: "center",
                                             cursor: "pointer",
                                         }}
-                                        onClick={() => onOpenModal(car)}
+                                        onClick={() => handleOpenModal(car)}
                                     >
                                         <Image
                                             src={car.image}
@@ -238,7 +255,7 @@ export default function CarruselFlota({ onOpenModal }) {
                                     }}
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        onOpenModal(car);
+                                        handleOpenModal(car);
                                     }}
                                 >
                                     Ver galería
@@ -261,6 +278,10 @@ export default function CarruselFlota({ onOpenModal }) {
                     );
                 })}
             </Swiper>
+            {/* Modal local si no se provee desde el padre */}
+            {!parentOpenModal && (
+                <CarDetailModal open={open} onClose={() => setOpen(false)} car={modalCar} />
+            )}
         </Box>
     );
 }
