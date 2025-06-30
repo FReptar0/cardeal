@@ -2,12 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Container,
-  Typography,
-  Box,
-  CircularProgress,
-} from "@mui/material";
+import { Container, Typography, Box, CircularProgress } from "@mui/material";
 import RecommendationModal from "../components/RecommendationModal";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
@@ -15,9 +10,17 @@ import carsData from "../data/cars.json";
 import dynamic from "next/dynamic";
 import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation, Autoplay } from "swiper/modules";
 
-const SearchBar = dynamic(() => import("../components/SearchBar"), { ssr: false });
-const CompactHeader = dynamic(() => import("../components/CompactHeader"), { ssr: false });
+const SearchBar = dynamic(() => import("../components/SearchBar"), {
+  ssr: false,
+});
+const CompactHeader = dynamic(() => import("../components/CompactHeader"), {
+  ssr: false,
+});
 
 // Componente Loader optimizado
 const Loader = () => {
@@ -42,7 +45,10 @@ const Loader = () => {
       }}
     >
       <CircularProgress sx={{ color: "primary.text" }} size={48} />
-      <Typography variant="h6" sx={{ color: "primary.text", fontWeight: "bold" }}>
+      <Typography
+        variant="h6"
+        sx={{ color: "primary.text", fontWeight: "bold" }}
+      >
         Cargando autos disponibles{dots}
       </Typography>
     </Box>
@@ -65,6 +71,7 @@ export default function RentalPage() {
   });
   const [tempRecommendedCar, setTempRecommendedCar] = useState(null);
   const [ratesLoaded, setRatesLoaded] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const router = useRouter();
   const scrollRefs = useRef([]);
@@ -77,7 +84,9 @@ export default function RentalPage() {
     let h = date.getHours();
     const ampm = h >= 12 ? "PM" : "AM";
     h = h % 12 || 12;
-    return `${pad(date.getMonth() + 1)}${pad(date.getDate())}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
+    return `${pad(date.getMonth() + 1)}${pad(
+      date.getDate()
+    )}${date.getFullYear()} ${pad(h)}:${pad(date.getMinutes())} ${ampm}`;
   };
 
   // Función para obtener tarifas optimizada
@@ -91,10 +100,10 @@ export default function RentalPage() {
       });
 
       const rates = await res.json();
-      
+
       // Filtrar rates únicos por categoría
       const uniqueRates = rates.reduce((acc, rate) => {
-        if (!acc.find(r => r.category === rate.category)) {
+        if (!acc.find((r) => r.category === rate.category)) {
           acc.push(rate);
         }
         return acc;
@@ -102,8 +111,11 @@ export default function RentalPage() {
 
       const filtered = uniqueRates
         .map((rate) => {
-          const carInfo = carsData.find(car => car.abbreviation === rate.category);
-          if (!carInfo || !rate.baseRate || rate.baseRate === "N/A") return null;
+          const carInfo = carsData.find(
+            (car) => car.abbreviation === rate.category
+          );
+          if (!carInfo || !rate.baseRate || rate.baseRate === "N/A")
+            return null;
 
           const base = parseFloat(rate.baseRate);
           const discount = parseFloat((base * 0.9).toFixed(2));
@@ -150,8 +162,8 @@ export default function RentalPage() {
 
     const params = {
       pickupLocationId: filters.pickupLocation?.id,
-      returnLocationId: filters.sameOffice 
-        ? filters.pickupLocation?.id 
+      returnLocationId: filters.sameOffice
+        ? filters.pickupLocation?.id
         : filters.returnLocation?.id,
       pickupDateTime: createDateTime(filters.pickupDate, filters.pickupTime),
       returnDateTime: createDateTime(filters.returnDate, filters.returnTime),
@@ -160,15 +172,12 @@ export default function RentalPage() {
     fetchRates(params);
   };
 
-
-
-
   const handleCarSelect = (car, index) => {
     setSelectedCarIndex(index);
     setSelectedCar(car);
     if (index < filteredCars.length - 1) {
       setTempRecommendedCar(filteredCars[index + 1]);
-      setModals(prev => ({ ...prev, recommendation: true }));
+      setModals((prev) => ({ ...prev, recommendation: true }));
     } else {
       router.push("/proteccion");
     }
@@ -180,7 +189,7 @@ export default function RentalPage() {
       setSelectedCarIndex(newIndex);
       setSelectedCar(filteredCars[newIndex]);
     }
-    setModals(prev => ({ ...prev, recommendation: false }));
+    setModals((prev) => ({ ...prev, recommendation: false }));
     router.push("/proteccion");
   };
 
@@ -211,7 +220,9 @@ export default function RentalPage() {
 
   useEffect(() => {
     if (selectedCar) {
-      const index = filteredCars.findIndex(car => car.name === selectedCar.name);
+      const index = filteredCars.findIndex(
+        (car) => car.name === selectedCar.name
+      );
       if (index !== -1) setSelectedCarIndex(index);
     }
   }, [selectedCar, filteredCars]);
@@ -241,11 +252,21 @@ export default function RentalPage() {
           overflow: "hidden",
           maxHeight: headerState.hideSearch ? 0 : "1000px",
           opacity: headerState.hideSearch ? 0 : 1,
-          transform: headerState.hideSearch ? "translateY(-20px)" : "translateY(0)",
+          transform: headerState.hideSearch
+            ? "translateY(-20px)"
+            : "translateY(0)",
           transition: "all 0.5s ease-in-out",
         }}
       >
-        <Box id="search-bar-container" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+        <Box
+          id="search-bar-container"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <SearchBar onSearch={handleSearch} />
         </Box>
       </Box>
@@ -257,7 +278,7 @@ export default function RentalPage() {
       />
 
       {headerState.showCompact && <Box sx={{ height: "50px" }} />}
-      
+
       <Box id="stepper-box" sx={{ width: "100%", marginTop: -12 }}>
         <RentalStepper />
       </Box>
@@ -270,7 +291,13 @@ export default function RentalPage() {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          maxWidth: { xs: "100%", sm: "100%", md: "1100px", lg: "1300px", xl: "1500px" },
+          maxWidth: {
+            xs: "100%",
+            sm: "100%",
+            md: "1100px",
+            lg: "1300px",
+            xl: "1500px",
+          },
           margin: "0 auto",
           boxSizing: "border-box",
         }}
@@ -291,64 +318,79 @@ export default function RentalPage() {
         {loadingPrices ? (
           <Loader />
         ) : filteredCars.length === 0 ? (
-          <Box id="no-cars-message" sx={{ height: "20vh", display: "flex", alignItems: "center" }}>
-            <Typography variant="h5" sx={{ color: "secondary.text", fontWeight: "bold" }}>
+          <Box
+            id="no-cars-message"
+            sx={{ height: "20vh", display: "flex", alignItems: "center" }}
+          >
+            <Typography
+              variant="h5"
+              sx={{ color: "secondary.text", fontWeight: "bold" }}
+            >
               No hay autos disponibles para tu búsqueda.
             </Typography>
           </Box>
         ) : (
           <Box
-            id="cars-grid-container"
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr", // 1 columna en móvil
-                sm: "1fr", // 1 columna en tablet pequeño
-                md: "1fr 1fr", // 2 columnas en desktop y superior
-              },
-              gap: { xs: 2, sm: 3, md: 4 },
-              width: "100%",
-              maxWidth: "100%",
-              mt: 2,
-              boxSizing: "border-box",
-              justifyItems: "center",
-            }}
+            id="cars-carousel-container"
+            sx={{ width: "100%", maxWidth: "1200px", mt: 2 }}
           >
-            {filteredCars.map((car, index) => {
-              // Centrar la última card si el número es impar y estamos en desktop (2 columnas)
-              const isLastOdd =
-                filteredCars.length % 2 === 1 &&
-                index === filteredCars.length - 1;
-              return (
-                <Box
-                  key={index}
-                  ref={(el) => (scrollRefs.current[index] = el)}
-                  onClick={() => handleCarSelect(car, index)}
-                  sx={{
-                    cursor: "pointer",
-                    width: "100%",
-                    maxWidth: { xs: "98vw", sm: "98vw", md: "500px", lg: "540px" },
-                    boxSizing: "border-box",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "stretch",
-                    gridColumn: {
-                      xs: undefined,
-                      sm: undefined,
-                      md: isLastOdd ? "1 / span 2" : undefined,
-                    },
-                    justifySelf: isLastOdd ? "center" : undefined,
-                  }}
-                  id={`car-card-box-${index}`}
-                >
-                  <CarCard
-                    car={car}
-                    price={car.price}
-                    isSelected={selectedCarIndex === index}
-                  />
-                </Box>
-              );
-            })}
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              slidesPerView={3}
+              centeredSlides
+              loop
+              spaceBetween={40}
+              navigation
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              onSwiper={(sw) => setActiveIndex(sw.realIndex)}
+              onSlideChange={(sw) => setActiveIndex(sw.realIndex)}
+              style={{
+                overflow: "visible",
+                paddingTop: "50px",
+                paddingBottom: "50px",
+              }}
+              breakpoints={{
+                0: { slidesPerView: 1, spaceBetween: 10 },
+                600: { slidesPerView: 2, spaceBetween: 20 },
+                900: { slidesPerView: 3, spaceBetween: 40 },
+              }}
+            >
+              {filteredCars.map((car, index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <SwiperSlide key={index} style={{ overflow: "visible" }}>
+                    <Box
+                      ref={(el) => (scrollRefs.current[index] = el)}
+                      onClick={() => handleCarSelect(car, index)}
+                      sx={{
+                        cursor: "pointer",
+                        width: "100%",
+                        maxWidth: {
+                          xs: "98vw",
+                          sm: "98vw",
+                          md: "500px",
+                          lg: "540px",
+                        },
+                        boxSizing: "border-box",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "stretch",
+                        transition: "transform 0.5s ease, box-shadow 0.5s ease",
+                        transform: isActive ? "scale(1.18)" : "scale(1)",
+                        zIndex: isActive ? 2 : 1,
+                      }}
+                      id={`car-card-box-${index}`}
+                    >
+                      <CarCard
+                        car={car}
+                        price={car.price}
+                        isSelected={selectedCarIndex === index}
+                      />
+                    </Box>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
           </Box>
         )}
       </Box>

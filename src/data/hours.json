@@ -1,0 +1,37 @@
+[
+  {
+    "day": "Monday",
+    "open": "08:00 AM",
+    "close": "08:00 PM"
+  },
+  {
+    "day": "Tuesday",
+    "open": "08:00 AM",
+    "close": "08:00 PM"
+  },
+  {
+    "day": "Wednesday",
+    "open": "08:00 AM",
+    "close": "08:00 PM"
+  },
+  {
+    "day": "Thursday",
+    "open": "08:00 AM",
+    "close": "08:00 PM"
+  },
+  {
+    "day": "Friday",
+    "open": "08:00 AM",
+    "close": "08:00 PM"
+  },
+  {
+    "day": "Saturday",
+    "open": "09:00 AM",
+    "close": "04:00 PM"
+  },
+  {
+    "day": "Sunday",
+    "open": "09:00 AM",
+    "close": "04:00 PM"
+  }
+]
