@@ -142,10 +142,10 @@ const categoryToFolderMap = {
   "SUV 5": "suv_5",
   "SUV 5 LX": "suv_5_lx",
   ECAR: "economico", // ecar es economico
-  SCAR: "compacto",  // scar es compacto
-  FCAR: "fullsize",  // fcar es fullsize
-  SFAR: "suv_5",     // sfar es suv 5
-  FFAR: "suv_5_lx",  // ffar es suv 5 lx
+  SCAR: "compacto", // scar es compacto
+  FCAR: "fullsize", // fcar es fullsize
+  SFAR: "suv_5", // sfar es suv 5
+  FFAR: "suv_5_lx", // ffar es suv 5 lx
 };
 
 // Ajustar la lógica para aceptar tanto nombre como código de categoría

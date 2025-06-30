@@ -220,10 +220,12 @@ export default function UserForm() {
     }
 
     // Otros cargos
-    const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
+    const otherCharges =
+      (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
 
     // Subtotal
-    const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
+    const subTotal =
+      totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
 
     // IVA
     const ivaCost = subTotal * 0.16;
@@ -236,8 +238,6 @@ export default function UserForm() {
 
     return totalWithIva.toFixed(2);
   };
-
-
 
   const onSubmit = (isOnline) => async (data) => {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
@@ -583,7 +583,9 @@ export default function UserForm() {
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
-              (tokenIsInvalid && !isValid)
+              (tokenIsInvalid && !isValid) ||
+              !watch("terms") ||
+              !watch("privacy")
             }
             sx={{
               backgroundColor: (theme) =>
@@ -594,28 +596,31 @@ export default function UserForm() {
               },
               position: "relative",
               minHeight: 64,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <span style={{ width: '100%', textAlign: 'center' }}>
-              {submitting ? "Procesando..." : "Pago en mostrador".charAt(0).toUpperCase() + "Pago en mostrador".slice(1).toLowerCase()}
+            <span style={{ width: "100%", textAlign: "center" }}>
+              {submitting
+                ? "Procesando..."
+                : "Pago en mostrador".charAt(0).toUpperCase() +
+                  "Pago en mostrador".slice(1).toLowerCase()}
             </span>
-            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
+            <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
               <Typography
                 variant="caption"
                 sx={{
                   color:
                     submitting || (tokenIsInvalid && !isValid)
-                      ? '#b0b0b0'
-                      : '#fff',
+                      ? "#b0b0b0"
+                      : "#fff",
                   fontWeight: 500,
-                  display: 'block',
+                  display: "block",
                 }}
               >
-                ({`Total: $${calculateTotal(false)}`})
+                {`Total: $${calculateTotal(false)}`}
               </Typography>
             </span>
           </Button>
@@ -627,44 +632,152 @@ export default function UserForm() {
             onClick={handleSubmit(onSubmit(true))}
             disabled={
               submittingOnline ||
-              (tokenIsInvalid && !isValid)
+              (tokenIsInvalid && !isValid) ||
+              !watch("terms") ||
+              !watch("privacy")
             }
             sx={{
               backgroundColor: (theme) =>
-                theme.palette.primary.buttons || "#b0b0b0",
+                submittingOnline || (tokenIsInvalid && !isValid)
+                  ? "rgba(16, 144, 106, 0.5)" // verde opaco
+                  : theme.palette.primary.buttons || "#10906a",
               "&:hover": {
                 backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#b0b0b0",
+                  submittingOnline || (tokenIsInvalid && !isValid)
+                    ? "rgba(16, 144, 106, 0.7)"
+                    : theme.palette.primary.buttons || "#10906a",
               },
               position: "relative",
               minHeight: 64,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
             }}
           >
-            <span style={{ width: '100%', textAlign: 'center' }}>
-              {submittingOnline ? "Redirigiendo…" : "Pago en línea".charAt(0).toUpperCase() + "Pago en línea".slice(1).toLowerCase()}
+            {/* Brillitos animados SVG en la esquina superior derecha */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 16,
+                zIndex: 2,
+                pointerEvents: "none",
+                animation: "sparkle-rotate 2.5s linear infinite",
+              }}
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 28 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g>
+                  <circle cx="14" cy="14" r="2.5" fill="#fff" fillOpacity="0.8">
+                    <animate
+                      attributeName="r"
+                      values="2.5;4;2.5"
+                      dur="1.2s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="1;0.7;1"
+                      dur="1.2s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <g>
+                    <path
+                      d="M14 4 L14 0"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="1;0.2;1"
+                        dur="1.2s"
+                        repeatCount="indefinite"
+                      />
+                    </path>
+                    <path
+                      d="M14 28 L14 24"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="1;0.2;1"
+                        dur="1.2s"
+                        repeatCount="indefinite"
+                      />
+                    </path>
+                    <path
+                      d="M4 14 L0 14"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="1;0.2;1"
+                        dur="1.2s"
+                        repeatCount="indefinite"
+                      />
+                    </path>
+                    <path
+                      d="M28 14 L24 14"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="1;0.2;1"
+                        dur="1.2s"
+                        repeatCount="indefinite"
+                      />
+                    </path>
+                  </g>
+                </g>
+              </svg>
+            </Box>
+            <span style={{ width: "100%", textAlign: "center" }}>
+              {submittingOnline
+                ? "Redirigiendo…"
+                : "Pago en línea".charAt(0).toUpperCase() +
+                  "Pago en línea".slice(1).toLowerCase()}
             </span>
-            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
+            <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
               <Typography
                 variant="caption"
                 sx={{
                   color:
                     submittingOnline || (tokenIsInvalid && !isValid)
-                      ? '#b0b0b0'
-                      : '#fff',
+                      ? "#b0b0b0"
+                      : "#fff",
                   fontWeight: 500,
-                  display: 'block',
+                  display: "block",
                 }}
               >
-                ({`Total: $${calculateTotal(true)}`})
+                {`Total: $${calculateTotal(true)}`}
               </Typography>
             </span>
           </Button>
         </Box>
       </Box>
+
+      {/* Agregar animación global para el SVG */}
+      <style>
+        {`@keyframes sparkle-rotate {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }`}
+      </style>
     </Card>
   );
 }
