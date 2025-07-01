@@ -579,9 +579,20 @@ export default function UserForm() {
             checked={guestMode}
             onChange={(_, checked) => setGuestMode(checked)}
             sx={{
-              color: (theme) => theme.palette.primary.buttons || "#10906a",
-              "&.Mui-checked": {
-                color: (theme) => theme.palette.primary.buttons || "#10906a",
+              "& .MuiSwitch-thumb": {
+                // thumb color: default (MUI)
+              },
+              "& .Mui-checked .MuiSwitch-thumb": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#10906a",
+              },
+              "& .MuiSwitch-track": {
+                // track color: default (MUI)
+              },
+              "&.Mui-checked .MuiSwitch-track": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#10906a",
+                opacity: 1,
               },
             }}
           />
@@ -683,96 +694,6 @@ export default function UserForm() {
               overflow: "hidden",
             }}
           >
-            {/* Brillitos animados SVG en la esquina superior derecha */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: 8,
-                right: 16,
-                zIndex: 2,
-                pointerEvents: "none",
-                animation: "sparkle-rotate 2.5s linear infinite",
-              }}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 28 28"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g>
-                  <circle cx="14" cy="14" r="2.5" fill="#fff" fillOpacity="0.8">
-                    <animate
-                      attributeName="r"
-                      values="2.5;4;2.5"
-                      dur="1.2s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      values="1;0.7;1"
-                      dur="1.2s"
-                      repeatCount="indefinite"
-                    />
-                  </circle>
-                  <g>
-                    <path
-                      d="M14 4 L14 0"
-                      stroke="#fff"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    >
-                      <animate
-                        attributeName="opacity"
-                        values="1;0.2;1"
-                        dur="1.2s"
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                    <path
-                      d="M14 28 L14 24"
-                      stroke="#fff"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    >
-                      <animate
-                        attributeName="opacity"
-                        values="1;0.2;1"
-                        dur="1.2s"
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                    <path
-                      d="M4 14 L0 14"
-                      stroke="#fff"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    >
-                      <animate
-                        attributeName="opacity"
-                        values="1;0.2;1"
-                        dur="1.2s"
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                    <path
-                      d="M28 14 L24 14"
-                      stroke="#fff"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    >
-                      <animate
-                        attributeName="opacity"
-                        values="1;0.2;1"
-                        dur="1.2s"
-                        repeatCount="indefinite"
-                      />
-                    </path>
-                  </g>
-                </g>
-              </svg>
-            </Box>
             <span style={{ width: "100%", textAlign: "center" }}>
               {submittingOnline
                 ? "Redirigiendo…"
@@ -797,14 +718,6 @@ export default function UserForm() {
           </Button>
         </Box>
       </Box>
-
-      {/* Agregar animación global para el SVG */}
-      <style>
-        {`@keyframes sparkle-rotate {
-          0% { transform: rotate(0deg);}
-          100% { transform: rotate(360deg);}
-        }`}
-      </style>
     </Card>
   );
 }
