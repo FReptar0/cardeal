@@ -14,19 +14,18 @@ export default async function handler(req, res) {
   // 1) Verificar método
   if (method === "GET") {
     // ————————————— GET /api/bookings/[id] —————————————
-    // Autenticación
+    // Permitir acceso sin JWT solo si la reserva es de invitado
+    let decoded = null;
+    let userId = null;
     const authHeader = headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No autorizado" });
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        decoded = jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
+        userId = decoded.userId;
+      } catch (err) {
+        return res.status(401).json({ message: "Token inválido o expirado" });
+      }
     }
-    const token = authHeader.split(" ")[1];
-    let decoded;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return res.status(401).json({ message: "Token inválido o expirado" });
-    }
-    const userId = decoded.userId;
 
     try {
       const { db } = await connectToDatabase();
@@ -36,6 +35,21 @@ export default async function handler(req, res) {
         return res.status(404).json({ message: "Reserva no encontrada" });
       }
 
+      // Si es invitado, permitir acceso sin autenticación
+      if (booking.isGuest === true) {
+        const { discount, ...rest } = booking;
+        return res.status(200).json({
+          booking: {
+            ...rest,
+            discount: discount || 0,
+          },
+        });
+      }
+
+      // Si no es invitado, requerir autenticación y permisos
+      if (!decoded) {
+        return res.status(401).json({ message: "No autorizado" });
+      }
       // Solo el dueño o admin/superadmin pueden verla
       if (
         booking.userId !== userId &&
