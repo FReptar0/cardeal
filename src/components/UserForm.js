@@ -274,7 +274,26 @@ export default function UserForm() {
         const contactEmail = data.email;
         const contactPhone = data.phone;
 
-        // 2) Crear reserva como invitado
+        // Primero registrar en TSD para obtener confirmNum
+        const tsdResponse = await registrarReservaEnTSD({
+          bookingId: null, // No hay bookingId local aún
+          contactName,
+          selectedCar,
+          selectedInsurance,
+          selectedExtras,
+          searchData,
+        });
+
+        if (!tsdResponse.success || !tsdResponse.confirmNum) {
+          toast.error(
+            "No se pudo registrar la reserva en TSD. Intenta de nuevo."
+          );
+          setSubmitting(false);
+          setSubmittingOnline(false);
+          return;
+        }
+
+        // 2) Crear reserva como invitado, incluyendo confirmNum
         const resB = await fetch("/api/bookings/createGuest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -289,6 +308,7 @@ export default function UserForm() {
             paid: false,
             paidOnline: isOnline,
             discount,
+            confirmNum: tsdResponse.confirmNum,
           }),
         });
         const jB = await resB.json();
@@ -297,33 +317,6 @@ export default function UserForm() {
           return;
         }
 
-        // No hay pago en línea para invitados, solo mostrador
-        if (!isOnline) {
-          // Registro en TSD si es pago en mostrador
-          const tsdResponse = await registrarReservaEnTSD({
-            bookingId: jB.bookingId,
-            contactName,
-            selectedCar,
-            selectedInsurance,
-            selectedExtras,
-            searchData,
-          });
-
-          if (!tsdResponse.success) {
-            toast.error(
-              "La reserva fue registrada localmente, pero falló en TSD."
-            );
-            return;
-          }
-
-          if (tsdResponse.confirmNum) {
-            await fetch(`/api/bookings/${jB.bookingId}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ confirmNum: tsdResponse.confirmNum }),
-            });
-          }
-        }
         const encryptedId = encryptId(jB.bookingId);
         router.push(`/confirm/${encryptedId}`);
         return;
