@@ -134,10 +134,9 @@ const BusinessRegistrationForm = () => {
                                 <Typography 
                                     variant="h6" 
                                     sx={{ 
-                                        opacity: 0.9,
                                         fontSize: { md: '1.1rem', lg: '1.2rem' }, 
                                         lineHeight: 1.6,
-                                        fontWeight: 300
+                                        fontWeight: 400
                                     }}
                                 >
                                     Queremos escuchar sus necesidades y trabajar juntos para diseñar soluciones, propuestas operativas y financieras que realmente se adapten a su empresa.
@@ -185,7 +184,7 @@ const BusinessRegistrationForm = () => {
                                     sx={{ 
                                         mb: 4, 
                                         fontWeight: 600, 
-                                        color: 'text.primary',
+                                        color: theme => theme.palette.primary.main,
                                         textAlign: { xs: 'center', md: 'left' }
                                     }}
                                 >
