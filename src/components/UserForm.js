@@ -540,18 +540,19 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
-            <TextField
-              label="Fecha de nacimiento"
-              type="date"
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-              {...register("birthDate")}
-              error={!!errors.birthDate}
-              helperText={errors.birthDate?.message}
-            />
+            {/* Solo mostrar fecha de nacimiento y contraseñas si NO es invitado */}
             {!guestMode && (
               <>
+                <TextField
+                  label="Fecha de nacimiento"
+                  type="date"
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                  {...register("birthDate")}
+                  error={!!errors.birthDate}
+                  helperText={errors.birthDate?.message}
+                />
                 <TextField
                   label="Contraseña"
                   type={showPassword ? "text" : "password"}
@@ -688,9 +689,11 @@ export default function UserForm() {
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
-              (tokenIsInvalid && !isValid) ||
-              !watch("terms") ||
-              !watch("privacy")
+              // Si es invitado, solo validar campos mínimos
+              (guestMode
+                ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("terms") || !watch("privacy")
+                : (tokenIsInvalid && !isValid) || !watch("terms") || !watch("privacy")
+              )
             }
             sx={{
               backgroundColor: (theme) =>
@@ -718,7 +721,11 @@ export default function UserForm() {
                 variant="caption"
                 sx={{
                   color:
-                    submitting || (tokenIsInvalid && !isValid)
+                    submitting ||
+                    (guestMode
+                      ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("terms") || !watch("privacy")
+                      : (tokenIsInvalid && !isValid)
+                    )
                       ? "#b0b0b0"
                       : "#fff",
                   fontWeight: 500,
