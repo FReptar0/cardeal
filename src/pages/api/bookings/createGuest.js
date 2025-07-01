@@ -1,6 +1,8 @@
 // /pages/api/bookings/createGuest.js
 import { connectToDatabase } from "@/utils/mongodb";
 import { generateUuid } from "@/utils/uuid";
+import { sendEmail } from "@/utils/sendEmail";
+import { encryptId } from "@/utils/encryption";
 
 const IVA_RATE = 0.16;
 
@@ -137,6 +139,20 @@ export default async function handler(req, res) {
         };
 
         await db.collection("bookings").insertOne(newBooking);
+
+        // Enviar email de información de reserva al invitado
+        try {
+            const encryptedId = encryptId(newBooking._id.toString());
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.qardeal.com.mx';
+            const url = `${baseUrl}/confirm/${encryptedId}`;
+            await sendEmail({
+                to: contactEmail,
+                templateId: 'reservation-info',
+                data: { url },
+            });
+        } catch (err) {
+            console.error("Error enviando email de reserva al invitado:", err);
+        }
 
         // Devolver al frontend todos los totales para mostrar
         return res.status(201).json({
