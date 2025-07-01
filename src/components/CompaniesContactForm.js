@@ -99,11 +99,14 @@ const BusinessRegistrationForm = () => {
                             md={6} 
                             sx={{ 
                                 display: { xs: 'none', md: 'flex' },
-                                bgcolor: 'primary.main',
                                 color: 'white',
                                 p: { md: 6, lg: 8 },
                                 alignItems: 'center',
                                 position: 'relative',
+                                backgroundImage: 'url(/photos/suv-standard/Kicks-faro-izq.webp)',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
                                 '&::before': {
                                     content: '""',
                                     position: 'absolute',
@@ -111,7 +114,7 @@ const BusinessRegistrationForm = () => {
                                     left: 0,
                                     right: 0,
                                     bottom: 0,
-                                    background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)',
+                                    background: 'linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
                                     zIndex: 1
                                 }
                             }}
@@ -137,7 +140,7 @@ const BusinessRegistrationForm = () => {
                                         fontWeight: 300
                                     }}
                                 >
-                                    Conectamos con tu empresa para ofrecerte las mejores soluciones tecnológicas adaptadas a tus necesidades específicas.
+                                    Queremos escuchar sus necesidades y trabajar juntos para diseñar soluciones, propuestas operativas y financieras que realmente se adapten a su empresa.
                                 </Typography>
                             </Box>
                         </Grid>
