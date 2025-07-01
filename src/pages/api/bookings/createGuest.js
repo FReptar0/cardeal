@@ -27,7 +27,8 @@ export default async function handler(req, res) {
         paidOnline,   // boolean
         discount = 0, // número
         otherCharges = 0,     // cargo mostrador
-        otherChargesOnline = 0 // cargo en línea
+        otherChargesOnline = 0, // cargo en línea
+        tsdConfirmNum
     } = req.body;
 
     // Validación básica
@@ -130,6 +131,7 @@ export default async function handler(req, res) {
             totalAmount,                     // importe neto con IVA
             status: paidOnline ? "PENDING" : "OFFLINE",
             discount: Number(discount),
+            tsdConfirmNum,
             createdAt: new Date(),
             updatedAt: new Date(),
         };

@@ -308,7 +308,7 @@ export default function UserForm() {
             paid: false,
             paidOnline: isOnline,
             discount,
-            confirmNum: tsdResponse.confirmNum,
+            tsdConfirmNum: tsdResponse.confirmNum,
           }),
         });
         const jB = await resB.json();
