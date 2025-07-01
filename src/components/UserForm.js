@@ -243,9 +243,73 @@ export default function UserForm() {
   };
 
   const onSubmit = (isOnline) => async (data) => {
+
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
 
     try {
+      // Lógica para invitado (guestMode)
+      if (guestMode) {
+        // 1) Datos de contacto directo del formulario
+        const contactName = data.fullName;
+        const contactEmail = data.email;
+        const contactPhone = data.phone;
+
+        // 2) Crear reserva como invitado
+        const resB = await fetch("/api/bookings/createGuest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            selectedCar,
+            selectedInsurance,
+            selectedExtras,
+            searchData,
+            contactName,
+            contactEmail,
+            contactPhone,
+            paid: false,
+            paidOnline: isOnline,
+            discount,
+          }),
+        });
+        const jB = await resB.json();
+        if (!resB.ok) {
+          toast.error(jB.message || "Error al crear la pre-reserva");
+          return;
+        }
+
+        // No hay pago en línea para invitados, solo mostrador
+        if (!isOnline) {
+          // Registro en TSD si es pago en mostrador
+          const tsdResponse = await registrarReservaEnTSD({
+            bookingId: jB.bookingId,
+            contactName,
+            selectedCar,
+            selectedInsurance,
+            selectedExtras,
+            searchData,
+          });
+
+          if (!tsdResponse.success) {
+            toast.error(
+              "La reserva fue registrada localmente, pero falló en TSD."
+            );
+            return;
+          }
+
+          if (tsdResponse.confirmNum) {
+            await fetch(`/api/bookings/${jB.bookingId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ confirmNum: tsdResponse.confirmNum }),
+            });
+          }
+        }
+        const encryptedId = encryptId(jB.bookingId);
+        router.push(`/confirm/${encryptedId}`);
+        return;
+      }
+
+      // Lógica normal (usuario registrado o registro nuevo)
       // 1) Registro / login si falta
       let token = jwt;
       let justRegistered = false;
@@ -486,53 +550,56 @@ export default function UserForm() {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
-            {/* Eliminado campo de ubicación */}
-            <TextField
-              label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              {...register("password")}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((p) => !p)}>
-                      {showPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Confirmar contraseña"
-              type={showConfirmPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              {...register("confirmPassword")}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((p) => !p)}
-                    >
-                      {showConfirmPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            {!guestMode && (
+              <>
+                <TextField
+                  label="Contraseña"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  margin="normal"
+                  {...register("password")}
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword((p) => !p)}>
+                          {showPassword ? (
+                            <VisibilityOffOutlined />
+                          ) : (
+                            <VisibilityOutlined />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  label="Confirmar contraseña"
+                  type={showConfirmPassword ? "text" : "password"}
+                  fullWidth
+                  margin="normal"
+                  {...register("confirmPassword")}
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword((p) => !p)}
+                        >
+                          {showConfirmPassword ? (
+                            <VisibilityOffOutlined />
+                          ) : (
+                            <VisibilityOutlined />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </>
+            )}
           </>
         )}
         <FormControlLabel
@@ -663,59 +730,61 @@ export default function UserForm() {
             </span>
           </Button>
 
-          <Button
-            fullWidth
-            variant="contained"
-            color="success"
-            onClick={handleSubmit(onSubmit(true))}
-            disabled={
-              submittingOnline ||
-              (tokenIsInvalid && !isValid) ||
-              !watch("terms") ||
-              !watch("privacy")
-            }
-            sx={{
-              backgroundColor: (theme) =>
-                submittingOnline || (tokenIsInvalid && !isValid)
-                  ? "rgba(16, 144, 106, 0.5)" // verde opaco
-                  : theme.palette.primary.buttons || "#10906a",
-              "&:hover": {
+          {!guestMode && (
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              onClick={handleSubmit(onSubmit(true))}
+              disabled={
+                submittingOnline ||
+                (tokenIsInvalid && !isValid) ||
+                !watch("terms") ||
+                !watch("privacy")
+              }
+              sx={{
                 backgroundColor: (theme) =>
                   submittingOnline || (tokenIsInvalid && !isValid)
-                    ? "rgba(16, 144, 106, 0.7)"
+                    ? "rgba(16, 144, 106, 0.5)" // verde opaco
                     : theme.palette.primary.buttons || "#10906a",
-              },
-              position: "relative",
-              minHeight: 64,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-            }}
-          >
-            <span style={{ width: "100%", textAlign: "center" }}>
-              {submittingOnline
-                ? "Redirigiendo…"
-                : "Pago en línea".charAt(0).toUpperCase() +
-                  "Pago en línea".slice(1).toLowerCase()}
-            </span>
-            <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color:
+                "&:hover": {
+                  backgroundColor: (theme) =>
                     submittingOnline || (tokenIsInvalid && !isValid)
-                      ? "#b0b0b0"
-                      : "#fff",
-                  fontWeight: 500,
-                  display: "block",
-                }}
-              >
-                {`Total: $${calculateTotal(true)}`}
-              </Typography>
-            </span>
-          </Button>
+                      ? "rgba(16, 144, 106, 0.7)"
+                      : theme.palette.primary.buttons || "#10906a",
+                },
+                position: "relative",
+                minHeight: 64,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              <span style={{ width: "100%", textAlign: "center" }}>
+                {submittingOnline
+                  ? "Redirigiendo…"
+                  : "Pago en línea".charAt(0).toUpperCase() +
+                    "Pago en línea".slice(1).toLowerCase()}
+              </span>
+              <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color:
+                      submittingOnline || (tokenIsInvalid && !isValid)
+                        ? "#b0b0b0"
+                        : "#fff",
+                    fontWeight: 500,
+                    display: "block",
+                  }}
+                >
+                  {`Total: $${calculateTotal(true)}`}
+                </Typography>
+              </span>
+            </Button>
+          )}
         </Box>
       </Box>
     </Card>
