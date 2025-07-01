@@ -125,6 +125,10 @@ export default function UserForm() {
           .string()
           .email("Correo inválido")
           .required("El correo es obligatorio"),
+        confirmEmail: yup
+          .string()
+          .oneOf([yup.ref("email"), null], "Los correos no coinciden")
+          .required("Confirma el correo electrónico"),
         birthDate: yup
           .date()
           .required("La fecha de nacimiento es obligatoria")
@@ -180,11 +184,14 @@ export default function UserForm() {
     reset,
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "all", // Validación en tiempo real para todos los campos
+    reValidateMode: "onChange", // Revalida en cada cambio
+    criteriaMode: "all", // Muestra todos los errores posibles
     defaultValues: {
       fullName: "",
       phone: "",
       email: "",
+      confirmEmail: "",
       birthDate: "",
       // location: "",
       password: "",
@@ -518,6 +525,7 @@ export default function UserForm() {
             <Controller
               name="phone"
               control={control}
+              rules={{ required: true }}
               render={({ field }) => (
                 <Box sx={{ width: "100%", mt: 1 }}>
                   <PhoneInput
@@ -535,9 +543,11 @@ export default function UserForm() {
                       }`,
                     }}
                     buttonStyle={{ border: "none", background: "transparent" }}
+                    onBlur={field.onBlur}
+                    onChange={(value) => field.onChange(value)}
                   />
                   {errors.phone && (
-                    <Typography variant="caption" color="error">
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
                       {errors.phone.message}
                     </Typography>
                   )}
@@ -553,6 +563,17 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
+            {guestMode && (
+              <TextField
+                label="Confirmar correo electrónico"
+                type="email"
+                fullWidth
+                margin="normal"
+                {...register("confirmEmail")}
+                error={!!errors.confirmEmail}
+                helperText={errors.confirmEmail?.message}
+              />
+            )}
             {/* Fecha de nacimiento siempre visible, contraseñas solo si NO es invitado */}
             <TextField
               label="Fecha de nacimiento"
