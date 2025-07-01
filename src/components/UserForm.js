@@ -19,6 +19,7 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
+  Switch,
 } from "@mui/material";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
@@ -100,6 +101,8 @@ export default function UserForm() {
   const [submittingOnline, setSubmittingOnline] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // Estado para el switch de invitado
+  const [guestMode, setGuestMode] = useState(false);
 
   const isJwtExpired = (token) => {
     try {
@@ -568,6 +571,30 @@ export default function UserForm() {
             </Link>
           }
         />
+
+        {/* Switch para continuar como invitado */}
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 1 }}>
+          <Switch
+            color="success"
+            checked={guestMode}
+            onChange={(_, checked) => setGuestMode(checked)}
+            sx={{
+              color: (theme) => theme.palette.primary.buttons || "#10906a",
+              "&.Mui-checked": {
+                color: (theme) => theme.palette.primary.buttons || "#10906a",
+              },
+            }}
+          />
+          <Typography
+            sx={{
+              ml: 1,
+              color: (theme) => theme.palette.primary.buttons || "#10906a",
+              fontWeight: 600,
+            }}
+          >
+            Continuar como invitado
+          </Typography>
+        </Box>
 
         <Box
           sx={{
