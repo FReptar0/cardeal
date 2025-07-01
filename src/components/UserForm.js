@@ -115,41 +115,61 @@ export default function UserForm() {
 
   const tokenIsInvalid = !jwt || isJwtExpired(jwt);
 
-  // Schema de validación
-  const schema = yup.object().shape({
-    terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup
-      .boolean()
-      .oneOf([true], "Debes aceptar la política de privacidad"),
-    ...(tokenIsInvalid && {
-      fullName: yup.string().required("El nombre completo es obligatorio"),
-      phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup
-        .string()
-        .email("Correo inválido")
-        .required("El correo es obligatorio"),
-      birthDate: yup
-        .date()
-        .required("La fecha de nacimiento es obligatoria")
-        .test(
-          "is-adult",
-          "Debes tener al menos 18 años",
-          (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
-        ),
-      // location: yup.string().required("La ubicación es obligatoria"),
-      password: yup
-        .string()
-        .required("La contraseña es obligatoria")
-        .min(8, "Debe contener al menos 8 caracteres")
-        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
-        .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
-        .matches(/\d/, "Debe contener al menos un número"),
-      confirmPassword: yup
-        .string()
-        .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
-        .required("Confirma la contraseña"),
-    }),
-  });
+  // Esquema de validación dinámico según modo invitado
+  const schema = React.useMemo(() => {
+    if (guestMode) {
+      return yup.object().shape({
+        fullName: yup.string().required("El nombre completo es obligatorio"),
+        phone: yup.string().required("El teléfono es obligatorio"),
+        email: yup
+          .string()
+          .email("Correo inválido")
+          .required("El correo es obligatorio"),
+        birthDate: yup
+          .date()
+          .required("La fecha de nacimiento es obligatoria")
+          .test(
+            "is-adult",
+            "Debes tener al menos 18 años",
+            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+          ),
+        terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
+        privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+      });
+    }
+    // Usuario registrado o registro nuevo
+    return yup.object().shape({
+      terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
+      privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+      ...(tokenIsInvalid && {
+        fullName: yup.string().required("El nombre completo es obligatorio"),
+        phone: yup.string().required("El teléfono es obligatorio"),
+        email: yup
+          .string()
+          .email("Correo inválido")
+          .required("El correo es obligatorio"),
+        birthDate: yup
+          .date()
+          .required("La fecha de nacimiento es obligatoria")
+          .test(
+            "is-adult",
+            "Debes tener al menos 18 años",
+            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+          ),
+        password: yup
+          .string()
+          .required("La contraseña es obligatoria")
+          .min(8, "Debe contener al menos 8 caracteres")
+          .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
+          .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
+          .matches(/\d/, "Debe contener al menos un número"),
+        confirmPassword: yup
+          .string()
+          .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
+          .required("Confirma la contraseña"),
+      }),
+    });
+  }, [guestMode, tokenIsInvalid]);
 
   const {
     register,
@@ -540,19 +560,19 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
-            {/* Solo mostrar fecha de nacimiento y contraseñas si NO es invitado */}
+            {/* Fecha de nacimiento siempre visible, contraseñas solo si NO es invitado */}
+            <TextField
+              label="Fecha de nacimiento"
+              type="date"
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              {...register("birthDate")}
+              error={!!errors.birthDate}
+              helperText={errors.birthDate?.message}
+            />
             {!guestMode && (
               <>
-                <TextField
-                  label="Fecha de nacimiento"
-                  type="date"
-                  fullWidth
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
-                  {...register("birthDate")}
-                  error={!!errors.birthDate}
-                  helperText={errors.birthDate?.message}
-                />
                 <TextField
                   label="Contraseña"
                   type={showPassword ? "text" : "password"}
@@ -691,7 +711,7 @@ export default function UserForm() {
               submitting ||
               // Si es invitado, solo validar campos mínimos
               (guestMode
-                ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("terms") || !watch("privacy")
+                ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
                 : (tokenIsInvalid && !isValid) || !watch("terms") || !watch("privacy")
               )
             }
@@ -723,7 +743,7 @@ export default function UserForm() {
                   color:
                     submitting ||
                     (guestMode
-                      ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("terms") || !watch("privacy")
+                      ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
                       : (tokenIsInvalid && !isValid)
                     )
                       ? "#b0b0b0"
