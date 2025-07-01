@@ -54,19 +54,36 @@ export default function BookingConfirmation() {
   }, []);
 
   useEffect(() => {
-    if (!id || !jwt) return;
-    setLoading(true); // Asegurarse de que el skeleton se muestre inmediatamente
+    if (!id) return;
+    setLoading(true);
 
-    fetch(`/api/bookings/${id}`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("No autorizado");
-        return res.json();
-      })
-      .then((data) => setBooking(data.booking))
-      .catch(() => router.replace("/login"))
-      .finally(() => setTimeout(() => setLoading(false), 2000));
+    // Si hay JWT, buscar como usuario normal; si no, buscar como invitado
+    const fetchBooking = async () => {
+      let res;
+      if (jwt) {
+        res = await fetch(`/api/bookings/${id}`, {
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
+      } else {
+        // Intentar obtener la reserva sin JWT (para invitados)
+        res = await fetch(`/api/bookings/${id}`);
+      }
+      if (!res.ok) {
+        router.replace("/login");
+        return;
+      }
+      const data = await res.json();
+      // Si la reserva es de invitado, permitir mostrarla; si no, redirigir si no hay JWT
+      if (data.booking.isGuest === true) {
+        setBooking(data.booking);
+      } else if (!jwt) {
+        router.replace("/login");
+      } else {
+        setBooking(data.booking);
+      }
+      setTimeout(() => setLoading(false), 2000);
+    };
+    fetchBooking();
   }, [id, jwt, router]);
 
   if (loading) {

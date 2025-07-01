@@ -44,13 +44,32 @@ export default function DateTimeSelector({
   // Obtener el día de la semana en inglés para buscar en hours.json
   const weekDay = date.toLocaleDateString("en-US", { weekday: "long" });
   const hoursForDay = hoursData.find((h) => h.day === weekDay);
-  const timeSlots = hoursForDay
+  let timeSlots = hoursForDay
     ? generateTimeSlots(
         to24Hour(hoursForDay.open),
         to24Hour(hoursForDay.close),
         false
       )
     : [];
+
+  // Filtrar horarios pasados y aplicar filtro de 2 horas si es hoy
+  if (isToday && timeSlots.length > 0) {
+    const now = new Date();
+    // Sumar 2 horas y redondear al siguiente múltiplo de 30 minutos
+    let minHour = now.getHours() + 2;
+    let minMinute = now.getMinutes();
+    if (minMinute > 0 && minMinute <= 30) {
+      minMinute = 30;
+    } else if (minMinute > 30) {
+      minHour += 1;
+      minMinute = 0;
+    }
+    const minTime = `${String(minHour).padStart(2, "0")}:${
+      minMinute === 0 ? "00" : "30"
+    }`;
+    // Filtrar los timeSlots que sean mayores o iguales al minTime
+    timeSlots = timeSlots.filter((slot) => slot >= minTime);
+  }
 
   // Utilidad para convertir "08:00 AM" a "08:00" y "08:00 PM" a "20:00"
   function to24Hour(time12h) {

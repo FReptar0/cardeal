@@ -1,5 +1,6 @@
 import verificationTemplate from './templates/verification';
 import resetPasswordTemplate from './templates/resetPassword';
+import reservationInfoTemplate from './templates/reservationInfo';
 
 const templates = {
     "verify-account": {
@@ -9,6 +10,10 @@ const templates = {
     "reset-password": {
         subject: 'Solicitud de restablecimiento de contraseña',
         templateFn: resetPasswordTemplate,
+    },
+    "reservation-info": {
+        subject: 'Información de tu reserva',
+        templateFn: reservationInfoTemplate,
     },
 };
 
@@ -34,10 +39,11 @@ function validateData(data) {
     if (!data || typeof data !== 'object') {
         throw new Error('Los datos deben ser un objeto');
     }
-    if (!data.name || typeof data.name !== 'string' || !data.name.trim()) {
+    // Validación flexible según plantilla
+    if (data.name !== undefined && (typeof data.name !== 'string' || !data.name.trim())) {
         throw new Error('El nombre es obligatorio y debe ser una cadena no vacía');
     }
-    if (!data.url || typeof data.url !== 'string' || !data.url.trim()) {
+    if (data.url !== undefined && (typeof data.url !== 'string' || !data.url.trim())) {
         throw new Error('El enlace es obligatorio y debe ser una cadena no vacía');
     }
 }

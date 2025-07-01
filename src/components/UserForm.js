@@ -19,6 +19,7 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
+  Switch,
 } from "@mui/material";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
@@ -100,6 +101,8 @@ export default function UserForm() {
   const [submittingOnline, setSubmittingOnline] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // Estado para el switch de invitado
+  const [guestMode, setGuestMode] = useState(false);
 
   const isJwtExpired = (token) => {
     try {
@@ -112,41 +115,65 @@ export default function UserForm() {
 
   const tokenIsInvalid = !jwt || isJwtExpired(jwt);
 
-  // Schema de validación
-  const schema = yup.object().shape({
-    terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-    privacy: yup
-      .boolean()
-      .oneOf([true], "Debes aceptar la política de privacidad"),
-    ...(tokenIsInvalid && {
-      fullName: yup.string().required("El nombre completo es obligatorio"),
-      phone: yup.string().required("El teléfono es obligatorio"),
-      email: yup
-        .string()
-        .email("Correo inválido")
-        .required("El correo es obligatorio"),
-      birthDate: yup
-        .date()
-        .required("La fecha de nacimiento es obligatoria")
-        .test(
-          "is-adult",
-          "Debes tener al menos 18 años",
-          (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
-        ),
-      // location: yup.string().required("La ubicación es obligatoria"),
-      password: yup
-        .string()
-        .required("La contraseña es obligatoria")
-        .min(8, "Debe contener al menos 8 caracteres")
-        .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
-        .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
-        .matches(/\d/, "Debe contener al menos un número"),
-      confirmPassword: yup
-        .string()
-        .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
-        .required("Confirma la contraseña"),
-    }),
-  });
+  // Esquema de validación dinámico según modo invitado
+  const schema = React.useMemo(() => {
+    if (guestMode) {
+      return yup.object().shape({
+        fullName: yup.string().required("El nombre completo es obligatorio"),
+        phone: yup.string().required("El teléfono es obligatorio"),
+        email: yup
+          .string()
+          .email("Correo inválido")
+          .required("El correo es obligatorio"),
+        confirmEmail: yup
+          .string()
+          .oneOf([yup.ref("email"), null], "Los correos no coinciden")
+          .required("Confirma el correo electrónico"),
+        birthDate: yup
+          .date()
+          .required("La fecha de nacimiento es obligatoria")
+          .test(
+            "is-adult",
+            "Debes tener al menos 18 años",
+            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+          ),
+        terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
+        privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+      });
+    }
+    // Usuario registrado o registro nuevo
+    return yup.object().shape({
+      terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
+      privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+      ...(tokenIsInvalid && {
+        fullName: yup.string().required("El nombre completo es obligatorio"),
+        phone: yup.string().required("El teléfono es obligatorio"),
+        email: yup
+          .string()
+          .email("Correo inválido")
+          .required("El correo es obligatorio"),
+        birthDate: yup
+          .date()
+          .required("La fecha de nacimiento es obligatoria")
+          .test(
+            "is-adult",
+            "Debes tener al menos 18 años",
+            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+          ),
+        password: yup
+          .string()
+          .required("La contraseña es obligatoria")
+          .min(8, "Debe contener al menos 8 caracteres")
+          .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
+          .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
+          .matches(/\d/, "Debe contener al menos un número"),
+        confirmPassword: yup
+          .string()
+          .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
+          .required("Confirma la contraseña"),
+      }),
+    });
+  }, [guestMode, tokenIsInvalid]);
 
   const {
     register,
@@ -157,11 +184,14 @@ export default function UserForm() {
     reset,
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "all", // Validación en tiempo real para todos los campos
+    reValidateMode: "onChange", // Revalida en cada cambio
+    criteriaMode: "all", // Muestra todos los errores posibles
     defaultValues: {
       fullName: "",
       phone: "",
       email: "",
+      confirmEmail: "",
       birthDate: "",
       // location: "",
       password: "",
@@ -220,10 +250,12 @@ export default function UserForm() {
     }
 
     // Otros cargos
-    const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
+    const otherCharges =
+      (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
 
     // Subtotal
-    const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
+    const subTotal =
+      totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
 
     // IVA
     const ivaCost = subTotal * 0.16;
@@ -237,12 +269,67 @@ export default function UserForm() {
     return totalWithIva.toFixed(2);
   };
 
-
-
   const onSubmit = (isOnline) => async (data) => {
+
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
 
     try {
+      // Lógica para invitado (guestMode)
+      if (guestMode) {
+        // 1) Datos de contacto directo del formulario
+        const contactName = data.fullName;
+        const contactEmail = data.email;
+        const contactPhone = data.phone;
+
+        // Primero registrar en TSD para obtener confirmNum
+        const tsdResponse = await registrarReservaEnTSD({
+          bookingId: null, // No hay bookingId local aún
+          contactName,
+          selectedCar,
+          selectedInsurance,
+          selectedExtras,
+          searchData,
+        });
+
+        if (!tsdResponse.success || !tsdResponse.confirmNum) {
+          toast.error(
+            "No se pudo registrar la reserva en TSD. Intenta de nuevo."
+          );
+          setSubmitting(false);
+          setSubmittingOnline(false);
+          return;
+        }
+
+        // 2) Crear reserva como invitado, incluyendo confirmNum
+        const resB = await fetch("/api/bookings/createGuest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            selectedCar,
+            selectedInsurance,
+            selectedExtras,
+            searchData,
+            contactName,
+            contactEmail,
+            contactPhone,
+            paid: false,
+            paidOnline: isOnline,
+            discount,
+            tsdConfirmNum: tsdResponse.confirmNum,
+          }),
+        });
+        const jB = await resB.json();
+        if (!resB.ok) {
+          toast.error(jB.message || "Error al crear la pre-reserva");
+          return;
+        }
+
+        const encryptedId = encryptId(jB.bookingId);
+        router.push(`/confirm/${encryptedId}`);
+        return;
+      }
+
+      // Lógica normal (usuario registrado o registro nuevo)
       // 1) Registro / login si falta
       let token = jwt;
       let justRegistered = false;
@@ -438,6 +525,7 @@ export default function UserForm() {
             <Controller
               name="phone"
               control={control}
+              rules={{ required: true }}
               render={({ field }) => (
                 <Box sx={{ width: "100%", mt: 1 }}>
                   <PhoneInput
@@ -455,9 +543,11 @@ export default function UserForm() {
                       }`,
                     }}
                     buttonStyle={{ border: "none", background: "transparent" }}
+                    onBlur={field.onBlur}
+                    onChange={(value) => field.onChange(value)}
                   />
                   {errors.phone && (
-                    <Typography variant="caption" color="error">
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
                       {errors.phone.message}
                     </Typography>
                   )}
@@ -473,6 +563,18 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
+            {guestMode && (
+              <TextField
+                label="Confirmar correo electrónico"
+                type="email"
+                fullWidth
+                margin="normal"
+                {...register("confirmEmail")}
+                error={!!errors.confirmEmail}
+                helperText={errors.confirmEmail?.message}
+              />
+            )}
+            {/* Fecha de nacimiento siempre visible, contraseñas solo si NO es invitado */}
             <TextField
               label="Fecha de nacimiento"
               type="date"
@@ -483,53 +585,56 @@ export default function UserForm() {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
-            {/* Eliminado campo de ubicación */}
-            <TextField
-              label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              {...register("password")}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((p) => !p)}>
-                      {showPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Confirmar contraseña"
-              type={showConfirmPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              {...register("confirmPassword")}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((p) => !p)}
-                    >
-                      {showConfirmPassword ? (
-                        <VisibilityOffOutlined />
-                      ) : (
-                        <VisibilityOutlined />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            {!guestMode && (
+              <>
+                <TextField
+                  label="Contraseña"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  margin="normal"
+                  {...register("password")}
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword((p) => !p)}>
+                          {showPassword ? (
+                            <VisibilityOffOutlined />
+                          ) : (
+                            <VisibilityOutlined />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  label="Confirmar contraseña"
+                  type={showConfirmPassword ? "text" : "password"}
+                  fullWidth
+                  margin="normal"
+                  {...register("confirmPassword")}
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword?.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword((p) => !p)}
+                        >
+                          {showConfirmPassword ? (
+                            <VisibilityOffOutlined />
+                          ) : (
+                            <VisibilityOutlined />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </>
+            )}
           </>
         )}
         <FormControlLabel
@@ -569,6 +674,41 @@ export default function UserForm() {
           }
         />
 
+        {/* Switch para continuar como invitado */}
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 1 }}>
+          <Switch
+            color="success"
+            checked={guestMode}
+            onChange={(_, checked) => setGuestMode(checked)}
+            sx={{
+              "& .MuiSwitch-thumb": {
+                // thumb color: default (MUI)
+              },
+              "& .Mui-checked .MuiSwitch-thumb": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#10906a",
+              },
+              "& .MuiSwitch-track": {
+                // track color: default (MUI)
+              },
+              "&.Mui-checked .MuiSwitch-track": {
+                backgroundColor: (theme) =>
+                  theme.palette.primary.buttons || "#10906a",
+                opacity: 1,
+              },
+            }}
+          />
+          <Typography
+            sx={{
+              ml: 1,
+              color: (theme) => theme.palette.primary.buttons || "#10906a",
+              fontWeight: 600,
+            }}
+          >
+            Continuar como invitado
+          </Typography>
+        </Box>
+
         <Box
           sx={{
             display: "flex",
@@ -583,7 +723,11 @@ export default function UserForm() {
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
-              (tokenIsInvalid && !isValid)
+              // Si es invitado, solo validar campos mínimos
+              (guestMode
+                ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
+                : (tokenIsInvalid && !isValid) || !watch("terms") || !watch("privacy")
+              )
             }
             sx={{
               backgroundColor: (theme) =>
@@ -594,75 +738,94 @@ export default function UserForm() {
               },
               position: "relative",
               minHeight: 64,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <span style={{ width: '100%', textAlign: 'center' }}>
-              {submitting ? "Procesando..." : "Pago en mostrador".charAt(0).toUpperCase() + "Pago en mostrador".slice(1).toLowerCase()}
+            <span style={{ width: "100%", textAlign: "center" }}>
+              {submitting
+                ? "Procesando..."
+                : "Pago en mostrador".charAt(0).toUpperCase() +
+                  "Pago en mostrador".slice(1).toLowerCase()}
             </span>
-            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
+            <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
               <Typography
                 variant="caption"
                 sx={{
                   color:
-                    submitting || (tokenIsInvalid && !isValid)
-                      ? '#b0b0b0'
-                      : '#fff',
+                    submitting ||
+                    (guestMode
+                      ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
+                      : (tokenIsInvalid && !isValid)
+                    )
+                      ? "#b0b0b0"
+                      : "#fff",
                   fontWeight: 500,
-                  display: 'block',
+                  display: "block",
                 }}
               >
-                ({`Total: $${calculateTotal(false)}`})
+                {`Total: $${calculateTotal(false)}`}
               </Typography>
             </span>
           </Button>
 
-          <Button
-            fullWidth
-            variant="contained"
-            color="success"
-            onClick={handleSubmit(onSubmit(true))}
-            disabled={
-              submittingOnline ||
-              (tokenIsInvalid && !isValid)
-            }
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.primary.buttons || "#b0b0b0",
-              "&:hover": {
+          {!guestMode && (
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              onClick={handleSubmit(onSubmit(true))}
+              disabled={
+                submittingOnline ||
+                (tokenIsInvalid && !isValid) ||
+                !watch("terms") ||
+                !watch("privacy")
+              }
+              sx={{
                 backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#b0b0b0",
-              },
-              position: "relative",
-              minHeight: 64,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ width: '100%', textAlign: 'center' }}>
-              {submittingOnline ? "Redirigiendo…" : "Pago en línea".charAt(0).toUpperCase() + "Pago en línea".slice(1).toLowerCase()}
-            </span>
-            <span style={{ width: '100%', textAlign: 'center', marginTop: 4 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color:
+                  submittingOnline || (tokenIsInvalid && !isValid)
+                    ? "rgba(16, 144, 106, 0.5)" // verde opaco
+                    : theme.palette.primary.buttons || "#10906a",
+                "&:hover": {
+                  backgroundColor: (theme) =>
                     submittingOnline || (tokenIsInvalid && !isValid)
-                      ? '#b0b0b0'
-                      : '#fff',
-                  fontWeight: 500,
-                  display: 'block',
-                }}
-              >
-                ({`Total: $${calculateTotal(true)}`})
-              </Typography>
-            </span>
-          </Button>
+                      ? "rgba(16, 144, 106, 0.7)"
+                      : theme.palette.primary.buttons || "#10906a",
+                },
+                position: "relative",
+                minHeight: 64,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              <span style={{ width: "100%", textAlign: "center" }}>
+                {submittingOnline
+                  ? "Redirigiendo…"
+                  : "Pago en línea".charAt(0).toUpperCase() +
+                    "Pago en línea".slice(1).toLowerCase()}
+              </span>
+              <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color:
+                      submittingOnline || (tokenIsInvalid && !isValid)
+                        ? "#b0b0b0"
+                        : "#fff",
+                    fontWeight: 500,
+                    display: "block",
+                  }}
+                >
+                  {`Total: $${calculateTotal(true)}`}
+                </Typography>
+              </span>
+            </Button>
+          )}
         </Box>
       </Box>
     </Card>

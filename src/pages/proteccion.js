@@ -141,27 +141,40 @@ const categoryToFolderMap = {
   FULLSIZE: "fullsize",
   "SUV 5": "suv_5",
   "SUV 5 LX": "suv_5_lx",
+  ECAR: "economico", // ecar es economico
+  SCAR: "compacto", // scar es compacto
+  FCAR: "fullsize", // fcar es fullsize
+  SFAR: "suv_5", // sfar es suv 5
+  FFAR: "suv_5_lx", // ffar es suv 5 lx
 };
 
-// Adjusted function to dynamically get the image path based on category and plan ID
+// Ajustar la lógica para aceptar tanto nombre como código de categoría
 const getDynamicImagePath = (category, planId) => {
   if (!category) {
     console.error("La categoría seleccionada es nula o indefinida.");
-    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
+    return "/Protecciones/default/default_0.jpg";
   }
 
   const normalizedCategory = category.toUpperCase().trim();
-  const folder = categoryToFolderMap[normalizedCategory];
+  let folder = categoryToFolderMap[normalizedCategory];
+
+  // Si no está en el mapa, intentar filtrar por código
+  if (!folder) {
+    // Si la categoría es un código conocido, usar el mapping
+    if (["ECAR", "SCAR", "FCAR", "SFAR", "FFAR"].includes(normalizedCategory)) {
+      folder = categoryToFolderMap[normalizedCategory];
+    }
+  }
 
   if (!folder) {
     console.error(
       `La categoría '${normalizedCategory}' no está mapeada en categoryToFolderMap.`
     );
-    return "/Protecciones/default/default_0.jpg"; // Cambiar '_cero' por '_0'
+    return "/Protecciones/default/default_0.jpg";
   }
 
   const planImageMap = {
-    none: `${folder}_0.jpg`, // Cambiar '_cero' por '_0'
+    none: `${folder}_0.jpg`,
     basico: `${folder}_80.jpg`,
     intermedio: `${folder}_90.jpg`,
     completo: `${folder}_95.jpg`,
@@ -389,6 +402,17 @@ const SeguroVehiculo = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Log de rutas de imágenes generadas para cada plan
+  React.useEffect(() => {
+    if (selectedCar?.category) {
+      console.log("Categoría seleccionada:", selectedCar.category);
+      ["none", "basico", "intermedio", "completo"].forEach((planId) => {
+        const ruta = getDynamicImagePath(selectedCar.category, planId);
+        console.log(`Ruta imagen para plan '${planId}':`, ruta);
+      });
+    }
+  }, [selectedCar?.category]);
 
   return (
     <Container
