@@ -101,8 +101,8 @@ export default function UserForm() {
   const [submittingOnline, setSubmittingOnline] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // Estado para el switch de invitado
-  const [guestMode, setGuestMode] = useState(false);
+  // Estado para el modo usuario registrado (por defecto es invitado)
+  const [registeredMode, setRegisteredMode] = useState(false);
 
   const isJwtExpired = (token) => {
     try {
@@ -117,7 +117,8 @@ export default function UserForm() {
 
   // Esquema de validación dinámico según modo invitado
   const schema = React.useMemo(() => {
-    if (guestMode) {
+    if (!registeredMode) {
+      // Invitado por defecto
       return yup.object().shape({
         fullName: yup.string().required("El nombre completo es obligatorio"),
         phone: yup.string().required("El teléfono es obligatorio"),
@@ -131,11 +132,17 @@ export default function UserForm() {
           .required("Confirma el correo electrónico"),
         birthDate: yup
           .date()
+          .typeError("Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)")
           .required("La fecha de nacimiento es obligatoria")
           .test(
             "is-adult",
-            "Debes tener al menos 18 años",
-            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+            "Debes tener al menos 18 años para registrarte",
+            (value) => {
+              if (!value || Object.prototype.toString.call(value) !== '[object Date]' || isNaN(value.getTime())) {
+                return false;
+              }
+              return differenceInYears(new Date(), new Date(value)) >= 18;
+            }
           ),
         terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
         privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
@@ -154,11 +161,17 @@ export default function UserForm() {
           .required("El correo es obligatorio"),
         birthDate: yup
           .date()
+          .typeError("Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)")
           .required("La fecha de nacimiento es obligatoria")
           .test(
             "is-adult",
-            "Debes tener al menos 18 años",
-            (val) => val && differenceInYears(new Date(), new Date(val)) >= 18
+            "Debes tener al menos 18 años para registrarte",
+            (value) => {
+              if (!value || Object.prototype.toString.call(value) !== '[object Date]' || isNaN(value.getTime())) {
+                return false;
+              }
+              return differenceInYears(new Date(), new Date(value)) >= 18;
+            }
           ),
         password: yup
           .string()
@@ -173,7 +186,7 @@ export default function UserForm() {
           .required("Confirma la contraseña"),
       }),
     });
-  }, [guestMode, tokenIsInvalid]);
+  }, [registeredMode, tokenIsInvalid]);
 
   const {
     register,
@@ -497,8 +510,8 @@ export default function UserForm() {
   const returnDisplay = searchData.sameOffice
     ? pickupDisplay
     : searchData.returnLocation
-    ? `${searchData.returnLocation.ciudad} - ${searchData.returnLocation.estado}`
-    : "";
+      ? `${searchData.returnLocation.ciudad} - ${searchData.returnLocation.estado}`
+      : "";
 
   return (
     <Card sx={{ p: 3, width: "100%" }}>
@@ -538,9 +551,8 @@ export default function UserForm() {
                       fontSize: "16px",
                       paddingLeft: "48px",
                       borderRadius: "4px",
-                      border: `1px solid ${
-                        errors.phone ? "#d32f2f" : "#c4c4c4"
-                      }`,
+                      border: `1px solid ${errors.phone ? "#d32f2f" : "#c4c4c4"
+                        }`,
                     }}
                     buttonStyle={{ border: "none", background: "transparent" }}
                     onBlur={field.onBlur}
@@ -563,7 +575,7 @@ export default function UserForm() {
               error={!!errors.email}
               helperText={errors.email?.message}
             />
-            {guestMode && (
+            {!registeredMode && (
               <TextField
                 label="Confirmar correo electrónico"
                 type="email"
@@ -574,7 +586,7 @@ export default function UserForm() {
                 helperText={errors.confirmEmail?.message}
               />
             )}
-            {/* Fecha de nacimiento siempre visible, contraseñas solo si NO es invitado */}
+            {/* Fecha de nacimiento siempre visible, contraseñas solo si es modo registrado */}
             <TextField
               label="Fecha de nacimiento"
               type="date"
@@ -585,7 +597,7 @@ export default function UserForm() {
               error={!!errors.birthDate}
               helperText={errors.birthDate?.message}
             />
-            {!guestMode && (
+            {registeredMode && (
               <>
                 <TextField
                   label="Contraseña"
@@ -674,39 +686,33 @@ export default function UserForm() {
           }
         />
 
-        {/* Switch para continuar como invitado */}
+        {/* Checkbox para "Crear cuenta y reservar como usuario registrado" */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 1 }}>
-          <Switch
-            color="success"
-            checked={guestMode}
-            onChange={(_, checked) => setGuestMode(checked)}
-            sx={{
-              "& .MuiSwitch-thumb": {
-                // thumb color: default (MUI)
-              },
-              "& .Mui-checked .MuiSwitch-thumb": {
-                backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#10906a",
-              },
-              "& .MuiSwitch-track": {
-                // track color: default (MUI)
-              },
-              "&.Mui-checked .MuiSwitch-track": {
-                backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#10906a",
-                opacity: 1,
-              },
-            }}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={registeredMode}
+                onChange={(_, checked) => setRegisteredMode(checked)}
+                sx={{
+                  color: (theme) => theme.palette.primary.buttons || "#10906a",
+                  '&.Mui-checked': {
+                    color: (theme) => theme.palette.primary.buttons || "#10906a",
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography
+                sx={{
+                  ml: 1,
+                  color: (theme) => theme.palette.primary.buttons || "#10906a",
+                  fontWeight: 600,
+                }}
+              >
+                Crear cuenta y paga en línea
+              </Typography>
+            }
           />
-          <Typography
-            sx={{
-              ml: 1,
-              color: (theme) => theme.palette.primary.buttons || "#10906a",
-              fontWeight: 600,
-            }}
-          >
-            Continuar como invitado
-          </Typography>
         </Box>
 
         <Box
@@ -723,8 +729,7 @@ export default function UserForm() {
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
-              // Si es invitado, solo validar campos mínimos
-              (guestMode
+              (!registeredMode
                 ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
                 : (tokenIsInvalid && !isValid) || !watch("terms") || !watch("privacy")
               )
@@ -748,7 +753,7 @@ export default function UserForm() {
               {submitting
                 ? "Procesando..."
                 : "Pago en mostrador".charAt(0).toUpperCase() +
-                  "Pago en mostrador".slice(1).toLowerCase()}
+                "Pago en mostrador".slice(1).toLowerCase()}
             </span>
             <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
               <Typography
@@ -756,10 +761,10 @@ export default function UserForm() {
                 sx={{
                   color:
                     submitting ||
-                    (guestMode
-                      ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
-                      : (tokenIsInvalid && !isValid)
-                    )
+                      (!registeredMode
+                        ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
+                        : (tokenIsInvalid && !isValid)
+                      )
                       ? "#b0b0b0"
                       : "#fff",
                   fontWeight: 500,
@@ -771,7 +776,7 @@ export default function UserForm() {
             </span>
           </Button>
 
-          {!guestMode && (
+          {registeredMode && (
             <Button
               fullWidth
               variant="contained"
@@ -807,7 +812,7 @@ export default function UserForm() {
                 {submittingOnline
                   ? "Redirigiendo…"
                   : "Pago en línea".charAt(0).toUpperCase() +
-                    "Pago en línea".slice(1).toLowerCase()}
+                  "Pago en línea".slice(1).toLowerCase()}
               </span>
               <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
                 <Typography
