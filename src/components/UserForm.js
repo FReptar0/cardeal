@@ -709,7 +709,7 @@ export default function UserForm() {
                   fontWeight: 600,
                 }}
               >
-                Crear cuenta y reservar como usuario registrado
+                Crear cuenta y paga en línea
               </Typography>
             }
           />
