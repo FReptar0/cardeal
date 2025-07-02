@@ -369,7 +369,7 @@ const BusinessRegistrationForm = () => {
                                                 color="text.secondary"
                                                 sx={{ fontSize: '0.85rem' }}
                                             >
-                                                * Elementos cuya cumplimentación es obligatoria.
+                                                * Campos obligatorios
                                             </Typography>
                                         </Grid>
 
