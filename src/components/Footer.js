@@ -40,7 +40,7 @@ const Footer = () => {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    textAlign: "center", // Centrar también los textos
+                    textAlign: "center",
                     marginTop: "10px",
                   }}
                 >
@@ -51,7 +51,7 @@ const Footer = () => {
                       marginBottom: "10px",
                     }}
                   >
-                    ¡Síguenos en nuestras redes sociales!
+                    Conecta con nosotros en nuestras redes sociales.
                   </Typography>
                   <Box sx={{ display: "flex", gap: 2 }}>
                     <IconButton
