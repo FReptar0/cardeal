@@ -1,4 +1,7 @@
 import React from 'react';
+import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
     Box,
     Typography,
@@ -63,13 +66,36 @@ const BusinessRegistrationForm = () => {
         validationSchema: validationSchema,
         validateOnChange: true,
         validateOnBlur: true,
-        onSubmit: (values) => {
-            console.log('Datos del formulario:', values);
-            // TODO: Implementar hook de envío
+        onSubmit: async (values, { resetForm }) => {
+            try {
+                const res = await fetch('/api/crmContact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: values.nombre,
+                        email: values.email,
+                        telefono: values.telefono,
+                        nombreEmpresa: values.nombreEmpresa,
+                        rfc: values.rfc,
+                        mensaje: values.mensaje || '',
+                    }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    toast.success('¡Solicitud enviada correctamente! Nos pondremos en contacto contigo pronto.');
+                    resetForm();
+                } else {
+                    toast.error(data.message || 'Error al enviar la solicitud.');
+                }
+            } catch (err) {
+                toast.error('Error de conexión al enviar la solicitud.');
+            }
         },
     });
 
     return (
+        <>
+        <ToastContainer position="top-center" autoClose={5000} />
         <Box 
             sx={{ 
                 minHeight: '100vh', 
@@ -312,6 +338,23 @@ const BusinessRegistrationForm = () => {
                                             />
                                         </Grid>
 
+                                        {/* Mensaje adicional */}
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                fullWidth
+                                                id="mensaje"
+                                                name="mensaje"
+                                                label="Mensaje adicional (opcional)"
+                                                value={formik.values.mensaje}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                multiline
+                                                minRows={3}
+                                                maxRows={6}
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+
                                         {/* Checkbox de términos */}
                                         <Grid item xs={12}>
                                             <FormControlLabel
@@ -414,6 +457,7 @@ const BusinessRegistrationForm = () => {
                 </Paper>
             </Container>
         </Box>
+        </>
     );
 };
 
