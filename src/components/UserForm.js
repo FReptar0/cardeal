@@ -144,26 +144,36 @@ export default function UserForm() {
           .required("Confirma el correo electrónico"),
         birthDate: yup
           .date()
-          .typeError("Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)")
+          .typeError(
+            "Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)"
+          )
           .required("La fecha de nacimiento es obligatoria")
           .test(
             "is-adult",
             "Debes tener al menos 18 años para registrarte",
             (value) => {
-              if (!value || Object.prototype.toString.call(value) !== '[object Date]' || isNaN(value.getTime())) {
+              if (
+                !value ||
+                Object.prototype.toString.call(value) !== "[object Date]" ||
+                isNaN(value.getTime())
+              ) {
                 return false;
               }
               return differenceInYears(new Date(), new Date(value)) >= 18;
             }
           ),
         terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-        privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+        privacy: yup
+          .boolean()
+          .oneOf([true], "Debes aceptar la política de privacidad"),
       });
     }
     // Usuario registrado o registro nuevo
     return yup.object().shape({
       terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-      privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
+      privacy: yup
+        .boolean()
+        .oneOf([true], "Debes aceptar la política de privacidad"),
       ...(tokenIsInvalid && {
         fullName: yup
           .string()
@@ -184,13 +194,19 @@ export default function UserForm() {
           .required("El correo es obligatorio"),
         birthDate: yup
           .date()
-          .typeError("Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)")
+          .typeError(
+            "Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)"
+          )
           .required("La fecha de nacimiento es obligatoria")
           .test(
             "is-adult",
             "Debes tener al menos 18 años para registrarte",
             (value) => {
-              if (!value || Object.prototype.toString.call(value) !== '[object Date]' || isNaN(value.getTime())) {
+              if (
+                !value ||
+                Object.prototype.toString.call(value) !== "[object Date]" ||
+                isNaN(value.getTime())
+              ) {
                 return false;
               }
               return differenceInYears(new Date(), new Date(value)) >= 18;
@@ -306,7 +322,6 @@ export default function UserForm() {
   };
 
   const onSubmit = (isOnline) => async (data) => {
-
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
 
     try {
@@ -533,8 +548,8 @@ export default function UserForm() {
   const returnDisplay = searchData.sameOffice
     ? pickupDisplay
     : searchData.returnLocation
-      ? `${searchData.returnLocation.ciudad} - ${searchData.returnLocation.estado}`
-      : "";
+    ? `${searchData.returnLocation.ciudad} - ${searchData.returnLocation.estado}`
+    : "";
 
   return (
     <Card sx={{ p: 3, width: "100%" }}>
@@ -574,15 +589,20 @@ export default function UserForm() {
                       fontSize: "16px",
                       paddingLeft: "48px",
                       borderRadius: "4px",
-                      border: `1px solid ${errors.phone ? "#d32f2f" : "#c4c4c4"
-                        }`,
+                      border: `1px solid ${
+                        errors.phone ? "#d32f2f" : "#c4c4c4"
+                      }`,
                     }}
                     buttonStyle={{ border: "none", background: "transparent" }}
                     onBlur={field.onBlur}
                     onChange={(value) => field.onChange(value)}
                   />
                   {errors.phone && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{ mt: 0.5 }}
+                    >
                       {errors.phone.message}
                     </Typography>
                   )}
@@ -718,8 +738,9 @@ export default function UserForm() {
                 onChange={(_, checked) => setRegisteredMode(checked)}
                 sx={{
                   color: (theme) => theme.palette.primary.buttons || "#10906a",
-                  '&.Mui-checked': {
-                    color: (theme) => theme.palette.primary.buttons || "#10906a",
+                  "&.Mui-checked": {
+                    color: (theme) =>
+                      theme.palette.primary.buttons || "#10906a",
                   },
                 }}
               />
@@ -748,21 +769,29 @@ export default function UserForm() {
         >
           <Button
             fullWidth
-            variant="contained"
+            variant="outlined"
             onClick={handleSubmit(onSubmit(false))}
             disabled={
               submitting ||
               (!registeredMode
-                ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
-                : (tokenIsInvalid && !isValid) || !watch("terms") || !watch("privacy")
-              )
+                ? !watch("fullName") ||
+                  !watch("phone") ||
+                  !watch("email") ||
+                  !watch("birthDate") ||
+                  !watch("terms") ||
+                  !watch("privacy")
+                : (tokenIsInvalid && !isValid) ||
+                  !watch("terms") ||
+                  !watch("privacy"))
             }
             sx={{
-              backgroundColor: (theme) =>
-                theme.palette.primary.buttons || "#b0b0b0",
+              borderColor: "#10906a",
+              backgroundColor: "#fff",
+              color: "#111",
               "&:hover": {
-                backgroundColor: (theme) =>
-                  theme.palette.primary.buttons || "#b0b0b0",
+                borderColor: "#10906a",
+                backgroundColor: "#e6f5f0",
+                color: "#111",
               },
               position: "relative",
               minHeight: 64,
@@ -770,13 +799,16 @@ export default function UserForm() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              fontWeight: 700,
             }}
           >
-            <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
+            <span
+              style={{ width: "100%", textAlign: "center", fontWeight: 700 }}
+            >
               {submitting
                 ? "Procesando..."
                 : "Pago en mostrador".charAt(0).toUpperCase() +
-                "Pago en mostrador".slice(1).toLowerCase()}
+                  "Pago en mostrador".slice(1).toLowerCase()}
             </span>
             <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
               <Typography
@@ -784,12 +816,16 @@ export default function UserForm() {
                 sx={{
                   color:
                     submitting ||
-                      (!registeredMode
-                        ? !watch("fullName") || !watch("phone") || !watch("email") || !watch("birthDate") || !watch("terms") || !watch("privacy")
-                        : (tokenIsInvalid && !isValid)
-                      )
+                    (!registeredMode
+                      ? !watch("fullName") ||
+                        !watch("phone") ||
+                        !watch("email") ||
+                        !watch("birthDate") ||
+                        !watch("terms") ||
+                        !watch("privacy")
+                      : tokenIsInvalid && !isValid)
                       ? "#b0b0b0"
-                      : "#fff",
+                      : "#111",
                   fontWeight: 700,
                   display: "block",
                 }}
@@ -831,13 +867,17 @@ export default function UserForm() {
                 overflow: "hidden",
               }}
             >
-              <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
+              <span
+                style={{ width: "100%", textAlign: "center", fontWeight: 700 }}
+              >
                 {submittingOnline
                   ? "Redirigiendo…"
                   : "Pago en línea".charAt(0).toUpperCase() +
-                  "Pago en línea".slice(1).toLowerCase()}
+                    "Pago en línea".slice(1).toLowerCase()}
               </span>
-              <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
+              <span
+                style={{ width: "100%", textAlign: "center", marginTop: 4 }}
+              >
                 <Typography
                   variant="caption"
                   sx={{
