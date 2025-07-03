@@ -747,9 +747,10 @@ export default function UserForm() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              fontFamily: 'Oxford, Arial, sans-serif',
             }}
           >
-            <span style={{ width: "100%", textAlign: "center" }}>
+            <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
               {submitting
                 ? "Procesando..."
                 : "Pago en mostrador".charAt(0).toUpperCase() +
@@ -767,7 +768,7 @@ export default function UserForm() {
                       )
                       ? "#b0b0b0"
                       : "#fff",
-                  fontWeight: 500,
+                  fontWeight: 700,
                   display: "block",
                 }}
               >
@@ -806,9 +807,10 @@ export default function UserForm() {
                 alignItems: "center",
                 justifyContent: "center",
                 overflow: "hidden",
+                fontFamily: 'Oxford, Arial, sans-serif',
               }}
             >
-              <span style={{ width: "100%", textAlign: "center" }}>
+              <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
                 {submittingOnline
                   ? "Redirigiendo…"
                   : "Pago en línea".charAt(0).toUpperCase() +
@@ -822,7 +824,7 @@ export default function UserForm() {
                       submittingOnline || (tokenIsInvalid && !isValid)
                         ? "#b0b0b0"
                         : "#fff",
-                    fontWeight: 500,
+                    fontWeight: 700,
                     display: "block",
                   }}
                 >
