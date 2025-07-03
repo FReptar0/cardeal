@@ -120,7 +120,19 @@ export default function UserForm() {
     if (!registeredMode) {
       // Invitado por defecto
       return yup.object().shape({
-        fullName: yup.string().required("El nombre completo es obligatorio"),
+        fullName: yup
+          .string()
+          .required("El nombre completo es obligatorio")
+          .test(
+            "has-lastname",
+            "Debes ingresar al menos un nombre y un apellido",
+            (value) => {
+              if (!value) return false;
+              // Debe tener al menos dos palabras separadas por espacio
+              const parts = value.trim().split(/\s+/);
+              return parts.length >= 2 && parts[1].length > 0;
+            }
+          ),
         phone: yup.string().required("El teléfono es obligatorio"),
         email: yup
           .string()
@@ -153,7 +165,18 @@ export default function UserForm() {
       terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
       privacy: yup.boolean().oneOf([true], "Debes aceptar la política de privacidad"),
       ...(tokenIsInvalid && {
-        fullName: yup.string().required("El nombre completo es obligatorio"),
+        fullName: yup
+          .string()
+          .required("El nombre completo es obligatorio")
+          .test(
+            "has-lastname",
+            "Debes ingresar al menos un nombre y un apellido",
+            (value) => {
+              if (!value) return false;
+              const parts = value.trim().split(/\s+/);
+              return parts.length >= 2 && parts[1].length > 0;
+            }
+          ),
         phone: yup.string().required("El teléfono es obligatorio"),
         email: yup
           .string()
