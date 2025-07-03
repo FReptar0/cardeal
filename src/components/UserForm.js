@@ -287,8 +287,8 @@ export default function UserForm() {
     isOnline ? setSubmittingOnline(true) : setSubmitting(true);
 
     try {
-      // Lógica para invitado (guestMode)
-      if (guestMode) {
+      // Lógica para invitado (modo por defecto)
+      if (!registeredMode) {
         // 1) Datos de contacto directo del formulario
         const contactName = data.fullName;
         const contactEmail = data.email;
@@ -747,7 +747,6 @@ export default function UserForm() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              fontFamily: 'Oxford, Arial, sans-serif',
             }}
           >
             <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
@@ -807,7 +806,6 @@ export default function UserForm() {
                 alignItems: "center",
                 justifyContent: "center",
                 overflow: "hidden",
-                fontFamily: 'Oxford, Arial, sans-serif',
               }}
             >
               <span style={{ width: "100%", textAlign: "center", fontWeight: 700 }}>
