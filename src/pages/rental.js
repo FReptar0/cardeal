@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Container, Typography, Box, CircularProgress } from "@mui/material";
+import { Container, Typography, Box, CircularProgress, IconButton } from "@mui/material";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import RecommendationModal from "../components/RecommendationModal";
 import RentalStepper from "../components/Stepper";
 import CarCard from "../components/CarCard";
@@ -12,7 +14,6 @@ import { useBooking } from "../contexts/BookingContext";
 import { useSearch } from "../contexts/SearchContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { Autoplay } from "swiper/modules";
 
 const SearchBar = dynamic(() => import("../components/SearchBar"), {
   ssr: false,
@@ -301,25 +302,62 @@ export default function RentalPage() {
               px: "32px",
             }}
           >
-            <Swiper
-              modules={[Autoplay]}
-              slidesPerView={3}
-              centeredSlides
-              loop
-              spaceBetween={40}
-              autoplay={{ delay: 4000, disableOnInteraction: false }}
-              onSlideChange={(s) => setActiveIndex(s.realIndex)}
-              style={{
-                overflow: "visible", // swiper no recorta
-                paddingTop: "80px", // espacio extra arriba
-                paddingBottom: "80px", // espacio extra abajo
-              }}
-              breakpoints={{
-                0: { slidesPerView: 1, spaceBetween: 10 },
-                600: { slidesPerView: 2, spaceBetween: 20 },
-                900: { slidesPerView: 3, spaceBetween: 40 },
-              }}
-            >
+            <Box sx={{ position: 'relative' }}>
+              {/* Flechas laterales centradas verticalmente */}
+              <IconButton
+                aria-label="Anterior"
+                onClick={() => window._rentalSwiper && window._rentalSwiper.slidePrev()}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '-32px',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  boxShadow: 2,
+                  '&:hover': { bgcolor: 'grey.100' },
+                  display: { xs: 'none', sm: 'flex' },
+                  zIndex: 10,
+                }}
+              >
+                <ArrowBackIosNewIcon />
+              </IconButton>
+              <IconButton
+                aria-label="Siguiente"
+                onClick={() => window._rentalSwiper && window._rentalSwiper.slideNext()}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: '-32px',
+                  transform: 'translateY(-50%)',
+                  bgcolor: 'white',
+                  boxShadow: 2,
+                  '&:hover': { bgcolor: 'grey.100' },
+                  display: { xs: 'none', sm: 'flex' },
+                  zIndex: 10,
+                }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+              <Swiper
+                modules={[]}
+                slidesPerView={3}
+                centeredSlides
+                loop
+                spaceBetween={40}
+                autoplay={false}
+                onSlideChange={(s) => setActiveIndex(s.realIndex)}
+                style={{
+                  overflow: "visible",
+                  paddingTop: "80px",
+                  paddingBottom: "80px",
+                }}
+                breakpoints={{
+                  0: { slidesPerView: 1, spaceBetween: 10 },
+                  600: { slidesPerView: 2, spaceBetween: 20 },
+                  900: { slidesPerView: 3, spaceBetween: 40 },
+                }}
+                onSwiper={(swiper) => { window._rentalSwiper = swiper; }}
+              >
               {filteredCars.map((car, ix) => {
                 const isActive = ix === activeIndex;
                 return (
@@ -349,23 +387,24 @@ export default function RentalPage() {
                   </SwiperSlide>
                 );
               })}
-            </Swiper>
-            {/* Dots */}
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-              {filteredCars.map((_, i) => (
-                <Box
-                  key={i}
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: "50%",
-                    backgroundColor:
-                      i === activeIndex ? "primary.main" : "grey.400",
-                    mx: 0.5,
-                    transition: "background-color 0.3s",
-                  }}
-                />
-              ))}
+              </Swiper>
+              {/* Dots */}
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                {filteredCars.map((_, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: "50%",
+                      backgroundColor:
+                        i === activeIndex ? "primary.main" : "grey.400",
+                      mx: 0.5,
+                      transition: "background-color 0.3s",
+                    }}
+                  />
+                ))}
+              </Box>
             </Box>
           </Box>
         )}
