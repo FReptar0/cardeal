@@ -1,99 +1,99 @@
 {
-    "faqData": [
-        {
-            "id": 1,
-            "question": "¿Cuál es el tiempo mínimo de Renta?",
-            "answer": "El periodo mínimo de renta es de 24 horas."
-        },
-        {
-            "id": 2,
-            "question": "¿Qué incluye el costo de mi reservación?",
-            "answer": "El precio de su reservación incluye los servicios mencionados en esta reservación, y Protección de Responsabilidad Civil contra daños a terceros hasta por $350,000 pesos MX y Gastos médicos para ocupantes hasta por $250,000 MX pesos por evento. Cualquier Protección y Servicios que no se encuentren mencionados como incluidos en esta reservación tienen un costo adicional."
-        },
-        {
-            "id": 3,
-            "question": "¿Cuáles son los requisitos para rentar?",
-            "answer": "Para realizar la renta de un vehículo se deberán cubrir los siguientes requisitos en original, así como firmar y aceptar el contrato:\n\n• EDAD: La edad mínima para rentar es de 25 años. En caso de ser menor de dicha edad, entre el rango de 18 y 24 años será sujeto de un cargo adicional por concepto de conductor menor.\n\n• IDENTIFICACIÓN: Presentar identificación oficial vigente, siendo aceptadas: Credencial de Elector INE, Pasaporte o Cedula Profesional. Para el caso de extranjeros deberán de presentar Pasaporte vigente o Documento Migratorio actualizado.\n\n• LICENCIA DE CONDUCIR: Todos los conductores principales o adicionales deben de presentar licencia de conducir vigente al momento de la renta y hasta el cierre del contrato de la persona que será designada como conductor de la unidad.\n\n• TARJETAS DE CRÉDITO: Todos nuestros clientes deberán presentar una tarjeta de crédito vigente al momento de la apertura del contrato. Se aceptan tarjetas de crédito VISA, MasterCard y American Express."
-        },
-        {
-            "id": 4,
-            "question": "¿Cómo sé qué auto me entregarán?",
-            "answer": "Para la renta de autos los vehículos se encuentran clasificados en categorías que cumplen con las características y especificaciones, de acuerdo al estándar internacional de la organización (ACRIS), por lo que se entregará el auto de la categoría reservada."
-        },
-        {
-            "id": 5,
-            "question": "¿Cuáles son las formas de pago?",
-            "answer": "TARJETA BANCARIA: Las tarjetas de crédito/débito aceptadas son VISA, MasterCard y American Express.\n\nLa tarjeta que usted utilice al momento de reservar o abrir el contrato, debe estar al mismo nombre del titular de la reserva. Si la tarjeta de crédito no está a nombre del conductor, puede reservar siempre que el titular acompañe al conductor a recoger el vehículo.\n\nQuedan excluidas las tarjetas de crédito departamentales y las tarjetas digitales.\n\nPara el depósito en garantía solamente son válidas tarjetas de crédito (físicas)."
-        },
-        {
-            "id": 6,
-            "question": "¿Qué es el Depósito en Garantía?",
-            "answer": "Al momento de la apertura del contrato se le solicitará una tarjeta de crédito para realizar un depósito en garantía por la renta del vehículo, de acuerdo con la protección contratada.\n\nPara el depósito en garantía únicamente son válidas TARJETAS DE CREDITO VISA, MasterCard y American Express.\n\nEl depósito en garantía se libera al momento del cierre del contrato y se verá reflejado dependiendo del periodo de tiempo que la institución bancaria emisora de la tarjeta de crédito tarde en procesar de acuerdo con sus procesos y políticas.\n\nEn caso de Daño/Robo al automóvil y que exceda el depósito en garantía, QARDEAL podrá exigir, judicial o extrajudicialmente, el pago de una cantidad adicional si el depósito fuere insuficiente."
-        },
-        {
-            "id": 7,
-            "question": "¿Qué opción de protecciones puedo contratar?",
-            "answer": "Protección incluida: RESPONSABILIDAD CIVIL + GASTOS MEDICOS\nEsta incluye: Protección de daños a terceros y responsabilidad civil hasta $350,000 pesos MX y gastos médicos hasta $250,000 pesos MX (hasta 50 mil pesos MX por pasajero).\n\nProtección: BASICA 80%\nAl contratar la Protección Básica, ésta incluye: Protección de daños a terceros y responsabilidad civil hasta $350,000 pesos MX y gastos médicos hasta $250,000 pesos MX (hasta 50 mil pesos MX por pasajero). Adicionalmente tienes protección del auto contra daños por colisiones o robo total con un deducible máximo del 20% del valor comercial del auto; excepto: llaves, placas, multas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos). Esta protección NO incluye Asistencia Vial.\n\nProtección INTERMEDIA 90%\nEsta protección incluye la ampliación de la protección de daños a terceros y responsabilidad civil hasta $700,000 pesos MX y gastos médicos hasta $500,000 pesos MX (hasta 100 mil pesos MX por pasajero). Adicionalmente cuentas con una protección del auto contra daños por colisiones o robo total con un deducible máximo del 10% del valor comercial del auto. Esta Protección NO Incluye: llaves, placas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos). Esta Protección incluye Asistencia Vial en todo momento de tu viaje (envío de combustible, paso de batería, envío de llaves y cambio de neumáticos), en un radio de alcance de 0 a 40 Kilómetros de la sucursal más cercana de QARDEAL.\n\nProtección PREMIUM 95%\nEsta protección incluye la ampliación de la protección de daños a terceros y responsabilidad civil hasta $700,000 pesos MX y gastos médicos hasta $500,000 pesos MX (hasta 100 mil pesos MX por pasajero). Adicionalmente cuentas con una protección del auto contra daños por colisiones o robo total con un deducible máximo del 5% del valor comercial del auto. Esta Protección NO Incluye: llaves, placas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos). Esta Protección incluye Asistencia Vial en todo momento de tu viaje (envío de combustible, paso de batería, envío de llaves y cambio de neumáticos), en un radio de alcance de 0 a 100 Kilómetros de la sucursal más cercana de QARDEAL.\n\nNota: En caso de robo el cliente deberá acudir a la autoridad correspondiente a levantar el acta/denuncia ante el Ministerio Publico."
-        },
-        {
-            "id": 8,
-            "question": "¿Qué es lo que NO incluyen las protecciones?",
-            "answer": "EXCLUSIONES GENERALES DE TODAS LAS PROTECCIONES:\n\n• No cubren pérdida de placas, multas, estadías en corralón o llaves.\n• No cubre la protección si el conductor NO es el registrado en el anexo (contrato)\n• No cubren daños a llantas, rines, espejos laterales y cristales.\n• Se declinan en caso de que el cliente no reporte el accidente dentro de un periodo mayor de 24 horas después del siniestro (salvo causas de fuerza mayor).\n• Automáticamente se invalidarán en caso de haber alcohol, estupefacientes y/o drogas involucradas.\n• No cubren fuera del territorio nacional.\n• No cubren si se conduce en un camino no pavimentado.\n• En general se invalidarán si existe negligencia por parte del cliente, como cualquier acto doloso, irresponsable o temerario por parte del cliente que provoque daños en nuestro auto, a terceros en sus bienes o personas, tales como exceso de velocidad, dejar llaves pegadas (robo), uso para carreras o rally, transporte público o de carga, actos vandálicos o ilegales, etc."
-        },
-        {
-            "id": 9,
-            "question": "¿Qué son OTROS CARGOS?",
-            "answer": "Estos incluyen licencias de uso vehicular, cuotas locales y federales."
-        },
-        {
-            "id": 10,
-            "question": "¿Tengo que pagar las multas e infracciones?",
-            "answer": "Se aplicará el cargo de las multas que durante la renta del auto se generen en el vehículo, aplica pérdida de placas y multas extemporáneas (precio más gastos administrativos)."
-        },
-        {
-            "id": 11,
-            "question": "¿Tengo que pagar los daños y/o faltantes?",
-            "answer": "Se realizará el cargo por este concepto cuando el auto haya sufrido un accidente y cuente con daños estéticos y/o mecánicos, el cargo se realizará para cubrir el deducible señalado en las protecciones contratadas o el daño completo en caso de haber declinado las protecciones.\n\nAsí mismo también se realizará el cargo por la reparación o reposición del daño y/o faltante en:\n• Llaves\n• Llantas\n• Cristales\n• Daños ocultos\n• Daños por una colisión o daños no registrados en la inspección inicial."
-        },
-        {
-            "id": 12,
-            "question": "¿Qué es el PPG (Pre Pago de Gasolina)?",
-            "answer": "QARDEAL, entregará la Unidad con tanque lleno (8/8) al cliente, al inicio de su renta.\n\nPPG: Esta Opción le da el beneficio de Prepagar el tanque completo y poder devolverlo vacío sin cargo adicional.\n\nEn caso de que el cliente devuelva el auto con gasolina, este no será reembolsable, ni acreditable a la cuenta de renta del cliente."
-        },
-        {
-            "id": 13,
-            "question": "¿Tengo que contratar un asiento para bebé?",
-            "answer": "Los asientos para bebé tendrán un costo adicional por día.\n\nQARDEAL, pondrá a disposición tres tipos de sillas de bebé de acuerdo a la legislación vigente:\n\na) Silla de bebé (grupo 0+) niños de 1 a 13 kilos.\nb) Silla de bebé (grupo 0/1/2) niños de 1 a 25 kilos.\nc) Asiento elevador de coche sin respaldo para niños de 18 a 45 kilos.\n\nQARDEAL, se reserva el derecho de cancelar la reserva del cliente, en caso de detectar que los ocupantes al momento de tomar el vehículo lleven como ocupantes a menores de edad y no utilicen la silla correspondiente para seguridad de los menores de acuerdo a la legislación vigente.\n\nEs responsabilidad del contratante la colocación dentro del vehículo de la(s) sillas de bebé, con supervisión del personal de QARDEAL. La solicitud de este servicio se deberá de realizar con 72 horas de anticipación a su reserva."
-        },
-        {
-            "id": 14,
-            "question": "¿Qué es el Conductor Menor?",
-            "answer": "Todo conductor registrado dentro del contrato como titular y/o adicional de 18 a 24 años deberá cubrir una cuota de riesgo por edad."
-        },
-        {
-            "id": 15,
-            "question": "¿Qué es el Cargo por pérdida de uso?",
-            "answer": "En caso de que la unidad sufra un siniestro y las protecciones queden invalidadas, el cliente será responsable también por el pago de los días que el vehículo siniestrado deba permanecer en reparación y por consecuencia no pueda ser rentado. El cargo comenzará a partir del día del siniestro y hasta el momento de finalizar su reparación.\n\nEn caso de que la unidad sea detenida por cualquier autoridad local, estatal o federal y llevada a un corralón derivado de cualquier situación imputable al cliente, el cliente será responsable por el pago de la tarifa diaria hasta el momento de su liberación."
-        },
-        {
-            "id": 16,
-            "question": "¿Qué es la Cuota de Limpieza?",
-            "answer": "Será la cuota que se aplicará al cliente en el supuesto de que regrese el vehículo con objetos dentro del mismo, manchas en sus vestiduras, alfombras, tapicería, vidrios y/o asientos, y con pelo de mascotas."
-        },
-        {
-            "id": 17,
-            "question": "¿Puedo devolver el auto en otra locación (DROP OFF)?",
-            "answer": "Sí es posible, con un cargo adicional dependiendo la ciudad a devolver."
-        },
-        {
-            "id": 18,
-            "question": "¿Tienen servicios de entrega y/o devolución a domicilio?",
-            "answer": "Sí, con un cargo por solicitud de entrega o devolución del vehículo en el domicilio del cliente, previa validación de la documentación obligatoria, costo y disponibilidad por cada locación de cada ciudad."
-        },
-        {
-            "id": 19,
-            "question": "¿Qué hago si mi auto en renta fue remolcado?",
-            "answer": "En caso de que el vehículo haya sido incautado por cualquier autoridad (entendiéndose por incautar el hecho de que la autoridad haya tomado posesión del vehículo). Deberá reportarlo al número de atención a clientes, y seguir las indicaciones. El cliente deberá cubrir los gastos administrativos."
-        }
-    ]
+  "faqData": [
+    {
+      "id": 1,
+      "question": "¿Cuál es el tiempo mínimo de Renta?",
+      "answer": "El periodo mínimo de renta es de 24 horas."
+    },
+    {
+      "id": 2,
+      "question": "¿Qué incluye el costo de mi reservación?",
+      "answer": "El precio de su reservación incluye los servicios mencionados en esta reservación, y Protección de Responsabilidad Civil contra daños a terceros hasta por $350,000 pesos MX y Gastos médicos para ocupantes hasta por $250,000 MX pesos por evento. Cualquier Protección y Servicios que no se encuentren mencionados como incluidos en esta reservación tienen un costo adicional."
+    },
+    {
+      "id": 3,
+      "question": "¿Cuáles son los requisitos para rentar?",
+      "answer": "Para realizar la renta de un vehículo se deberán cubrir los siguientes requisitos en original, así como firmar y aceptar el contrato:\n\nEDAD: La edad mínima para rentar es de 25 años. En caso de ser menor de dicha edad, entre el rango de 18 y 24 años será sujeto de un cargo adicional por concepto de conductor menor.\n\nIDENTIFICACIÓN: Presentar identificación oficial vigente, siendo aceptadas: Credencial de Elector INE, Pasaporte o Cédula Profesional. Para el caso de extranjeros deberán de presentar Pasaporte vigente o Documento Migratorio actualizado.\n\nLICENCIA DE CONDUCIR: Todos los conductores principales o adicionales deben de presentar licencia de conducir vigente al momento de la renta y hasta el cierre del contrato.\n\nTARJETAS DE CRÉDITO: Todos nuestros clientes deberán presentar una tarjeta de crédito vigente al momento de la apertura del contrato. Se aceptan tarjetas de crédito VISA, MasterCard y American Express."
+    },
+    {
+      "id": 4,
+      "question": "¿Cómo sé qué auto me entregarán?",
+      "answer": "Para la renta de autos los vehículos se encuentran clasificados en categorías que cumplen con las características y especificaciones, de acuerdo al estándar internacional de la organización (ACRIS), por lo que se entregará el auto de la categoría reservada."
+    },
+    {
+      "id": 5,
+      "question": "¿Cuáles son las formas de pago?",
+      "answer": "TARJETA BANCARIA: Las tarjetas de crédito/débito aceptadas son VISA, MasterCard y American Express.\n\nLa tarjeta que usted utilice al momento de reservar o abrir el contrato, debe estar al mismo nombre del titular de la reserva. Si la tarjeta de crédito no está a nombre del conductor, puede reservar siempre que el titular acompañe al conductor a recoger el vehículo.\n\nQuedando excluidas las tarjetas de crédito departamentales y las tarjetas digitales.\n\nPara el depósito en garantía solamente son válidas tarjetas de crédito (físicas)."
+    },
+    {
+      "id": 6,
+      "question": "¿Qué es el Depósito en Garantía?",
+      "answer": "Al momento de la apertura del contrato se le solicitará una tarjeta de crédito para realizar un depósito en garantía por la renta del vehículo, de acuerdo con la protección contratada.\n\nPara el depósito en garantía únicamente son válidas TARJETAS DE CRÉDITO VISA, MasterCard y American Express.\n\nEl depósito en garantía se libera al momento del cierre del contrato y se verá reflejado dependiendo del periodo de tiempo que la institución bancaria emisora de la tarjeta de crédito tarde en procesar de acuerdo con sus procesos y políticas.\n\nEn caso de Daño/Robo al automóvil y que exceda el depósito en garantía, QARDEAL podrá exigir, judicial o extrajudicialmente, el pago de una cantidad adicional si el depósito fuere insuficiente."
+    },
+    {
+        "id": 7,
+        "question": "¿Qué opción de protecciones puedo contratar?",
+        "answer": "Protección incluida: RESPONSABILIDAD CIVIL + GASTOS MEDICOS\nEsta incluye: Protección de daños a terceros y responsabilidad civil hasta $350,000 pesos MX y gastos médicos hasta $250,000 pesos MX (hasta 50 mil pesos MX por pasajero).\nNota: En caso de robo el cliente deberá acudir a la autoridad correspondiente a levantar el acta/ denuncia ante el Ministerio Publico.\n\nProtección: BASICA 80%\nAl contratar la Protección Básica, ésta incluye: Protección de daños a terceros y responsabilidad civil hasta $350,000 pesos MX y gastos médicos hasta $250,000 pesos MX (hasta 50 mil pesos MX por pasajero).\nAdicionalmente tienes protección del auto contra daños por colisiones o robo total con un deducible máximo del 20 % del valor comercial del auto; excepto: llaves, placas, multas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos).\nEsta protección NO incluye Asistencia Vial.\nNota: En caso de robo el cliente deberá acudir a la autoridad correspondiente a levantar el acta/ denuncia ante el Ministerio Publico.\n\nProtección INTERMEDIA 90%\nEsta protección incluye la ampliación de la protección de daños a terceros y responsabilidad civil hasta $700,000 pesos MX y gastos médicos hasta $500,000 pesos MX (hasta 100 mil pesos MX por pasajero).\nAdicionalmente cuentas con una protección del auto contra daños por colisiones o robo total con un deducible máximo del 10% del valor comercial del auto.\nEsta Protección NO Incluye: llaves, placas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos).\nEsta Protección incluye Asistencia Vial en todo momento de tu viaje (envío de combustible, paso de batería, envío de llaves y cambio de neumáticos), en un radio de alcance de 0 a 40 Kilómetros de la sucursal más cercana de QARDEAL.\nNota: En caso de robo el cliente deberá acudir a la autoridad correspondiente a levantar el acta/ denuncia ante el Ministerio Publico.\n\nProtección PREMIUM 95%\nEsta protección incluye la ampliación de la protección de daños a terceros y responsabilidad civil hasta $700,000 pesos MX y gastos médicos hasta $500,000 pesos MX (hasta 100 mil pesos MX por pasajero).\nAdicionalmente cuentas con una protección del auto contra daños por colisiones o robo total con un deducible máximo del 5% del valor comercial del auto.\nEsta Protección NO Incluye: llaves, placas, documentos y accesorios interiores (radio, tapetes, ventanas, llantas y espejos).\nEsta Protección incluye Asistencia Vial en todo momento de tu viaje (envío de combustible, paso de batería, envío de llaves y cambio de neumáticos), en un radio de alcance de 0 a 100 Kilómetros de la sucursal más cercana de QARDEAL.\nNota: En caso de robo el cliente deberá acudir a la autoridad correspondiente a levantar el acta/ denuncia ante el Ministerio Publico.\n\nAsistencia Vial\nAsistencia Vial. - en caso de descompostura, falla mecánica, falta de combustible, neumático ponchado o acumulador descargado que impida la circulación de la unidad, se brindará la asistencia vial.\nPara el caso de faltante de combustible se cubrirá el servicio de asistencia, mas no así el costo del combustible, mismo que se cargará al cierre del contrato.\nServicio de cerrajería. - en caso de extravío, daño u olvido de la llave dentro de la unidad, se llevará el duplicado o se enviará a un proveedor especializado para la apertura del auto. Sólo se cubre el servicio de asistencia, el costo de compostura o reposición de la llave será cubierto por el cliente al cierre del contrato."
+    },
+    {
+        "id": 8,
+        "question": "¿Qué es lo que NO incluyen las protecciones?",
+        "answer": "EXCLUSIONES GENERALES DE TODAS LAS PROTECCIONES:\n• No cubren pérdida de placas, multas, estadías en corralón o llaves.\n• No cubre la protección si el conductor NO es el registrado en el anexo (contrato)\n• No cubren daños a llantas, rines, espejos laterales y cristales.\n• Se declinan en caso de que el cliente no reporte el accidente dentro de un periodo mayor de 24 horas después del siniestro (salvo causas de fuerza mayor).\n• Automáticamente se invalidarán en caso de haber alcohol, estupefacientes y/o drogas involucradas.\n• No cubren fuera del territorio nacional.\n• No cubren si se conduce en un camino no pavimentado.\n• En general se invalidarán si existe negligencia por parte del cliente, como cualquier acto doloso, irresponsable o temerario por parte del cliente que provoque daños en nuestro auto, a terceros en sus bienes o personas, tales como exceso de velocidad, dejar llaves pegadas (robo), uso para carreras o rally, transporte público o de carga, actos vandálicos o ilegales, etc."
+    },
+    {
+      "id": 9,
+      "question": "¿Qué son OTROS CARGOS?",
+      "answer": "Estos incluyen licencias de uso vehicular, cuotas locales y federales."
+    },
+    {
+      "id": 10,
+      "question": "¿Tengo que pagar las multas e infracciones?",
+      "answer": "Se aplicará el cargo por multas generadas durante la renta, incluyendo pérdida de placas y multas extemporáneas (con gastos administrativos)."
+    },
+    {
+      "id": 11,
+      "question": "¿Tengo que pagar los daños y/o faltantes?",
+      "answer": "Se aplicará el cargo por daños estéticos y/o mecánicos al vehículo. Se cobrará el deducible o el daño completo si no contrató protecciones.\nTambién aplica en:\n• Llaves\n• Llantas\n• Cristales\n• Daños ocultos\n• Daños no registrados en inspección inicial"
+    },
+    {
+        "id": 12,
+        "question": "¿Qué es el PPG (Pre Pago de Gasolina)?",
+        "answer": "QARDEAL, entregará la Unidad con tanque lleno (8/8) al cliente, al inicio de su renta.\nPPG: Esta Opción le da el beneficio de Prepagar el tanque completo y poder devolverlo vacío sin cargo adicional.\nEn caso de que el cliente devuelva el auto con gasolina, este no será reembolsable, ni acreditable a la cuenta de renta del cliente."
+    },
+    {
+    "id": 13,
+    "question": "¿Tengo que contratar un asiento para bebé?",
+    "answer": "Los asientos para bebé tendrán un costo adicional por día.\nQARDEAL, pondrá a disposición tres tipos de sillas de bebé de acuerdo a la legislación vigente:\n\na) Silla de bebé (grupo 0+) niños de 1 a 13 kilos.\nb) Silla de bebé (grupo 0/1/2) niños de 1 a 25 kilos.\nc) Asiento elevador de coche sin respaldo para niños de 18 a 45 kilos.\n\nQARDEAL, se reserva el derecho de cancelar la reserva del cliente, en caso de detectar que los ocupantes al momento de tomar el vehículo lleven como ocupantes a menores de edad y no utilicen la silla correspondiente para seguridad de los menores de acuerdo a la legislación vigente.\n\nEs responsabilidad del contratante la colocación dentro del vehículo de la(s) sillas de bebé, con supervisión del personal de QARDEAL. La solicitud de este servicio se deberá de realizar con 72 horas de anticipación a su reserva."
+    },
+    {
+      "id": 14,
+      "question": "¿Qué es el Conductor Menor?",
+      "answer": "Todo conductor registrado dentro del contrato como titular y/o adicional de 18 a 24 años deberá cubrir una cuota de riesgo por edad."
+    },
+    {
+      "id": 15,
+      "question": "¿Qué es el Cargo por pérdida de uso?",
+      "answer": "En caso de que la unidad sufra un siniestro y las protecciones queden invalidadas, el cliente será responsable también por el pago de los días que el vehículo siniestrado deba permanecer en reparación y por consecuencia no pueda ser rentado. El cargo comenzará a partir del día del siniestro y hasta el momento de finalizar su reparación. En caso de que la unidad sea detenida por cualquier autoridad local, estatal o federal y llevada a un corralón derivado de cualquier situación imputable al cliente, el cliente será responsable por el pago de la tarifa diaria hasta el momento de su liberación"
+    },
+    {
+      "id": 16,
+      "question": "¿Qué es la Cuota de Limpieza?",
+      "answer": "Será la cuota que se aplicará al cliente en el supuesto de que regrese el vehículo con objetos dentro del mismo, manchas en sus vestiduras, alfombras, tapicería, vidrios y/o asientos, y con pelo de mascotas."
+    },
+    {
+      "id": 17,
+      "question": "¿Puedo devolver el auto en otra locación (DROP OFF)?",
+      "answer": "Sí, es posible con un cargo adicional dependiendo de la ciudad."
+    },
+    {
+      "id": 18,
+      "question": "¿Tienen servicios de entrega y/o devolución a domicilio?",
+      "answer": "Si, con un cargo por solicitud de entrega o devolución del vehículo en el domicilio del cliente, previa validación de la documentación obligatoria, costo y disponibilidad por cada locación de cada ciudad."
+    },
+    {
+      "id": 19,
+      "question": "¿Qué hago si mi auto en renta fue remolcado?",
+      "answer": "En caso de que el vehículo haya sido incautado por cualquier autoridad (entendiéndose por incautar el hecho de que la autoridad haya tomado posesión del vehículo). Deberá reportarlo al número de atención a clientes, y seguir las indicaciones. El cliente deberá cubrir los gastos administrativos."
+    }
+  ]
 }
