@@ -18,6 +18,7 @@ Cardeal is a full-stack web application that enables users to search, select, an
 - **Backend**: Next.js API routes, MongoDB 6.15.0
 - **External Services**: TSD XML API, Flap Payment Gateway
 - **Key Libraries**: React Hook Form, React-PDF, XML2JS
+- 
 
 ## Getting Started
 
