@@ -28,6 +28,7 @@ const Layout = ({ children }) => {
               display: "flex",
               position: "relative",
               top: 70,
+              zIndex: 999999,
             }}
           >
             <Box
