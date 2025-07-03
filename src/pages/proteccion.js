@@ -471,9 +471,6 @@ const SeguroVehiculo = () => {
       <Typography variant="h4" fontWeight="bold">
         Elige un tipo de protección
       </Typography>
-      <Typography variant="body1" mb={4}>
-        que se va a cubrir al rentar un carro
-      </Typography>
 
       {loadingProtecciones ? (
         <Box
