@@ -1,17 +1,9 @@
 import React from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Link,
-  Divider,
-  Paper,
-} from "@mui/material";
+import { Box, Container, Typography, Link, Divider } from "@mui/material";
 
 export default function AvisoPrivacidad() {
   return (
     <Box sx={{ width: "100%", mb: 10 }}>
-      {/* Header */}
       <Typography
         variant="h4"
         fontWeight="bold"
@@ -23,7 +15,6 @@ export default function AvisoPrivacidad() {
 
       <Container maxWidth="md">
         <Box elevation={3} sx={{ p: 4, bgcolor: "background.paper" }}>
-          {/* Introducción */}
           <Typography variant="body1" paragraph>
             DENG MOTORS, S.A. de C.V., con domicilio legal en Calle Río Grijalva
             18, Colonia Vista Hermosa, C.P. 62290, Cuernavaca, Morelos es
@@ -36,7 +27,6 @@ export default function AvisoPrivacidad() {
             datos personales, según sea el caso:
           </Typography>
 
-          {/* Datos recabados */}
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
             Datos Personales que Recabamos
           </Typography>
@@ -51,13 +41,12 @@ export default function AvisoPrivacidad() {
             <li>R.F.C.</li>
           </Box>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Le informamos que por la naturaleza de nuestra relación jurídica, no
-            requerimos recabar datos personales sensibles.
+            Le informamos que, por la naturaleza de nuestra relación jurídica,
+            no requerimos recabar datos personales sensibles.
           </Typography>
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Finalidades prioritarias */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Finalidades Prioritarias
           </Typography>
@@ -79,8 +68,10 @@ export default function AvisoPrivacidad() {
               disposición.
             </li>
             <li>
-              Consultar y cotizar las características y precios de las
-              diferentes unidades vehiculares ofertadas.
+              Consultar y cotizar a través de nuestro micrositio ubicado en la
+              página electrónica antes mencionada, la consulta de las
+              características y precios de las diferentes unidades vehiculares
+              ofertadas.
             </li>
           </Box>
 
@@ -110,7 +101,6 @@ export default function AvisoPrivacidad() {
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Finalidades secundarias */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Finalidades Secundarias
           </Typography>
@@ -133,7 +123,6 @@ export default function AvisoPrivacidad() {
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Transferencia de datos */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Transferencia de Datos
           </Typography>
@@ -162,7 +151,7 @@ export default function AvisoPrivacidad() {
               <Box component="tr">
                 <Box component="th">Destinatario de los Datos Personales</Box>
                 <Box component="th">Finalidad</Box>
-                <Box component="th">Requiere consentim.</Box>
+                <Box component="th">Requiere consent.</Box>
               </Box>
             </Box>
             <Box component="tbody">
@@ -174,8 +163,17 @@ export default function AvisoPrivacidad() {
                 </Box>
                 <Box component="td">No</Box>
               </Box>
+              <Box component="tr">
+                <Box component="td">TSD RENTAL</Box>
+                <Box component="td">
+                  Incorporación a la base de datos comercial y procesamiento de
+                  la reserva
+                </Box>
+                <Box component="td">No</Box>
+              </Box>
             </Box>
           </Box>
+
           <Typography variant="body2" paragraph>
             Con relación a las finalidades secundarias y a las transferencias
             que requieren de su consentimiento, si las hubiere, usted cuenta con
@@ -186,7 +184,6 @@ export default function AvisoPrivacidad() {
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Derechos ARCO */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Derechos ARCO
           </Typography>
@@ -203,8 +200,7 @@ export default function AvisoPrivacidad() {
           </Typography>
           <Typography variant="body1" paragraph>
             Para el ejercicio de cualquiera de los derechos ARCO, usted deberá
-            presentar la solicitud respectiva enviando un correo electrónico a
-            la siguiente dirección:{" "}
+            presentar la solicitud respectiva enviando un correo electrónico a:{" "}
             <Link
               href="mailto:avisosdeprivacidad@qardeal.com.mx"
               underline="hover"
@@ -212,136 +208,73 @@ export default function AvisoPrivacidad() {
               avisosdeprivacidad@qardeal.com.mx
             </Link>
             , adjuntando copia de su identificación oficial con fotografía y en
-            caso de actuar mediante representante legal, adjuntando la escritura
-            pública que acredite su personalidad jurídica, indicando la fecha y
-            nombre de la persona que lo atendió, el número de crédito, contrato
-            u operación, número de serie del vehículo que adquirió con nosotros,
-            así como el número de la factura del vehículo o de la compra de
-            refacciones o ingreso del vehículo al área de servicio.
+            caso de actuar mediante representante legal, la escritura pública
+            correspondiente. Indique también fecha, nombre de quien lo atendió,
+            número de contrato, serie del vehículo o factura relacionada.
           </Typography>
           <Typography variant="body2" paragraph>
-            En un tiempo no mayor a 5 días hábiles se le informará la aceptación
-            o negativa de su solicitud y en caso de que esta sea aceptada,
-            contamos con 20 días para dar respuesta a su solicitud, mediante
-            correo electrónico a la dirección desde la cual hizo contacto con
-            nosotros.
+            Recibirá respuesta en un plazo no mayor a 5 días hábiles. En caso de
+            ser aceptada, daremos trámite en un máximo de 20 días a través del
+            correo que nos proporcionó.
           </Typography>
           <Typography variant="body2" paragraph>
-            Los datos de contacto de la persona o departamento de datos
-            personales, que está a cargo de dar trámite a las solicitudes de
-            derechos ARCO, son los siguientes: At’n. Ing. Isrrael López, con
-            domicilio en Avenida Cuauhtémoc 694, Piso 2, Colonia Narvarte
-            Poniente, Alcaldía Benito Juárez, C.P. 03020, Ciudad de México, al
-            siguiente correo electrónico: avisosdeprivacidad@qardeal.com.mx.
+            Responsable: Ing. Isrrael López, Avenida Cuauhtémoc 694, Piso 2,
+            Colonia Narvarte Poniente, C.P. 03020, CDMX. Correo:
+            avisosdeprivacidad@qardeal.com.mx
           </Typography>
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Revocación */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Revocación de Consentimiento
           </Typography>
           <Typography variant="body1" paragraph>
-            Usted puede revocar el consentimiento que, en su caso, nos haya
-            otorgado para el tratamiento de sus datos personales. Sin embargo,
-            es importante que tenga en cuenta que no en todos los casos podremos
-            atender su solicitud o concluir el uso de forma inmediata, ya que es
-            posible que por alguna obligación legal requiramos seguir tratando
-            sus datos personales. Asimismo, usted deberá considerar que, para
-            ciertos fines, la revocación de su consentimiento implicará que no
-            le podamos seguir prestando el servicio que nos solicitó, o la
-            conclusión de su relación con nosotros.
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Para revocar su consentimiento deberá presentar su solicitud a
-            través de correo electrónico a la siguiente dirección:{" "}
+            Usted puede revocar el consentimiento otorgado para el tratamiento
+            de sus datos personales escribiendo a:{" "}
             <Link
               href="mailto:avisosdeprivacidad@qardeal.com.mx"
               underline="hover"
             >
               avisosdeprivacidad@qardeal.com.mx
             </Link>
-            .
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Con relación al procedimiento y requisitos para la revocación de su
-            consentimiento, le informamos que el procedimiento es el mismo que
-            ha quedado estipulado en párrafos anteriores de este aviso de
-            privacidad, para el ejercicio de sus derechos ARCO.
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Con objeto de que usted pueda limitar el uso y divulgación de su
-            información personal, está a su disposición el siguiente correo
-            electrónico: avisosdeprivacidad@qardeal.com.mx
+            . Sin embargo, en algunos casos, por obligaciones legales, no
+            podremos atender su solicitud de forma inmediata.
           </Typography>
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Modificaciones */}
           <Typography variant="body2" paragraph>
-            El presente aviso de privacidad puede sufrir modificaciones, cambios
-            o actualizaciones, los cuales estarán a su disposición en nuestro
-            micrositio ubicado en la página electrónica de Grupo Andrade
-            www.grupoandrade.com o en la App de Grupo Andrade o de cualquier
-            otra plataforma o medio digital que pongamos a su disposición.
-          </Typography>
-          <Typography variant="body2" paragraph>
-            El procedimiento a través del cual se llevarán a cabo las
-            notificaciones sobre cambios o actualizaciones al presente aviso de
-            privacidad será a través de anuncios colocados en nuestras oficinas
-            o puntos de venta.
+            El presente aviso de privacidad puede sufrir modificaciones o
+            actualizaciones, las cuales estarán disponibles en nuestro sitio web{" "}
+            <Link
+              href="https://www.qardeal.com.mx"
+              target="_blank"
+              underline="hover"
+            >
+              www.qardeal.com.mx
+            </Link>
+            , app de Qardeal o plataformas digitales que pongamos a su
+            disposición. También podrán notificarse en puntos de venta físicos.
           </Typography>
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Cookies */}
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Uso de Cookies
           </Typography>
           <Typography variant="body1" paragraph>
-            Le informamos que en nuestra página de Internet utilizamos
-            “cookies”, con las cuales es posible monitorear sus preferencias en
-            nuestro sitio, brindarle un mejor servicio y experiencia de usuario
-            al navegar en nuestra página, así como ofrecerle nuevos productos y
-            servicios.
+            Nuestro sitio web utiliza cookies para mejorar la experiencia del
+            usuario, recordar preferencias, ofrecer productos personalizados y
+            generar estadísticas de navegación.
           </Typography>
           <Typography variant="body1" paragraph>
-            Las cookies son archivos de datos descargados automáticamente y
-            almacenados en su equipo de cómputo o dispositivo de comunicaciones
-            electrónicas al navegar en una página de Internet específica, que
-            permiten recordar al servidor de Internet algunos datos sobre el
-            usuario, entre ellos, sus preferencias de navegación.
+            Estas cookies recopilan información como el tipo de navegador,
+            páginas visitadas antes y después, vínculos que sigue, dirección IP,
+            ubicación aproximada y tiempo de permanencia.
           </Typography>
           <Typography variant="body1" paragraph>
-            La mayoría de las cookies expiran después de un periodo determinado
-            de tiempo, o bien el titular las puede borrar en el momento que lo
-            desee. Así mismo el titular puede hacer que el navegador le avise
-            cuando recibe una cookie de manera que pueda aceptarla o rechazarla.
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Por lo anterior, le informamos que a través de las cookies obtenemos
-            información personal del titular, como la siguiente:
-          </Typography>
-          <Box component="ul" sx={{ pl: 4, mb: 2 }}>
-            <li>El tipo de navegador y sistema operativo que utiliza.</li>
-            <li>
-              Las páginas de Internet que visita en forma previa y posterior a
-              la entrada del sitio del responsable.
-            </li>
-            <li>
-              Los vínculos que sigue y permanencia en el sitio del responsable.
-            </li>
-            <li>La dirección IP del Titular.</li>
-            <li>
-              Lugar desde el cual visita a la página del responsable y
-              estadísticas de navegación.
-            </li>
-          </Box>
-          <Typography variant="body1" paragraph>
-            Las cookies y otras tecnologías pueden ser deshabilitadas por el
-            titular, a continuación, le proporcionamos ligas con las
-            instrucciones para realizar esta acción en algunos de los
-            navegadores más populares:
+            Usted puede desactivar las cookies en su navegador. Instrucciones
+            disponibles para:
           </Typography>
           <Box component="ul" sx={{ pl: 4, mb: 2 }}>
             <li>
@@ -393,30 +326,15 @@ export default function AvisoPrivacidad() {
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Protección de datos */}
           <Typography variant="body2" paragraph>
-            Así mismo le informamos que su información se encuentra debidamente
-            protegida, cumpliendo con lo estipulado por la Secretaría de
-            Economía a través de la Norma Oficial Mexicana
-            NMX-COE-001-SCFI-2018.
-          </Typography>
-          <Typography variant="body2" paragraph>
-            Comercio Electrónico – Disposiciones a las que se sujetarán aquellas
-            personas que ofrezcan, comercialicen o vendan bienes, productos o
-            servicios.
+            Su información se encuentra protegida conforme a la Norma Oficial
+            Mexicana NMX-COE-001-SCFI-2018, sobre Comercio Electrónico.
           </Typography>
 
-          {/* Firma y fecha */}
           {/* <Box sx={{ mt: 4, textAlign: "right" }}>
             <Typography variant="body1" paragraph>
               He leído y acepto los términos y contenido del presente aviso de
               privacidad.
-            </Typography>
-            <Typography variant="caption" display="block">
-              Fecha: _______________________________________
-            </Typography>
-            <Typography variant="caption">
-              Nombre y firma: ________________________________
             </Typography>
           </Box> */}
         </Box>
