@@ -8,12 +8,15 @@ import { useBooking } from "@/contexts/BookingContext";
 import { useDebounce } from "use-debounce";
 import { usePathname } from "next/navigation";
 import { useAutoOpenSelectors } from "../hooks/useAutoOpenSelectors";
-import { useBusinessHours } from "../hooks/useBusinessHours";
+// import { useBusinessHours } from "../hooks/useBusinessHours";
 import { useLocations } from "../hooks/useLocations";
 import { isRentalPage, showCarImageOnPage } from "../utils/routes";
 import { generateTimeSlots } from "../utils/timeSlots";
 import { parseBusinessHours } from "../utils/locations";
-import { adjustReturnDate, validateAndAdjustDates } from "../utils/bookingLogic";
+import {
+  adjustReturnDate,
+  validateAndAdjustDates,
+} from "../utils/bookingLogic";
 import SearchForm from "./SearchForm";
 
 export default function SearchBar({ sx = {}, onSearch }) {
@@ -35,17 +38,18 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const showCarImage = showCarImageOnPage(router.pathname);
 
   // Hook para manejar horarios de sucursal
-  const {
-    pickupHours,
-    setPickupHours,
-    loadingPickupHours,
-    setLoadingPickupHours,
-    returnHours,
-    setReturnHours,
-    loadingReturnHours,
-    setLoadingReturnHours,
-    fetchBusinessHours,
-  } = useBusinessHours();
+  // --- Lógica de horarios comentada porque ya no se usa fetch ni loading ---
+  // const {
+  //   pickupHours,
+  //   setPickupHours,
+  //   loadingPickupHours,
+  //   setLoadingPickupHours,
+  //   returnHours,
+  //   setReturnHours,
+  //   loadingReturnHours,
+  //   setLoadingReturnHours,
+  //   fetchBusinessHours,
+  // } = useBusinessHours();
 
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
@@ -114,73 +118,74 @@ export default function SearchBar({ sx = {}, onSearch }) {
     useLocations(setSearchData);
 
   // useEffect para cargar horarios cuando pickupLocation cambie
-  useEffect(() => {
-    if (searchData.pickupLocation?.id) {
-      fetchBusinessHours(
-        searchData.pickupLocation.id,
-        setPickupHours,
-        setLoadingPickupHours
-      );
-
-      // y también carga return (ya sea misma oficina o distinta)
-      const returnId = searchData.sameOffice
-        ? searchData.pickupLocation.id
-        : searchData.returnLocation?.id;
-      if (returnId) {
-        fetchBusinessHours(returnId, setReturnHours, setLoadingReturnHours);
-      }
-    }
-  }, [
-    searchData.pickupLocation,
-    searchData.sameOffice,
-    searchData.returnLocation,
-  ]);
+  // useEffect(() => {
+  //   if (searchData.pickupLocation?.id) {
+  //     fetchBusinessHours(
+  //       searchData.pickupLocation.id,
+  //       setPickupHours,
+  //       setLoadingPickupHours
+  //     );
+  //
+  //     // y también carga return (ya sea misma oficina o distinta)
+  //     const returnId = searchData.sameOffice
+  //       ? searchData.pickupLocation.id
+  //       : searchData.returnLocation?.id;
+  //     if (returnId) {
+  //       fetchBusinessHours(returnId, setReturnHours, setLoadingReturnHours);
+  //     }
+  //   }
+  // }, [
+  //   searchData.pickupLocation,
+  //   searchData.sameOffice,
+  //   searchData.returnLocation,
+  // ]);
 
   // Handlers sin tocar
   const handlePickupLocationChange = (e, newValue) => {
     setSearchData({ ...searchData, pickupLocation: newValue });
     setShouldRedirect(true);
-    if (newValue?.id) {
-      fetchBusinessHours(
-        newValue.id,
-        (data) => {
-          setPickupHours(data);
-
-          const horario = parseBusinessHours(data);
-          if (horario) {
-            const validHours = generateTimeSlots(horario.start, horario.end);
-            if (!validHours.includes(searchData.pickupTime)) {
-              setSearchData((prev) => ({
-                ...prev,
-                pickupTime: validHours[0], // Primer horario válido
-              }));
-            }
-          }
-        },
-        setLoadingPickupHours
-      );
-
-      if (searchData.sameOffice) {
-        fetchBusinessHours(
-          newValue.id,
-          (data) => {
-            setReturnHours(data);
-
-            const horario = parseBusinessHours(data);
-            if (horario) {
-              const validHours = generateTimeSlots(horario.start, horario.end);
-              if (!validHours.includes(searchData.returnTime)) {
-                setSearchData((prev) => ({
-                  ...prev,
-                  returnTime: validHours[0],
-                }));
-              }
-            }
-          },
-          setLoadingReturnHours
-        );
-      }
-    }
+    // --- Lógica de fetch de horarios comentada ---
+    // if (newValue?.id) {
+    //   fetchBusinessHours(
+    //     newValue.id,
+    //     (data) => {
+    //       setPickupHours(data);
+    //
+    //       const horario = parseBusinessHours(data);
+    //       if (horario) {
+    //         const validHours = generateTimeSlots(horario.start, horario.end);
+    //         if (!validHours.includes(searchData.pickupTime)) {
+    //           setSearchData((prev) => ({
+    //             ...prev,
+    //             pickupTime: validHours[0], // Primer horario válido
+    //           }));
+    //         }
+    //       }
+    //     },
+    //     setLoadingPickupHours
+    //   );
+    //
+    //   if (searchData.sameOffice) {
+    //     fetchBusinessHours(
+    //       newValue.id,
+    //       (data) => {
+    //         setReturnHours(data);
+    //
+    //         const horario = parseBusinessHours(data);
+    //         if (horario) {
+    //           const validHours = generateTimeSlots(horario.start, horario.end);
+    //           if (!validHours.includes(searchData.returnTime)) {
+    //             setSearchData((prev) => ({
+    //               ...prev,
+    //               returnTime: validHours[0],
+    //             }));
+    //           }
+    //         }
+    //       },
+    //       setLoadingReturnHours
+    //     );
+    //   }
+    // }
   };
   const handleReturnLocationChange = (e, newValue) => {
     setShouldRedirect(true);
@@ -197,20 +202,20 @@ export default function SearchBar({ sx = {}, onSearch }) {
         returnTime: searchData.pickupTime,
       });
 
-      fetchBusinessHours(searchData.pickupLocation.id, (data) => {
-        setReturnHours(data);
-
-        const horario = parseBusinessHours(data);
-        if (horario) {
-          const validHours = generateTimeSlots(horario.start, horario.end);
-          if (!validHours.includes(searchData.returnTime)) {
-            setSearchData((prev) => ({
-              ...prev,
-              returnTime: validHours[0],
-            }));
-          }
-        }
-      });
+      // fetchBusinessHours(searchData.pickupLocation.id, (data) => {
+      //   setReturnHours(data);
+      //
+      //   const horario = parseBusinessHours(data);
+      //   if (horario) {
+      //     const validHours = generateTimeSlots(horario.start, horario.end);
+      //     if (!validHours.includes(searchData.returnTime)) {
+      //       setSearchData((prev) => ({
+      //         ...prev,
+      //         returnTime: validHours[0],
+      //       }));
+      //     }
+      //   }
+      // });
 
       return; // salimos porque ya hicimos todo
     }
@@ -218,26 +223,26 @@ export default function SearchBar({ sx = {}, onSearch }) {
     // Si es diferente, actualizamos normalmente
     setSearchData({ ...searchData, returnLocation: newValue });
 
-    if (newValue?.id && !searchData.sameOffice) {
-      fetchBusinessHours(
-        newValue.id,
-        (data) => {
-          setReturnHours(data);
-
-          const horario = parseBusinessHours(data);
-          if (horario) {
-            const validHours = generateTimeSlots(horario.start, horario.end);
-            if (!validHours.includes(searchData.returnTime)) {
-              setSearchData((prev) => ({
-                ...prev,
-                returnTime: validHours[0],
-              }));
-            }
-          }
-        },
-        setLoadingReturnHours
-      );
-    }
+    // if (newValue?.id && !searchData.sameOffice) {
+    //   fetchBusinessHours(
+    //     newValue.id,
+    //     (data) => {
+    //       setReturnHours(data);
+    //
+    //       const horario = parseBusinessHours(data);
+    //       if (horario) {
+    //         const validHours = generateTimeSlots(horario.start, horario.end);
+    //         if (!validHours.includes(searchData.returnTime)) {
+    //           setSearchData((prev) => ({
+    //             ...prev,
+    //             returnTime: validHours[0],
+    //           }));
+    //         }
+    //       }
+    //     },
+    //     setLoadingReturnHours
+    //   );
+    // }
   };
 
   const handleSameOfficeChange = () => {
@@ -254,17 +259,17 @@ export default function SearchBar({ sx = {}, onSearch }) {
       newSearchData.returnLocation = searchData.pickupLocation;
       newSearchData.returnTime = searchData.pickupTime;
 
-      if (searchData.pickupLocation?.id) {
-        fetchBusinessHours(
-          searchData.pickupLocation.id,
-          setReturnHours,
-          setLoadingReturnHours
-        );
-      }
+      // if (searchData.pickupLocation?.id) {
+      //   fetchBusinessHours(
+      //     searchData.pickupLocation.id,
+      //     setReturnHours,
+      //     setLoadingReturnHours
+      //   );
+      // }
     } else {
       newSearchData.returnLocation = null;
       newSearchData.returnTime = "";
-      setReturnHours(null);
+      // setReturnHours(null);
     }
 
     setSearchData(newSearchData);
@@ -358,7 +363,6 @@ export default function SearchBar({ sx = {}, onSearch }) {
       returnTimeRef,
     });
 
-
   // --- Render principal usando SearchForm extraído ---
   return (
     <Box
@@ -415,10 +419,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
               searchData={searchData}
               handlePickupLocationChange={handlePickupLocationChange}
               handleReturnLocationChange={handleReturnLocationChange}
-              pickupHours={pickupHours}
-              loadingPickupHours={loadingPickupHours}
-              returnHours={returnHours}
-              loadingReturnHours={loadingReturnHours}
+              // pickupHours={pickupHours}
+              // loadingPickupHours={loadingPickupHours}
+              // returnHours={returnHours}
+              // loadingReturnHours={loadingReturnHours}
               pickupDateRef={pickupDateRef}
               pickupTimeRef={pickupTimeRef}
               returnDateRef={returnDateRef}
@@ -447,10 +451,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
           searchData={searchData}
           handlePickupLocationChange={handlePickupLocationChange}
           handleReturnLocationChange={handleReturnLocationChange}
-          pickupHours={pickupHours}
-          loadingPickupHours={loadingPickupHours}
-          returnHours={returnHours}
-          loadingReturnHours={loadingReturnHours}
+          // pickupHours={pickupHours}
+          // loadingPickupHours={loadingPickupHours}
+          // returnHours={returnHours}
+          // loadingReturnHours={loadingReturnHours}
           pickupDateRef={pickupDateRef}
           pickupTimeRef={pickupTimeRef}
           returnDateRef={returnDateRef}
