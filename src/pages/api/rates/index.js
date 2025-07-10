@@ -48,7 +48,7 @@ export default async function handler(req, res) {
       <PickupDateTime>${pickupDateTime}</PickupDateTime>
       <ReturnDateTime>${returnDateTime}</ReturnDateTime>
       <ClassCode>${classCodes}</ClassCode>
-      <RateCode>BASIC</RateCode>
+      <RateCode>SUMMER</RateCode>
     </PayLoad>
   </TRNXML>
   `;
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     // console.log("RateProducts:", products);
     // Filtrar solo los productos con RateCode === 'BASIC'
     const rates = products
-      .filter((rp) => rp.RateCode === 'BASIC')
+      .filter((rp) => rp.RateCode === "SUMMER")
       .map((rp) => ({
         category: rp.ClassCode,
         rateId: rp.RateID,
