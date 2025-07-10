@@ -55,7 +55,6 @@ export default async function handler(req, res) {
     TSD_PASSCODE,
   } = process.env;
 
-
   const formattedPickup = formatCustomDateTime(pickupDateTime);
   const formattedReturn = formatCustomDateTime(returnDateTime);
 
@@ -86,7 +85,7 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickup}</PickupDateTime>
     <ReturnDateTime>${formattedReturn}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <RateCode>BASIC</RateCode>
+    <RateCode>SUMMER</RateCode>
     ${extraCodesXML}
     <TotalPricing>1</TotalPricing>
   </PayLoad>
@@ -113,8 +112,12 @@ export default async function handler(req, res) {
 
     // Buscar el RateProduct con RateCode === 'BASIC'
     const rateProduct = Array.isArray(json?.PRE?.TRNXML?.Payload?.RateProduct)
-      ? json.PRE.TRNXML.Payload.RateProduct.find(rp => rp.RateCode === 'BASIC')
-      : (json?.PRE?.TRNXML?.Payload?.RateProduct?.RateCode === 'BASIC' ? json.PRE.TRNXML.Payload.RateProduct : null);
+      ? json.PRE.TRNXML.Payload.RateProduct.find(
+          (rp) => rp.RateCode === "SUMMER"
+        )
+      : json?.PRE?.TRNXML?.Payload?.RateProduct?.RateCode === "SUMMER"
+      ? json.PRE.TRNXML.Payload.RateProduct
+      : null;
 
     const dailyExtras = rateProduct?.TotalPricing?.DailyExtra;
 
@@ -129,9 +132,7 @@ export default async function handler(req, res) {
 
     const result = extras
       .map((extra) => {
-        const match = allExtras.find(
-          (e) => e.codeExtras === extra.ExtraCode
-        );
+        const match = allExtras.find((e) => e.codeExtras === extra.ExtraCode);
         if (!match) return null;
         return {
           id: match.id,

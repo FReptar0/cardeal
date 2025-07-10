@@ -146,7 +146,7 @@ export default async function handler(req, res) {
     <PickupDateTime>${formattedPickup}</PickupDateTime>
     <ReturnDateTime>${formattedReturn}</ReturnDateTime>
     <ClassCode>${classCode}</ClassCode>
-    <RateCode>BASIC</RateCode>
+    <RateCode>SUMMER</RateCode>
 ${extraCodesXML}
     <TotalPricing>1</TotalPricing>
   </PayLoad>
@@ -189,7 +189,10 @@ ${extraCodesXML}
             ? rate.TotalPricing.DailyExtra
             : [rate.TotalPricing.DailyExtra];
           dailyExtras = dailyExtras.concat(extras);
-          console.log(`📥 [carInsurance] DailyExtra [RateProduct #${idx}]:`, JSON.stringify(extras, null, 2));
+          console.log(
+            `📥 [carInsurance] DailyExtra [RateProduct #${idx}]:`,
+            JSON.stringify(extras, null, 2)
+          );
         }
       });
     } else if (rateProducts) {
@@ -198,10 +201,15 @@ ${extraCodesXML}
           ? rateProducts.TotalPricing.DailyExtra
           : [rateProducts.TotalPricing.DailyExtra];
         dailyExtras = dailyExtras.concat(extras);
-        console.log("📥 [carInsurance] DailyExtra:", JSON.stringify(extras, null, 2));
+        console.log(
+          "📥 [carInsurance] DailyExtra:",
+          JSON.stringify(extras, null, 2)
+        );
       }
     } else {
-      console.log("📥 [carInsurance] No se encontró RateProduct en la respuesta JSON de TSD");
+      console.log(
+        "📥 [carInsurance] No se encontró RateProduct en la respuesta JSON de TSD"
+      );
     }
 
     if (!dailyExtras.length) {
@@ -216,10 +224,7 @@ ${extraCodesXML}
       precioTotal: parseFloat(extra.ExtraAmount),
     }));
 
-    console.log(
-      "✅ [carInsurance] Respuesta procesada correctamente:",
-      result
-    );
+    console.log("✅ [carInsurance] Respuesta procesada correctamente:", result);
     // Devolvemos el resultado
 
     return res.status(200).json(result);
