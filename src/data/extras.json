@@ -5,7 +5,7 @@
     "descripcion": "Se pueden incluir conductores adicionales con un costo extra por día.",
     "precio": 110,
     "codeExtras": "ADD",
-    "imagen": "/extras/adicional.webp"
+    "imagen": "/extras/adicional.avif"
   },
   {
     "id": "UAGE",
@@ -13,7 +13,7 @@
     "descripcion": "Los conductores menores de 25 años generan un cargo adicional por día.",
     "precio": 110,
     "codeExtras": "UAGE",
-    "imagen": "/extras/menor.webp"
+    "imagen": "/extras/menor.avif"
   },
   {
     "id": "BABY",
@@ -21,7 +21,7 @@
     "descripcion": "Bebé (grupo 0+), niños de 1 a 13 kilos.",
     "precio": 150,
     "codeExtras": "BABY",
-    "imagen": "/extras/baby-seat.webp"
+    "imagen": "/extras/baby-seat.avif"
   },
   {
     "id": "CHILD",
@@ -29,7 +29,7 @@
     "descripcion": "Niños de 1 a 25 kilos.",
     "precio": 150,
     "codeExtras": "CHILD",
-    "imagen": "/extras/child-seat.webp"
+    "imagen": "/extras/child-seat.avif"
   },
   {
     "id": "BOOST",
@@ -37,6 +37,6 @@
     "descripcion": "Asiento para niños de 18 a 45 kilos.",
     "precio": 150,
     "codeExtras": "BOOST",
-    "imagen": "/extras/Booster.webp"
+    "imagen": "/extras/Booster.avif"
   }
 ]

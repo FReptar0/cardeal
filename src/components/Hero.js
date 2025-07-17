@@ -44,7 +44,7 @@ export default function Hero() {
         }}
       >
         <Image
-          src="/extras/background-mexico-light.png"
+          src="/extras/background-mexico-light.avif"
           alt="Fondo"
           fill={false}
           width={1200}
