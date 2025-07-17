@@ -33,6 +33,7 @@ Cardeal is a full-stack web application that enables users to search, select, an
 1. Clone the repository
 2. Install dependencies:
 
+
 ```bash
 npm install
 # or
@@ -87,6 +88,7 @@ Build the application:
 npm run build
 npm start
 ```
+
 
 ## Development Scripts
 
