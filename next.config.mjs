@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: { reactRoot: true, prefetch: false },
   async headers(){
     return [
       {
