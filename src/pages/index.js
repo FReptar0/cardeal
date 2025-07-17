@@ -110,7 +110,6 @@ export default function Index() {
         }}
       >
         <video
-          src="/videos/LOGO.mp4"
           autoPlay
           loop
           muted
@@ -123,7 +122,10 @@ export default function Index() {
             height: "100%",
             objectFit: "cover",
           }}
-        />
+        >
+          <source src="/videos/LOGO.webm" type="video/webm" />
+          <source src="/videos/LOGO.mp4" type="video/mp4" />
+        </video>
       </AnimatedSection>
 
       {/* Sección Nuestra Flota */}
