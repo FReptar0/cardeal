@@ -1,11 +1,19 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
 
 export default function Document() {
   return (
     <Html lang="es">
       <Head>
         {/* Carga gtag.js con next/script correctamente */}
-        <script
+        {/* GTAG for AW-17260472755 using next/script */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17260472755"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-ads-conversion"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -28,12 +36,28 @@ export default function Document() {
             `,
           }}
         />
+        {/* Google Analytics tag using next/script */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-N4YZE7NF7W"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-N4YZE7NF7W');
+            `,
+          }}
+        />
       </Head>
       <body>
         <Main />
         <NextScript />
-        {/* Importante: script externo de GTAG aquí */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17260472755"></script>
       </body>
     </Html>
   );
