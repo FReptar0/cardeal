@@ -33,7 +33,7 @@ const extrasCatalogo = [
     descripcion:
       "Se pueden incluir conductores adicionales con un costo extra por día.",
     codeExtras: "ADD",
-    imagen: "/extras/adicional.webp",
+    imagen: "/extras/adicional.avif",
   },
   {
     id: "UAGE",
@@ -41,28 +41,28 @@ const extrasCatalogo = [
     descripcion:
       "Los conductores menores de 25 años generan un cargo adicional por día.",
     codeExtras: "UAGE",
-    imagen: "/extras/menor.webp",
+    imagen: "/extras/menor.avif",
   },
   {
     id: "BABY",
     nombre: "Baby Seat (Grupo 0+)",
     descripcion: "Bebé (grupo 0+), niños de 1 a 13 kilos.",
     codeExtras: "BABY",
-    imagen: "/extras/baby-seat.webp",
+    imagen: "/extras/baby-seat.avif",
   },
   {
     id: "CHILD",
     nombre: "Child Seat (Grupo 0/1/2)",
     descripcion: "Niños de 1 a 25 kilos.",
     codeExtras: "CHILD",
-    imagen: "/extras/child-seat.webp",
+    imagen: "/extras/child-seat.avif",
   },
   {
     id: "BOOST",
     nombre: "Booster",
     descripcion: "Asiento para niños de 18 a 45 kilos.",
     codeExtras: "BOOST",
-    imagen: "/extras/Booster.webp",
+    imagen: "/extras/Booster.avif",
   },
 ];
 
