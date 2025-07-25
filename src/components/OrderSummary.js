@@ -7,9 +7,7 @@ import {
   Card,
   CardContent,
   Typography,
-  Divider,
-  TextField,
-  Button,
+  Divider
 } from "@mui/material";
 import PropTypes from "prop-types";
 import Places from "@/components/Places";
