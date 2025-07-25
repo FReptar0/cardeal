@@ -12,7 +12,6 @@ import {
   Button,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import { useBooking } from "../contexts/BookingContext";
 import Places from "@/components/Places";
 
 export default function OrderSummary({
@@ -46,19 +45,6 @@ export default function OrderSummary({
   const [couponError, setCouponError] = useState(false);
   const [discountApplied, setDiscountApplied] = useState(false);
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
-  const { setDiscount } = useBooking(); // Importar el descuento del contexto
-
-  const handleApplyCoupon = () => {
-    if (appliedCoupon === "00001") {
-      setCouponError(false);
-      setDiscount(totalCarCost * 0.1); // Guardar el descuento en el contexto
-      setDiscountApplied(true);
-      setAppliedCoupon(""); // Limpiar el input
-    } else {
-      setCouponError(true);
-      setAppliedCoupon(""); // Limpiar el input incluso si hay error
-    }
-  };
 
   // Cambiar la lógica para detectar la página de confirmación
   const isConfirmationPage = router.asPath.startsWith("/confirm/");
@@ -555,55 +541,7 @@ export default function OrderSummary({
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Campo para ingresar código de cupón */}
-        {router.pathname !== "/confirm/[id]" && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 2 }}>
-            <Typography variant="body2" fontWeight="bold">
-              Ingresa código de cupón:
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 1, width: "100%" }}>
-              <TextField
-                variant="outlined"
-                size="small"
-                placeholder="Código de descuento"
-                sx={{
-                  flex: 0.85, // Relación 85% del ancho
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: 1,
-                }}
-                value={appliedCoupon}
-                onChange={(e) => setAppliedCoupon(e.target.value)}
-                error={couponError}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                sx={{
-                  flex: 0.15, // Relación 15% del ancho
-                  height: "40px", // Asegurar que el grosor sea consistente
-                  backgroundColor: (theme) => theme.palette.primary.buttons,
-                  fontWeight: "bold",
-                  textTransform: "none",
-                  borderRadius: 1,
-                }}
-                onClick={handleApplyCoupon}
-              >
-                APLICAR
-              </Button>
-            </Box>
-            {couponError && (
-              <Typography
-                variant="caption"
-                color="error"
-                sx={{ mt: 1, textAlign: "left", width: "100%" }}
-              >
-                Código de cupón no válido
-              </Typography>
-            )}
-          </Box>
-        )}
+        <Divider sx={{ my: 2 }} />
 
         {/* Mostrar la sección de totales adaptada para la página de confirmación */}
         {isConfirmationPage && (
