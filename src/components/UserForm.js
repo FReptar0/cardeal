@@ -33,6 +33,7 @@ import { useBooking } from "@/contexts/BookingContext";
 import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
 import { encryptId } from "@/utils/encryption";
+import { validateJWT } from "@/utils/security";
 
 const registrarReservaEnTSD = async ({
   bookingId,
@@ -104,16 +105,22 @@ export default function UserForm() {
   // Estado para el modo usuario registrado (por defecto es invitado)
   const [registeredMode, setRegisteredMode] = useState(false);
 
-  const isJwtExpired = (token) => {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.exp ? payload.exp < Math.floor(Date.now() / 1000) : false;
-    } catch {
-      return true;
+  // Safe JWT validation with proper error handling
+  const getTokenValidation = (token) => {
+    if (!token) {
+      return { isValid: false, isExpired: true };
     }
+
+    const validation = validateJWT(token);
+    return {
+      isValid: validation.isValid,
+      isExpired: validation.isExpired || false,
+      payload: validation.payload
+    };
   };
 
-  const tokenIsInvalid = !jwt || isJwtExpired(jwt);
+  const tokenValidation = getTokenValidation(jwt);
+  const tokenIsInvalid = !tokenValidation.isValid;
 
   // Esquema de validación dinámico según modo invitado
   const schema = React.useMemo(() => {
