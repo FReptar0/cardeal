@@ -31,7 +31,6 @@ export default function OrderSummaryConfirmed({
   discount,
   paidOnline,
 }) {
-  console.log("extrasInfo", extrasInfo);
 
   // Si extrasInfo es un objeto tipo {BABY: 1}, mapearlo usando el JSON
   const extrasArray = React.useMemo(() => {

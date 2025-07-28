@@ -29,7 +29,6 @@ export function getEmailData(templateId, data) {
     }
     try {
         validateData(data, templateId);
-        console.log(`Datos validados correctamente para la plantilla ${templateId}`);
     } catch (error) {
         console.error('Error de validación:', error.message);
         throw new Error(`Datos inválidos para la plantilla ${templateId}: ` + error);

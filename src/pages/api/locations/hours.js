@@ -44,7 +44,6 @@ export default async function handler(req, res) {
   `;
 
   try {
-    // console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
 
     const response = await fetch(TSD_ENDPOINT, {
       method: "POST",
@@ -58,8 +57,6 @@ export default async function handler(req, res) {
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     const hours = json?.PRE?.TRNXML?.Payload?.RentalLocation?.BusinessHours;
-    console.log("BusinessHours:", hours);
-    //console.log("JSON completo:", JSON.stringify(json, null, 2));
 
     res.status(200).json(hours || {});
   } catch (error) {

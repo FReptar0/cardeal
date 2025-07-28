@@ -46,13 +46,6 @@ export default async function handler(req, res) {
     classCode: classCodeRaw,
   } = req.body;
 
-  console.log("📥 [carInsurance] Parámetros recibidos:", {
-    pickupLocationId,
-    returnLocationId,
-    pickupDateTime,
-    returnDateTime,
-    classCodeRaw,
-  });
 
   if (
     !pickupLocationId ||
@@ -68,7 +61,6 @@ export default async function handler(req, res) {
 
   // Normalizamos classCode a mayúsculas y sin espacios al principio/final
   const classCode = classCodeRaw.trim().toUpperCase();
-  console.log("🔧 [carInsurance] classCode normalizado:", classCode);
 
   const {
     TSD_ENDPOINT,
@@ -97,7 +89,6 @@ export default async function handler(req, res) {
 
   // Determinamos si es SUV basado en SFAR o FFAR
   const esSUV = classCode === "SFAR" || classCode === "FFAR";
-  console.log("🔧 [carInsurance] ¿Es SUV? ->", esSUV);
 
   const proteccionesCatalogo = esSUV
     ? [
@@ -106,19 +97,10 @@ export default async function handler(req, res) {
         { codeExtras: "PDW SUV" },
       ]
     : [{ codeExtras: "CDW2" }, { codeExtras: "CDW" }, { codeExtras: "PDW" }];
-  console.log(
-    "🔧 [carInsurance] proteccionesCatalogo utilizadas:",
-    proteccionesCatalogo
-  );
 
   // Formateamos fechas para TSD
   const formattedPickup = formatCustomDateTime(pickupDateTime);
   const formattedReturn = formatCustomDateTime(returnDateTime);
-  console.log("🗓️ [carInsurance] Fechas formateadas:", {
-    formattedPickup,
-    formattedReturn,
-  });
-
   // Construimos XML
   const extraCodesXML = proteccionesCatalogo
     .map((e) => `    <ExtraCode>${e.codeExtras}</ExtraCode>`)
@@ -153,7 +135,6 @@ ${extraCodesXML}
 </TRNXML>
   `.trim();
 
-  //console.log("📤 [carInsurance] XML Body enviado a TSD:\n", xmlBody);
 
   try {
     const response = await fetch(TSD_ENDPOINT, {
@@ -189,10 +170,6 @@ ${extraCodesXML}
             ? rate.TotalPricing.DailyExtra
             : [rate.TotalPricing.DailyExtra];
           dailyExtras = dailyExtras.concat(extras);
-          console.log(
-            `📥 [carInsurance] DailyExtra [RateProduct #${idx}]:`,
-            JSON.stringify(extras, null, 2)
-          );
         }
       });
     } else if (rateProducts) {
@@ -201,15 +178,8 @@ ${extraCodesXML}
           ? rateProducts.TotalPricing.DailyExtra
           : [rateProducts.TotalPricing.DailyExtra];
         dailyExtras = dailyExtras.concat(extras);
-        console.log(
-          "📥 [carInsurance] DailyExtra:",
-          JSON.stringify(extras, null, 2)
-        );
       }
     } else {
-      console.log(
-        "📥 [carInsurance] No se encontró RateProduct en la respuesta JSON de TSD"
-      );
     }
 
     if (!dailyExtras.length) {
@@ -223,9 +193,6 @@ ${extraCodesXML}
       codeExtras: extra.ExtraCode,
       precioTotal: parseFloat(extra.ExtraAmount),
     }));
-
-    console.log("✅ [carInsurance] Respuesta procesada correctamente:", result);
-    // Devolvemos el resultado
 
     return res.status(200).json(result);
   } catch (error) {

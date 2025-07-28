@@ -129,7 +129,6 @@ export default function BookingConfirmation() {
 
   const { car, insurance, extras, search, contact } = booking;
 
-  console.log("Booking data:", booking);
 
   const days =
     Math.ceil(
@@ -157,7 +156,6 @@ export default function BookingConfirmation() {
       }, 0)
     : 0;
 
-  console.log("carPrice", subtotal, "extras", extrasCost);
 
   const otherCharges = (subtotal + extrasCost + insuranceCost) * 0.23;
 

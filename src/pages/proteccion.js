@@ -182,9 +182,6 @@ const getDynamicImagePath = (category, planId) => {
 
   const imagePath = `/Protecciones/${folder}/${planImageMap[planId]}`;
 
-  console.log(
-    `Ruta completa cero: /Protecciones/${folder}/${planImageMap.none}, Ruta completa básico: /Protecciones/${folder}/${planImageMap.basico}, Ruta completa intermedio: /Protecciones/${folder}/${planImageMap.intermedio}, Ruta completa completo: /Protecciones/${folder}/${planImageMap.completo}`
-  );
 
   return imagePath;
 };
@@ -233,7 +230,6 @@ const SeguroVehiculo = () => {
           classCode: selectedCar.abbreviation,
         };
 
-        console.log("📤 [front] Body para /api/carInsurance:", payload);
 
         try {
           const response = await fetch("/api/carInsurance", {
@@ -253,7 +249,6 @@ const SeguroVehiculo = () => {
           }
 
           const data = await response.json();
-          console.log("📥 [front] Respuesta JSON de /api/carInsurance:", data);
 
           const rentalDays =
             searchData && searchData.pickupDate && searchData.returnDate
@@ -264,7 +259,6 @@ const SeguroVehiculo = () => {
                 )
               : 1;
 
-          console.log("🔢 [front] rentalDays calculados:", rentalDays);
 
           const proteccionesConPrecioPorDia = data.map((extra) => {
             const precioDia =
@@ -277,10 +271,6 @@ const SeguroVehiculo = () => {
             };
           });
 
-          console.log(
-            "🗂️ [front] proteccionesConPrecioPorDia:",
-            proteccionesConPrecioPorDia
-          );
           setProteccionesDisponibles(proteccionesConPrecioPorDia);
         } catch (error) {
           console.error(
@@ -308,7 +298,6 @@ const SeguroVehiculo = () => {
 
   // Log the selected car and image paths for each insurance plan
   const planesConPrecioDinamico = React.useMemo(() => {
-    // console.log("Carro seleccionado:", selectedCar);
     return effectivePlanesSeguros.map((plan) => {
       if (plan.id === "none") {
         return {
@@ -322,7 +311,6 @@ const SeguroVehiculo = () => {
       );
       const precio = match ? match.precioDia : 0;
       const imagen = getDynamicImagePath(selectedCar?.category, plan.id);
-      // console.log(`Imagen para el plan ${plan.id}:`, imagen);
       return {
         ...plan,
         total: precio.toFixed(2),
@@ -353,7 +341,6 @@ const SeguroVehiculo = () => {
   const handleSelect = (plan) => {
     if (plan.id === "none" || plan.total !== "0.00") {
       setSelectedInsurance({ ...plan, code: plan.code });
-      console.log("✅ [front] Plan seleccionado:", plan);
 
       const planIndex = planesConPrecioDinamico.findIndex(
         (p) => p.id === plan.id
@@ -376,10 +363,6 @@ const SeguroVehiculo = () => {
     if (!selectedInsurance) {
       setOpenWarning(true);
     } else {
-      console.log(
-        "➡️ [front] Continuando con el seguro seleccionado:",
-        selectedInsurance
-      );
       router.push("/extras-renta");
     }
   };
@@ -406,11 +389,6 @@ const SeguroVehiculo = () => {
   // Log de rutas de imágenes generadas para cada plan
   React.useEffect(() => {
     if (selectedCar?.category) {
-      console.log("Categoría seleccionada:", selectedCar.category);
-      ["none", "basico", "intermedio", "completo"].forEach((planId) => {
-        const ruta = getDynamicImagePath(selectedCar.category, planId);
-        console.log(`Ruta imagen para plan '${planId}':`, ruta);
-      });
     }
   }, [selectedCar?.category]);
 

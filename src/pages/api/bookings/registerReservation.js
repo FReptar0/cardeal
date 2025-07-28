@@ -43,7 +43,6 @@ function formatCustomDateTime(inputString) {
 }
 
 export default async function handler(req, res) {
-  console.log("🔍 Handler reached: Processing request...");
   const endpoint = process.env.TSD_ENDPOINT;
   const {
     TSD_SENDER_ID,
@@ -52,21 +51,6 @@ export default async function handler(req, res) {
     TSD_CUSTOMER_NUMBER,
     TSD_PASSCODE,
   } = process.env;
-
-  console.log("🚀 registerReservation: iniciando handler");
-  console.log("📡 Endpoint TSD:", endpoint);
-  console.log("🔑 Credenciales:", {
-    sender: TSD_SENDER_ID,
-    recipient: TSD_RECIPIENT_ID,
-    partner: TSD_TRADING_PARTNER_CODE,
-    customer: TSD_CUSTOMER_NUMBER,
-    passcode: TSD_PASSCODE,
-  });
-
-  console.log("🔑 CustomerNumber:", process.env.TSD_CUSTOMER_NUMBER);
-  console.log("🔑 Passcode:", process.env.TSD_PASSCODE);
-
-  //
 
   // Datos que envia el cliente
   const {
@@ -83,9 +67,6 @@ export default async function handler(req, res) {
     rateId = "", // string con ID de tarifa o vacío
   } = req.body;
 
-  console.log("Fecha", formatCustomDateTime(pickupDateTime));
-  console.log("Fecha", formatCustomDateTime(returnDateTime));
-
   let extrasXML = extrasCodes
     .flatMap((code) => {
       // Si ya estás pasando objetos { id, cantidad }, adapta aquí
@@ -99,8 +80,6 @@ export default async function handler(req, res) {
   if (insuranceCode) {
     extrasXML = `    <ExtraCode>${insuranceCode}</ExtraCode>\n` + extrasXML;
   }
-
-  console.log("🚀 registerReservation Payload:", req.body);
 
   const formattedPickupDateTime = formatCustomDateTime(pickupDateTime);
   const formattedReturnDateTime = formatCustomDateTime(returnDateTime);
@@ -134,7 +113,6 @@ export default async function handler(req, res) {
 </TRNXML>`.trim();
 
   try {
-    console.log("📨 XML enviado:\n", xmlBody);
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/xml" },
@@ -142,10 +120,8 @@ export default async function handler(req, res) {
     });
 
     const xml = await response.text();
-    console.log("📨 XML recibido:\n", xml);
 
     const json = await parseStringPromise(xml, { explicitArray: false });
-    console.log("🔍 JSON parseado:\n", JSON.stringify(json, null, 2));
 
     const msg = json?.PRE?.TRNXML?.Message || {};
     if (msg.MessageID === "RSPERR") {

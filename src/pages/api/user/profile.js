@@ -1,30 +1,33 @@
 // /pages/api/user/profile.js
 import { connectToDatabase } from '@/utils/mongodb';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { authenticateRequest } from '@/utils/auth';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Método no permitido' });
     }
 
-    // Obtener el token de los encabezados
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: 'No autorizado' });
+    // Authenticate request
+    const authResult = authenticateRequest(req);
+    if (!authResult.success) {
+        return res.status(401).json({
+            message: authResult.error,
+            ...(authResult.code === 'TOKEN_EXPIRED' && { expired: true })
+        });
     }
-    const token = authHeader.split(" ")[1];
 
     try {
-        // Verificar y decodificar el token
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = authResult.decoded;
 
         // Extraer el userId (se asumió que en el login se envió: userId: user._id)
         const { db } = await connectToDatabase();
         const user = await db.collection('users').findOne({ _id: decoded.userId });
 
         if (!user) {
+            console.error('User profile fetch failed - user not found:', {
+                userId: decoded.userId,
+                timestamp: new Date().toISOString()
+            });
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
@@ -33,10 +36,12 @@ export default async function handler(req, res) {
 
         return res.status(200).json({ user });
     } catch (error) {
-        console.error("Error en la verificación del token:", error);
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ expired: true, message: 'Token expirado' });
-        }
-        return res.status(401).json({ message: 'Token inválido o expirado' });
+        console.error('User profile fetch failed - unexpected error:', {
+            error: error.message,
+            stack: error.stack,
+            userId: authResult.decoded?.userId,
+            timestamp: new Date().toISOString()
+        });
+        return res.status(500).json({ message: 'Error interno del servidor' });
     }
 }

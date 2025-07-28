@@ -155,8 +155,9 @@ export default async function handler(req, res) {
         rateId: booking.car?.rateId || "",
       };
 
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
       const tsdRes = await fetch(
-        `https://cardeal-beige.vercel.app/api/bookings/registerReservation`,
+        `${baseUrl}/api/bookings/registerReservation`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -165,10 +166,6 @@ export default async function handler(req, res) {
       );
 
       const tsdJson = await tsdRes.json();
-      console.log(
-        "Respuesta completa de TSD:",
-        JSON.stringify(tsdJson, null, 2)
-      );
 
       const msg = tsdJson?.PRE?.TRNXML?.Message || {};
       if (msg.MessageID === "RSPERR") {
@@ -196,7 +193,6 @@ export default async function handler(req, res) {
           },
         });
       } else {
-        console.warn("TSD no devolvió confirmNum. XML parseado:", tsdJson);
         await logEvent({
           webhook: "success",
           type: "internal_error",
@@ -209,7 +205,8 @@ export default async function handler(req, res) {
     }
 
     const encryptedId = encryptId(mp_order);
-    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const redirectUrl = `${baseUrl}/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
   } catch (err) {

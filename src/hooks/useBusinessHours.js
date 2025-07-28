@@ -42,7 +42,6 @@ export function useBusinessHours() {
   //                 data.OpenCloseSun[0] = "0900-1600";
   //             }
   //         }
-  //         console.log(JSON.stringify(data, null, 2));
   //         setHoursFn(data);
   //     } catch (err) {
   //         console.error("Error al obtener horarios:", err);
