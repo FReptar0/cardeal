@@ -44,7 +44,6 @@ export default function UserForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submittingOnline, setSubmittingOnline] = useState(false);
-  const [registeredMode, setRegisteredMode] = useState(false);
 
   // Safe JWT validation with proper error handling
   const getTokenValidation = (token) => {
@@ -62,6 +61,9 @@ export default function UserForm() {
 
   const tokenValidation = getTokenValidation(jwt);
   const tokenIsInvalid = !tokenValidation.isValid;
+  
+  // Detectar automáticamente el modo según la sesión
+  const [registeredMode, setRegisteredMode] = useState(!tokenIsInvalid);
 
   // Esquema de validación dinámico según modo invitado
   const schema = React.useMemo(() => {
@@ -456,35 +458,37 @@ export default function UserForm() {
           }
         />
 
-        {/* Checkbox para "Crear cuenta y reservar como usuario registrado" */}
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 1 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={registeredMode}
-                onChange={(_, checked) => setRegisteredMode(checked)}
-                sx={{
-                  color: (theme) => theme.palette.primary.buttons || "#10906a",
-                  "&.Mui-checked": {
-                    color: (theme) =>
-                      theme.palette.primary.buttons || "#10906a",
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography
-                sx={{
-                  ml: 1,
-                  color: (theme) => theme.palette.primary.buttons || "#10906a",
-                  fontWeight: 600,
-                }}
-              >
-                Crear cuenta y paga en línea
-              </Typography>
-            }
-          />
-        </Box>
+        {/* Checkbox para "Crear cuenta y reservar como usuario registrado" - Solo mostrar si no hay sesión */}
+        {tokenIsInvalid && (
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 1 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={registeredMode}
+                  onChange={(_, checked) => setRegisteredMode(checked)}
+                  sx={{
+                    color: (theme) => theme.palette.primary.buttons || "#10906a",
+                    "&.Mui-checked": {
+                      color: (theme) =>
+                        theme.palette.primary.buttons || "#10906a",
+                    },
+                  }}
+                />
+              }
+              label={
+                <Typography
+                  sx={{
+                    ml: 1,
+                    color: (theme) => theme.palette.primary.buttons || "#10906a",
+                    fontWeight: 600,
+                  }}
+                >
+                  Crear cuenta y paga en línea
+                </Typography>
+              }
+            />
+          </Box>
+        )}
 
         <PaymentButtons
           handleSubmit={handleSubmit}
