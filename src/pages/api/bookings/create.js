@@ -1,9 +1,8 @@
 // /pages/api/bookings/create.js
 import { connectToDatabase } from "@/utils/mongodb";
 import { generateUuid } from "@/utils/uuid";
-import jwt from "jsonwebtoken";
+import { authenticateRequest } from "@/utils/auth";
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const IVA_RATE = 0.16;
 
 export default async function handler(req, res) {
@@ -12,17 +11,14 @@ export default async function handler(req, res) {
   }
 
   // 1) Autenticación
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No autorizado" });
+  const authResult = authenticateRequest(req);
+  if (!authResult.success) {
+    return res.status(401).json({
+      message: authResult.error,
+      ...(authResult.code === 'TOKEN_EXPIRED' && { expired: true })
+    });
   }
-  let decoded;
-  try {
-    decoded = jwt.verify(authHeader.split(" ")[1], JWT_SECRET);
-  } catch {
-    return res.status(401).json({ message: "Token inválido o expirado" });
-  }
-  const userId = decoded.userId;
+  const userId = authResult.decoded.userId;
 
   // 2) Leer payload (ahora incluye cargos extra)
   const {
@@ -51,6 +47,10 @@ export default async function handler(req, res) {
     typeof paid !== "boolean" ||
     typeof paidOnline !== "boolean"
   ) {
+    console.error('Booking creation failed - validation error:', {
+      userId: userId,
+      timestamp: new Date().toISOString()
+    });
     return res.status(400).json({ message: "Faltan datos requeridos" });
   }
 
@@ -60,11 +60,34 @@ export default async function handler(req, res) {
     // 4) Generar orderNumber único
     const genOrder = () => Math.floor(100000 + Math.random() * 900000).toString();
     let orderNumber, isUnique = false;
-    while (!isUnique) {
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    while (!isUnique && attempts < maxAttempts) {
       orderNumber = genOrder();
-      if (!await db.collection("bookings").findOne({ orderNumber })) {
-        isUnique = true;
+      try {
+        const existing = await db.collection("bookings").findOne({ orderNumber });
+        if (!existing) {
+          isUnique = true;
+        }
+      } catch (error) {
+        console.error('Booking creation failed - order number verification error:', {
+          error: error.message,
+          userId: userId,
+          timestamp: new Date().toISOString()
+        });
+        return res.status(500).json({ message: "Error al crear la reserva" });
       }
+      attempts++;
+    }
+    
+    if (!isUnique) {
+      console.error('Booking creation failed - could not generate unique order number:', {
+        attempts: attempts,
+        userId: userId,
+        timestamp: new Date().toISOString()
+      });
+      return res.status(500).json({ message: "Error al crear la reserva" });
     }
 
     // 5) Cálculo de días de renta
@@ -143,7 +166,23 @@ export default async function handler(req, res) {
       updatedAt: new Date(),
     };
 
-    await db.collection("bookings").insertOne(newBooking);
+    try {
+      const result = await db.collection("bookings").insertOne(newBooking);
+      if (!result.insertedId) {
+        console.error('Booking creation failed - database insert error:', {
+          userId: userId,
+          timestamp: new Date().toISOString()
+        });
+        return res.status(500).json({ message: "Error al crear la reserva" });
+      }
+    } catch (error) {
+      console.error('Booking creation failed - database insert error:', {
+        error: error.message,
+        userId: userId,
+        timestamp: new Date().toISOString()
+      });
+      return res.status(500).json({ message: "Error al crear la reserva" });
+    }
 
     // 10) Devolver al frontend todos los totales para mostrar
     return res.status(201).json({
@@ -154,7 +193,12 @@ export default async function handler(req, res) {
       rentalDays,
     });
   } catch (error) {
-    console.error("Error creando reserva:", error);
+    console.error('Booking creation failed - unexpected error:', {
+      error: error.message,
+      stack: error.stack,
+      userId: userId,
+      timestamp: new Date().toISOString()
+    });
     return res.status(500).json({ message: "Error al crear la reserva" });
   }
 }

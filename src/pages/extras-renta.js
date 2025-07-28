@@ -156,9 +156,6 @@ const ExtrasRenta = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Selected extras:", selectedExtras);
-  }, [selectedExtras]);
 
   const rentalDays =
     searchData && searchData.pickupDate && searchData.returnDate
@@ -216,7 +213,6 @@ const ExtrasRenta = () => {
   };
 
   if (!isCarLoaded) {
-    console.log("⏳ Esperando que se cargue el coche desde localStorage...");
     return null;
   }
 

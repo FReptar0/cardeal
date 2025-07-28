@@ -40,8 +40,6 @@ export default async function handler(req, res) {
   `;
 
   try {
-    //console.log("XML BODY QUE SE ENVÍA A TSD >>>", xmlBody);
-
     const response = await fetch(TSD_ENDPOINT, {
       method: "POST",
       headers: {

@@ -33,8 +33,6 @@ export default async function handler(req, res) {
     classCode, // opcional: si no hay rateId, se usa <ClassCode>
   } = req.body;
 
-  console.log("Datos recibidos en la solicitud:", req.body);
-
   const pickupDateTime = "05262025 10:00 AM"; // Fecha de recogida hardcodeada
   const returnDateTime = "05282025 10:00 AM"; // Fecha de devolución hardcodeada
 
@@ -67,8 +65,6 @@ export default async function handler(req, res) {
   </PayLoad>
 </TRNXML>`.trim();
 
-  console.log("XML enviado al servidor externo:", xmlBody);
-
   try {
     const resp = await fetch(TSD_ENDPOINT, {
       method: "POST",
@@ -80,13 +76,6 @@ export default async function handler(req, res) {
     }
 
     const xml = await resp.text();
-    console.log("Detalles completos de la respuesta del servidor externo:", {
-      status: resp.status,
-      statusText: resp.statusText,
-      headers: Object.fromEntries(resp.headers.entries()),
-      body: xml,
-    });
-    console.log("Respuesta completa del servidor externo:", xml);
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     // Extraemos confirmación y, si existe, TotalPricing :contentReference[oaicite:1]{index=1}:contentReference[oaicite:2]{index=2}
@@ -94,7 +83,6 @@ export default async function handler(req, res) {
     const confirmNum = trn.ConfirmNum || null;
     const totalPricing = trn.TotalPricing || null;
 
-    console.log("Reserva exitosa:", { confirmNum, totalPricing });
 
     return res.status(200).json({ confirmNum, totalPricing });
   } catch (err) {

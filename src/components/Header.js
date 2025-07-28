@@ -57,7 +57,6 @@ const Header = () => {
 
   // Función para cerrar sesión
   const handleLogout = () => {
-    console.log("Cerrar sesión");
     handleCloseMenu();
     logout();
     router.push("/"); // Usar router.push en lugar de window.location.href

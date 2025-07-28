@@ -32,7 +32,6 @@ function formatCustomDateTime(inputString) {
 }
 
 export default async function handler(req, res) {
-  console.log("🔁 Handler ejecutado - Inicio de /api/tsdExtras");
 
   const {
     pickupLocationId,
@@ -43,8 +42,6 @@ export default async function handler(req, res) {
     allExtras = [],
   } = req.body;
 
-  //console.log("📦 Payload recibido:");
-  //console.log({ pickupLocationId, returnLocationId, pickupDateTime, returnDateTime, classCode, allExtras });
 
   const {
     TSD_ENDPOINT,
@@ -58,8 +55,6 @@ export default async function handler(req, res) {
   const formattedPickup = formatCustomDateTime(pickupDateTime);
   const formattedReturn = formatCustomDateTime(returnDateTime);
 
-  //console.log("🗓️ Fechas formateadas:");
-  //console.log({ formattedPickup, formattedReturn });
 
   const extraCodesXML = allExtras
     .map((e) => `<ExtraCode>${e.codeExtras}</ExtraCode>`)
@@ -91,11 +86,7 @@ export default async function handler(req, res) {
   </PayLoad>
 </TRNXML>`.trim();
 
-  //console.log("📤 XML generado:");
-  //console.log(xmlBody);
-
   try {
-    console.log("⏳ Enviando solicitud a TSD...");
     const response = await fetch(TSD_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/xml" },
@@ -103,12 +94,8 @@ export default async function handler(req, res) {
     });
 
     const xml = await response.text();
-    //console.log("📨 Respuesta XML recibida:");
-    //console.log(xml);
 
     const json = await parseStringPromise(xml, { explicitArray: false });
-    //console.log("🧾 JSON parseado:");
-    //console.dir(json, { depth: null });
 
     // Buscar el RateProduct con RateCode === 'BASIC'
     const rateProduct = Array.isArray(json?.PRE?.TRNXML?.Payload?.RateProduct)
@@ -127,9 +114,6 @@ export default async function handler(req, res) {
     }
 
     const extras = Array.isArray(dailyExtras) ? dailyExtras : [dailyExtras];
-    //console.log("🎯 Extras encontrados:");
-    //console.log(extras);
-
     const result = extras
       .map((extra) => {
         const match = allExtras.find((e) => e.codeExtras === extra.ExtraCode);
@@ -143,10 +127,6 @@ export default async function handler(req, res) {
         };
       })
       .filter(Boolean);
-
-    console.log("✅ Resultado final a retornar:");
-    console.log(result);
-
     res.status(200).json(result);
   } catch (error) {
     console.error("❌ Error al procesar la solicitud:", error);

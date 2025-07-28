@@ -1,7 +1,5 @@
 import { connectToDatabase } from '@/utils/mongodb';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { authenticateRequest } from '@/utils/auth';
 
 export default async function handler(req, res) {
     if (req.method !== "GET") {
@@ -9,18 +7,14 @@ export default async function handler(req, res) {
     }
 
     // — Verificar token —
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ message: 'No autorizado' });
+    const authResult = authenticateRequest(req);
+    if (!authResult.success) {
+        return res.status(401).json({
+            message: authResult.error,
+            ...(authResult.code === 'TOKEN_EXPIRED' && { expired: true })
+        });
     }
-    const token = authHeader.split(" ")[1];
-    let decoded;
-    try {
-        decoded = jwt.verify(token, JWT_SECRET);
-    } catch {
-        return res.status(401).json({ message: 'Token inválido o expirado' });
-    }
-    const userId = decoded.userId;
+    const userId = authResult.decoded.userId;
 
     // — Parámetros de paginación (5 por página) —
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -33,6 +27,10 @@ export default async function handler(req, res) {
         // — Validar usuario —
         const user = await db.collection("users").findOne({ _id: userId });
         if (!user) {
+            console.error('Bookings fetch failed - user not found:', {
+                userId: userId,
+                timestamp: new Date().toISOString()
+            });
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
@@ -54,7 +52,12 @@ export default async function handler(req, res) {
         const totalPages = Math.ceil(total / limit);
         return res.status(200).json({ bookings, total, totalPages });
     } catch (error) {
-        console.error(error);
+        console.error('Bookings fetch failed - unexpected error:', {
+            error: error.message,
+            stack: error.stack,
+            userId: userId,
+            timestamp: new Date().toISOString()
+        });
         return res.status(500).json({ message: 'Error al obtener las reservas' });
     }
 }

@@ -60,14 +60,12 @@ export default async function handler(req, res) {
       body: xmlBody,
     });
     const xml = await response.text();
-    //console.log("Respuesta XML de TSD:", xml);
     const json = await parseStringPromise(xml, { explicitArray: false });
 
     // Extraemos los RateProduct (podría venir un solo objeto o array)
     let products = json?.PRE?.TRNXML?.Payload?.RateProduct || [];
     products = Array.isArray(products) ? products : [products];
 
-    // console.log("RateProducts:", products);
     // Filtrar solo los productos con RateCode === 'BASIC'
     const rates = products
       .filter((rp) => rp.RateCode === "SUMMER")

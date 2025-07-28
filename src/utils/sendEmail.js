@@ -34,7 +34,6 @@ export async function sendEmail({ to, templateId, data }) {
 
     try {
         const info = await transport.sendMail(mailOptions);
-        console.log('Email enviado:', info.response);
         return info;
     } catch (error) {
         console.error('Error al enviar el email:', error);
