@@ -2,29 +2,25 @@
 const nextConfig = {
   reactStrictMode: true,
   async headers() {
+    const oneMonth = 30 * 24 * 60 * 60;
+    const fiveYears = 5 * 365 * 24 * 60 * 60;
+
     return [
       {
-        source: '/:path*',
-        has: [
-          {
-            type: 'header',
-            key: 'accept',
-            value: 'text/html'
-          }
-        ],
+        source: '/videos/:path*\\.(mp4|webm)$',
         headers: [
           {
-            key: 'cache-control',
-            value: 'public, max-age=3600, stale-while-revalidate=59'
+            key: 'Cache-Control',
+            value: `max-age=${fiveYears}, s-maxage=${fiveYears}, immutable`
           }
         ]
       },
       {
-        source: '/:path*\\.(js|css|png|jpg|jpeg|webp|avif|mp4|webm)$',
+        source: '/:path*',
         headers: [
           {
-            key: 'cache-control',
-            value: 'public, max-age=31536000, immutable'
+            key: 'Cache-Control',
+            value: `max-age=${oneMonth}, s-maxage=${oneMonth}, immutable`
           }
         ]
       }
