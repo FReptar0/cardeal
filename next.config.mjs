@@ -14,7 +14,7 @@ const nextConfig = {
         ],
         headers: [
           {
-            key: 'Cache-Control',
+            key: 'cache-control',
             value: 'public, max-age=3600, stale-while-revalidate=59'
           }
         ]
@@ -23,7 +23,7 @@ const nextConfig = {
         source: '/:path*\\.(js|css|png|jpg|jpeg|webp|avif|mp4|webm)$',
         headers: [
           {
-            key: 'Cache-Control',
+            key: 'cache-control',
             value: 'public, max-age=31536000, immutable'
           }
         ]
