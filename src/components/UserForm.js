@@ -2,29 +2,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import differenceInYears from "date-fns/differenceInYears";
 import {
   Box,
   Card,
-  TextField,
-  Button,
   Typography,
   FormControlLabel,
   Checkbox,
   Link,
   Divider,
   CircularProgress,
-  IconButton,
-  InputAdornment,
-  Switch,
 } from "@mui/material";
-import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
-import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -34,56 +23,11 @@ import { useSearch } from "@/contexts/SearchContext";
 import useUserProfile from "@/hooks/useUserProfile";
 import { encryptId } from "@/utils/encryption";
 import { validateJWT } from "@/utils/security";
-
-const registrarReservaEnTSD = async ({
-  bookingId,
-  contactName,
-  selectedCar,
-  selectedInsurance,
-  selectedExtras,
-  searchData,
-}) => {
-  try {
-    const res = await fetch("/api/bookings/registerReservation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        pickupLocationId: searchData.pickupLocation?.id,
-        returnLocationId: searchData.sameOffice
-          ? searchData.pickupLocation?.id
-          : searchData.returnLocation?.id,
-        pickupDateTime: `${searchData.pickupDate} ${searchData.pickupTime}`,
-        returnDateTime: `${searchData.returnDate} ${searchData.returnTime}`,
-        classCode: selectedCar?.abbreviation,
-        unitNumber: selectedCar?.unitNumber,
-        renterFirst: contactName.split(" ")[0],
-        renterLast: contactName.split(" ").slice(1).join(" "),
-        extrasCodes: Object.values(selectedExtras)
-          .filter((extra) => extra.cantidad > 0)
-          .map((extra) => ({
-            id: extra.id,
-            cantidad: extra.cantidad,
-          })),
-        insuranceCode: selectedInsurance?.code || "",
-        rateId: selectedCar?.rateId,
-      }),
-    });
-
-    const tsdJson = await res.json();
-
-    if (!res.ok) {
-      throw new Error(tsdJson.message || "Error en la reserva con TSD");
-    }
-
-    return {
-      success: true,
-      confirmNum: tsdJson.PRE?.TRNXML?.ConfirmNum || null,
-    };
-  } catch (err) {
-    console.error("❌ Error registrando en TSD:", err.message);
-    return false;
-  }
-};
+import { createGuestSchema, createRegisteredSchema } from "@/utils/formValidationSchemas";
+import { registrarReservaEnTSD } from "@/utils/tsdIntegration";
+import BookingFormFields from "@/components/forms/BookingFormFields";
+import AuthenticationFlow from "@/components/forms/AuthenticationFlow";
+import PaymentButtons from "@/components/forms/PaymentButtons";
 
 export default function UserForm() {
   const router = useRouter();
@@ -100,9 +44,6 @@ export default function UserForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submittingOnline, setSubmittingOnline] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // Estado para el modo usuario registrado (por defecto es invitado)
   const [registeredMode, setRegisteredMode] = useState(false);
 
   // Safe JWT validation with proper error handling
@@ -124,114 +65,9 @@ export default function UserForm() {
 
   // Esquema de validación dinámico según modo invitado
   const schema = React.useMemo(() => {
-    if (!registeredMode) {
-      // Invitado por defecto
-      return yup.object().shape({
-        fullName: yup
-          .string()
-          .required("El nombre completo es obligatorio")
-          .test(
-            "has-lastname",
-            "Debes ingresar al menos un nombre y un apellido",
-            (value) => {
-              if (!value) return false;
-              // Debe tener al menos dos palabras separadas por espacio
-              const parts = value.trim().split(/\s+/);
-              return parts.length >= 2 && parts[1].length > 0;
-            }
-          ),
-        phone: yup.string().required("El teléfono es obligatorio"),
-        email: yup
-          .string()
-          .email("Correo inválido")
-          .required("El correo es obligatorio"),
-        confirmEmail: yup
-          .string()
-          .oneOf([yup.ref("email"), null], "Los correos no coinciden")
-          .required("Confirma el correo electrónico"),
-        birthDate: yup
-          .date()
-          .typeError(
-            "Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)"
-          )
-          .required("La fecha de nacimiento es obligatoria")
-          .test(
-            "is-adult",
-            "Debes tener al menos 18 años para registrarte",
-            (value) => {
-              if (
-                !value ||
-                Object.prototype.toString.call(value) !== "[object Date]" ||
-                isNaN(value.getTime())
-              ) {
-                return false;
-              }
-              return differenceInYears(new Date(), new Date(value)) >= 18;
-            }
-          ),
-        terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-        privacy: yup
-          .boolean()
-          .oneOf([true], "Debes aceptar la política de privacidad"),
-      });
-    }
-    // Usuario registrado o registro nuevo
-    return yup.object().shape({
-      terms: yup.boolean().oneOf([true], "Debes aceptar los términos"),
-      privacy: yup
-        .boolean()
-        .oneOf([true], "Debes aceptar la política de privacidad"),
-      ...(tokenIsInvalid && {
-        fullName: yup
-          .string()
-          .required("El nombre completo es obligatorio")
-          .test(
-            "has-lastname",
-            "Debes ingresar al menos un nombre y un apellido",
-            (value) => {
-              if (!value) return false;
-              const parts = value.trim().split(/\s+/);
-              return parts.length >= 2 && parts[1].length > 0;
-            }
-          ),
-        phone: yup.string().required("El teléfono es obligatorio"),
-        email: yup
-          .string()
-          .email("Correo inválido")
-          .required("El correo es obligatorio"),
-        birthDate: yup
-          .date()
-          .typeError(
-            "Por favor, ingresa una fecha válida en el formato correcto (YYYY-MM-DD)"
-          )
-          .required("La fecha de nacimiento es obligatoria")
-          .test(
-            "is-adult",
-            "Debes tener al menos 18 años para registrarte",
-            (value) => {
-              if (
-                !value ||
-                Object.prototype.toString.call(value) !== "[object Date]" ||
-                isNaN(value.getTime())
-              ) {
-                return false;
-              }
-              return differenceInYears(new Date(), new Date(value)) >= 18;
-            }
-          ),
-        password: yup
-          .string()
-          .required("La contraseña es obligatoria")
-          .min(8, "Debe contener al menos 8 caracteres")
-          .matches(/[a-z]/, "Debe contener al menos una letra minúscula")
-          .matches(/[A-Z]/, "Debe contener al menos una letra mayúscula")
-          .matches(/\d/, "Debe contener al menos un número"),
-        confirmPassword: yup
-          .string()
-          .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
-          .required("Confirma la contraseña"),
-      }),
-    });
+    return !registeredMode 
+      ? createGuestSchema() 
+      : createRegisteredSchema(tokenIsInvalid);
   }, [registeredMode, tokenIsInvalid]);
 
   const {
@@ -243,16 +79,15 @@ export default function UserForm() {
     reset,
   } = useForm({
     resolver: yupResolver(schema),
-    mode: "all", // Validación en tiempo real para todos los campos
-    reValidateMode: "onChange", // Revalida en cada cambio
-    criteriaMode: "all", // Muestra todos los errores posibles
+    mode: "all",
+    reValidateMode: "onChange",
+    criteriaMode: "all",
     defaultValues: {
       fullName: "",
       phone: "",
       email: "",
       confirmEmail: "",
       birthDate: "",
-      // location: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -351,7 +186,7 @@ export default function UserForm() {
 
         if (!tsdResponse.success || !tsdResponse.confirmNum) {
           toast.error(
-            "No se pudo registrar la reserva en TSD. Intenta de nuevo."
+            tsdResponse.error || "No se pudo registrar la reserva en TSD. Intenta de nuevo."
           );
           setSubmitting(false);
           setSubmittingOnline(false);
@@ -513,7 +348,7 @@ export default function UserForm() {
 
         if (!tsdResponse.success) {
           toast.error(
-            "La reserva fue registrada localmente, pero falló en TSD."
+            tsdResponse.error || "La reserva fue registrada localmente, pero falló en TSD."
           );
           return;
         }
@@ -570,135 +405,20 @@ export default function UserForm() {
       <Divider sx={{ my: 2 }} />
 
       <Box component="form">
-        {tokenIsInvalid && (
-          <>
-            <TextField
-              label="Nombre completo"
-              fullWidth
-              margin="normal"
-              {...register("fullName")}
-              error={!!errors.fullName}
-              helperText={errors.fullName?.message}
-            />
-            <Controller
-              name="phone"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Box sx={{ width: "100%", mt: 1 }}>
-                  <PhoneInput
-                    {...field}
-                    country="mx"
-                    enableSearch
-                    inputStyle={{
-                      width: "100%",
-                      height: "56px",
-                      fontSize: "16px",
-                      paddingLeft: "48px",
-                      borderRadius: "4px",
-                      border: `1px solid ${
-                        errors.phone ? "#d32f2f" : "#c4c4c4"
-                      }`,
-                    }}
-                    buttonStyle={{ border: "none", background: "transparent" }}
-                    onBlur={field.onBlur}
-                    onChange={(value) => field.onChange(value)}
-                  />
-                  {errors.phone && (
-                    <Typography
-                      variant="caption"
-                      color="error"
-                      sx={{ mt: 0.5 }}
-                    >
-                      {errors.phone.message}
-                    </Typography>
-                  )}
-                </Box>
-              )}
-            />
-            <TextField
-              label="Correo electrónico"
-              type="email"
-              fullWidth
-              margin="normal"
-              {...register("email")}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-            />
-            {!registeredMode && (
-              <TextField
-                label="Confirmar correo electrónico"
-                type="email"
-                fullWidth
-                margin="normal"
-                {...register("confirmEmail")}
-                error={!!errors.confirmEmail}
-                helperText={errors.confirmEmail?.message}
-              />
-            )}
-            {/* Fecha de nacimiento siempre visible, contraseñas solo si es modo registrado */}
-            <TextField
-              label="Fecha de nacimiento"
-              type="date"
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-              {...register("birthDate")}
-              error={!!errors.birthDate}
-              helperText={errors.birthDate?.message}
-            />
-            {registeredMode && (
-              <>
-                <TextField
-                  label="Contraseña"
-                  type={showPassword ? "text" : "password"}
-                  fullWidth
-                  margin="normal"
-                  {...register("password")}
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword((p) => !p)}>
-                          {showPassword ? (
-                            <VisibilityOffOutlined />
-                          ) : (
-                            <VisibilityOutlined />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <TextField
-                  label="Confirmar contraseña"
-                  type={showConfirmPassword ? "text" : "password"}
-                  fullWidth
-                  margin="normal"
-                  {...register("confirmPassword")}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword?.message}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword((p) => !p)}
-                        >
-                          {showConfirmPassword ? (
-                            <VisibilityOffOutlined />
-                          ) : (
-                            <VisibilityOutlined />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </>
-            )}
-          </>
-        )}
+        <BookingFormFields
+          register={register}
+          control={control}
+          errors={errors}
+          registeredMode={registeredMode}
+          tokenIsInvalid={tokenIsInvalid}
+        />
+        
+        <AuthenticationFlow
+          register={register}
+          errors={errors}
+          registeredMode={registeredMode}
+          tokenIsInvalid={tokenIsInvalid}
+        />
         <FormControlLabel
           control={
             <Checkbox
@@ -766,142 +486,17 @@ export default function UserForm() {
           />
         </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: 2,
-            mt: 3,
-          }}
-        >
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={handleSubmit(onSubmit(false))}
-            disabled={
-              submitting ||
-              (!registeredMode
-                ? !watch("fullName") ||
-                  !watch("phone") ||
-                  !watch("email") ||
-                  !watch("birthDate") ||
-                  !watch("terms") ||
-                  !watch("privacy")
-                : (tokenIsInvalid && !isValid) ||
-                  !watch("terms") ||
-                  !watch("privacy"))
-            }
-            sx={{
-              borderColor: "#10906a",
-              backgroundColor: "#fff",
-              color: "#111",
-              "&:hover": {
-                borderColor: "#10906a",
-                backgroundColor: "#e6f5f0",
-                color: "#111",
-              },
-              position: "relative",
-              minHeight: 64,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 700,
-            }}
-          >
-            <span
-              style={{ width: "100%", textAlign: "center", fontWeight: 700 }}
-            >
-              {submitting
-                ? "Procesando..."
-                : "Pago en mostrador".charAt(0).toUpperCase() +
-                  "Pago en mostrador".slice(1).toLowerCase()}
-            </span>
-            <span style={{ width: "100%", textAlign: "center", marginTop: 4 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color:
-                    submitting ||
-                    (!registeredMode
-                      ? !watch("fullName") ||
-                        !watch("phone") ||
-                        !watch("email") ||
-                        !watch("birthDate") ||
-                        !watch("terms") ||
-                        !watch("privacy")
-                      : tokenIsInvalid && !isValid)
-                      ? "#b0b0b0"
-                      : "#111",
-                  fontWeight: 700,
-                  display: "block",
-                }}
-              >
-                {`Total: $${calculateTotal(false)}`}
-              </Typography>
-            </span>
-          </Button>
-
-          {registeredMode && (
-            <Button
-              fullWidth
-              variant="contained"
-              color="success"
-              onClick={handleSubmit(onSubmit(true))}
-              disabled={
-                submittingOnline ||
-                (tokenIsInvalid && !isValid) ||
-                !watch("terms") ||
-                !watch("privacy")
-              }
-              sx={{
-                backgroundColor: (theme) =>
-                  submittingOnline || (tokenIsInvalid && !isValid)
-                    ? "rgba(16, 144, 106, 0.5)" // verde opaco
-                    : theme.palette.primary.buttons || "#10906a",
-                "&:hover": {
-                  backgroundColor: (theme) =>
-                    submittingOnline || (tokenIsInvalid && !isValid)
-                      ? "rgba(16, 144, 106, 0.7)"
-                      : theme.palette.primary.buttons || "#10906a",
-                },
-                position: "relative",
-                minHeight: 64,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              <span
-                style={{ width: "100%", textAlign: "center", fontWeight: 700 }}
-              >
-                {submittingOnline
-                  ? "Redirigiendo…"
-                  : "Pago en línea".charAt(0).toUpperCase() +
-                    "Pago en línea".slice(1).toLowerCase()}
-              </span>
-              <span
-                style={{ width: "100%", textAlign: "center", marginTop: 4 }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color:
-                      submittingOnline || (tokenIsInvalid && !isValid)
-                        ? "#b0b0b0"
-                        : "#fff",
-                    fontWeight: 700,
-                    display: "block",
-                  }}
-                >
-                  {`Total: $${calculateTotal(true)}`}
-                </Typography>
-              </span>
-            </Button>
-          )}
-        </Box>
+        <PaymentButtons
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
+          submitting={submitting}
+          submittingOnline={submittingOnline}
+          registeredMode={registeredMode}
+          tokenIsInvalid={tokenIsInvalid}
+          isValid={isValid}
+          watch={watch}
+          calculateTotal={calculateTotal}
+        />
       </Box>
     </Card>
   );
