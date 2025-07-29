@@ -212,7 +212,6 @@ export default async function handler(req, res) {
     });
 
     const encryptedId = encryptId(mp_order);
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
     const redirectUrl = `${baseUrl}/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
