@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -6,14 +6,27 @@ import {
     Tabs,
     Tab,
     Modal,
+    Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import Image from "next/image";
+import { validateIframeUrl } from "@/utils/security";
 
 export default function CarDetailModal({ open, onClose, car }) {
     const [tabIndex, setTabIndex] = React.useState(0);
+    const [iframeValidation, setIframeValidation] = useState({ isValid: false, sanitizedUrl: '', error: '' });
+
+    // Validate iframe URL when car changes
+    useEffect(() => {
+        if (car?.image360) {
+            const validation = validateIframeUrl(car.image360);
+            setIframeValidation(validation);
+        } else {
+            setIframeValidation({ isValid: false, sanitizedUrl: '', error: '' });
+        }
+    }, [car?.image360]);
 
     if (!car) return null;
 
@@ -107,15 +120,44 @@ export default function CarDetailModal({ open, onClose, car }) {
                             ))}
                         </Swiper>
                     ) : (
-                        <iframe
-                            src={car.image360}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                border: "none",
-                                borderRadius: 8,
-                            }}
-                        />
+                        <>
+                            {iframeValidation.isValid ? (
+                                <iframe
+                                    src={iframeValidation.sanitizedUrl}
+                                    title="Vista 360° del vehículo"
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        border: "none",
+                                        borderRadius: 8,
+                                    }}
+                                    sandbox="allow-scripts allow-same-origin"
+                                    loading="lazy"
+                                />
+                            ) : (
+                                <Box
+                                    sx={{
+                                        width: "100%",
+                                        height: "100%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "column",
+                                        backgroundColor: "#f5f5f5",
+                                        borderRadius: 2,
+                                    }}
+                                >
+                                    <Alert severity="warning" sx={{ mb: 2 }}>
+                                        Vista 360° no disponible
+                                    </Alert>
+                                    {iframeValidation.error && (
+                                        <Typography variant="caption" color="text.secondary">
+                                            {iframeValidation.error}
+                                        </Typography>
+                                    )}
+                                </Box>
+                            )}
+                        </>
                     )}
                 </Box>
                 <Box

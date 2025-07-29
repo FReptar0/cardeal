@@ -1,18 +1,27 @@
-import React, { useState } from "react";
-import { Box, IconButton, Paper } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, IconButton, Paper, Alert, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import { SupportAgent } from "@mui/icons-material";
+import { validateIframeUrl } from "@/utils/security";
 
 const WHATSAPP_GREEN = "#25D366";
 
 const ChatBubble = () => {
   const [open, setOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false); // Estado separado para el chatbot
+  const [iframeValidation, setIframeValidation] = useState({ isValid: false, sanitizedUrl: '', error: '' });
 
   const toggleChat = () => setOpen((prev) => !prev);
   const toggleChatbot = () => setChatOpen((prev) => !prev); // Nueva función para el chatbot
+
+  // Validate chatbot iframe URL
+  useEffect(() => {
+    const chatbotUrl = "https://app-webhook-pd.pymesdigital.store/webhook/d3d04c98-9076-45c8-bf6c-d3e2bd3fb62a/chat";
+    const validation = validateIframeUrl(chatbotUrl);
+    setIframeValidation(validation);
+  }, []);
 
   // Tamaños
   const size = 80; // Tamaño reducido
@@ -181,13 +190,38 @@ const ChatBubble = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <iframe
-              src="https://app-webhook-pd.pymesdigital.store/webhook/d3d04c98-9076-45c8-bf6c-d3e2bd3fb62a/chat"
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-              title="Chatbot"
-            />
+            {iframeValidation.isValid ? (
+              <iframe
+                src={iframeValidation.sanitizedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: "none" }}
+                title="Chatbot de soporte"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                loading="lazy"
+              />
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  p: 2,
+                }}
+              >
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  Chat no disponible
+                </Alert>
+                {iframeValidation.error && (
+                  <Typography variant="caption" color="text.secondary">
+                    {iframeValidation.error}
+                  </Typography>
+                )}
+              </Box>
+            )}
           </Paper>
         )}
       </Box>

@@ -13,10 +13,12 @@ import {
     TextField,
     Button,
     Typography,
+    Alert,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { validateFileUpload } from "@/utils/security";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/contexts/AuthContext";
@@ -81,13 +83,51 @@ const EditProfileModal = ({ open, onClose, onRefresh, defaultValues }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
+        if (!file) return;
+
+        // Validate file before processing
+        const validation = validateFileUpload(file);
+        if (!validation.isValid) {
+            toast.error(`Error en el archivo: ${validation.error}`);
+            // Clear the input
+            e.target.value = '';
+            return;
+        }
+
+        // Additional client-side checks
+        const img = new Image();
+        img.onload = () => {
+            // Check image dimensions if needed (optional)
+            const maxDimension = 2048;
+            if (img.width > maxDimension || img.height > maxDimension) {
+                toast.error(`La imagen es muy grande. Máximo ${maxDimension}x${maxDimension} píxeles.`);
+                e.target.value = '';
+                return;
+            }
+
+            // File is valid, proceed with reading
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileValue("avatar", reader.result);
             };
+            reader.onerror = () => {
+                toast.error("Error al leer el archivo");
+                e.target.value = '';
+            };
             reader.readAsDataURL(file);
-        }
+        };
+        
+        img.onerror = () => {
+            toast.error("El archivo no es una imagen válida");
+            e.target.value = '';
+        };
+        
+        // Create temporary URL to load the image for validation
+        const tempUrl = URL.createObjectURL(file);
+        img.src = tempUrl;
+        
+        // Clean up the temporary URL after a delay
+        setTimeout(() => URL.revokeObjectURL(tempUrl), 1000);
     };
 
     const onSubmitProfile = async (data) => {

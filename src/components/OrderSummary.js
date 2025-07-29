@@ -1,16 +1,16 @@
 // /components/OrderSummary.jsx
 import React, { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import {
-  Box,
   Card,
   CardContent,
   Typography,
   Divider
 } from "@mui/material";
 import PropTypes from "prop-types";
-import Places from "@/components/Places";
+import VehicleSection from "@/components/order/VehicleSection";
+import InsuranceSection from "@/components/order/InsuranceSection";
+import PricingCalculations from "@/components/order/PricingCalculations";
 
 export default function OrderSummary({
   selectedCar,
@@ -29,7 +29,6 @@ export default function OrderSummary({
   totalWithIva,
   otherCharges,
   otherCharges2,
-  formatCurrency,
   subtotal,
   subtotal2,
   totals,
@@ -39,9 +38,7 @@ export default function OrderSummary({
   returnDisplay,
 }) {
   const router = useRouter();
-  const [appliedCoupon, setAppliedCoupon] = useState("");
-  const [couponError, setCouponError] = useState(false);
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [discountApplied] = useState(false);
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
 
   // Cambiar la lógica para detectar la página de confirmación
@@ -59,510 +56,47 @@ export default function OrderSummary({
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           <b>Vehículo Seleccionado:</b>
         </Typography>
-        {selectedCar ? (
-          <>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <Image
-                src={selectedCar.image}
-                alt={selectedCar.name}
-                width={300}
-                height={180}
-                style={{ width: "100%", maxWidth: 300, borderRadius: 8, height: "auto", objectFit: "contain" }}
-                priority
-              />
-              <Typography variant="body1" fontWeight="bold">
-                {selectedCar.name}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {selectedCar.category}
-              </Typography>
-            </Box>
-
-            {/* Places Component */}
-            <Places
-              pickupDisplay={pickupDisplay}
-              returnDisplay={returnDisplay}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between", // Ensure both sides are balanced
-                alignItems: "center",
-                width: "100%", // Match the width of the OrderSummary
-                margin: "0 auto", // Center the component
-              }}
-            />
-
-            {/* Rental Dates */}
-            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-              <b>Fechas de la Renta:</b>
-            </Typography>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
-            >
-              <Typography variant="body2">
-                {pickupDateString} - {returnDateString}
-              </Typography>
-              <Typography variant="body2" fontWeight="bold">
-                ({rentalDays} días)
-              </Typography>
-            </Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
-            >
-              <Typography variant="body2" fontStyle="italic">
-                {paidOnline
-                  ? `${formatCurrency(dailyCarCost2)} /día (precio en línea)`
-                  : `${formatCurrency(dailyCarCost)} /día (precio mostrador)`}
-              </Typography>
-              {/* Car price with strikethrough-above design when paying online and prices differ */}
-              {paidOnline && totalCarCost !== totalCarCost2 ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      textDecoration: "line-through",
-                      color: "#bdbdbd",
-                      fontWeight: 500,
-                      fontSize: 16,
-                      mb: 0.5,
-                    }}
-                  >
-                    {formatCurrency(totalCarCost)}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    fontWeight="bold"
-                    sx={{
-                      color: (theme) => theme.palette.primary.text,
-                      fontSize: 18,
-                    }}
-                  >
-                    {formatCurrency(totalCarCost2)}
-                  </Typography>
-                </Box>
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontWeight="bold"
-                  sx={
-                    paidOnline
-                      ? { color: (theme) => theme.palette.primary.text }
-                      : {}
-                  }
-                >
-                  {formatCurrency(paidOnline ? totalCarCost2 : totalCarCost)}
-                </Typography>
-              )}
-            </Box>
-          </>
-        ) : (
-          <Typography variant="body2">
-            No se ha seleccionado un vehículo.
-          </Typography>
-        )}
+        <VehicleSection
+          selectedCar={selectedCar}
+          pickupDateString={pickupDateString}
+          returnDateString={returnDateString}
+          rentalDays={rentalDays}
+          dailyCarCost={dailyCarCost}
+          totalCarCost={totalCarCost}
+          dailyCarCost2={dailyCarCost2}
+          totalCarCost2={totalCarCost2}
+          paidOnline={paidOnline}
+          pickupDisplay={pickupDisplay}
+          returnDisplay={returnDisplay}
+        />
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Seguro */}
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Protección Seleccionada:</b>
-        </Typography>
-        {selectedInsurance ? (
-          <>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="body2" fontWeight="bold">
-                {selectedInsurance.nombre}
-              </Typography>
-              <Typography variant="body2" fontWeight="bold">
-                {selectedInsurance.total} /día
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Typography variant="body2" fontStyle="italic">
-                ({rentalDays} días) = {formatCurrency(totalInsuranceCost)}
-              </Typography>
-            </Box>
-          </>
-        ) : (
-          <Typography variant="body2">
-            No se ha seleccionado una protección.
-          </Typography>
-        )}
+        <InsuranceSection
+          selectedInsurance={selectedInsurance}
+          rentalDays={rentalDays}
+          totalInsuranceCost={totalInsuranceCost}
+        />
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Extras */}
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          <b>Extras Seleccionados:</b>
-        </Typography>
-        {extrasInfo.length > 0 ? (
-          extrasInfo.map((ex) => (
-            <Box
-              key={ex.id}
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Typography variant="body2">
-                {ex.nombre} x {ex.cantidad}
-              </Typography>
-              <Typography variant="body2" fontWeight="bold">
-                {formatCurrency(ex.lineCost)}
-              </Typography>
-            </Box>
-          ))
-        ) : (
-          <Typography variant="body2">
-            No se han seleccionado extras.
-          </Typography>
-        )}
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Otros cargos */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 1,
-          }}
-        >
-          <Typography variant="subtitle1" fontWeight="bold">
-            Otros Cargos:
-          </Typography>
-          {paidOnline && otherCharges !== otherCharges2 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  textDecoration: "line-through",
-                  color: "#bdbdbd",
-                  fontWeight: 500,
-                  fontSize: 16,
-                  mb: 0.5,
-                }}
-              >
-                {formatCurrency(otherCharges)}
-              </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{
-                  color: (theme) => theme.palette.primary.text,
-                  fontSize: 18,
-                }}
-              >
-                {formatCurrency(otherCharges2)}
-              </Typography>
-            </Box>
-          ) : (
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              sx={{
-                color: paidOnline
-                  ? (theme) => theme.palette.primary.text
-                  : undefined,
-              }}
-            >
-              {formatCurrency(paidOnline ? otherCharges2 : otherCharges)}
-            </Typography>
-          )}
-        </Box>
-        <Typography
-          variant="caption"
-          sx={{ display: "block", mt: 1 }}
-          color="textSecondary"
-        >
-          * Este cargo incluye costos administrativos y operativos adicionales.
-          Consulta más detalles en los{" "}
-          <a
-            href="/terminos-y-condiciones"
-            target="_blank"
-            style={{ textDecoration: "underline" }}
-          >
-            Términos y Condiciones
-          </a>
-          .
-        </Typography>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Subtotal */}
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="body2" fontWeight="bold">
-            Subtotal
-          </Typography>
-          {paidOnline && subtotal !== subtotal2 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  textDecoration: "line-through",
-                  color: "#bdbdbd",
-                  fontWeight: 500,
-                  fontSize: 16,
-                  mb: 0.5,
-                }}
-              >
-                {formatCurrency(subtotal)}
-              </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{
-                  color: (theme) => theme.palette.primary.text,
-                  fontSize: 18,
-                }}
-              >
-                {formatCurrency(subtotal2)}
-              </Typography>
-            </Box>
-          ) : (
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              sx={
-                paidOnline
-                  ? { color: (theme) => theme.palette.primary.text }
-                  : {}
-              }
-            >
-              {formatCurrency(paidOnline ? subtotal2 : subtotal)}
-            </Typography>
-          )}
-        </Box>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* IVA y Total */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-          <Typography variant="body2" fontWeight="bold">
-            IVA (16%)
-          </Typography>
-          {paidOnline && ivaCost !== ivaCost2 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  textDecoration: "line-through",
-                  color: "#bdbdbd",
-                  fontWeight: 500,
-                  fontSize: 16,
-                  mb: 0.5,
-                }}
-              >
-                {formatCurrency(ivaCost)}
-              </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={{
-                  color: (theme) => theme.palette.primary.text,
-                  fontSize: 18,
-                }}
-              >
-                {formatCurrency(ivaCost2)}
-              </Typography>
-            </Box>
-          ) : (
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              sx={{
-                color: paidOnline
-                  ? (theme) => theme.palette.primary.text
-                  : undefined,
-              }}
-            >
-              {formatCurrency(paidOnline ? ivaCost2 : ivaCost)}
-            </Typography>
-          )}
-        </Box>
-        {/* Elimina la línea superior de Total a pagar cuando está activo el pago en línea y hay dos precios */}
-        {!(totals && totals.price && totals.price2 && paidOnline) && (
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-            <Typography variant="body2" fontWeight="bold">
-              Total a pagar:
-            </Typography>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              sx={{
-                color: paidOnline
-                  ? (theme) => theme.palette.primary.text
-                  : undefined,
-              }}
-            >
-              {formatCurrency(paidOnline ? totals.price2 : totals.price)}
-            </Typography>
-          </Box>
-        )}
-        {/* Mostrar el precio dependiendo de si hay uno o dos valores */}
-        {totals && totals.price && totals.price2 && paidOnline ? (
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
-            <Typography variant="body2" fontWeight="bold">
-              Total a pagar:
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  textDecoration: "line-through",
-                  color: "#bdbdbd",
-                  fontWeight: 500,
-                  fontSize: 18,
-                  mb: 0.5,
-                }}
-              >
-                {formatCurrency(totals.price)}
-              </Typography>
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                sx={{
-                  color: (theme) => theme.palette.primary.text,
-                  fontSize: 22,
-                }}
-              >
-                {formatCurrency(totals.price2)}
-              </Typography>
-            </Box>
-          </Box>
-        ) : null}
-
-        {/* Mensaje de ahorro para pago en línea en una sola línea */}
-        {paidOnline &&
-          totals &&
-          totals.price &&
-          totals.price2 &&
-          totals.price > totals.price2 && (
-            <Box
-              sx={{
-                mt: 2,
-                mb: 2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  color: (theme) => theme.palette.primary.text,
-                  fontWeight: "bold",
-                  fontSize: { xs: 18, md: 22 },
-                  textAlign: "center",
-                }}
-              >
-                ¡USTED ESTÁ AHORRANDO{" "}
-                {formatCurrency(totals.price - totals.price2)}!
-              </Typography>
-            </Box>
-          )}
-
-        {/* Descuento */}
-        {discountApplied && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              <b>Descuento aplicado:</b>
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="body2">10% de descuento</Typography>
-              <Typography variant="body2" fontWeight="bold">
-                -{formatCurrency(totalCarCost * 0.1)}
-              </Typography>
-            </Box>
-          </>
-        )}
-
-        {/* Descuento */}
-        {discount > 0 && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              <b>Descuento aplicado:</b>
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="body2">Descuento</Typography>
-              <Typography variant="body2" fontWeight="bold">
-                -{formatCurrency(discount)}
-              </Typography>
-            </Box>
-          </>
-        )}
-
-        <Divider sx={{ my: 2 }} />
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Mostrar la sección de totales adaptada para la página de confirmación */}
-        {isConfirmationPage && (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            ></Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6" fontWeight="bold">
-                Total a pagar:
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{ color: (theme) => theme.palette.primary.text }}
-                fontWeight="bold"
-              >
-                {formatCurrency(
-                  totalWithIva + (totalCarCost + totalExtrasCost) * 0.23
-                )}
-              </Typography>
-            </Box>
-          </Box>
-        )}
+        <PricingCalculations
+          extrasInfo={extrasInfo}
+          otherCharges={otherCharges}
+          otherCharges2={otherCharges2}
+          paidOnline={paidOnline}
+          subtotal={subtotal}
+          subtotal2={subtotal2}
+          ivaCost={ivaCost}
+          ivaCost2={ivaCost2}
+          totals={totals}
+          discount={discount}
+          discountApplied={discountApplied}
+          totalCarCost={totalCarCost}
+          isConfirmationPage={isConfirmationPage}
+          totalWithIva={totalWithIva}
+          totalExtrasCost={totalExtrasCost}
+        />
       </CardContent>
     </Card>
   );
@@ -588,5 +122,5 @@ OrderSummary.propTypes = {
     price: PropTypes.number,
     price2: PropTypes.number,
   }),
-  discount: PropTypes.number, // Agregar el descuento como parámetro
+  discount: PropTypes.number,
 };
