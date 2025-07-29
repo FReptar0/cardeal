@@ -43,7 +43,7 @@ export const calculateRentalDays = (startDate, endDate) => {
  */
 export const parseInsuranceCost = (insuranceTotal) => {
   if (!insuranceTotal) return 0;
-  const numString = insuranceTotal.replace(/[^\\d.]/g, "");
+  const numString = insuranceTotal.replace(/[^\d.]/g, "");
   return parseFloat(numString) || 0;
 };
 
@@ -100,10 +100,12 @@ export const calculateBookingTotals = ({
   // Calculate rental days
   const rentalDays = calculateRentalDays(searchData.pickupDate, searchData.returnDate);
 
-  // Car costs - online uses price, counter uses price2
+  // Car costs - IMPORTANT: This matches the original checkout.js logic
+  // selectedCar.price = online payment (cheaper discount price)
+  // selectedCar.price2 = counter payment (full price, more expensive)
   const dailyCarCost = isOnlinePayment 
-    ? Number(selectedCar.price || 0)
-    : Number(selectedCar.price2 || 0);
+    ? Number(selectedCar.price || 0)  // Online payment (cheaper)
+    : Number(selectedCar.price2 || 0); // Counter payment (more expensive)
   const totalCarCost = dailyCarCost * rentalDays;
 
   // Insurance costs

@@ -127,7 +127,13 @@ export default function UserForm() {
 
   // Helper function for calculating totals
   const calculateTotal = (isOnline) => {
-    return getTotalsByPaymentMethod(isOnline).finalTotal.toFixed(2);
+    // Ensure we have valid car data with different prices
+    if (!selectedCar || !selectedCar.price || !selectedCar.price2) {
+      return '0.00';
+    }
+    
+    const totals = getTotalsByPaymentMethod(isOnline);
+    return totals.finalTotal.toFixed(2);
   };
 
   const onSubmit = (isOnline) => async (data) => {

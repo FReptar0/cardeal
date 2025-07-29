@@ -13,6 +13,7 @@ export const useBookingCalculations = ({
   discount = 0
 }) => {
   // Calculate totals for both payment methods
+  // IMPORTANT: Counter payment uses price2 (expensive), Online payment uses price (cheaper)
   const counterTotals = useMemo(() => 
     calculateBookingTotals({
       selectedCar,
@@ -20,7 +21,7 @@ export const useBookingCalculations = ({
       selectedExtras,
       searchData,
       discount,
-      isOnlinePayment: false
+      isOnlinePayment: false  // Uses selectedCar.price2 (expensive)
     }), [selectedCar, selectedInsurance, selectedExtras, searchData, discount]
   );
 
@@ -31,7 +32,7 @@ export const useBookingCalculations = ({
       selectedExtras,
       searchData,
       discount,
-      isOnlinePayment: true
+      isOnlinePayment: true   // Uses selectedCar.price (cheaper)
     }), [selectedCar, selectedInsurance, selectedExtras, searchData, discount]
   );
 
