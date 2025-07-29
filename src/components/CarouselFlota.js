@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { Box, Card, CardMedia, CardContent, Typography, Button, useTheme } from "@mui/material";
+import PropTypes from "prop-types";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,7 +16,7 @@ import Image from "next/image";
 // Permite usar el modal de detalle si no se provee desde el padre
 const CarDetailModal = dynamic(() => import("./CarDetailModal"), { ssr: false });
 
-export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
+const CarruselFlota = React.memo(function CarruselFlota({ onOpenModal: parentOpenModal }) {
     const theme = useTheme();
     const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
@@ -60,6 +61,9 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
 
     return (
         <Box
+            component="section"
+            role="region"
+            aria-label="Carrusel de flota de vehículos"
             sx={{
                 width: "100%",
                 maxWidth: "1200px",
@@ -284,4 +288,11 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
             )}
         </Box>
     );
-}
+});
+
+// PropTypes validation
+CarruselFlota.propTypes = {
+    onOpenModal: PropTypes.func,
+};
+
+export default CarruselFlota;

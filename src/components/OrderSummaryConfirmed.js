@@ -13,7 +13,7 @@ const parsePrecio = (precio) => {
   return 0;
 };
 
-export default function OrderSummaryConfirmed({
+function OrderSummaryConfirmed({
   selectedCar,
   pickupDateString,
   returnDateString,
@@ -266,3 +266,5 @@ OrderSummaryConfirmed.propTypes = {
   discount: PropTypes.number,
   paidOnline: PropTypes.bool,
 };
+
+export default OrderSummaryConfirmed;

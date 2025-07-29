@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import {
   Card,
@@ -10,23 +10,46 @@ import {
   Tooltip,
   Divider,
 } from "@mui/material";
+import PropTypes from "prop-types";
 import GalleryModal from "./GalleryModal";
 import InfoIcon from "@mui/icons-material/Info";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import LuggageIcon from "@mui/icons-material/Luggage";
 
-export default function CarCard({ car, isSelected }) {
+const CarCard = React.memo(function CarCard({ car, isSelected }) {
   const [open, setOpen] = useState(false);
 
-  // Función auxiliar para detener la propagación del evento
-  const stopAllPropagation = (event) => {
+  // Memoized function to stop event propagation
+  const stopAllPropagation = useCallback((event) => {
     event.nativeEvent?.stopImmediatePropagation?.();
     event.stopPropagation();
-  };
+  }, []);
+
+  // Memoized handlers
+  const handleOpenGallery = useCallback((event) => {
+    stopAllPropagation(event);
+    setOpen(true);
+  }, [stopAllPropagation]);
+
+  const handleKeyDown = useCallback((event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleOpenGallery(event);
+    }
+  }, [handleOpenGallery]);
+
+  const handleCloseGallery = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <>
       <Card
+        component="article"
+        tabIndex={0}
+        role="button"
+        aria-label={`Vehículo ${car.name} - ${car.category}. Precio en línea: $${car.price} MXN/día`}
+        onKeyDown={handleKeyDown}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -43,6 +66,10 @@ export default function CarCard({ car, isSelected }) {
           "&:hover": {
             boxShadow: 5,
             transform: "scale(1.02)",
+          },
+          "&:focus": {
+            outline: "2px solid #2196f3",
+            outlineOffset: "2px",
           },
         }}
       >
@@ -68,10 +95,7 @@ export default function CarCard({ car, isSelected }) {
               cursor: "pointer",
               mb: 1,
             }}
-            onClick={(event) => {
-              stopAllPropagation(event);
-              setOpen(true);
-            }}
+            onClick={handleOpenGallery}
           >
             <Image
               src={car.image}
@@ -108,10 +132,7 @@ export default function CarCard({ car, isSelected }) {
                 color: (theme) => theme.palette.primary.buttons,
               },
             }}
-            onClick={(event) => {
-              stopAllPropagation(event);
-              setOpen(true);
-            }}
+            onClick={handleOpenGallery}
           >
             Ver galería
           </Button>
@@ -376,7 +397,35 @@ export default function CarCard({ car, isSelected }) {
         </Box>
       </Card>
 
-      <GalleryModal open={open} onClose={() => setOpen(false)} car={car} />
+      <GalleryModal open={open} onClose={handleCloseGallery} car={car} />
     </>
   );
-}
+});
+
+// PropTypes validation
+CarCard.propTypes = {
+  car: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    abbreviation: PropTypes.string,
+    abbreviationMeaning: PropTypes.string,
+    abbreviationDescription: PropTypes.string,
+    passengers: PropTypes.number.isRequired,
+    doors: PropTypes.number.isRequired,
+    luggage: PropTypes.number.isRequired,
+    luggageSize: PropTypes.string,
+    luggageDimensions: PropTypes.shape({
+      width: PropTypes.string,
+      height: PropTypes.string,
+      depth: PropTypes.string,
+    }),
+    transmission: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    price2: PropTypes.number.isRequired,
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+};
+
+export default CarCard;

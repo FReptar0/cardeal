@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { Box, Typography, Button, useTheme } from "@mui/material";
+import PropTypes from "prop-types";
 
-export default function SitioEnConstruccion() {
+const SitioEnConstruccion = React.memo(function SitioEnConstruccion() {
     const theme = useTheme();
 
     return (
@@ -16,7 +17,7 @@ export default function SitioEnConstruccion() {
             textAlign="center"
             p={2}
         >
-            {/* Animación MP4 */}
+            {/* Animación MP4 con autoplay */}
             <Box width={200} height={200} mb={4}>
                 <video
                     src="/icons/alerta.mp4"
@@ -24,7 +25,9 @@ export default function SitioEnConstruccion() {
                     loop
                     muted
                     playsInline
+                    controls={false}
                     style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    aria-label="Animación de sitio en construcción"
                 />
             </Box>
 
@@ -53,4 +56,11 @@ export default function SitioEnConstruccion() {
             </Link>
         </Box>
     );
-}
+});
+
+// PropTypes validation
+SitioEnConstruccion.propTypes = {
+    // This component doesn't receive props
+};
+
+export default SitioEnConstruccion;
