@@ -1,27 +1,28 @@
 import React from "react";
-import { useRouter } from "next/router";
 import {
   Box,
   Typography,
   Divider,
 } from "@mui/material";
+import { formatCurrency } from "@/utils/calculations";
 
 const PricingCalculations = ({
   extrasInfo,
   otherCharges,
   otherCharges2,
   paidOnline,
-  formatCurrency,
   subtotal,
   subtotal2,
   ivaCost,
   ivaCost2,
   totals,
+  discount,
+  discountApplied,
+  totalCarCost,
   isConfirmationPage,
   totalWithIva,
   totalExtrasCost,
 }) => {
-  const router = useRouter();
 
   return (
     <>

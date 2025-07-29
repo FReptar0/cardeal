@@ -29,7 +29,6 @@ export default function OrderSummary({
   totalWithIva,
   otherCharges,
   otherCharges2,
-  formatCurrency,
   subtotal,
   subtotal2,
   totals,
@@ -39,9 +38,7 @@ export default function OrderSummary({
   returnDisplay,
 }) {
   const router = useRouter();
-  const [appliedCoupon, setAppliedCoupon] = useState("");
-  const [couponError, setCouponError] = useState(false);
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [discountApplied] = useState(false);
   const totalExtrasCost = extrasInfo.reduce((acc, ex) => acc + ex.lineCost, 0);
 
   // Cambiar la lógica para detectar la página de confirmación
@@ -69,7 +66,6 @@ export default function OrderSummary({
           dailyCarCost2={dailyCarCost2}
           totalCarCost2={totalCarCost2}
           paidOnline={paidOnline}
-          formatCurrency={formatCurrency}
           pickupDisplay={pickupDisplay}
           returnDisplay={returnDisplay}
         />
@@ -80,7 +76,6 @@ export default function OrderSummary({
           selectedInsurance={selectedInsurance}
           rentalDays={rentalDays}
           totalInsuranceCost={totalInsuranceCost}
-          formatCurrency={formatCurrency}
         />
 
         <Divider sx={{ my: 2 }} />
@@ -90,7 +85,6 @@ export default function OrderSummary({
           otherCharges={otherCharges}
           otherCharges2={otherCharges2}
           paidOnline={paidOnline}
-          formatCurrency={formatCurrency}
           subtotal={subtotal}
           subtotal2={subtotal2}
           ivaCost={ivaCost}
@@ -128,5 +122,5 @@ OrderSummary.propTypes = {
     price: PropTypes.number,
     price2: PropTypes.number,
   }),
-  discount: PropTypes.number, // Agregar el descuento como parámetro
+  discount: PropTypes.number,
 };

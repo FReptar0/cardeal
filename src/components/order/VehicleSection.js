@@ -5,6 +5,7 @@ import {
   Typography,
 } from "@mui/material";
 import Places from "@/components/Places";
+import { formatCurrency } from "@/utils/calculations";
 
 const VehicleSection = ({
   selectedCar,
@@ -16,7 +17,6 @@ const VehicleSection = ({
   dailyCarCost2,
   totalCarCost2,
   paidOnline,
-  formatCurrency,
   pickupDisplay,
   returnDisplay,
 }) => {

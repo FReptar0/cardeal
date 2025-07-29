@@ -3,12 +3,12 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { formatCurrency } from "@/utils/calculations";
 
 const InsuranceSection = ({
   selectedInsurance,
   rentalDays,
   totalInsuranceCost,
-  formatCurrency,
 }) => {
   return (
     <>
