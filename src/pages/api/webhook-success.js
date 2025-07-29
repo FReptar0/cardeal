@@ -6,11 +6,21 @@ import { encryptId } from "@/utils/encryption";
 import { sendEmail } from "@/utils/sendEmail";
 
 async function validateBookingExists(db, mp_order, res) {
+  console.log(`🔍 Validating booking exists for ID: ${mp_order}`);
   const booking = await db.collection("bookings").findOne({ _id: mp_order });
   if (!booking) {
     console.error("❌ Reserva no encontrada con ID:", mp_order);
     return res.status(404).send("Reserva no encontrada");
   }
+  
+  console.log(`✅ Booking found:`, {
+    id: booking._id,
+    hasContact: !!booking.contact,
+    contactEmail: booking.contact?.email,
+    status: booking.status,
+    emailSent: booking.emailSent
+  });
+  
   return booking;
 }
 
@@ -60,8 +70,20 @@ async function sendReservationEmail(booking, stage, baseUrl) {
 
 async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
   try {
+    console.log('🔍 Debugging payment failure email data:', {
+      bookingId: booking._id,
+      hasContact: !!booking.contact,
+      contactEmail: booking.contact?.email,
+      userName: booking.contact?.fullName,
+      carName: booking.car?.name,
+      totalAmount: booking.totalWithIva || booking.total
+    });
+    
     if (!booking.contact?.email) {
-      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva');
+      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva', {
+        bookingId: booking._id,
+        contact: booking.contact
+      });
       return false;
     }
 
@@ -76,11 +98,18 @@ async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
         name: booking.car?.name || 'Vehículo seleccionado',
         category: booking.car?.category || 'Categoría estándar'
       },
-      paymentAmount: booking.totalWithIva || booking.total || 0,
+      paymentAmount: Number(booking.totalWithIva || booking.total || 0),
       paymentError: failureReason || 'Error en el procesamiento del pago',
       alternativePaymentUrl: alternativePaymentUrl,
       supportUrl: supportUrl
     };
+
+    console.log('📧 Sending payment failure email with data:', {
+      to: booking.contact.email,
+      templateId: 'payment-failure',
+      alternativePaymentUrl,
+      paymentAmount: emailData.paymentAmount
+    });
 
     await sendEmail({
       to: booking.contact.email,
@@ -91,7 +120,12 @@ async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
     console.log('✅ Email de fallo de pago enviado exitosamente a:', booking.contact.email);
     return true;
   } catch (error) {
-    console.error('❌ Error enviando email de fallo de pago:', error);
+    console.error('❌ Error enviando email de fallo de pago:', {
+      error: error.message,
+      stack: error.stack,
+      bookingId: booking._id,
+      contactEmail: booking.contact?.email
+    });
     return false;
   }
 }
@@ -151,6 +185,7 @@ export default async function handler(req, res) {
       "❌ Pago NO aprobado por el banco. mp_authorization inválido:",
       mp_authorization
     );
+    console.log(`🔄 Processing payment failure for order: ${mp_order}`);
 
     await logEvent({
       webhook: "success",
@@ -182,28 +217,36 @@ export default async function handler(req, res) {
         }
       );
 
-      // Send payment failure email if not already sent
-      if (!booking.emailSent) {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-        const emailSent = await sendPaymentFailureEmail(
-          booking, 
-          baseUrl, 
-          `Autorización bancaria inválida: ${mp_authorization}`
-        );
-        
-        if (emailSent) {
-          await db.collection("bookings").updateOne(
-            { _id: mp_order },
-            {
-              $set: {
-                emailSent: true,
-                emailSentAt: new Date(),
-                emailType: 'payment-failure',
-                emailStage: 'online-failed'
-              }
+      // Send payment failure email - we just reset emailSent to false in the update above
+      console.log(`📧 Checking email status for booking ${mp_order}:`, {
+        originalEmailSent: booking.emailSent,
+        hasEmail: !!booking.contact?.email,
+        contactEmail: booking.contact?.email
+      });
+      
+      // Since we just set emailSent to false in the update above, we should always send the email
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+      const emailSent = await sendPaymentFailureEmail(
+        booking, 
+        baseUrl, 
+        `Autorización bancaria inválida: ${mp_authorization}`
+      );
+      
+      if (emailSent) {
+        console.log(`✅ Payment failure email sent successfully for booking ${mp_order}`);
+        await db.collection("bookings").updateOne(
+          { _id: mp_order },
+          {
+            $set: {
+              emailSent: true,
+              emailSentAt: new Date(),
+              emailType: 'payment-failure',
+              emailStage: 'online-failed'
             }
-          );
-        }
+          }
+        );
+      } else {
+        console.log(`❌ Failed to send payment failure email for booking ${mp_order}`);
       }
 
       return res

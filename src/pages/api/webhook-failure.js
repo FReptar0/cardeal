@@ -3,6 +3,69 @@ import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { encryptId } from "@/utils/encryption";
 import { logEvent } from "@/utils/logger";
+import { sendEmail } from "@/utils/sendEmail";
+
+async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
+  try {
+    console.log('🔍 Debugging payment failure email data:', {
+      bookingId: booking._id,
+      hasContact: !!booking.contact,
+      contactEmail: booking.contact?.email,
+      userName: booking.contact?.fullName,
+      carName: booking.car?.name,
+      totalAmount: booking.totalWithIva || booking.total
+    });
+    
+    if (!booking.contact?.email) {
+      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva', {
+        bookingId: booking._id,
+        contact: booking.contact
+      });
+      return false;
+    }
+
+    const encryptedId = encryptId(booking._id);
+    const alternativePaymentUrl = `${baseUrl}/payment/retry/${encryptedId}`;
+    const supportUrl = `${baseUrl}/atencion-cliente`;
+    
+    const emailData = {
+      userName: booking.contact?.fullName || 'Cliente',
+      reservationId: booking._id,
+      carInfo: {
+        name: booking.car?.name || 'Vehículo seleccionado',
+        category: booking.car?.category || 'Categoría estándar'
+      },
+      paymentAmount: Number(booking.totalWithIva || booking.total || 0),
+      paymentError: failureReason || 'Error en el procesamiento del pago',
+      alternativePaymentUrl: alternativePaymentUrl,
+      supportUrl: supportUrl
+    };
+
+    console.log('📧 Sending payment failure email with data:', {
+      to: booking.contact.email,
+      templateId: 'payment-failure',
+      alternativePaymentUrl,
+      paymentAmount: emailData.paymentAmount
+    });
+
+    await sendEmail({
+      to: booking.contact.email,
+      templateId: 'payment-failure',
+      data: emailData
+    });
+
+    console.log('✅ Email de fallo de pago enviado exitosamente a:', booking.contact.email);
+    return true;
+  } catch (error) {
+    console.error('❌ Error enviando email de fallo de pago:', {
+      error: error.message,
+      stack: error.stack,
+      bookingId: booking._id,
+      contactEmail: booking.contact?.email
+    });
+    return false;
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -72,22 +135,11 @@ export default async function handler(req, res) {
 
   try {
     const { db } = await connectToDatabase();
-
-    const result = await db.collection("bookings").updateOne(
-      { _id: mp_order },
-      {
-        $set: {
-          paid: false,
-          status: "FAILED",
-          failureReason: mp_response,
-          node: mp_node,
-          concept: mp_concept,
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-    if (result.matchedCount === 0) {
+    
+    // First, get the booking before updating it
+    const booking = await db.collection("bookings").findOne({ _id: mp_order });
+    
+    if (!booking) {
       console.warn("⚠️ No se encontró la reserva con ID:", mp_order);
       await logEvent({
         webhook: "failure",
@@ -98,6 +150,56 @@ export default async function handler(req, res) {
         details: {},
       });
       return res.status(404).send("Reserva no encontrada");
+    }
+    
+    console.log(`✅ Booking found for failure processing:`, {
+      id: booking._id,
+      hasContact: !!booking.contact,
+      contactEmail: booking.contact?.email,
+      status: booking.status,
+      emailSent: booking.emailSent
+    });
+
+    const result = await db.collection("bookings").updateOne(
+      { _id: mp_order },
+      {
+        $set: {
+          paid: false,
+          status: "FAILED",
+          failureReason: mp_response || `Autorización inválida: ${mp_authorization}`,
+          node: mp_node,
+          concept: mp_concept,
+          updatedAt: new Date(),
+          emailSent: false, // Reset email status for potential retry
+        },
+      }
+    );
+
+    // Send payment failure email
+    console.log(`📧 Processing payment failure email for booking ${mp_order}`);
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const emailSent = await sendPaymentFailureEmail(
+      booking, 
+      baseUrl, 
+      mp_response || `Autorización bancaria inválida: ${mp_authorization}`
+    );
+    
+    if (emailSent) {
+      console.log(`✅ Payment failure email sent successfully for booking ${mp_order}`);
+      await db.collection("bookings").updateOne(
+        { _id: mp_order },
+        {
+          $set: {
+            emailSent: true,
+            emailSentAt: new Date(),
+            emailType: 'payment-failure',
+            emailStage: 'online-failed'
+          }
+        }
+      );
+    } else {
+      console.log(`❌ Failed to send payment failure email for booking ${mp_order}`);
     }
 
     await logEvent({
@@ -110,7 +212,8 @@ export default async function handler(req, res) {
     });
 
     const encryptedId = encryptId(mp_order);
-    const redirectUrl = `https://cardeal-beige.vercel.app/confirm/${encryptedId}`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const redirectUrl = `${baseUrl}/confirm/${encryptedId}`;
 
     return res.redirect(302, redirectUrl);
   } catch (err) {
