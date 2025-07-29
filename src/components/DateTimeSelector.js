@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -38,38 +38,57 @@ export default function DateTimeSelector({
   const datePickerRef = useRef(null);
   // No se importa useRouter aquí, el componente es agnóstico
 
-  // Usar la fecha seleccionada para obtener el horario correcto del día
-  const horario = parseBusinessHours(businessHours, date);
-  const isToday = format(date, "yyyy-MM-dd") === getTodayDate();
-  // Obtener el día de la semana en inglés para buscar en hours.json
-  const weekDay = date.toLocaleDateString("en-US", { weekday: "long" });
-  const hoursForDay = hoursData.find((h) => h.day === weekDay);
-  let timeSlots = hoursForDay
-    ? generateTimeSlots(
-        to24Hour(hoursForDay.open),
-        to24Hour(hoursForDay.close),
-        false
-      )
-    : [];
+  // Memoized business hours parsing
+  const horario = useMemo(() => {
+    return parseBusinessHours(businessHours, date);
+  }, [businessHours, date]);
 
-  // Filtrar horarios pasados y aplicar filtro de 2 horas si es hoy
-  if (isToday && timeSlots.length > 0) {
-    const now = new Date();
-    // Sumar 2 horas y redondear al siguiente múltiplo de 30 minutos
-    let minHour = now.getHours() + 2;
-    let minMinute = now.getMinutes();
-    if (minMinute > 0 && minMinute <= 30) {
-      minMinute = 30;
-    } else if (minMinute > 30) {
-      minHour += 1;
-      minMinute = 0;
+  // Memoized date checks
+  const isToday = useMemo(() => {
+    return format(date, "yyyy-MM-dd") === getTodayDate();
+  }, [date]);
+
+  // Memoized weekday calculation
+  const weekDay = useMemo(() => {
+    return date.toLocaleDateString("en-US", { weekday: "long" });
+  }, [date]);
+
+  // Memoized hours for day lookup
+  const hoursForDay = useMemo(() => {
+    return hoursData.find((h) => h.day === weekDay);
+  }, [weekDay]);
+
+  // Memoized time slots generation with filtering
+  const timeSlots = useMemo(() => {
+    let slots = hoursForDay
+      ? generateTimeSlots(
+          to24Hour(hoursForDay.open),
+          to24Hour(hoursForDay.close),
+          false
+        )
+      : [];
+
+    // Filtrar horarios pasados y aplicar filtro de 2 horas si es hoy
+    if (isToday && slots.length > 0) {
+      const now = new Date();
+      // Sumar 2 horas y redondear al siguiente múltiplo de 30 minutos
+      let minHour = now.getHours() + 2;
+      let minMinute = now.getMinutes();
+      if (minMinute > 0 && minMinute <= 30) {
+        minMinute = 30;
+      } else if (minMinute > 30) {
+        minHour += 1;
+        minMinute = 0;
+      }
+      const minTime = `${String(minHour).padStart(2, "0")}:${
+        minMinute === 0 ? "00" : "30"
+      }`;
+      // Filtrar los timeSlots que sean mayores o iguales al minTime
+      slots = slots.filter((slot) => slot >= minTime);
     }
-    const minTime = `${String(minHour).padStart(2, "0")}:${
-      minMinute === 0 ? "00" : "30"
-    }`;
-    // Filtrar los timeSlots que sean mayores o iguales al minTime
-    timeSlots = timeSlots.filter((slot) => slot >= minTime);
-  }
+    
+    return slots;
+  }, [hoursForDay, isToday]);
 
   // Utilidad para convertir "08:00 AM" a "08:00" y "08:00 PM" a "20:00"
   function to24Hour(time12h) {
@@ -140,14 +159,14 @@ export default function DateTimeSelector({
             type="date"
             inputRef={dateInputRef}
             value={format(date, "yyyy-MM-dd")}
-            onChange={(e) => {
+            onChange={useCallback((e) => {
               const [year, month, day] = e.target.value.split("-");
               const selectedDate = new Date(year, month - 1, day);
               setDate(selectedDate);
               if (onDateChange) {
                 setTimeout(() => onDateChange(), 100);
               }
-            }}
+            }, [setDate, onDateChange])}
             sx={{
               position: "absolute",
               top: 0,
@@ -191,12 +210,12 @@ export default function DateTimeSelector({
               onClose={() => setOpen(false)}
               inputRef={timeSelectRef}
               value={timeSlots.includes(time) ? time : ""}
-              onChange={(e) => {
+              onChange={useCallback((e) => {
                 setTime(e.target.value);
                 if (onTimeChange) {
                   setTimeout(() => onTimeChange(), 100);
                 }
-              }}
+              }, [setTime, onTimeChange])}
               fullWidth
               variant="standard"
               disableUnderline

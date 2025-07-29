@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import DateTimeSelector from "./DateTimeSelector";
 
-export default function SearchForm({
+const SearchForm = React.memo(function SearchForm({
   isRental,
   isRentalPage,
   locations,
@@ -271,4 +271,6 @@ export default function SearchForm({
       )} */}
     </>
   );
-}
+});
+
+export default SearchForm;

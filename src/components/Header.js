@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   AppBar,
   Toolbar,
@@ -45,62 +45,76 @@ const Header = () => {
     }
   }, [isDesktop]);
 
-  // Maneja la apertura del menú del usuario
-  const handleClickUserIcon = (event) => {
+  // Memoized event handlers
+  const handleClickUserIcon = useCallback((event) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  // Cierra el menú del usuario
-  const handleCloseMenu = () => {
+  const handleCloseMenu = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  // Función para cerrar sesión
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     handleCloseMenu();
     logout();
-    router.push("/"); // Usar router.push en lugar de window.location.href
-  };
+    router.push("/");
+  }, [handleCloseMenu, logout, router]);
 
-  // Función para iniciar sesión
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     handleCloseMenu();
-    router.push("/login"); // Usar router.push
-  };
+    router.push("/login");
+  }, [handleCloseMenu, router]);
 
-  // Función para navegar al perfil
-  const handleProfileNavigation = () => {
+  const handleProfileNavigation = useCallback(() => {
     handleCloseMenu();
-    router.push("/perfil"); // Usar router.push
-  };
+    router.push("/perfil");
+  }, [handleCloseMenu, router]);
+
+  // Throttled scroll handler for better performance
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const isAtTop = scrollTop === 0;
+    setIsTop(isAtTop);
+    setShowMenu(isAtTop);
+    if (scrollTop > 0) {
+      setOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-      setIsTop(scrollTop === 0);
-      setShowMenu(scrollTop === 0);
-      if (scrollTop > 0) {
-        setOpen(false);
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [handleScroll]);
 
-  const formatPathName = (path) => {
-    if (path === "/") return "Inicio";
-    if (path === "/atencion-cliente") return "Atención a clientes";
-    if (path === "/vehiculos") return "Vehículos";
-    if (path === "/sucursales") return "Sucursales";
-    if (path === "/soluciones-empresariales") return "Convenios corporativos";
-    if (path === "/FAQ") return "Preguntas frecuentes";
-    return (
-      path.replace("/", "").charAt(0).toUpperCase() +
-      path.slice(2).toLowerCase()
-    );
-  };
+  // Memoized path formatting
+  const formatPathName = useMemo(() => {
+    const pathMap = {
+      "/": "Inicio",
+      "/atencion-cliente": "Atención a clientes",
+      "/vehiculos": "Vehículos",
+      "/sucursales": "Sucursales",
+      "/soluciones-empresariales": "Convenios corporativos",
+      "/FAQ": "Preguntas frecuentes"
+    };
+    
+    return (path) => {
+      return pathMap[path] || (
+        path.replace("/", "").charAt(0).toUpperCase() +
+        path.slice(2).toLowerCase()
+      );
+    };
+  }, []);
 
   return (
     <>

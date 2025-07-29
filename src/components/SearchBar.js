@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Box } from "@mui/material";
 import { useSearch } from "@/contexts/SearchContext";
@@ -34,8 +34,9 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const { searchData, setSearchData } = useSearch(); // Contexto global
   const [debouncedSearchData] = useDebounce(searchData, 200);
   const { selectedCar } = useBooking();
-  const isRental = isRentalPage(router.pathname);
-  const showCarImage = showCarImageOnPage(router.pathname);
+  // Memoized path-dependent values
+  const isRental = useMemo(() => isRentalPage(router.pathname), [router.pathname]);
+  const showCarImage = useMemo(() => showCarImageOnPage(router.pathname), [router.pathname]);
 
   // Hook para manejar horarios de sucursal
   // --- Lógica de horarios comentada porque ya no se usa fetch ni loading ---
@@ -54,8 +55,10 @@ export default function SearchBar({ sx = {}, onSearch }) {
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const pathname = usePathname();
-  const applyNegativeMargin =
-    pathname === "/" || pathname.startsWith("/vehiculos");
+  const applyNegativeMargin = useMemo(() => 
+    pathname === "/" || pathname.startsWith("/vehiculos"),
+    [pathname]
+  );
 
   // (Eliminada función fetchBusinessHours, ahora se usa el hook)
 
@@ -140,8 +143,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
   //   searchData.returnLocation,
   // ]);
 
-  // Handlers sin tocar
-  const handlePickupLocationChange = (e, newValue) => {
+  // Memoized handlers to prevent unnecessary re-renders
+  const handlePickupLocationChange = useCallback((e, newValue) => {
     setSearchData({ ...searchData, pickupLocation: newValue });
     setShouldRedirect(true);
     // --- Lógica de fetch de horarios comentada ---
@@ -186,8 +189,9 @@ export default function SearchBar({ sx = {}, onSearch }) {
     //     );
     //   }
     // }
-  };
-  const handleReturnLocationChange = (e, newValue) => {
+  }, [searchData, setSearchData]);
+  
+  const handleReturnLocationChange = useCallback((e, newValue) => {
     setShouldRedirect(true);
     // Si el usuario seleccionó la misma ubicación de origen, volvemos a activar el check
     if (
@@ -243,9 +247,9 @@ export default function SearchBar({ sx = {}, onSearch }) {
     //     setLoadingReturnHours
     //   );
     // }
-  };
+  }, [searchData, setSearchData]);
 
-  const handleSameOfficeChange = () => {
+  const handleSameOfficeChange = useCallback(() => {
     setShouldRedirect(true);
     const same = !searchData.sameOffice;
 
@@ -273,7 +277,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
     }
 
     setSearchData(newSearchData);
-  };
+  }, [searchData, setSearchData]);
 
   useEffect(() => {
     const pickupId = searchData.pickupLocation?.id;
@@ -300,8 +304,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
   // Usar estado controlado para abrir los Select de hora
   // 1. Abre el selector de hora de recepción justo después de cambiar la fecha de recepción
 
-  // Ajuste de fechas usando utilería
-  const handlePickupDateChange = (newDate) => {
+  // Memoized date change handlers
+  const handlePickupDateChange = useCallback((newDate) => {
     const { pickupDate, returnDate } = adjustReturnDate(
       newDate,
       searchData.returnDate
@@ -312,9 +316,9 @@ export default function SearchBar({ sx = {}, onSearch }) {
       returnDate,
     });
     setTimeout(() => setPickupTimeOpen(true), 100);
-  };
+  }, [searchData, setSearchData]);
 
-  const handleReturnDateChange = (newDate) => {
+  const handleReturnDateChange = useCallback((newDate) => {
     const { pickupDate, returnDate } = validateAndAdjustDates(
       searchData.pickupDate,
       newDate
@@ -325,14 +329,14 @@ export default function SearchBar({ sx = {}, onSearch }) {
       returnDate,
     });
     setTimeout(() => setReturnTimeOpen(true), 100);
-  };
+  }, [searchData, setSearchData]);
 
-  const handlePickupTimeChange = (newTime) => {
+  const handlePickupTimeChange = useCallback((newTime) => {
     setSearchData({ ...searchData, pickupTime: newTime });
     setPickupTimeOpen(false); // Cierra el menú después de seleccionar
-  };
+  }, [searchData, setSearchData]);
 
-  const handleReturnTimeChange = (newTime) => {
+  const handleReturnTimeChange = useCallback((newTime) => {
     setSearchData({ ...searchData, returnTime: newTime });
     setReturnTimeOpen(false); // Cierra el menú después de seleccionar
 
@@ -353,7 +357,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
     } else if (router.pathname === "/rental") {
       onSearch?.(filters);
     }
-  };
+  }, [searchData, setSearchData, router, onSearch]);
 
   // Hook para exponer funciones de apertura automática de selectores
   const { openPickupTime, openReturnDate, openReturnTime } =

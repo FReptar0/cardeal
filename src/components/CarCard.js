@@ -15,14 +15,24 @@ import InfoIcon from "@mui/icons-material/Info";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import LuggageIcon from "@mui/icons-material/Luggage";
 
-export default function CarCard({ car, isSelected }) {
+const CarCard = React.memo(function CarCard({ car, isSelected }) {
   const [open, setOpen] = useState(false);
 
-  // Función auxiliar para detener la propagación del evento
-  const stopAllPropagation = (event) => {
+  // Memoized function to stop event propagation
+  const stopAllPropagation = useCallback((event) => {
     event.nativeEvent?.stopImmediatePropagation?.();
     event.stopPropagation();
-  };
+  }, []);
+
+  // Memoized handlers
+  const handleOpenGallery = useCallback((event) => {
+    stopAllPropagation(event);
+    setOpen(true);
+  }, [stopAllPropagation]);
+
+  const handleCloseGallery = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <>
@@ -68,10 +78,7 @@ export default function CarCard({ car, isSelected }) {
               cursor: "pointer",
               mb: 1,
             }}
-            onClick={(event) => {
-              stopAllPropagation(event);
-              setOpen(true);
-            }}
+            onClick={handleOpenGallery}
           >
             <Image
               src={car.image}
@@ -108,10 +115,7 @@ export default function CarCard({ car, isSelected }) {
                 color: (theme) => theme.palette.primary.buttons,
               },
             }}
-            onClick={(event) => {
-              stopAllPropagation(event);
-              setOpen(true);
-            }}
+            onClick={handleOpenGallery}
           >
             Ver galería
           </Button>
@@ -376,7 +380,9 @@ export default function CarCard({ car, isSelected }) {
         </Box>
       </Card>
 
-      <GalleryModal open={open} onClose={() => setOpen(false)} car={car} />
+      <GalleryModal open={open} onClose={handleCloseGallery} car={car} />
     </>
   );
-}
+});
+
+export default CarCard;
