@@ -94,7 +94,7 @@ export default function paymentFailureTemplate({
                         <a href="${alternativePaymentUrl}"
                            style="
                              display:inline-block;
-                             background-color:#10906a;
+                             background-color:#f57c00;
                              color:#ffffff;
                              text-decoration:none;
                              font-family:Arial, sans-serif;

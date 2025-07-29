@@ -66,7 +66,7 @@ async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
     }
 
     const encryptedId = encryptId(booking._id);
-    const alternativePaymentUrl = `${baseUrl}/rental?retry=${encryptedId}`;
+    const alternativePaymentUrl = `${baseUrl}/payment/retry/${encryptedId}`;
     const supportUrl = `${baseUrl}/atencion-cliente`;
     
     const emailData = {

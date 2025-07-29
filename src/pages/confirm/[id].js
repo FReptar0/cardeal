@@ -21,8 +21,10 @@ import OrderSummaryConfirmed from "@/components/OrderSummaryConfirmed";
 import ConfirmationStepper from "@/components/ConfirmationStepper";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBooking } from "@/contexts/BookingContext";
-import { decryptId } from "@/utils/encryption";
+import { decryptId, encryptId } from "@/utils/encryption";
 import { useSearch } from "@/contexts/SearchContext";
+import PaymentIcon from "@mui/icons-material/Payment";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 // para el pdf
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -365,6 +367,61 @@ export default function BookingConfirmation() {
                   />
                 </Box>
               </Box>
+              
+              {/* Retry Payment Button for Failed Bookings */}
+              {booking.paidOnline && !booking.paid && booking.status === "FAILED" && (
+                <Box sx={{ mt: 2, p: 2, backgroundColor: "#fff3cd", borderRadius: 1, border: "1px solid #ffc107" }}>
+                  <Typography variant="body2" sx={{ mb: 2, color: "#856404" }}>
+                    <strong>💳 Problema con el Pago</strong><br/>
+                    Tu reserva no pudo ser procesada debido a un problema con el pago. 
+                    Puedes reintentar el pago o cambiar a pago en mostrador.
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1, flexDirection: { xs: "column", sm: "row" } }}>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      startIcon={<RefreshIcon />}
+                      onClick={() => {
+                        const encryptedId = encryptId(booking._id);
+                        router.push(`/payment/retry/${encryptedId}`);
+                      }}
+                      sx={{ flex: 1 }}
+                    >
+                      Reintentar Pago
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="warning"
+                      onClick={async () => {
+                        try {
+                          const encryptedId = encryptId(booking._id);
+                          const response = await fetch('/api/payment/convert-to-counter', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ encryptedBookingId: encryptedId }),
+                          });
+                          
+                          if (response.ok) {
+                            // Refresh the page to show updated status
+                            window.location.reload();
+                          } else {
+                            // If conversion fails, redirect to support
+                            router.push("/atencion-cliente");
+                          }
+                        } catch (error) {
+                          console.error('Error converting to counter payment:', error);
+                          router.push("/atencion-cliente");
+                        }
+                      }}
+                      sx={{ flex: 1 }}
+                    >
+                      Pagar en Mostrador
+                    </Button>
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Box>
 
