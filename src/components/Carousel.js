@@ -1,6 +1,7 @@
 // components/Carousel.js
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Slider from "react-slick";
+import PropTypes from "prop-types";
 import {
   Box,
   Card,
@@ -15,9 +16,10 @@ import cars from "../data/cars.json";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-export default function Carousel() {
+const Carousel = React.memo(function Carousel() {
   const sliderRef = useRef(null);
   const theme = useTheme();
+  const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
   const settings = {
     dots: true,
@@ -26,7 +28,7 @@ export default function Carousel() {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
-    autoplay: true,
+    autoplay: autoplayEnabled,
     autoplaySpeed: 4500,
     responsive: [
       { breakpoint: 1200, settings: { slidesToShow: 2 } },
@@ -36,6 +38,9 @@ export default function Carousel() {
 
   return (
     <Box
+      component="section"
+      role="region"
+      aria-label="Carrusel de vehículos"
       sx={{
         position: "relative",
         width: "100%",
@@ -43,8 +48,26 @@ export default function Carousel() {
         px: { xs: 2, md: 0 },
       }}
     >
+      {/* Control de reproducción automática */}
+      <Box sx={{ mb: 2, textAlign: "center" }}>
+        <button
+          onClick={() => setAutoplayEnabled(!autoplayEnabled)}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: autoplayEnabled ? '#d32f2f' : '#2e7d32',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+          aria-label={autoplayEnabled ? 'Pausar carrusel automático' : 'Iniciar carrusel automático'}
+        >
+          {autoplayEnabled ? '⏸️ Pausar' : '▶️ Reproducir'} Carrusel
+        </button>
+      </Box>
       <IconButton
         onClick={() => sliderRef.current.slickPrev()}
+        aria-label="Imagen anterior del carrusel"
         sx={{
           position: "absolute",
           top: "50%",
@@ -60,6 +83,7 @@ export default function Carousel() {
       </IconButton>
       <IconButton
         onClick={() => sliderRef.current.slickNext()}
+        aria-label="Siguiente imagen del carrusel"
         sx={{
           position: "absolute",
           top: "50%",
@@ -144,4 +168,11 @@ export default function Carousel() {
       </Box>
     </Box>
   );
-}
+});
+
+// PropTypes validation
+Carousel.propTypes = {
+  // This component doesn't receive props
+};
+
+export default Carousel;

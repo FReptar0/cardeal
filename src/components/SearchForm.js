@@ -79,6 +79,8 @@ const SearchForm = React.memo(function SearchForm({
             {...params}
             label={isRental ? "Ubicación de origen" : "Selecciona ubicación"}
             variant="outlined"
+            aria-labelledby="pickup-location-label"
+            aria-describedby="pickup-location-helper"
             sx={{
               "& .MuiOutlinedInput-root": { pt: "8px", pb: "6px" },
               "& .MuiInputLabel-root": {
@@ -272,5 +274,32 @@ const SearchForm = React.memo(function SearchForm({
     </>
   );
 });
+
+// PropTypes validation
+SearchForm.propTypes = {
+  isRental: PropTypes.bool,
+  isRentalPage: PropTypes.bool,
+  locations: PropTypes.array,
+  searchData: PropTypes.object.isRequired,
+  handlePickupLocationChange: PropTypes.func.isRequired,
+  handleReturnLocationChange: PropTypes.func.isRequired,
+  pickupDateRef: PropTypes.object,
+  pickupTimeRef: PropTypes.object,
+  returnDateRef: PropTypes.object,
+  returnTimeRef: PropTypes.object,
+  pickupTimeOpen: PropTypes.bool,
+  setPickupTimeOpen: PropTypes.func,
+  returnTimeOpen: PropTypes.bool,
+  setReturnTimeOpen: PropTypes.func,
+  handlePickupDateChange: PropTypes.func.isRequired,
+  handleReturnDateChange: PropTypes.func.isRequired,
+  handlePickupTimeChange: PropTypes.func.isRequired,
+  handleReturnTimeChange: PropTypes.func.isRequired,
+  openReturnDate: PropTypes.func,
+  applyNegativeMargin: PropTypes.bool,
+  router: PropTypes.object.isRequired,
+  setSearchData: PropTypes.func.isRequired,
+  onSearch: PropTypes.func,
+};
 
 export default SearchForm;

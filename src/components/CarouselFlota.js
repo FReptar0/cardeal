@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { Box, Card, CardMedia, CardContent, Typography, Button, useTheme } from "@mui/material";
+import PropTypes from "prop-types";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,7 +16,7 @@ import Image from "next/image";
 // Permite usar el modal de detalle si no se provee desde el padre
 const CarDetailModal = dynamic(() => import("./CarDetailModal"), { ssr: false });
 
-export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
+const CarruselFlota = React.memo(function CarruselFlota({ onOpenModal: parentOpenModal }) {
     const theme = useTheme();
     const router = useRouter();
     const [activeIndex, setActiveIndex] = useState(0);
@@ -25,6 +26,7 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
     // Modal local si no se provee desde el padre
     const [modalCar, setModalCar] = useState(null);
     const [open, setOpen] = useState(false);
+    const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -60,6 +62,9 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
 
     return (
         <Box
+            component="section"
+            role="region"
+            aria-label="Carrusel de flota de vehículos"
             sx={{
                 width: "100%",
                 maxWidth: "1200px",
@@ -67,13 +72,25 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
                 mt: 2,
             }}
         >
+            {/* Control de reproducción automática */}
+            <Box sx={{ mb: 2, textAlign: "center" }}>
+                <Button
+                    onClick={() => setAutoplayEnabled(!autoplayEnabled)}
+                    variant={autoplayEnabled ? "contained" : "outlined"}
+                    color={autoplayEnabled ? "error" : "primary"}
+                    aria-label={autoplayEnabled ? 'Pausar carrusel automático' : 'Iniciar carrusel automático'}
+                    sx={{ mb: 2 }}
+                >
+                    {autoplayEnabled ? '⏸️ Pausar' : '▶️ Reproducir'} Carrusel
+                </Button>
+            </Box>
             <Swiper
                 modules={[Navigation, Autoplay]}
                 slidesPerView={isMobile ? 1 : 3}
                 centeredSlides
                 loop
                 spaceBetween={isMobile ? 20 : 60}
-                autoplay={{ delay: 4000, disableOnInteraction: false }}
+                autoplay={autoplayEnabled ? { delay: 4000, disableOnInteraction: false } : false}
                 onSwiper={(sw) => setActiveIndex(sw.realIndex)}
                 onSlideChange={(sw) => setActiveIndex(sw.realIndex)}
                 style={{
@@ -284,4 +301,11 @@ export default function CarruselFlota({ onOpenModal: parentOpenModal }) {
             )}
         </Box>
     );
-}
+});
+
+// PropTypes validation
+CarruselFlota.propTypes = {
+    onOpenModal: PropTypes.func,
+};
+
+export default CarruselFlota;

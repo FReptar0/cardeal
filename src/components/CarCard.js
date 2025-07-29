@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import {
   Card,
@@ -10,6 +10,7 @@ import {
   Tooltip,
   Divider,
 } from "@mui/material";
+import PropTypes from "prop-types";
 import GalleryModal from "./GalleryModal";
 import InfoIcon from "@mui/icons-material/Info";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
@@ -30,6 +31,13 @@ const CarCard = React.memo(function CarCard({ car, isSelected }) {
     setOpen(true);
   }, [stopAllPropagation]);
 
+  const handleKeyDown = useCallback((event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleOpenGallery(event);
+    }
+  }, [handleOpenGallery]);
+
   const handleCloseGallery = useCallback(() => {
     setOpen(false);
   }, []);
@@ -37,6 +45,11 @@ const CarCard = React.memo(function CarCard({ car, isSelected }) {
   return (
     <>
       <Card
+        component="article"
+        tabIndex={0}
+        role="button"
+        aria-label={`Vehículo ${car.name} - ${car.category}. Precio en línea: $${car.price} MXN/día`}
+        onKeyDown={handleKeyDown}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -53,6 +66,10 @@ const CarCard = React.memo(function CarCard({ car, isSelected }) {
           "&:hover": {
             boxShadow: 5,
             transform: "scale(1.02)",
+          },
+          "&:focus": {
+            outline: "2px solid #2196f3",
+            outlineOffset: "2px",
           },
         }}
       >
@@ -384,5 +401,31 @@ const CarCard = React.memo(function CarCard({ car, isSelected }) {
     </>
   );
 });
+
+// PropTypes validation
+CarCard.propTypes = {
+  car: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    abbreviation: PropTypes.string,
+    abbreviationMeaning: PropTypes.string,
+    abbreviationDescription: PropTypes.string,
+    passengers: PropTypes.number.isRequired,
+    doors: PropTypes.number.isRequired,
+    luggage: PropTypes.number.isRequired,
+    luggageSize: PropTypes.string,
+    luggageDimensions: PropTypes.shape({
+      width: PropTypes.string,
+      height: PropTypes.string,
+      depth: PropTypes.string,
+    }),
+    transmission: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    price2: PropTypes.number.isRequired,
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+};
 
 export default CarCard;

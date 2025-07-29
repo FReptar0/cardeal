@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import PropTypes from "prop-types";
 import { format } from "date-fns";
 import {
   formatDay,
@@ -20,7 +21,7 @@ import { generateTimeSlots } from "../utils/timeSlots";
 import { parseBusinessHours } from "../utils/locations";
 import hoursData from "../data/hours.json";
 
-export default function DateTimeSelector({
+function DateTimeSelector({
   label,
   date,
   setDate,
@@ -101,8 +102,17 @@ export default function DateTimeSelector({
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <Typography variant="h6" sx={{ color: "black", fontWeight: "bold" }}>
+    <Box 
+      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+      role="group"
+      aria-labelledby={`${label.replace(/\s+/g, '-').toLowerCase()}-label`}
+    >
+      <Typography 
+        id={`${label.replace(/\s+/g, '-').toLowerCase()}-label`}
+        variant="h6" 
+        sx={{ color: "black", fontWeight: "bold" }}
+        component="h3"
+      >
         {label}
       </Typography>
       <Box
@@ -154,6 +164,14 @@ export default function DateTimeSelector({
             disableRipple
             disableFocusRipple
             onClick={() => dateInputRef?.current?.showPicker()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dateInputRef?.current?.showPicker();
+              }
+            }}
+            aria-label={`Seleccionar fecha para ${label.toLowerCase()}`}
+            tabIndex={0}
           />
           <TextField
             type="date"
@@ -182,6 +200,7 @@ export default function DateTimeSelector({
                 new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
                 "yyyy-MM-dd"
               ),
+              'aria-label': `Fecha de ${label.toLowerCase()}`,
             }}
           />
         </Box>
@@ -221,6 +240,9 @@ export default function DateTimeSelector({
               disableUnderline
               displayEmpty
               sx={{ textAlign: "center", fontSize: "1.2rem", width: "auto" }}
+              inputProps={{
+                'aria-label': `Seleccionar hora para ${label.toLowerCase()}`,
+              }}
               MenuProps={{
                 PaperProps: {
                   sx: { maxHeight: 300 },
@@ -231,7 +253,12 @@ export default function DateTimeSelector({
                 Selecciona
               </MenuItem>
               {timeSlots.map((slot) => (
-                <MenuItem key={slot} value={slot}>
+                <MenuItem 
+                  key={slot} 
+                  value={slot}
+                  role="option"
+                  aria-selected={time === slot}
+                >
                   {slot}
                 </MenuItem>
               ))}
@@ -242,3 +269,22 @@ export default function DateTimeSelector({
     </Box>
   );
 }
+
+// PropTypes validation
+DateTimeSelector.propTypes = {
+  label: PropTypes.string.isRequired,
+  date: PropTypes.instanceOf(Date).isRequired,
+  setDate: PropTypes.func.isRequired,
+  time: PropTypes.string.isRequired,
+  setTime: PropTypes.func.isRequired,
+  businessHours: PropTypes.object,
+  loading: PropTypes.bool,
+  dateInputRef: PropTypes.object,
+  timeSelectRef: PropTypes.object,
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  onDateChange: PropTypes.func,
+  onTimeChange: PropTypes.func,
+};
+
+export default DateTimeSelector;

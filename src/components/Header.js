@@ -18,6 +18,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Link from "next/link"; // Import de Next.js Link
 import Image from "next/image";
 import { useRouter } from "next/router"; // Para obtener la ruta actual
+import PropTypes from "prop-types";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -120,6 +121,8 @@ const Header = () => {
     <>
       <AppBar
         position="fixed"
+        component="header"
+        role="banner"
         sx={{
           background: "#F5F5F5",
           color: "#000",
@@ -134,6 +137,7 @@ const Header = () => {
           <Link href="/" passHref legacyBehavior>
             <Box
               component="a"
+              aria-label="Ir a la página principal de Qardeal"
               sx={{
                 width: isTop ? 350 : 200,
                 height: "auto",
@@ -184,6 +188,7 @@ const Header = () => {
                 <Link key={index} href={path} passHref legacyBehavior>
                   <Button
                     component="a"
+                    aria-current={activePath === path ? "page" : undefined}
                     sx={{
                       color: "#000",
                       textDecoration: "none",
@@ -270,6 +275,9 @@ const Header = () => {
                 color="inherit"
                 sx={{ display: { md: "none" } }}
                 onClick={() => setOpen(!open)}
+                aria-label="Abrir menú de navegación"
+                aria-expanded={open}
+                aria-controls="collapsedMenu"
               >
                 <MenuIcon />
               </IconButton>
@@ -281,6 +289,9 @@ const Header = () => {
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box
           id="collapsedMenu"
+          component="nav"
+          role="navigation"
+          aria-label="Menú de navegación móvil"
           sx={{
             backgroundColor: "#F5F5F5",
             textAlign: "center",
@@ -343,6 +354,11 @@ const Header = () => {
       </Collapse>
     </>
   );
+};
+
+// PropTypes validation
+Header.propTypes = {
+  // Header component doesn't receive props
 };
 
 export default Header;
