@@ -1,5 +1,8 @@
 // pages/api/registerReservation.js
 import { parseStringPromise } from "xml2js";
+import { connectToDatabase } from "@/utils/mongodb";
+import { sendEmail } from "@/utils/sendEmail";
+import { encryptId } from "@/utils/encryption";
 function formatDateTimeForTSD(dateInput) {
   // Asegúrate de trabajar siempre con un Date
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
@@ -40,6 +43,92 @@ function formatCustomDateTime(inputString) {
   const year = date.getFullYear();
 
   return `${month}${day}${year} ${timePart}`;
+}
+
+async function sendCounterReservationEmail(bookingData, tsdResponse) {
+  try {
+    const { db } = await connectToDatabase();
+    
+    // Try to find the booking by various identifiers
+    let booking = null;
+    if (bookingData.bookingId) {
+      booking = await db.collection("bookings").findOne({ _id: bookingData.bookingId });
+    }
+    
+    if (!booking && bookingData.renterFirst && bookingData.renterLast) {
+      // Fallback: search by name and recent date
+      const fullName = `${bookingData.renterFirst} ${bookingData.renterLast}`;
+      booking = await db.collection("bookings").findOne({
+        "contact.fullName": fullName,
+        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // Within last 24 hours
+      });
+    }
+    
+    if (!booking) {
+      console.warn('⚠️ No se encontró la reserva para enviar email de mostrador');
+      return;
+    }
+    
+    if (booking.emailSent) {
+      console.log('📧 Email ya enviado para esta reserva, saltando...');
+      return;
+    }
+    
+    if (!booking.contact?.email) {
+      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva');
+      return;
+    }
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const encryptedId = encryptId(booking._id);
+    const reservationUrl = `${baseUrl}/confirm/${encryptedId}`;
+    const confirmNum = tsdResponse?.PRE?.TRNXML?.ConfirmNum;
+    
+    const emailData = {
+      url: reservationUrl,
+      userName: booking.contact?.fullName || 'Cliente',
+      reservationId: confirmNum || booking._id,
+      stage: 'counter',
+      carInfo: {
+        name: booking.car?.name || 'Vehículo seleccionado',
+        category: booking.car?.category || 'Categoría estándar'
+      },
+      rentalDates: {
+        pickup: `${booking.search?.pickupDate} ${booking.search?.pickupTime}`,
+        return: `${booking.search?.returnDate} ${booking.search?.returnTime}`
+      },
+      locationInfo: {
+        pickup: booking.search?.pickupLocation?.name || 'Ubicación de recogida',
+        return: booking.search?.returnLocation?.name || 'Ubicación de devolución'
+      },
+      totalAmount: booking.totalWithIva || booking.total || 0
+    };
+
+    await sendEmail({
+      to: booking.contact.email,
+      templateId: 'reservation-info',
+      data: emailData
+    });
+
+    // Update booking to mark email as sent
+    await db.collection("bookings").updateOne(
+      { _id: booking._id },
+      {
+        $set: {
+          emailSent: true,
+          emailSentAt: new Date(),
+          emailType: 'reservation-success',
+          emailStage: 'counter',
+          tsdConfirmNum: confirmNum // Update with TSD confirmation if available
+        }
+      }
+    );
+
+    console.log('✅ Email de reserva en mostrador enviado exitosamente a:', booking.contact.email);
+  } catch (error) {
+    console.error('❌ Error enviando email de reserva en mostrador:', error);
+    throw error;
+  }
 }
 
 export default async function handler(req, res) {
@@ -129,6 +218,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: msg.MessageDescription });
     }
 
+    // Check if this is being called from webhook (has booking context)
+    const isFromWebhook = req.headers['x-webhook-call'] === 'true';
+    
+    if (!isFromWebhook) {
+      // This is a direct counter reservation, send email
+      try {
+        await sendCounterReservationEmail(req.body, json);
+      } catch (emailError) {
+        console.error('⚠️ Error enviando email para reserva en mostrador:', emailError);
+        // Don't fail the reservation if email fails
+      }
+    }
+    
     return res.status(200).json(json);
   } catch (error) {
     console.error("❌ Error al registrar reserva:", error);

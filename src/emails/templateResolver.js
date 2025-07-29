@@ -2,6 +2,7 @@ import verificationTemplate from './templates/verification';
 import resetPasswordTemplate from './templates/resetPassword';
 import reservationInfoTemplate from './templates/reservationInfo';
 import crmContactTemplate from './templates/crmContact';
+import paymentFailureTemplate from './templates/paymentFailure';
 
 const templates = {
     "verify-account": {
@@ -19,6 +20,10 @@ const templates = {
     "crm-contact": {
         subject: 'Nuevo contacto empresarial',
         templateFn: crmContactTemplate,
+    },
+    "payment-failure": {
+        subject: 'Problema con tu pago - Qardeal',
+        templateFn: paymentFailureTemplate,
     },
 };
 
@@ -59,6 +64,36 @@ function validateData(data, templateId) {
         }
         // rfc y mensaje son opcionales
     }
+    
+    // Validación para payment-failure
+    if (templateId === 'payment-failure') {
+        if (!data.userName || typeof data.userName !== 'string' || !data.userName.trim()) {
+            throw new Error('El nombre de usuario es obligatorio');
+        }
+        if (!data.reservationId || typeof data.reservationId !== 'string' || !data.reservationId.trim()) {
+            throw new Error('El ID de reserva es obligatorio');
+        }
+        if (!data.carInfo || typeof data.carInfo !== 'object') {
+            throw new Error('La información del vehículo es obligatoria');
+        }
+        if (!data.paymentAmount || typeof data.paymentAmount !== 'number') {
+            throw new Error('El monto del pago es obligatorio');
+        }
+        if (!data.alternativePaymentUrl || typeof data.alternativePaymentUrl !== 'string') {
+            throw new Error('La URL de pago alternativo es obligatoria');
+        }
+        if (!data.supportUrl || typeof data.supportUrl !== 'string') {
+            throw new Error('La URL de soporte es obligatoria');
+        }
+    }
+    
+    // Validación para reservation-info
+    if (templateId === 'reservation-info') {
+        if (!data.url || typeof data.url !== 'string' || !data.url.trim()) {
+            throw new Error('La URL de reserva es obligatoria');
+        }
+    }
+    
     if (data.name !== undefined && (typeof data.name !== 'string' || !data.name.trim())) {
         throw new Error('El nombre es obligatorio y debe ser una cadena no vacía');
     }

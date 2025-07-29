@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/utils/mongodb";
 import CryptoJS from "crypto-js";
 import { logEvent } from "@/utils/logger";
 import { encryptId } from "@/utils/encryption";
+import { sendEmail } from "@/utils/sendEmail";
 
 async function validateBookingExists(db, mp_order, res) {
   const booking = await db.collection("bookings").findOne({ _id: mp_order });
@@ -11,6 +12,88 @@ async function validateBookingExists(db, mp_order, res) {
     return res.status(404).send("Reserva no encontrada");
   }
   return booking;
+}
+
+async function sendReservationEmail(booking, stage, baseUrl) {
+  try {
+    if (!booking.contact?.email) {
+      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva');
+      return false;
+    }
+
+    const encryptedId = encryptId(booking._id);
+    const reservationUrl = `${baseUrl}/confirm/${encryptedId}`;
+    
+    const emailData = {
+      url: reservationUrl,
+      userName: booking.contact?.fullName || 'Cliente',
+      reservationId: booking.tsdConfirmNum || booking._id,
+      stage: stage,
+      carInfo: {
+        name: booking.car?.name || 'Vehículo seleccionado',
+        category: booking.car?.category || 'Categoría estándar'
+      },
+      rentalDates: {
+        pickup: `${booking.search?.pickupDate} ${booking.search?.pickupTime}`,
+        return: `${booking.search?.returnDate} ${booking.search?.returnTime}`
+      },
+      locationInfo: {
+        pickup: booking.search?.pickupLocation?.name || 'Ubicación de recogida',
+        return: booking.search?.returnLocation?.name || 'Ubicación de devolución'
+      },
+      totalAmount: booking.totalWithIva || booking.total || 0
+    };
+
+    await sendEmail({
+      to: booking.contact.email,
+      templateId: 'reservation-info',
+      data: emailData
+    });
+
+    console.log('✅ Email de reserva enviado exitosamente a:', booking.contact.email);
+    return true;
+  } catch (error) {
+    console.error('❌ Error enviando email de reserva:', error);
+    return false;
+  }
+}
+
+async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
+  try {
+    if (!booking.contact?.email) {
+      console.warn('⚠️ No se puede enviar email: email no encontrado en la reserva');
+      return false;
+    }
+
+    const encryptedId = encryptId(booking._id);
+    const alternativePaymentUrl = `${baseUrl}/rental?retry=${encryptedId}`;
+    const supportUrl = `${baseUrl}/atencion-cliente`;
+    
+    const emailData = {
+      userName: booking.contact?.fullName || 'Cliente',
+      reservationId: booking._id,
+      carInfo: {
+        name: booking.car?.name || 'Vehículo seleccionado',
+        category: booking.car?.category || 'Categoría estándar'
+      },
+      paymentAmount: booking.totalWithIva || booking.total || 0,
+      paymentError: failureReason || 'Error en el procesamiento del pago',
+      alternativePaymentUrl: alternativePaymentUrl,
+      supportUrl: supportUrl
+    };
+
+    await sendEmail({
+      to: booking.contact.email,
+      templateId: 'payment-failure',
+      data: emailData
+    });
+
+    console.log('✅ Email de fallo de pago enviado exitosamente a:', booking.contact.email);
+    return true;
+  } catch (error) {
+    console.error('❌ Error enviando email de fallo de pago:', error);
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -94,9 +177,34 @@ export default async function handler(req, res) {
             node: mp_node,
             concept: mp_concept,
             updatedAt: new Date(),
+            emailSent: false, // Reset email status for potential retry
           },
         }
       );
+
+      // Send payment failure email if not already sent
+      if (!booking.emailSent) {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+        const emailSent = await sendPaymentFailureEmail(
+          booking, 
+          baseUrl, 
+          `Autorización bancaria inválida: ${mp_authorization}`
+        );
+        
+        if (emailSent) {
+          await db.collection("bookings").updateOne(
+            { _id: mp_order },
+            {
+              $set: {
+                emailSent: true,
+                emailSentAt: new Date(),
+                emailType: 'payment-failure',
+                emailStage: 'online-failed'
+              }
+            }
+          );
+        }
+      }
 
       return res
         .status(402)
@@ -160,7 +268,10 @@ export default async function handler(req, res) {
         `${baseUrl}/api/bookings/registerReservation`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "x-webhook-call": "true" // Identify this as a webhook call
+          },
           body: JSON.stringify(tsdBody),
         }
       );
@@ -182,6 +293,7 @@ export default async function handler(req, res) {
             { _id: mp_order },
             { $set: { tsdConfirmNum: confirmNum } }
           );
+          
         await logEvent({
           webhook: "success",
           type: "success",
@@ -192,6 +304,27 @@ export default async function handler(req, res) {
             tsdConfirmNum: confirmNum,
           },
         });
+        
+        // Send reservation confirmation email if not already sent
+        if (!booking.emailSent) {
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+          const updatedBooking = { ...booking, tsdConfirmNum: confirmNum };
+          const emailSent = await sendReservationEmail(updatedBooking, 'online', baseUrl);
+          
+          if (emailSent) {
+            await db.collection("bookings").updateOne(
+              { _id: mp_order },
+              {
+                $set: {
+                  emailSent: true,
+                  emailSentAt: new Date(),
+                  emailType: 'reservation-success',
+                  emailStage: 'online'
+                }
+              }
+            );
+          }
+        }
       } else {
         await logEvent({
           webhook: "success",
@@ -201,6 +334,26 @@ export default async function handler(req, res) {
           message: "Error interno al procesar el webhook",
           details: { error: "TSD no devolvió confirmNum" },
         });
+        
+        // Even without confirmNum, send email with booking ID
+        if (!booking.emailSent) {
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+          const emailSent = await sendReservationEmail(booking, 'online', baseUrl);
+          
+          if (emailSent) {
+            await db.collection("bookings").updateOne(
+              { _id: mp_order },
+              {
+                $set: {
+                  emailSent: true,
+                  emailSentAt: new Date(),
+                  emailType: 'reservation-success',
+                  emailStage: 'online'
+                }
+              }
+            );
+          }
+        }
       }
     }
 
