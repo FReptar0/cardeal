@@ -26,7 +26,6 @@ const CarruselFlota = React.memo(function CarruselFlota({ onOpenModal: parentOpe
     // Modal local si no se provee desde el padre
     const [modalCar, setModalCar] = useState(null);
     const [open, setOpen] = useState(false);
-    const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -72,25 +71,13 @@ const CarruselFlota = React.memo(function CarruselFlota({ onOpenModal: parentOpe
                 mt: 2,
             }}
         >
-            {/* Control de reproducción automática */}
-            <Box sx={{ mb: 2, textAlign: "center" }}>
-                <Button
-                    onClick={() => setAutoplayEnabled(!autoplayEnabled)}
-                    variant={autoplayEnabled ? "contained" : "outlined"}
-                    color={autoplayEnabled ? "error" : "primary"}
-                    aria-label={autoplayEnabled ? 'Pausar carrusel automático' : 'Iniciar carrusel automático'}
-                    sx={{ mb: 2 }}
-                >
-                    {autoplayEnabled ? '⏸️ Pausar' : '▶️ Reproducir'} Carrusel
-                </Button>
-            </Box>
             <Swiper
                 modules={[Navigation, Autoplay]}
                 slidesPerView={isMobile ? 1 : 3}
                 centeredSlides
                 loop
                 spaceBetween={isMobile ? 20 : 60}
-                autoplay={autoplayEnabled ? { delay: 4000, disableOnInteraction: false } : false}
+                autoplay={{ delay: 4000, disableOnInteraction: false }}
                 onSwiper={(sw) => setActiveIndex(sw.realIndex)}
                 onSlideChange={(sw) => setActiveIndex(sw.realIndex)}
                 style={{

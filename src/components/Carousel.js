@@ -1,5 +1,5 @@
 // components/Carousel.js
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import Slider from "react-slick";
 import PropTypes from "prop-types";
 import {
@@ -19,7 +19,6 @@ import "slick-carousel/slick/slick-theme.css";
 const Carousel = React.memo(function Carousel() {
   const sliderRef = useRef(null);
   const theme = useTheme();
-  const [autoplayEnabled, setAutoplayEnabled] = useState(false);
 
   const settings = {
     dots: true,
@@ -28,7 +27,7 @@ const Carousel = React.memo(function Carousel() {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
-    autoplay: autoplayEnabled,
+    autoplay: true,
     autoplaySpeed: 4500,
     responsive: [
       { breakpoint: 1200, settings: { slidesToShow: 2 } },
@@ -48,23 +47,6 @@ const Carousel = React.memo(function Carousel() {
         px: { xs: 2, md: 0 },
       }}
     >
-      {/* Control de reproducción automática */}
-      <Box sx={{ mb: 2, textAlign: "center" }}>
-        <button
-          onClick={() => setAutoplayEnabled(!autoplayEnabled)}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: autoplayEnabled ? '#d32f2f' : '#2e7d32',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-          aria-label={autoplayEnabled ? 'Pausar carrusel automático' : 'Iniciar carrusel automático'}
-        >
-          {autoplayEnabled ? '⏸️ Pausar' : '▶️ Reproducir'} Carrusel
-        </button>
-      </Box>
       <IconButton
         onClick={() => sliderRef.current.slickPrev()}
         aria-label="Imagen anterior del carrusel"
