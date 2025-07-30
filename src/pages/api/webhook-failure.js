@@ -160,7 +160,7 @@ export default async function handler(req, res) {
       emailSent: booking.emailSent
     });
 
-    const result = await db.collection("bookings").updateOne(
+    await db.collection("bookings").updateOne(
       { _id: mp_order },
       {
         $set: {

@@ -173,16 +173,29 @@ export default function BookingConfirmation() {
   let lowerMessage = "";
   let wasSuccessful;
 
-  if (booking.paidOnline && !booking.paid && booking.status === "FAILED") {
-    mensaje = "Reserva no realizada.";
-    lowerMessage = "Por favor, verfica el metodo de pago e inténtalo de nuevo.";
+  // Check if this is a failed or incomplete online payment
+  const isIncompleteOnlinePayment = booking.paidOnline && !booking.paid && 
+    (booking.status === "FAILED" || booking.status === "PENDING" || booking.status === "PENDING_PAYMENT");
+  
+  if (isIncompleteOnlinePayment) {
+    if (booking.status === "FAILED") {
+      mensaje = "Reserva no realizada.";
+      lowerMessage = "El pago no pudo ser procesado. Puedes reintentar o cambiar a pago en mostrador.";
+    } else if (booking.status === "PENDING" || booking.status === "PENDING_PAYMENT") {
+      mensaje = "Pago pendiente.";
+      lowerMessage = "Tu reserva está en espera del pago. Completa el pago para confirmar tu reserva.";
+    }
     wasSuccessful = false;
   } else if (booking.paidOnline && booking.paid && booking.status === "PAID") {
     mensaje = "Reserva realizada con éxito";
     lowerMessage = "Gracias por elegir nuestro servicio.";
     wasSuccessful = true;
+  } else if (!booking.paidOnline) {
+    mensaje = "Reserva registrada";
+    lowerMessage = "Podrás pagar en mostrador al recoger tu vehículo.";
+    wasSuccessful = true;
   } else {
-    mensaje = "Reserva realizada con éxito";
+    mensaje = "Reserva confirmada";
     lowerMessage = "Gracias por elegir nuestro servicio.";
     wasSuccessful = true;
   }
@@ -368,8 +381,8 @@ export default function BookingConfirmation() {
                 </Box>
               </Box>
               
-              {/* Retry Payment Button for Failed Bookings */}
-              {booking.paidOnline && !booking.paid && booking.status === "FAILED" && (
+              {/* Retry Payment Button for Incomplete Online Payments */}
+              {isIncompleteOnlinePayment && (
                 <Box sx={{ mt: 2, p: 2, backgroundColor: "#fff3cd", borderRadius: 1, border: "1px solid #ffc107" }}>
                   <Typography variant="body2" sx={{ mb: 2, color: "#856404" }}>
                     <strong>💳 Problema con el Pago</strong><br/>
