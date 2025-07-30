@@ -66,7 +66,7 @@ async function sendPaymentFailureEmail(booking, baseUrl, failureReason) {
     }
 
     const encryptedId = encryptId(booking._id);
-    const alternativePaymentUrl = `${baseUrl}/rental?retry=${encryptedId}`;
+    const alternativePaymentUrl = null; // Retry functionality disabled
     const supportUrl = `${baseUrl}/atencion-cliente`;
     
     const emailData = {
@@ -177,7 +177,7 @@ export default async function handler(req, res) {
             node: mp_node,
             concept: mp_concept,
             updatedAt: new Date(),
-            emailSent: false, // Reset email status for potential retry
+            emailSent: false
           },
         }
       );

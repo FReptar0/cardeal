@@ -80,61 +80,39 @@ export default function paymentFailureTemplate({
                 <td style="padding: 10px 40px; text-align:center;">
                   <p style="margin:0; color:#555555; font-family:Arial, sans-serif; font-size:16px; line-height:1.5;">
                     <strong>¿Qué puedes hacer?</strong><br/>
-                    Tu reserva está <em>temporalmente en espera</em>. Puedes completar el pago o elegir pagar en mostrador.
+                    Tu reserva ha sido cancelada debido al fallo en el pago. Para una nueva reserva, contacta a nuestro equipo de soporte.
                   </p>
                 </td>
               </tr>
               
-              <!-- Action Buttons -->
+              <!-- Action Button -->
               <tr>
                 <td align="center" style="padding: 20px 40px;">
-                  <table role="presentation" cellspacing="0" cellpadding="0">
-                    <tr>
-                      <td style="padding-right: 10px;">
-                        <a href="${alternativePaymentUrl}"
-                           style="
-                             display:inline-block;
-                             background-color:#10906a;
-                             color:#ffffff;
-                             text-decoration:none;
-                             font-family:Arial, sans-serif;
-                             font-size:14px;
-                             font-weight:bold;
-                             padding:12px 20px;
-                             border-radius:6px;
-                           ">
-                          Reintentar Pago
-                        </a>
-                      </td>
-                      <td style="padding-left: 10px;">
-                        <a href="${supportUrl}"
-                           style="
-                             display:inline-block;
-                             background-color:#6c757d;
-                             color:#ffffff;
-                             text-decoration:none;
-                             font-family:Arial, sans-serif;
-                             font-size:14px;
-                             font-weight:bold;
-                             padding:12px 20px;
-                             border-radius:6px;
-                           ">
-                          Contactar Soporte
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
+                  <a href="${supportUrl}"
+                     style="
+                       display:inline-block;
+                       background-color:#6c757d;
+                       color:#ffffff;
+                       text-decoration:none;
+                       font-family:Arial, sans-serif;
+                       font-size:14px;
+                       font-weight:bold;
+                       padding:12px 20px;
+                       border-radius:6px;
+                     ">
+                    Contactar Soporte
+                  </a>
                 </td>
               </tr>
               
-              <!-- Alternative Payment Info -->
+              <!-- Important Notice -->
               <tr>
                 <td style="padding: 20px 40px;">
-                  <div style="background-color:#e3f2fd; border-left:4px solid #2196f3; padding:15px; border-radius:4px;">
-                    <p style="margin:0; color:#1565c0; font-family:Arial, sans-serif; font-size:14px; line-height:1.5;">
-                      <strong>💡 Opción Alternativa:</strong><br/>
-                      También puedes elegir pagar directamente en mostrador al recoger tu vehículo. 
-                      Esta opción no requiere pago anticipado.
+                  <div style="background-color:#fff3cd; border-left:4px solid #ffc107; padding:15px; border-radius:4px;">
+                    <p style="margin:0; color:#856404; font-family:Arial, sans-serif; font-size:14px; line-height:1.5;">
+                      <strong>⚠️ Importante:</strong><br/>
+                      Esta reserva ha sido cancelada automáticamente. Para realizar una nueva reserva, 
+                      por favor contacta a nuestro equipo de soporte.
                     </p>
                   </div>
                 </td>
