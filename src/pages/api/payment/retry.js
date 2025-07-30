@@ -33,10 +33,12 @@ export default async function handler(req, res) {
     }
 
     // Validate that booking is in a retryable state
-    if (booking.status !== "FAILED") {
+    const retryableStatuses = ["FAILED", "PENDING", "PENDING_PAYMENT"];
+    if (!retryableStatuses.includes(booking.status)) {
       return res.status(400).json({ 
         message: "Esta reserva no puede ser reintentada",
-        currentStatus: booking.status
+        currentStatus: booking.status,
+        retryableStatuses
       });
     }
 
@@ -47,7 +49,7 @@ export default async function handler(req, res) {
     }
 
     // Check if booking is not too old (optional: prevent retry after X days)
-    const maxRetryDays = 7; // Allow retry for 7 days
+    const maxRetryDays = 1; // Allow retry for 7 days
     const bookingAge = (new Date() - new Date(booking.createdAt)) / (1000 * 60 * 60 * 24);
     
     if (bookingAge > maxRetryDays) {
