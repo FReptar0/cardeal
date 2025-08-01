@@ -95,7 +95,7 @@ export default function RentalPage() {
         body: JSON.stringify(params),
       });
       const rates = await res.json();
-
+      console.log("Rates response:", rates);
       // Únicos por categoría
       const unique = rates.reduce((acc, r) => {
         if (!acc.find((x) => x.category === r.category)) acc.push(r);
@@ -110,12 +110,12 @@ export default function RentalPage() {
           if (!carInfo || !rate.baseRate || rate.baseRate === "N/A")
             return null;
           const base = parseFloat(rate.baseRate);
-          const discount = parseFloat((base * 0.9).toFixed(2));
+          const discountedPrice = parseFloat((base * 0.9).toFixed(2)); // 10% discount for display
           return {
             ...carInfo,
             ...rate,
-            price2: base,
-            price: discount,
+            price2: base,           // Precio mostrador (completo)
+            price: discountedPrice, // Precio online (con descuento para mostrar)
           };
         })
         .filter(Boolean);

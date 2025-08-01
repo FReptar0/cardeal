@@ -100,12 +100,12 @@ export const calculateBookingTotals = ({
   // Calculate rental days
   const rentalDays = calculateRentalDays(searchData.pickupDate, searchData.returnDate);
 
-  // Car costs - IMPORTANT: This matches the original checkout.js logic
-  // selectedCar.price = online payment (cheaper discount price)
-  // selectedCar.price2 = counter payment (full price, more expensive)
-  const dailyCarCost = isOnlinePayment 
-    ? Number(selectedCar.price || 0)  // Online payment (cheaper)
-    : Number(selectedCar.price2 || 0); // Counter payment (more expensive)
+  // Car costs - IMPORTANT: We need to use the base price for calculations
+  // selectedCar.price = discounted price for display (90% of base)  
+  // selectedCar.price2 = base price (100% - used for calculations)
+  // Apply discount only at the final total, not in intermediate calculations
+  const basePrice = Number(selectedCar.price2 || 0); // Always use base price for calculations
+  const dailyCarCost = basePrice;
   const totalCarCost = dailyCarCost * rentalDays;
 
   // Insurance costs
@@ -118,9 +118,10 @@ export const calculateBookingTotals = ({
   const totalExtrasCost = calculateExtrasCost(selectedExtras, rentalDays);
 
   // Other charges (23% of car + extras + insurance)
+  // IMPORTANT: Always calculate based on FULL prices, apply discount only at the end
   const otherCharges = (totalCarCost + totalExtrasCost + totalInsuranceCost) * 0.23;
 
-  // Subtotal
+  // Subtotal (always based on full prices)
   const subTotal = totalCarCost + totalInsuranceCost + totalExtrasCost + otherCharges;
 
   // IVA (16% of subtotal)
@@ -129,13 +130,14 @@ export const calculateBookingTotals = ({
   // Total with IVA
   const totalWithIva = subTotal + ivaCost;
 
-  // Final total after discount
-  const finalTotal = Math.max(0, totalWithIva - Number(discount || 0));
+  // Apply discount ONLY at the very end for online payment
+  const carDiscountAmount = isOnlinePayment ? (totalCarCost * 0.10) : 0;
+  const finalTotal = Math.max(0, totalWithIva - carDiscountAmount - Number(discount || 0));
 
   return {
     rentalDays,
-    dailyCarCost,
-    totalCarCost,
+    dailyCarCost: isOnlinePayment ? (dailyCarCost * 0.9) : dailyCarCost, // Show discounted daily rate for online
+    totalCarCost: totalCarCost, // Always return full car cost for transparency
     dailyInsuranceCost,
     totalInsuranceCost,
     totalExtrasCost,
@@ -144,6 +146,9 @@ export const calculateBookingTotals = ({
     ivaCost,
     totalWithIva,
     finalTotal,
-    discount: Number(discount || 0)
+    discount: Number(discount || 0),
+    // Additional info for transparency
+    originalCarCost: totalCarCost, // Original car cost before discount
+    carDiscount: carDiscountAmount // Discount applied only at the end
   };
 };
