@@ -100,15 +100,19 @@ const SearchForm = React.memo(function SearchForm({
         value={searchData.pickupLocation || null}
         onChange={handlePickupLocationChange}
         sx={{ width: "100%" }}
-        disabled
       />
 
       <FormControlLabel
         control={
           <Checkbox
-            checked={true}
-            onChange={() => {}}
-            disabled
+            checked={searchData.sameOffice}
+            onChange={(e) => {
+              setSearchData({
+                ...searchData,
+                sameOffice: e.target.checked,
+                returnLocation: e.target.checked ? searchData.pickupLocation : searchData.returnLocation
+              });
+            }}
             sx={{
               color: (theme) => theme.palette.primary.buttons,
               "&.Mui-checked": {

@@ -29,7 +29,9 @@ export function useLocations(setSearchData) {
                     }));
                 }
             })
-            .catch((err) => setErrorLocations(err))
+            .catch((err) => {
+                setErrorLocations(err);
+            })
             .finally(() => setLoadingLocations(false));
     }, [setSearchData]);
 
