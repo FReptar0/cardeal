@@ -5,11 +5,22 @@ const FIVE_YEARS = 5   * 365 * 24 * 60 * 60 // 157680000 s
 
 const nextConfig = {
   reactStrictMode: true,
+  // Vercel maneja automáticamente muchos headers de cache
   async headers() {
     return [
+      // Imágenes del directorio public: cache largo
+      {
+        source: '/(logos|icons|images-seguros|photos|Protecciones)/:path*\\.(png|jpg|jpeg|webp|avif|svg)$',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: `public, max-age=${ONE_YEAR}, s-maxage=${ONE_YEAR}, immutable`
+          }
+        ]
+      },
       // Vídeos: cache muy largo
       {
-        source: '/videos/:path*\\.(mp4|webm)',
+        source: '/videos/:path*\\.(mp4|webm)$',
         headers: [
           {
             key: 'Cache-Control',
@@ -17,37 +28,25 @@ const nextConfig = {
           }
         ]
       },
-      // Imágenes: cache muy largo (no cambian; usaremos versionado si cambian)
+      // API routes: no cache (importante para funcionalidad dinámica)
       {
-        source: '/:path*\\.(png|jpg|jpeg|webp|avif)$',
+        source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: `public, max-age=${FIVE_YEARS}, s-maxage=${ONE_YEAR}, immutable`
-          }
-        ]
-      },
-      // JS y CSS: cache de un mes
-      {
-        source: '/:path*\\.(js|css)$',
-        headers: [
+            value: 'no-cache, no-store, must-revalidate'
+          },
           {
-            key: 'Cache-Control',
-            value: `public, max-age=${ONE_MONTH}, s-maxage=${ONE_MONTH}, immutable`
-          }
-        ]
-      },
-      // HTML: siempre revalidar en el navegador, cache en CDN por un mes con stale-while-revalidate
-      {
-        source: '/:path*',
-        has: [{ type: 'header', key: 'accept', value: 'text/html' }],
-        headers: [
+            key: 'Pragma',
+            value: 'no-cache'
+          },
           {
-            key: 'Cache-Control',
-            value: `public, max-age=0, s-maxage=${ONE_MONTH}, stale-while-revalidate=3600`
+            key: 'Expires',
+            value: '0'
           }
         ]
       }
+      // Vercel maneja automáticamente _next/static y páginas HTML
     ]
   }
 }
