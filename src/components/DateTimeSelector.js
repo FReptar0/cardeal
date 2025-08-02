@@ -91,6 +91,23 @@ function DateTimeSelector({
     return slots;
   }, [hoursForDay, isToday]);
 
+  // Memoized event handlers
+  const handleDateChange = useCallback((e) => {
+    const [year, month, day] = e.target.value.split("-");
+    const selectedDate = new Date(year, month - 1, day);
+    setDate(selectedDate);
+    if (onDateChange) {
+      setTimeout(() => onDateChange(), 100);
+    }
+  }, [setDate, onDateChange]);
+
+  const handleTimeChange = useCallback((e) => {
+    setTime(e.target.value);
+    if (onTimeChange) {
+      setTimeout(() => onTimeChange(), 100);
+    }
+  }, [setTime, onTimeChange]);
+
   // Utilidad para convertir "08:00 AM" a "08:00" y "08:00 PM" a "20:00"
   function to24Hour(time12h) {
     const [time, modifier] = time12h.split(" ");
@@ -177,14 +194,7 @@ function DateTimeSelector({
             type="date"
             inputRef={dateInputRef}
             value={format(date, "yyyy-MM-dd")}
-            onChange={useCallback((e) => {
-              const [year, month, day] = e.target.value.split("-");
-              const selectedDate = new Date(year, month - 1, day);
-              setDate(selectedDate);
-              if (onDateChange) {
-                setTimeout(() => onDateChange(), 100);
-              }
-            }, [setDate, onDateChange])}
+            onChange={handleDateChange}
             sx={{
               position: "absolute",
               top: 0,
@@ -229,12 +239,7 @@ function DateTimeSelector({
               onClose={() => setOpen(false)}
               inputRef={timeSelectRef}
               value={timeSlots.includes(time) ? time : ""}
-              onChange={useCallback((e) => {
-                setTime(e.target.value);
-                if (onTimeChange) {
-                  setTimeout(() => onTimeChange(), 100);
-                }
-              }, [setTime, onTimeChange])}
+              onChange={handleTimeChange}
               fullWidth
               variant="standard"
               disableUnderline
