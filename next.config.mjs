@@ -1,14 +1,11 @@
 /** @type {import('next').NextConfig} */
-const ONE_MONTH  = 30 * 24 * 60 * 60        //  2592000 s
-const ONE_YEAR   = 365 * 24 * 60 * 60       // 31536000 s
-const FIVE_YEARS = 5   * 365 * 24 * 60 * 60 // 157680000 s
+const ONE_YEAR   = 365 * 24 * 60 * 60
+const FIVE_YEARS = 5   * 365 * 24 * 60 * 60
 
 const nextConfig = {
   reactStrictMode: true,
-  // Vercel maneja automáticamente muchos headers de cache
   async headers() {
     return [
-      // Imágenes del directorio public: cache largo
       {
         source: '/(logos|icons|images-seguros|photos|Protecciones)/:path*\\.(png|jpg|jpeg|webp|avif|svg)$',
         headers: [
@@ -18,7 +15,6 @@ const nextConfig = {
           }
         ]
       },
-      // Vídeos: cache muy largo
       {
         source: '/videos/:path*\\.(mp4|webm)$',
         headers: [
@@ -28,7 +24,6 @@ const nextConfig = {
           }
         ]
       },
-      // API routes: no cache (importante para funcionalidad dinámica)
       {
         source: '/api/:path*',
         headers: [
@@ -46,7 +41,6 @@ const nextConfig = {
           }
         ]
       }
-      // Vercel maneja automáticamente _next/static y páginas HTML
     ]
   }
 }
