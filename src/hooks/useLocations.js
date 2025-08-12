@@ -21,12 +21,20 @@ export function useLocations(setSearchData) {
             })
             .then((data) => {
                 setLocations(data);
-                // Seleccionar la tercera opción automáticamente y deshabilitar el Autocomplete
+                // Only set default location if user hasn't selected one yet
                 if (data && data.length >= 3 && typeof setSearchData === "function") {
-                    setSearchData((prev) => ({
-                        ...prev,
-                        pickupLocation: data[2],
-                    }));
+                    setSearchData((prev) => {
+                        // Don't override if user already has a pickup location selected
+                        if (prev.pickupLocation && prev.pickupLocation.id) {
+                            return prev;
+                        }
+                        // Only set default if no location is selected
+                        return {
+                            ...prev,
+                            pickupLocation: data[2],
+                            returnLocation: prev.sameOffice ? data[2] : prev.returnLocation,
+                        };
+                    });
                 }
             })
             .catch((err) => {

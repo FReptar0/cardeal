@@ -13,17 +13,9 @@ function getCurrentMexicoDate() {
 }
 
 
-const initialSearchData = {
-  pickupLocation: {
-    id: "AIBJ-T1-048",
-    city: "CDMX",
-    name: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
-  },
-  returnLocation: {
-    id: "AIBJ-T1-048",
-    city: "CDMX",
-    name: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
-  },
+const getInitialSearchData = () => ({
+  pickupLocation: null,
+  returnLocation: null,
   sameOffice: true,
   // Usamos getCurrentMexicoDate para las fechas iniciales
   pickupDate: getCurrentMexicoDate(),
@@ -34,6 +26,20 @@ const initialSearchData = {
   })(),
   pickupTime: "08:00 AM",
   returnTime: "08:00 AM",
+});
+
+// Fallback default locations only for cases where no user selection exists
+const defaultLocations = {
+  pickupLocation: {
+    id: "AIBJ-T1-048",
+    ciudad: "CDMX",
+    nombre: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
+  },
+  returnLocation: {
+    id: "AIBJ-T1-048",
+    ciudad: "CDMX", 
+    nombre: "Interior del AICM T1, local 048 Puerta 4 área Nacional, CDMX",
+  },
 };
 
 const SearchContext = createContext();
@@ -44,17 +50,36 @@ export const SearchProvider = ({ children }) => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("searchData");
       if (storedData) {
-        const parsed = JSON.parse(storedData);
-        return {
-          ...parsed,
-          // Rehidrata las fechas, ya que se almacenaron como string
-          pickupDate: new Date(parsed.pickupDate),
-          returnDate: new Date(parsed.returnDate),
-        };
+        try {
+          const parsed = JSON.parse(storedData);
+          // Preserve user selections, only update dates if they're in the past
+          const today = getCurrentMexicoDate();
+          let pickupDate = new Date(parsed.pickupDate);
+          let returnDate = new Date(parsed.returnDate);
+          
+          // Only update dates if they're in the past, preserve user location choices
+          if (pickupDate < today) {
+            pickupDate = getCurrentMexicoDate();
+            returnDate = new Date(pickupDate);
+            returnDate.setDate(returnDate.getDate() + 1);
+          }
+          
+          return {
+            ...parsed,
+            pickupDate,
+            returnDate,
+            // Preserve user location selections from localStorage
+            pickupLocation: parsed.pickupLocation || null,
+            returnLocation: parsed.returnLocation || null,
+          };
+        } catch (error) {
+          console.warn("Error parsing stored search data:", error);
+          return getInitialSearchData();
+        }
       }
-      return initialSearchData;
+      return getInitialSearchData();
     }
-    return initialSearchData;
+    return getInitialSearchData();
   });
 
   // Cada vez que searchData cambie, se guarda en el localStorage
@@ -64,7 +89,7 @@ export const SearchProvider = ({ children }) => {
     }
   }, [searchData]);
 
-  // Verificación de fechas para evitar fechas pasadas
+  // Verificación de fechas para evitar fechas pasadas - ONLY updates dates, preserves locations
   useEffect(() => {
     const today = getCurrentMexicoDate();
 
@@ -81,10 +106,15 @@ export const SearchProvider = ({ children }) => {
         const updatedReturnDate = new Date(today);
         updatedReturnDate.setDate(today.getDate() + 1);
 
+        // CRITICAL: Only update dates, preserve all user location selections
         return {
           ...prev,
           pickupDate: updatedPickupDate,
           returnDate: updatedReturnDate,
+          // Explicitly preserve user location choices
+          pickupLocation: prev.pickupLocation,
+          returnLocation: prev.returnLocation,
+          sameOffice: prev.sameOffice,
         };
       }
 
@@ -93,7 +123,7 @@ export const SearchProvider = ({ children }) => {
   }, []); // 👈 Solo se ejecuta una vez al montar
 
   const clearSearch = () => {
-    setSearchData(initialSearchData);
+    setSearchData(getInitialSearchData());
     localStorage.removeItem("searchData");
   };
 

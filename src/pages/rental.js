@@ -204,11 +204,11 @@ export default function RentalPage() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [selectedCarIndex]);
 
-  const safeSearchData = searchData || {
-    pickupLocation: "",
-    returnLocation: "",
-    pickupDate: "",
-    returnDate: "",
+  const safeSearchData = searchData || searchContextData || {
+    pickupLocation: null,
+    returnLocation: null,
+    pickupDate: new Date(),
+    returnDate: new Date(),
   };
 
   return (

@@ -110,7 +110,7 @@ const SearchForm = React.memo(function SearchForm({
               setSearchData({
                 ...searchData,
                 sameOffice: e.target.checked,
-                returnLocation: e.target.checked ? searchData.pickupLocation : searchData.returnLocation
+                returnLocation: e.target.checked ? searchData.pickupLocation : null
               });
             }}
             sx={{

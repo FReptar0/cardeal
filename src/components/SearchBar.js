@@ -279,26 +279,8 @@ export default function SearchBar({ sx = {}, onSearch }) {
     setSearchData(newSearchData);
   }, [searchData, setSearchData]);
 
-  useEffect(() => {
-    const pickupId = searchData.pickupLocation?.id;
-    const returnId = searchData.returnLocation?.id;
-
-    if (
-      pickupId &&
-      returnId &&
-      pickupId === returnId &&
-      !searchData.sameOffice
-    ) {
-      setSearchData((prev) => ({
-        ...prev,
-        sameOffice: true,
-      }));
-    }
-  }, [
-    searchData.pickupLocation?.id,
-    searchData.returnLocation?.id,
-    searchData.sameOffice,
-  ]);
+  // Removed auto-sameOffice logic that was preventing users from unchecking the checkbox
+  // The sameOffice state should be controlled entirely by user interaction through the checkbox
 
   // --- Cambios para abrir automáticamente el selector de hora tras seleccionar fecha ---
   // Usar estado controlado para abrir los Select de hora
@@ -360,8 +342,7 @@ export default function SearchBar({ sx = {}, onSearch }) {
   }, [searchData, setSearchData, router, onSearch]);
 
   // Hook para exponer funciones de apertura automática de selectores
-  const { openPickupTime, openReturnDate, openReturnTime } =
-    useAutoOpenSelectors({
+  const { openReturnDate } = useAutoOpenSelectors({
       pickupTimeRef,
       returnDateRef,
       returnTimeRef,
@@ -481,58 +462,4 @@ export default function SearchBar({ sx = {}, onSearch }) {
     </Box>
   );
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: isRental ? 0.5 : 3,
-        width: "100%",
-        p: 3,
-        backgroundColor: "#f5f5f5",
-        borderRadius: 2,
-        boxSizing: "border-box",
-        ...sx,
-      }}
-      id="containerBox"
-    >
-      {showCarImage ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: 2,
-          }}
-        >
-          {selectedCar && (
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: "250px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={selectedCar.image}
-                alt={selectedCar.name}
-                sx={{
-                  width: "100%",
-                  maxHeight: "218px",
-                  objectFit: "contain",
-                  mb: 2,
-                  borderRadius: 2,
-                }}
-              />
-            </Box>
-          )}
-          <Box sx={{ flex: 2 }}>{searchForm}</Box>
-        </Box>
-      ) : (
-        searchForm
-      )}
-    </Box>
-  );
 }
