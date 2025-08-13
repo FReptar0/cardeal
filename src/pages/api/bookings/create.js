@@ -161,6 +161,7 @@ export default async function handler(req, res) {
       },
       totalAmount,                     // importe neto con IVA
       status: paidOnline ? "PENDING" : "OFFLINE",
+      bookingStatus: "Not Released", // Released, With Incident.
       discount: Number(discount),
       createdAt: new Date(),
       updatedAt: new Date(),
