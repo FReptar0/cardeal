@@ -132,7 +132,7 @@ export default async function handler(req, res) {
             },
             totalAmount,                     // importe neto con IVA
             status: paidOnline ? "PENDING" : "OFFLINE",
-            bookingStatus: "Not Released",
+            bookingStatus: "Por liberar",
             discount: Number(discount),
             tsdConfirmNum,
             createdAt: new Date(),
