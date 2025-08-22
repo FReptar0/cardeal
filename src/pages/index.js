@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Head from "next/head";
 import { Box } from "@mui/material";
 import Carousel from "@/components/Carousel";
 import CarouselFlota from "@/components/CarouselFlota";
@@ -83,7 +84,11 @@ export default function Index() {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", textAlign: "center" }} id="home">
+    <>
+      <Head>
+        <title>Renta de autos en Ciudad de México | Qardeal</title>
+      </Head>
+      <Box sx={{ width: "100%", textAlign: "center" }} id="home">
       {/* Sección Hero */}
       <AnimatedSection 
         id="sectionOne" 
@@ -188,5 +193,6 @@ export default function Index() {
         </AnimatedSection>
       </AnimatedSection>
     </Box>
+    </>
   );
 }
