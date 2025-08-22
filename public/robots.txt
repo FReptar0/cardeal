@@ -1,0 +1,23 @@
+# Permitir a Google Search y Google Ads
+User-agent: Googlebot
+Disallow:
+
+User-agent: Googlebot-Mobile
+Disallow:
+
+User-agent: AdsBot-Google
+Disallow:
+
+# Opcional: permitir también a Google Image y otros servicios de Google
+User-agent: Googlebot-Image
+Disallow:
+
+User-agent: Googlebot-Video
+Disallow:
+
+# Bloquear todo lo demás
+User-agent: *
+Disallow: /
+
+# Sitemaps (importante para SEO)
+Sitemap: https://www.qardeal.com/sitemap.xml
